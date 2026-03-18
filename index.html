@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>German 1500 - Vocabulary Study App</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 40px rgba(0,0,0,0.08);display:flex;flex-direction:column}
+.nav{display:flex;background:#1B4F72;overflow-x:auto;flex-shrink:0}
+.nav button{flex:1;padding:10px 6px;color:rgba(255,255,255,0.6);background:none;border:none;font-size:11px;cursor:pointer;transition:all .2s;white-space:nowrap;min-width:70px}
+.nav button.active{color:#fff;background:rgba(255,255,255,0.15);border-bottom:2px solid #AED6F1}
+.nav button:hover{color:#fff}
+.content{padding:16px;flex:1;overflow-y:auto}
+h1{font-size:18px;color:#1B4F72;margin-bottom:12px}
+h2{font-size:15px;color:#1B4F72;margin:12px 0 8px}
+.card{background:#fff;border-radius:12px;padding:20px;margin:10px 0;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:1px solid #e2e8f0}
+.card-accent{border-left:4px solid #1B4F72}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.stat{background:linear-gradient(135deg,#f8fafc,#edf2f7);border-radius:10px;padding:14px;text-align:center}
+.stat .num{font-size:28px;font-weight:700;color:#1B4F72}
+.stat .label{font-size:11px;color:#718096;margin-top:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;width:100%}
+.btn-primary{background:#1B4F72;color:#fff}
+.btn-primary:hover{background:#154360}
+.btn-secondary{background:#e2e8f0;color:#1B4F72}
+.btn-secondary:hover{background:#cbd5e0}
+.btn-success{background:#27AE60;color:#fff}
+.btn-success:hover{background:#219a52}
+.btn-sm{padding:8px 14px;font-size:12px;width:auto}
+.flashcard-container{perspective:1000px;margin:16px 0}
+.flashcard{width:100%;min-height:220px;position:relative;cursor:pointer;transition:transform 0.5s;transform-style:preserve-3d}
+.flashcard.flipped{transform:rotateY(180deg)}
+.flashcard-face{position:absolute;width:100%;min-height:220px;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+.flashcard-front{background:linear-gradient(135deg,#1B4F72,#2E86C1);color:#fff}
+.flashcard-back{background:#fff;border:2px solid #1B4F72;transform:rotateY(180deg)}
+.flashcard-word{font-size:28px;font-weight:700;margin-bottom:8px}
+.flashcard-meta{font-size:12px;opacity:0.7;margin-top:4px}
+.flashcard-english{font-size:24px;font-weight:700;color:#1B4F72;margin-bottom:6px}
+.flashcard-category{font-size:12px;color:#718096}
+.confidence-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0}
+.conf-btn{padding:12px 8px;border-radius:8px;border:2px solid;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .2s}
+.conf-1{border-color:#E74C3C;color:#E74C3C;background:#fff}
+.conf-1:hover{background:#E74C3C;color:#fff}
+.conf-2{border-color:#F39C12;color:#F39C12;background:#fff}
+.conf-2:hover{background:#F39C12;color:#fff}
+.conf-3{border-color:#F1C40F;color:#b7950b;background:#fff}
+.conf-3:hover{background:#F1C40F;color:#fff}
+.conf-4{border-color:#27AE60;color:#27AE60;background:#fff}
+.conf-4:hover{background:#27AE60;color:#fff}
+.progress-bar{background:#e2e8f0;border-radius:99px;height:8px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:99px;transition:width .3s}
+.tag{display:inline-block;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;margin:2px}
+.tag-noun{background:#D6EAF8;color:#1B4F72}
+.tag-verb{background:#D5F5E3;color:#1E8449}
+.tag-adj{background:#F9EBEA;color:#922B21}
+.tag-gram{background:#F5EEF8;color:#6C3483}
+.tag-expr{background:#FEF9E7;color:#B7950B}
+.tag-found{background:#FDEBD0;color:#AF601A}
+.tip-box{background:#FEF9E7;border:1px solid #F9E79F;border-radius:8px;padding:12px;margin:10px 0;font-size:12px;color:#7D6608}
+.task-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin:4px 0;background:#f8fafc}
+.task-badge{min-width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff}
+.badge-new{background:#27AE60}
+.badge-r2{background:#F39C12}
+.badge-r3{background:#E74C3C}
+.badge-r5{background:#8E44AD}
+.badge-r7{background:#1B4F72}
+.word-list{max-height:200px;overflow-y:auto;margin:8px 0}
+.word-row{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;font-size:12px;border-bottom:1px solid #f0f0f0;gap:8px}
+.word-row:hover{background:#f8fafc}
+.tabs{display:flex;gap:4px;margin:10px 0;flex-wrap:wrap}
+.tab{padding:6px 12px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:12px;cursor:pointer}
+.tab.active{background:#1B4F72;color:#fff;border-color:#1B4F72}
+.dual-coding-prompt{background:linear-gradient(135deg,#EBF5FB,#D4E6F1);border-radius:10px;padding:14px;margin:10px 0;font-size:12px;color:#1B4F72}
+.phase-indicator{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600}
+.empty-state{text-align:center;padding:40px 20px;color:#a0aec0}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+.btn-group{display:flex;gap:8px;margin:10px 0}
+.btn-group .btn{flex:1}
+.review-type-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+input[type="date"],input[type="text"]{padding:8px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;width:100%}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.session-header{padding:12px 16px;background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.session-header button{background:none;border:none;color:#fff;cursor:pointer;font-size:14px}
+.sunday-banner{background:linear-gradient(135deg,#EBF5FB,#D4E6F1);border-radius:12px;padding:20px;text-align:center;margin:10px 0}
+.sunday-banner .icon{font-size:40px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="vocab-data.js"></script>
+<script src="emoji-data.js"></script>
+<script src="app.jsx" type="text/babel"></script>
+</body>
+</html>
