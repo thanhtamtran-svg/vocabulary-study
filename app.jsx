@@ -227,7 +227,7 @@ function App({onHome}) {
   const [syncMsg, setSyncMsg] = useState('');
   const syncRef = useRef(false);
 
-  // Fetch image when session word changes
+  // Fetch image + autoplay pronunciation when session word changes
   useEffect(function() {
     if (view !== 'session' || !sessionWords.length) return;
     var w = sessionWords[currentIdx];
@@ -238,6 +238,8 @@ function App({onHome}) {
       setWordImage(img);
       setImageLoading(false);
     }).catch(function() { setImageLoading(false); });
+    // Autoplay pronunciation
+    speakGerman(w.german);
   }, [view, currentIdx, sessionWords]);
 
   // Browse state (hoisted to avoid hooks-in-conditional bug)
