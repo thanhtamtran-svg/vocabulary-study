@@ -184,7 +184,7 @@ function saveState(state) {
 }
 
 // ===== MAIN APP =====
-function App() {
+function App({onHome}) {
   const saved = useMemo(() => loadState(), []);
 
   const [view, setView] = useState("dashboard");
@@ -1323,7 +1323,16 @@ function App() {
                 }
               }
             }, 'Reset All Progress')
-          )
+          ),
+
+          onHome ? React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
+            React.createElement('h2', null, 'Language'),
+            React.createElement('button', {
+              className: 'btn btn-secondary',
+              style: {marginTop:'8px'},
+              onClick: onHome
+            }, '\uD83C\uDF10 Switch Language')
+          ) : null
         )
       )
     );
@@ -1332,4 +1341,71 @@ function App() {
   return null;
 }
 
-ReactDOM.render(React.createElement(App), document.getElementById('root'));
+// ===== HOME SCREEN (Language Picker) =====
+function Home() {
+  const [language, setLanguage] = useState(() => {
+    try { return localStorage.getItem('vocab_language') || null; } catch { return null; }
+  });
+
+  function selectLanguage(lang) {
+    localStorage.setItem('vocab_language', lang);
+    setLanguage(lang);
+  }
+
+  function goHome() {
+    localStorage.removeItem('vocab_language');
+    setLanguage(null);
+  }
+
+  if (language === 'german') {
+    return React.createElement(App, {onHome: goHome});
+  }
+
+  if (language === 'english') {
+    return React.createElement('div', {className: 'app'},
+      React.createElement('div', {className: 'home-header'},
+        React.createElement('button', {onClick: goHome, style: {background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}, '\u2190 Back'),
+        React.createElement('span', {style: {fontSize:'15px',fontWeight:600}}, 'English Vocabulary'),
+        React.createElement('span', null, '')
+      ),
+      React.createElement('div', {className: 'content', style: {textAlign:'center',paddingTop:'60px'}},
+        React.createElement('div', {style: {fontSize:'64px',marginBottom:'16px'}}, '\uD83C\uDDEC\uD83C\uDDE7'),
+        React.createElement('h1', null, 'Coming Soon!'),
+        React.createElement('p', {style: {color:'#718096',margin:'12px 0'}}, 'English vocabulary course is under development.'),
+        React.createElement('button', {className: 'btn btn-primary', style: {marginTop:'20px',maxWidth:'200px',margin:'20px auto'}, onClick: goHome}, 'Back to Home')
+      )
+    );
+  }
+
+  // Home screen - language picker
+  return React.createElement('div', {className: 'app'},
+    React.createElement('div', {className: 'home-header'},
+      React.createElement('span', null, ''),
+      React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
+      React.createElement('span', null, '')
+    ),
+    React.createElement('div', {className: 'content', style: {paddingTop:'40px'}},
+      React.createElement('div', {style: {textAlign:'center',marginBottom:'30px'}},
+        React.createElement('div', {style: {fontSize:'48px',marginBottom:'8px'}}, '\uD83D\uDCDA'),
+        React.createElement('h1', {style: {fontSize:'22px',marginBottom:'4px'}}, 'What would you like to study today?'),
+        React.createElement('p', {style: {color:'#718096',fontSize:'13px'}}, 'Choose a language to get started')
+      ),
+      React.createElement('div', {className: 'language-grid'},
+        React.createElement('button', {className: 'language-card', onClick: function() { selectLanguage('german'); }},
+          React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDE9\uD83C\uDDEA'),
+          React.createElement('div', {className: 'language-name'}, 'German'),
+          React.createElement('div', {className: 'language-desc'}, '1500 words \u2022 A1-B1'),
+          React.createElement('div', {className: 'language-tag active-tag'}, 'Active')
+        ),
+        React.createElement('button', {className: 'language-card', onClick: function() { selectLanguage('english'); }},
+          React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDEC\uD83C\uDDE7'),
+          React.createElement('div', {className: 'language-name'}, 'English'),
+          React.createElement('div', {className: 'language-desc'}, 'Coming soon'),
+          React.createElement('div', {className: 'language-tag soon-tag'}, 'Soon')
+        )
+      )
+    )
+  );
+}
+
+ReactDOM.render(React.createElement(Home), document.getElementById('root'));

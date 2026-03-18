@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<title>German 1500 - Vocabulary Study App</title>
+<title>Vocabulary Study App</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
@@ -115,12 +115,22 @@ input[type="date"],input[type="text"],input[type="email"]{padding:8px 12px;borde
 .word-image{width:100%;max-height:200px;object-fit:cover;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
 .word-image-credit{font-size:9px;color:#a0aec0;margin-top:4px}
 .word-image-credit a{color:#718096;text-decoration:underline}
+.home-header{padding:14px 16px;background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.language-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.language-card{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:24px 12px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.language-card:hover{border-color:#1B4F72;box-shadow:0 4px 16px rgba(27,79,114,0.12);transform:translateY(-2px)}
+.language-flag{font-size:40px}
+.language-name{font-size:16px;font-weight:700;color:#1a202c}
+.language-desc{font-size:11px;color:#718096}
+.language-tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600;margin-top:4px}
+.active-tag{background:#D5F5E3;color:#1E8449}
+.soon-tag{background:#F9EBEA;color:#922B21}
 </style>
 </head>
 <body>
 <div id="root"></div>
-<script src="vocab-data.js?v=9"></script>
-<script src="emoji-data.js?v=9"></script>
-<script src="app.jsx?v=9" type="text/babel"></script>
+<script src="vocab-data.js?v=10"></script>
+<script src="emoji-data.js?v=10"></script>
+<script src="app.jsx?v=10" type="text/babel"></script>
 </body>
 </html>
