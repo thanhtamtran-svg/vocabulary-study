@@ -1342,14 +1342,40 @@ function App({onHome}) {
 }
 
 // ===== HOME SCREEN (Language Picker) =====
+const PASSWORDS = { german: 'tam', english: 'tam' };
+
 function Home() {
   const [language, setLanguage] = useState(() => {
     try { return localStorage.getItem('vocab_language') || null; } catch { return null; }
   });
+  const [authenticated, setAuthenticated] = useState(() => {
+    try { return localStorage.getItem('vocab_auth') === 'true'; } catch { return false; }
+  });
+  const [pendingLang, setPendingLang] = useState(null);
+  const [passInput, setPassInput] = useState('');
+  const [passError, setPassError] = useState(false);
 
-  function selectLanguage(lang) {
-    localStorage.setItem('vocab_language', lang);
-    setLanguage(lang);
+  function trySelectLanguage(lang) {
+    if (authenticated) {
+      localStorage.setItem('vocab_language', lang);
+      setLanguage(lang);
+    } else {
+      setPendingLang(lang);
+      setPassInput('');
+      setPassError(false);
+    }
+  }
+
+  function submitPassword() {
+    if (passInput === PASSWORDS[pendingLang]) {
+      localStorage.setItem('vocab_auth', 'true');
+      localStorage.setItem('vocab_language', pendingLang);
+      setAuthenticated(true);
+      setLanguage(pendingLang);
+      setPendingLang(null);
+    } else {
+      setPassError(true);
+    }
   }
 
   function goHome() {
@@ -1357,11 +1383,11 @@ function Home() {
     setLanguage(null);
   }
 
-  if (language === 'german') {
+  if (language === 'german' && authenticated) {
     return React.createElement(App, {onHome: goHome});
   }
 
-  if (language === 'english') {
+  if (language === 'english' && authenticated) {
     return React.createElement('div', {className: 'app'},
       React.createElement('div', {className: 'home-header'},
         React.createElement('button', {onClick: goHome, style: {background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}, '\u2190 Back'),
@@ -1373,6 +1399,35 @@ function Home() {
         React.createElement('h1', null, 'Coming Soon!'),
         React.createElement('p', {style: {color:'#718096',margin:'12px 0'}}, 'English vocabulary course is under development.'),
         React.createElement('button', {className: 'btn btn-primary', style: {marginTop:'20px',maxWidth:'200px',margin:'20px auto'}, onClick: goHome}, 'Back to Home')
+      )
+    );
+  }
+
+  // Password prompt
+  if (pendingLang) {
+    return React.createElement('div', {className: 'app'},
+      React.createElement('div', {className: 'home-header'},
+        React.createElement('button', {onClick: function() { setPendingLang(null); }, style: {background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}, '\u2190 Back'),
+        React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
+        React.createElement('span', null, '')
+      ),
+      React.createElement('div', {className: 'content', style: {paddingTop:'60px',textAlign:'center'}},
+        React.createElement('div', {style: {fontSize:'48px',marginBottom:'12px'}}, '\uD83D\uDD12'),
+        React.createElement('h1', {style: {fontSize:'18px',marginBottom:'16px'}}, 'Enter password to continue'),
+        React.createElement('input', {
+          type: 'password',
+          value: passInput,
+          placeholder: 'Password',
+          style: {maxWidth:'240px',margin:'0 auto',display:'block',textAlign:'center'},
+          onChange: function(e) { setPassInput(e.target.value); setPassError(false); },
+          onKeyDown: function(e) { if (e.key === 'Enter') submitPassword(); }
+        }),
+        passError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}, 'Incorrect password') : null,
+        React.createElement('button', {
+          className: 'btn btn-primary',
+          style: {marginTop:'16px',maxWidth:'240px'},
+          onClick: submitPassword
+        }, 'Enter')
       )
     );
   }
@@ -1391,13 +1446,13 @@ function Home() {
         React.createElement('p', {style: {color:'#718096',fontSize:'13px'}}, 'Choose a language to get started')
       ),
       React.createElement('div', {className: 'language-grid'},
-        React.createElement('button', {className: 'language-card', onClick: function() { selectLanguage('german'); }},
+        React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('german'); }},
           React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDE9\uD83C\uDDEA'),
           React.createElement('div', {className: 'language-name'}, 'German'),
           React.createElement('div', {className: 'language-desc'}, '1500 words \u2022 A1-B1'),
           React.createElement('div', {className: 'language-tag active-tag'}, 'Active')
         ),
-        React.createElement('button', {className: 'language-card', onClick: function() { selectLanguage('english'); }},
+        React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('english'); }},
           React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDEC\uD83C\uDDE7'),
           React.createElement('div', {className: 'language-name'}, 'English'),
           React.createElement('div', {className: 'language-desc'}, 'Coming soon'),
