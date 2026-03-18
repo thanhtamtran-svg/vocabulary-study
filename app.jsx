@@ -73,6 +73,26 @@ const SCIENCE_TIPS = [
   "Interleaving (mixing word types) feels harder but produces stronger long-term retention."
 ];
 
+// ===== TEXT-TO-SPEECH =====
+function speakGerman(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'de-DE';
+  utterance.rate = 0.85;
+  // Try to find a German voice
+  var voices = window.speechSynthesis.getVoices();
+  var deVoice = voices.find(function(v) { return v.lang.startsWith('de'); });
+  if (deVoice) utterance.voice = deVoice;
+  window.speechSynthesis.speak(utterance);
+}
+
+// Preload voices (needed on some browsers)
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+}
+
 // ===== UTILITY FUNCTIONS =====
 function dateKey(d) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -541,8 +561,11 @@ function App() {
                 React.createElement('span', {className: 'tag ' + w.typeClass,
                   style: {marginBottom:'12px'}}, w.type),
                 React.createElement('div', {className: 'flashcard-word'}, w.german),
+                React.createElement('button', {className: 'speak-btn',
+                  onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
+                  '\uD83D\uDD0A'),
                 React.createElement('div', {className: 'flashcard-meta'}, w.cat),
-                React.createElement('div', {style: {marginTop:'16px',fontSize:'12px',opacity:0.7}},
+                React.createElement('div', {style: {marginTop:'8px',fontSize:'12px',opacity:0.7}},
                   'Tap to flip')
               ),
               React.createElement('div', {className: 'flashcard-face flashcard-back'},
@@ -551,7 +574,13 @@ function App() {
                 React.createElement('span', {className: 'tag ' + w.typeClass,
                   style: {marginBottom:'8px'}}, w.type),
                 React.createElement('div', {className: 'flashcard-english'}, w.english),
-                React.createElement('div', {style: {fontSize:'16px',color:'#718096',marginTop:'4px'}}, w.german),
+                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',marginTop:'4px'}},
+                  React.createElement('span', {style: {fontSize:'16px',color:'#718096'}}, w.german),
+                  React.createElement('button', {className: 'speak-btn back',
+                    style: {width:'32px',height:'32px',fontSize:'16px'},
+                    onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
+                    '\uD83D\uDD0A')
+                ),
                 React.createElement('div', {className: 'flashcard-category'}, w.cat)
               )
             )
