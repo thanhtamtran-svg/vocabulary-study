@@ -44,6 +44,25 @@ async function cloudPush(email, state) {
   return !res.error;
 }
 
+// ===== UNSPLASH IMAGE =====
+const UNSPLASH_KEY = 'POIpL2lpBJPWn99F-d0pzkxSSTlueqR1IxvGeu-gF5Y';
+
+async function fetchWordImage(englishWord) {
+  var res = await fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(englishWord) + '&per_page=1&orientation=landscape', {
+    headers: { 'Authorization': 'Client-ID ' + UNSPLASH_KEY }
+  });
+  if (!res.ok) return null;
+  var data = await res.json();
+  if (data.results && data.results.length > 0) {
+    return {
+      url: data.results[0].urls.small,
+      credit: data.results[0].user.name,
+      link: data.results[0].user.links.html
+    };
+  }
+  return null;
+}
+
 // ===== AI EXPLAIN =====
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
@@ -196,6 +215,10 @@ function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  // Word image state
+  const [wordImage, setWordImage] = useState(null);
+  const [imageLoading, setImageLoading] = useState(false);
+
   // Cloud sync state
   const [syncEmail, setSyncEmail] = useState(() => {
     try { return localStorage.getItem(SYNC_EMAIL_KEY) || ''; } catch { return ''; }
@@ -203,6 +226,19 @@ function App() {
   const [syncStatus, setSyncStatus] = useState('idle'); // idle, syncing, done, error
   const [syncMsg, setSyncMsg] = useState('');
   const syncRef = useRef(false);
+
+  // Fetch image when session word changes
+  useEffect(function() {
+    if (view !== 'session' || !sessionWords.length) return;
+    var w = sessionWords[currentIdx];
+    if (!w) return;
+    setWordImage(null);
+    setImageLoading(true);
+    fetchWordImage(w.english).then(function(img) {
+      setWordImage(img);
+      setImageLoading(false);
+    }).catch(function() { setImageLoading(false); });
+  }, [view, currentIdx, sessionWords]);
 
   // Browse state (hoisted to avoid hooks-in-conditional bug)
   const [searchTerm, setSearchTerm] = useState("");
@@ -618,6 +654,22 @@ function App() {
 
           isLearn && !flipped ? React.createElement('div', {className: 'dual-coding-prompt'},
             React.createElement('strong', null, '\uD83C\uDFA8 Dual Coding: '), tip
+          ) : null,
+
+          // Word image (front side)
+          !flipped ? React.createElement('div', {className: 'word-image-container'},
+            imageLoading ? React.createElement('div', {style: {textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}, 'Loading image...') : null,
+            wordImage ? React.createElement('div', null,
+              React.createElement('img', {src: wordImage.url, alt: w.english, className: 'word-image'}),
+              React.createElement('div', {className: 'word-image-credit'},
+                'Photo by ',
+                React.createElement('a', {href: wordImage.link + '?utm_source=german1500&utm_medium=referral', target: '_blank', rel: 'noopener'}, wordImage.credit),
+                ' on Unsplash'
+              )
+            ) : null,
+            !imageLoading && !wordImage ? React.createElement('div', {style: {textAlign:'center',fontSize:'48px',padding:'20px'}},
+              typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'
+            ) : null
           ) : null,
 
           !isLearn && !flipped && reviewInterval ? React.createElement('div', {className: 'tip-box'},
