@@ -7,6 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f4f8;color:#1a202c;min-height:100vh}
@@ -88,6 +89,14 @@ input[type="date"],input[type="text"]{padding:8px 12px;border:1px solid #e2e8f0;
 .session-header button{background:none;border:none;color:#fff;cursor:pointer;font-size:14px}
 .sunday-banner{background:linear-gradient(135deg,#EBF5FB,#D4E6F1);border-radius:12px;padding:20px;text-align:center;margin:10px 0}
 .sunday-banner .icon{font-size:40px;margin-bottom:8px}
+.sync-bar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#EBF5FB;font-size:11px;color:#1B4F72}
+.sync-bar .sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sync-bar .sync-dot.online{background:#27AE60}
+.sync-bar .sync-dot.offline{background:#E74C3C}
+.sync-bar .sync-dot.syncing{background:#F39C12;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.sync-login{padding:16px;background:#EBF5FB;border-radius:8px;margin:10px 0}
+.sync-login input[type="email"]{margin:8px 0}
 </style>
 </head>
 <body>

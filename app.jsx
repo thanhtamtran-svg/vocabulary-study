@@ -1,4 +1,48 @@
-const {useState, useEffect, useCallback, useMemo} = React;
+const {useState, useEffect, useCallback, useMemo, useRef} = React;
+
+// ===== SUPABASE CLOUD SYNC =====
+const SUPABASE_URL = 'https://qpzepnbqdscshylcwvhr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jHgz4-egQIk9dYaV7HhR5w_MK3AYdC0';
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const SYNC_EMAIL_KEY = 'german1500_sync_email';
+
+function mergeProgress(local, remote) {
+  var merged = {...local};
+  Object.keys(remote).forEach(function(k) {
+    if (!merged[k]) { merged[k] = remote[k]; return; }
+    var lReviews = merged[k].reviews || [];
+    var rReviews = remote[k].reviews || [];
+    var allReviews = lReviews.slice();
+    rReviews.forEach(function(rr) {
+      var dup = allReviews.some(function(lr) { return lr.date === rr.date && lr.type === rr.type; });
+      if (!dup) allReviews.push(rr);
+    });
+    merged[k] = {
+      learned: merged[k].learned || remote[k].learned,
+      confidence: Math.max(merged[k].confidence || 0, remote[k].confidence || 0),
+      lastReview: merged[k].lastReview > remote[k].lastReview ? merged[k].lastReview : remote[k].lastReview,
+      reviews: allReviews
+    };
+  });
+  return merged;
+}
+
+async function cloudPull(email) {
+  if (!supabase || !email) return null;
+  var res = await supabase.from('vocab_progress').select('data').eq('user_email', email).single();
+  if (res.error || !res.data) return null;
+  return res.data.data;
+}
+
+async function cloudPush(email, state) {
+  if (!supabase || !email) return false;
+  var res = await supabase.from('vocab_progress').upsert({
+    user_email: email,
+    data: state,
+    updated_at: new Date().toISOString()
+  }, {onConflict: 'user_email'});
+  return !res.error;
+}
 
 const TYPE_TAGS = ["tag-noun","tag-verb","tag-adj","tag-gram","tag-expr","tag-found"];
 const TYPE_NAMES = VOCAB_DATA.types;
@@ -109,6 +153,14 @@ function App() {
   const [flipped, setFlipped] = useState(false);
   const [streak, setStreak] = useState(0);
 
+  // Cloud sync state
+  const [syncEmail, setSyncEmail] = useState(() => {
+    try { return localStorage.getItem(SYNC_EMAIL_KEY) || ''; } catch { return ''; }
+  });
+  const [syncStatus, setSyncStatus] = useState('idle'); // idle, syncing, done, error
+  const [syncMsg, setSyncMsg] = useState('');
+  const syncRef = useRef(false);
+
   // Browse state (hoisted to avoid hooks-in-conditional bug)
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState(-1);
@@ -134,6 +186,94 @@ function App() {
       completedDate: dateKey(today)
     });
   }, [startDate, started, progress, todayCompleted, today]);
+
+  // Cloud sync: pull on mount if email is set
+  useEffect(function() {
+    if (!syncEmail || syncRef.current) return;
+    syncRef.current = true;
+    setSyncStatus('syncing');
+    setSyncMsg('Syncing...');
+    cloudPull(syncEmail).then(function(remote) {
+      if (remote && remote.progress) {
+        var merged = mergeProgress(progress, remote.progress);
+        setProgress(merged);
+        if (remote.startDate && !saved?.startDate) setStartDate(parseDate(remote.startDate));
+        if (remote.started) setStarted(true);
+        if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
+          setTodayCompleted(function(tc) {
+            return {
+              learn: tc.learn || remote.todayCompleted.learn,
+              reviews: {...(remote.todayCompleted.reviews || {}), ...(tc.reviews || {})}
+            };
+          });
+        }
+        setSyncStatus('done');
+        setSyncMsg('Synced from cloud');
+      } else {
+        setSyncStatus('done');
+        setSyncMsg('No cloud data yet');
+      }
+      setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
+    }).catch(function() {
+      setSyncStatus('error');
+      setSyncMsg('Sync failed');
+      setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
+    });
+  }, []);
+
+  // Cloud sync: push after state changes (debounced)
+  useEffect(function() {
+    if (!syncEmail || !started) return;
+    var timer = setTimeout(function() {
+      cloudPush(syncEmail, {
+        startDate: dateKey(startDate),
+        started: started,
+        progress: progress,
+        todayCompleted: todayCompleted,
+        completedDate: dateKey(today)
+      });
+    }, 2000);
+    return function() { clearTimeout(timer); };
+  }, [syncEmail, startDate, started, progress, todayCompleted, today]);
+
+  function connectSync(email) {
+    localStorage.setItem(SYNC_EMAIL_KEY, email);
+    setSyncEmail(email);
+    setSyncStatus('syncing');
+    setSyncMsg('Connecting...');
+    cloudPull(email).then(function(remote) {
+      if (remote && remote.progress) {
+        var merged = mergeProgress(progress, remote.progress);
+        setProgress(merged);
+        if (remote.startDate) setStartDate(parseDate(remote.startDate));
+        if (remote.started) setStarted(true);
+        setSyncStatus('done');
+        setSyncMsg('Connected & synced!');
+      } else {
+        cloudPush(email, {
+          startDate: dateKey(startDate),
+          started: started,
+          progress: progress,
+          todayCompleted: todayCompleted,
+          completedDate: dateKey(today)
+        });
+        setSyncStatus('done');
+        setSyncMsg('Connected! Progress uploaded.');
+      }
+      setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
+    }).catch(function() {
+      setSyncStatus('error');
+      setSyncMsg('Connection failed');
+      setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
+    });
+  }
+
+  function disconnectSync() {
+    localStorage.removeItem(SYNC_EMAIL_KEY);
+    setSyncEmail('');
+    setSyncStatus('idle');
+    setSyncMsg('');
+  }
 
   // Reviews due today
   const reviewsDue = useMemo(() => {
@@ -483,14 +623,23 @@ function App() {
       {id: 'browse', icon: '\uD83D\uDCDA', label: 'Browse'},
       {id: 'settings', icon: '\u2699\uFE0F', label: 'Settings'}
     ];
-    return React.createElement('nav', {className: 'nav'},
-      items.map(function(item) {
-        return React.createElement('button', {
-          key: item.id,
-          className: active === item.id ? 'active' : '',
-          onClick: function() { setView(item.id); }
-        }, item.icon + ' ' + item.label);
-      })
+    return React.createElement(React.Fragment, null,
+      React.createElement('nav', {className: 'nav'},
+        items.map(function(item) {
+          return React.createElement('button', {
+            key: item.id,
+            className: active === item.id ? 'active' : '',
+            onClick: function() { setView(item.id); }
+          }, item.icon + ' ' + item.label);
+        })
+      ),
+      syncEmail ? React.createElement('div', {className: 'sync-bar'},
+        React.createElement('div', {className: 'sync-dot ' +
+          (syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'offline' : 'online')}),
+        React.createElement('span', null,
+          syncMsg || ('\u2601\uFE0F ' + syncEmail)
+        )
+      ) : null
     );
   }
 
@@ -827,6 +976,49 @@ function App() {
                 })
               )
             )
+          ),
+
+          React.createElement('h2', null, 'Cloud Sync'),
+          React.createElement('div', {className: 'card'},
+            React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
+              'Sync progress across devices. Enter the same email on each device to keep them in sync.'),
+            syncEmail ?
+              React.createElement('div', null,
+                React.createElement('div', {className: 'settings-row'},
+                  React.createElement('span', null, 'Synced as'),
+                  React.createElement('strong', {style: {fontSize:'12px'}}, syncEmail)
+                ),
+                React.createElement('div', {className: 'settings-row'},
+                  React.createElement('span', null, 'Status'),
+                  React.createElement('span', {style: {color: syncStatus === 'error' ? '#E74C3C' : '#27AE60', fontWeight:600, fontSize:'12px'}},
+                    syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Error' : 'Connected')
+                ),
+                React.createElement('div', {className: 'btn-group', style: {marginTop:'10px'}},
+                  React.createElement('button', {className: 'btn btn-primary btn-sm',
+                    onClick: function() { connectSync(syncEmail); }},
+                    'Sync Now'),
+                  React.createElement('button', {className: 'btn btn-secondary btn-sm',
+                    style: {color:'#E74C3C'},
+                    onClick: disconnectSync},
+                    'Disconnect')
+                )
+              ) :
+              React.createElement('div', null,
+                React.createElement('input', {
+                  type: 'email',
+                  id: 'sync-email-input',
+                  placeholder: 'Enter your email...',
+                  style: {marginBottom:'8px'}
+                }),
+                React.createElement('button', {
+                  className: 'btn btn-primary btn-sm',
+                  onClick: function() {
+                    var email = document.getElementById('sync-email-input').value.trim();
+                    if (email && email.includes('@')) connectSync(email);
+                    else alert('Please enter a valid email');
+                  }
+                }, 'Connect')
+              )
           ),
 
           React.createElement('h2', null, 'Reset'),
