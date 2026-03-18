@@ -12,24 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VocabStudy">
-<script>
-// Generate apple-touch-icon PNG dynamically
-(function(){
-  var c=document.createElement('canvas');c.width=180;c.height=180;
-  var x=c.getContext('2d');
-  // Background
-  x.fillStyle='#1B4F72';x.beginPath();x.roundRect(0,0,180,180,32);x.fill();
-  // Letter V
-  x.fillStyle='#fff';x.font='bold 112px sans-serif';x.textAlign='center';x.textBaseline='middle';
-  x.fillText('V',90,82);
-  // Accent bar
-  x.fillStyle='#AED6F1';x.beginPath();x.roundRect(22,145,136,14,7);x.fill();
-  // Set as apple-touch-icon
-  var link=document.createElement('link');
-  link.rel='apple-touch-icon';link.href=c.toDataURL('image/png');
-  document.head.appendChild(link);
-})();
-</script>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
