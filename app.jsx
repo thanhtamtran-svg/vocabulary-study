@@ -620,7 +620,7 @@ function App({onHome}) {
           }, '\uD83D\uDD25 ' + streak + ' word streak!') : null,
 
           React.createElement('div', {className: 'flashcard-container',
-            onClick: function() { setFlipped(!flipped); }},
+            onClick: function() { setFlipped(!flipped); speakGerman(w.german); }},
             React.createElement('div', {className: 'flashcard' + (flipped ? ' flipped' : '')},
               React.createElement('div', {className: 'flashcard-face flashcard-front'},
                 React.createElement('div', {style: {display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}},
