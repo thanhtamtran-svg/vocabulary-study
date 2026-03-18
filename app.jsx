@@ -702,13 +702,50 @@ function App() {
                 }, '\u2715')
               ),
               React.createElement('div', {className: 'ai-explain-content'},
-                aiExplanation.split('\n').map(function(line, i) {
-                  if (!line.trim()) return React.createElement('br', {key: i});
-                  if (line.match(/^\*\*.*\*\*$/)) return React.createElement('strong', {key: i, style: {display:'block',marginTop:'8px',color:'#1B4F72'}}, line.replace(/\*\*/g, ''));
-                  if (line.match(/^#+\s/)) return React.createElement('strong', {key: i, style: {display:'block',marginTop:'8px',color:'#1B4F72',fontSize:'13px'}}, line.replace(/^#+\s/, ''));
-                  if (line.match(/^[-•]\s/)) return React.createElement('div', {key: i, style: {paddingLeft:'12px',marginTop:'2px'}}, '\u2022 ' + line.replace(/^[-•]\s/, ''));
-                  return React.createElement('p', {key: i, style: {margin:'2px 0'}}, line);
-                })
+                (function() {
+                  // Parse markdown inline: **bold** and *italic*
+                  function renderInline(text, key) {
+                    var parts = [];
+                    var re = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+                    var last = 0, m;
+                    while ((m = re.exec(text)) !== null) {
+                      if (m.index > last) parts.push(text.slice(last, m.index));
+                      if (m[1]) parts.push(React.createElement('strong', {key: key + '_b' + m.index}, m[1]));
+                      else if (m[2]) parts.push(React.createElement('em', {key: key + '_i' + m.index}, m[2]));
+                      last = re.lastIndex;
+                    }
+                    if (last < text.length) parts.push(text.slice(last));
+                    return parts.length ? parts : text;
+                  }
+
+                  return aiExplanation.split('\n').reduce(function(acc, line, i) {
+                    // Skip blank lines and horizontal rules
+                    if (!line.trim() || line.match(/^-{3,}$/)) return acc;
+                    // Skip table separator rows
+                    if (line.match(/^\|[-|\s]+\|$/)) return acc;
+                    // Headers → compact section label
+                    if (line.match(/^#+\s/)) {
+                      acc.push(React.createElement('div', {key: i, className: 'ai-section-title'}, line.replace(/^#+\s/, '')));
+                      return acc;
+                    }
+                    // Bullet points
+                    if (line.match(/^[-•]\s/)) {
+                      acc.push(React.createElement('div', {key: i, className: 'ai-bullet'}, renderInline(line.replace(/^[-•]\s/, ''), i)));
+                      return acc;
+                    }
+                    // Table rows → render as compact items
+                    if (line.match(/^\|.*\|$/)) {
+                      var cells = line.split('|').filter(function(c) { return c.trim(); });
+                      if (cells.length >= 2) {
+                        acc.push(React.createElement('div', {key: i, className: 'ai-bullet'}, renderInline(cells[0].trim() + ' — ' + cells[1].trim(), i)));
+                      }
+                      return acc;
+                    }
+                    // Regular line
+                    acc.push(React.createElement('div', {key: i, className: 'ai-line'}, renderInline(line, i)));
+                    return acc;
+                  }, []);
+                })()
               )
             ) : null
 
