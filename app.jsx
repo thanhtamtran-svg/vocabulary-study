@@ -66,6 +66,20 @@ async function fetchWordImage(englishWord) {
 // ===== AI EXPLAIN =====
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
+async function fetchCachedExplanation(word) {
+  var url = SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(word.toLowerCase().trim()) + '&select=explanation';
+  var res = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    }
+  });
+  if (!res.ok) return null;
+  var data = await res.json();
+  if (data && data.length > 0) return data[0].explanation;
+  return null;
+}
+
 async function fetchExplanation(word) {
   const res = await fetch(EXPLAIN_URL, {
     method: 'POST',
@@ -214,6 +228,7 @@ function App({onHome}) {
   const [aiExplanation, setAiExplanation] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+  const [aiSaveStatus, setAiSaveStatus] = useState(''); // '', 'saving', 'saved'
 
   // Word image state
   const [wordImage, setWordImage] = useState(null);
@@ -227,7 +242,7 @@ function App({onHome}) {
   const [syncMsg, setSyncMsg] = useState('');
   const syncRef = useRef(false);
 
-  // Fetch image + autoplay pronunciation when session word changes
+  // Fetch image + autoplay pronunciation + cached explanation when session word changes
   useEffect(function() {
     if (view !== 'session' || !sessionWords.length) return;
     var w = sessionWords[currentIdx];
@@ -238,6 +253,17 @@ function App({onHome}) {
       setWordImage(img);
       setImageLoading(false);
     }).catch(function() { setImageLoading(false); });
+    // Auto-load cached explanation (no API cost)
+    setAiExplanation('');
+    setAiError('');
+    setAiLoading(false);
+    setAiSaveStatus('');
+    fetchCachedExplanation(w.german).then(function(text) {
+      if (text) {
+        setAiExplanation(text);
+        setAiSaveStatus('saved');
+      }
+    });
     // Autoplay pronunciation
     speakGerman(w.german);
   }, [view, currentIdx, sessionWords]);
@@ -434,9 +460,6 @@ function App({onHome}) {
     setCurrentIdx(0);
     setFlipped(false);
     setStreak(0);
-    setAiExplanation('');
-    setAiLoading(false);
-    setAiError('');
     setView("session");
   }
 
@@ -459,9 +482,6 @@ function App({onHome}) {
     if (currentIdx < sessionWords.length - 1) {
       setCurrentIdx(i => i + 1);
       setFlipped(false);
-      setAiExplanation('');
-      setAiLoading(false);
-      setAiError('');
     } else {
       if (sessionType.type === "learn") {
         setTodayCompleted(tc => ({
@@ -709,9 +729,17 @@ function App({onHome}) {
               onClick: function() {
                 setAiLoading(true);
                 setAiError('');
+                setAiSaveStatus('');
                 fetchExplanation(w.german).then(function(text) {
                   setAiExplanation(text);
                   setAiLoading(false);
+                  setAiSaveStatus('saving');
+                  // Verify it was saved to cache
+                  setTimeout(function() {
+                    fetchCachedExplanation(w.german).then(function(cached) {
+                      setAiSaveStatus(cached ? 'saved' : '');
+                    });
+                  }, 2000);
                 }).catch(function(err) {
                   setAiError('Could not load explanation. Try again.');
                   setAiLoading(false);
@@ -734,9 +762,16 @@ function App({onHome}) {
                 onClick: function() {
                   setAiError('');
                   setAiLoading(true);
+                  setAiSaveStatus('');
                   fetchExplanation(w.german).then(function(text) {
                     setAiExplanation(text);
                     setAiLoading(false);
+                    setAiSaveStatus('saving');
+                    setTimeout(function() {
+                      fetchCachedExplanation(w.german).then(function(cached) {
+                        setAiSaveStatus(cached ? 'saved' : '');
+                      });
+                    }, 2000);
                   }).catch(function() {
                     setAiError('Could not load explanation. Try again.');
                     setAiLoading(false);
@@ -748,7 +783,15 @@ function App({onHome}) {
             // Explanation result
             aiExplanation ? React.createElement('div', {className: 'ai-explain-box'},
               React.createElement('div', {className: 'ai-explain-header'},
-                React.createElement('span', null, '\uD83E\uDD16 AI Teacher'),
+                React.createElement('span', {style: {display:'flex',alignItems:'center',gap:'6px'}},
+                  '\uD83E\uDD16 AI Teacher',
+                  aiSaveStatus === 'saving' ? React.createElement('span', {
+                    style: {fontSize:'10px',color:'#F39C12',background:'#FEF9E7',padding:'2px 6px',borderRadius:'4px',fontWeight:600}
+                  }, '\u23F3 Saving...') : null,
+                  aiSaveStatus === 'saved' ? React.createElement('span', {
+                    style: {fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}
+                  }, '\u2705 Saved') : null
+                ),
                 React.createElement('button', {
                   className: 'btn btn-sm btn-secondary',
                   style: {padding:'4px 8px',fontSize:'10px'},

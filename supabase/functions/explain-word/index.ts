@@ -1,4 +1,5 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -31,6 +32,27 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Initialize Supabase client with service role key for DB access
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Check cache first
+    const wordLower = word.toLowerCase().trim();
+    const { data: cached } = await supabase
+      .from("vocab_explanations")
+      .select("explanation")
+      .eq("word", wordLower)
+      .single();
+
+    if (cached?.explanation) {
+      return new Response(
+        JSON.stringify({ explanation: cached.explanation }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Not cached — call Claude API
     const prompt = `Act as a Goethe-Institut A1 German teacher. Teach me this german word "${word}" including
 
 Key grammar point (gender, plural, case usage, or verb conjugation if relevant)
@@ -63,6 +85,12 @@ Keep explanations simple, A1-level, and concise.`;
 
     const data = await response.json();
     const text = data.content?.[0]?.text || "No explanation available.";
+
+    // Save to cache (fire-and-forget, don't block the response)
+    supabase
+      .from("vocab_explanations")
+      .upsert({ word: wordLower, explanation: text, created_at: new Date().toISOString() }, { onConflict: "word" })
+      .then(() => {});
 
     return new Response(
       JSON.stringify({ explanation: text }),
