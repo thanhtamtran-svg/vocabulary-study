@@ -44,6 +44,24 @@ async function cloudPush(email, state) {
   return !res.error;
 }
 
+// ===== AI EXPLAIN =====
+const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
+
+async function fetchExplanation(word) {
+  const res = await fetch(EXPLAIN_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    },
+    body: JSON.stringify({ word: word })
+  });
+  if (!res.ok) throw new Error('Failed to fetch explanation');
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data.explanation;
+}
+
 const TYPE_TAGS = ["tag-noun","tag-verb","tag-adj","tag-gram","tag-expr","tag-found"];
 const TYPE_NAMES = VOCAB_DATA.types;
 const REVIEW_LABELS = {2:"Review +2",3:"Review +3",5:"Review +5",7:"Review +7"};
@@ -172,6 +190,11 @@ function App() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [streak, setStreak] = useState(0);
+
+  // AI explain state
+  const [aiExplanation, setAiExplanation] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   // Cloud sync state
   const [syncEmail, setSyncEmail] = useState(() => {
@@ -373,6 +396,9 @@ function App() {
     setCurrentIdx(0);
     setFlipped(false);
     setStreak(0);
+    setAiExplanation('');
+    setAiLoading(false);
+    setAiError('');
     setView("session");
   }
 
@@ -395,6 +421,9 @@ function App() {
     if (currentIdx < sessionWords.length - 1) {
       setCurrentIdx(i => i + 1);
       setFlipped(false);
+      setAiExplanation('');
+      setAiLoading(false);
+      setAiError('');
     } else {
       if (sessionType.type === "learn") {
         setTodayCompleted(tc => ({
@@ -617,7 +646,72 @@ function App() {
               React.createElement('button', {className: 'conf-btn conf-4',
                 onClick: function(e) { e.stopPropagation(); rateWord(4); }},
                 '\u2705', React.createElement('br'), 'Instant')
-            )
+            ),
+
+            // AI Explain button
+            !aiExplanation && !aiLoading ? React.createElement('button', {
+              className: 'btn btn-secondary',
+              style: {marginTop:'10px',fontSize:'13px',gap:'6px'},
+              onClick: function() {
+                setAiLoading(true);
+                setAiError('');
+                fetchExplanation(w.german).then(function(text) {
+                  setAiExplanation(text);
+                  setAiLoading(false);
+                }).catch(function(err) {
+                  setAiError('Could not load explanation. Try again.');
+                  setAiLoading(false);
+                });
+              }
+            }, '\uD83E\uDD16 Explain this word') : null,
+
+            // Loading state
+            aiLoading ? React.createElement('div', {className: 'ai-explain-box'},
+              React.createElement('div', {style: {textAlign:'center',color:'#718096',padding:'16px'}},
+                '\u23F3 Asking AI teacher...')
+            ) : null,
+
+            // Error state
+            aiError ? React.createElement('div', {className: 'ai-explain-box',
+              style: {borderColor:'#E74C3C',background:'#FEF5F5'}},
+              React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',margin:0}}, aiError),
+              React.createElement('button', {className: 'btn btn-sm btn-secondary',
+                style: {marginTop:'8px'},
+                onClick: function() {
+                  setAiError('');
+                  setAiLoading(true);
+                  fetchExplanation(w.german).then(function(text) {
+                    setAiExplanation(text);
+                    setAiLoading(false);
+                  }).catch(function() {
+                    setAiError('Could not load explanation. Try again.');
+                    setAiLoading(false);
+                  });
+                }
+              }, 'Retry')
+            ) : null,
+
+            // Explanation result
+            aiExplanation ? React.createElement('div', {className: 'ai-explain-box'},
+              React.createElement('div', {className: 'ai-explain-header'},
+                React.createElement('span', null, '\uD83E\uDD16 AI Teacher'),
+                React.createElement('button', {
+                  className: 'btn btn-sm btn-secondary',
+                  style: {padding:'4px 8px',fontSize:'10px'},
+                  onClick: function() { setAiExplanation(''); }
+                }, '\u2715')
+              ),
+              React.createElement('div', {className: 'ai-explain-content'},
+                aiExplanation.split('\n').map(function(line, i) {
+                  if (!line.trim()) return React.createElement('br', {key: i});
+                  if (line.match(/^\*\*.*\*\*$/)) return React.createElement('strong', {key: i, style: {display:'block',marginTop:'8px',color:'#1B4F72'}}, line.replace(/\*\*/g, ''));
+                  if (line.match(/^#+\s/)) return React.createElement('strong', {key: i, style: {display:'block',marginTop:'8px',color:'#1B4F72',fontSize:'13px'}}, line.replace(/^#+\s/, ''));
+                  if (line.match(/^[-•]\s/)) return React.createElement('div', {key: i, style: {paddingLeft:'12px',marginTop:'2px'}}, '\u2022 ' + line.replace(/^[-•]\s/, ''));
+                  return React.createElement('p', {key: i, style: {margin:'2px 0'}}, line);
+                })
+              )
+            ) : null
+
           ) : null
         )
       )
