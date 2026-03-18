@@ -143,7 +143,7 @@ function App() {
     if (saved?.todayCompleted && saved?.completedDate === dateKey(todayDate())) {
       return saved.todayCompleted;
     }
-    return {learn: false, reviews: {}};
+    return {learnCount: 0, learnedBatches: [], reviews: {}};
   });
 
   // Session state (not persisted)
@@ -170,11 +170,42 @@ function App() {
   const cats = VOCAB_DATA.cats;
   const today = useMemo(todayDate, []);
   const studyDay = useMemo(() => getStudyDay(startDate, today), [startDate, today]);
-  const currentBatch = studyDay > 0 && studyDay <= batches.length ? studyDay : null;
+
+  // Next batch = first batch where not all words are learned
+  const nextBatch = useMemo(() => {
+    for (var i = 0; i < batches.length; i++) {
+      var allLearned = batches[i].every(function(wi) { return progress[wi]?.learned; });
+      if (!allLearned) return i + 1; // 1-indexed
+    }
+    return null; // all done
+  }, [progress, batches]);
+
+  const batchesCompleted = useMemo(() => {
+    var count = 0;
+    for (var i = 0; i < batches.length; i++) {
+      if (batches[i].every(function(wi) { return progress[wi]?.learned; })) count++;
+      else break;
+    }
+    return count;
+  }, [progress, batches]);
+
+  // Schedule tracking: expected batch by studyDay vs actual
+  const expectedBatch = Math.min(studyDay, batches.length);
+  const scheduleGap = batchesCompleted - expectedBatch; // positive = ahead, negative = behind
+
   const weekNum = Math.ceil(studyDay / 6) || 1;
   const phase = weekNum <= 4 ? 1 : weekNum <= 14 ? 2 : weekNum <= 24 ? 3 : 4;
   const phaseNames = ["","Foundation","Acceleration","Peak Input","Consolidation"];
   const phaseColors = ["","#27AE60","#2E86C1","#8E44AD","#F39C12"];
+
+  // Migrate old todayCompleted format (learn: true/false → learnCount)
+  useEffect(function() {
+    if (todayCompleted.learn === true && todayCompleted.learnCount === undefined) {
+      setTodayCompleted(function(tc) {
+        return {learnCount: 1, learnedBatches: tc.learnedBatches || [], reviews: tc.reviews || {}};
+      });
+    }
+  }, []);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -201,8 +232,10 @@ function App() {
         if (remote.started) setStarted(true);
         if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
           setTodayCompleted(function(tc) {
+            var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
             return {
-              learn: tc.learn || remote.todayCompleted.learn,
+              learnCount: Math.max(tc.learnCount || 0, rLearnCount),
+              learnedBatches: [...new Set([...(tc.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
               reviews: {...(remote.todayCompleted.reviews || {}), ...(tc.reviews || {})}
             };
           });
@@ -275,16 +308,18 @@ function App() {
     setSyncMsg('');
   }
 
-  // Reviews due today
+  // Reviews due today — based on when each batch was actually learned
   const reviewsDue = useMemo(() => {
     const due = [];
-    for (let bi = 1; bi <= Math.min(studyDay, batches.length); bi++) {
-      let learnDate = new Date(startDate);
-      let sd = 0;
-      while (sd < bi) {
-        if (learnDate.getDay() !== 0) sd++;
-        if (sd < bi) learnDate.setDate(learnDate.getDate() + 1);
-      }
+    for (let bi = 1; bi <= batchesCompleted; bi++) {
+      // Find the date this batch was learned (earliest review date of first word in batch)
+      var firstWord = batches[bi - 1][0];
+      var wp = progress[firstWord];
+      if (!wp || !wp.reviews || wp.reviews.length === 0) continue;
+      var learnReview = wp.reviews.find(function(r) { return r.type === 'learn'; });
+      if (!learnReview) continue;
+      var learnDate = parseDate(learnReview.date);
+
       for (const interval of [2,3,5,7]) {
         const reviewDate = addDays(learnDate, interval);
         if (dateKey(reviewDate) === dateKey(today)) {
@@ -296,7 +331,7 @@ function App() {
       }
     }
     return due;
-  }, [studyDay, startDate, today, todayCompleted]);
+  }, [batchesCompleted, batches, progress, today, todayCompleted]);
 
   const totalLearned = useMemo(() =>
     Object.keys(progress).filter(k => progress[k].learned).length
@@ -342,7 +377,11 @@ function App() {
       setFlipped(false);
     } else {
       if (sessionType.type === "learn") {
-        setTodayCompleted(tc => ({...tc, learn: true}));
+        setTodayCompleted(tc => ({
+          ...tc,
+          learnCount: (tc.learnCount || 0) + 1,
+          learnedBatches: [...(tc.learnedBatches || []), sessionType.batchIdx]
+        }));
       } else {
         const key = 'r' + sessionType.interval + '_b' + sessionType.batchIdx;
         setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, [key]: true}}));
@@ -646,8 +685,24 @@ function App() {
   // ===== DASHBOARD =====
   if (view === "dashboard") {
     var pendingReviews = reviewsDue.length;
-    var hasNewBatch = currentBatch && currentBatch <= batches.length && !todayCompleted.learn;
+    var hasNextBatch = nextBatch !== null;
     var isSunday = today.getDay() === 0;
+    var todayLearnCount = todayCompleted.learnCount || 0;
+
+    // Schedule status
+    var scheduleText = '';
+    var scheduleColor = '';
+    var scheduleIcon = '';
+    if (scheduleGap > 0) {
+      scheduleText = scheduleGap + ' batch' + (scheduleGap > 1 ? 'es' : '') + ' ahead';
+      scheduleColor = '#27AE60'; scheduleIcon = '\uD83D\uDE80';
+    } else if (scheduleGap < 0) {
+      scheduleText = Math.abs(scheduleGap) + ' batch' + (Math.abs(scheduleGap) > 1 ? 'es' : '') + ' behind';
+      scheduleColor = '#E74C3C'; scheduleIcon = '\u26A0\uFE0F';
+    } else {
+      scheduleText = 'On track';
+      scheduleColor = '#2E86C1'; scheduleIcon = '\u2705';
+    }
 
     return (
       React.createElement('div', {className: 'app'},
@@ -657,12 +712,25 @@ function App() {
             React.createElement('div', null,
               React.createElement('h1', {style: {marginBottom:'2px'}}, "Today's Plan"),
               React.createElement('p', {style: {fontSize:'12px',color:'#718096'}},
-                formatDate(today) + ' \u2022 Study Day ' + studyDay + ' \u2022 Week ' + weekNum)
+                formatDate(today) + ' \u2022 Day ' + studyDay + ' \u2022 Week ' + weekNum)
             ),
             React.createElement('span', {className: 'phase-indicator',
               style: {background: phaseColors[phase] + '22', color: phaseColors[phase]}},
               'Phase ' + phase + ': ' + phaseNames[phase])
           ),
+
+          // Schedule indicator
+          studyDay > 0 ? React.createElement('div', {
+            style: {display:'flex',alignItems:'center',gap:'6px',padding:'8px 12px',
+              background: scheduleColor + '11',borderRadius:'8px',margin:'8px 0',
+              border:'1px solid ' + scheduleColor + '33'}},
+            React.createElement('span', null, scheduleIcon),
+            React.createElement('span', {style: {fontSize:'12px',fontWeight:600,color: scheduleColor}},
+              scheduleText),
+            React.createElement('span', {style: {fontSize:'11px',color:'#718096',marginLeft:'auto'}},
+              batchesCompleted + '/' + batches.length + ' batches \u2022 ' +
+              todayLearnCount + ' today')
+          ) : null,
 
           React.createElement('div', {className: 'stat-grid'},
             React.createElement('div', {className: 'stat'},
@@ -681,13 +749,13 @@ function App() {
                 background:'linear-gradient(90deg,#27AE60,#2ECC71)'}})
           ),
 
-          // Sunday rest day
+          // Sunday rest suggestion (but still allow learning)
           isSunday ? React.createElement('div', {className: 'sunday-banner'},
             React.createElement('div', {className: 'icon'}, '\uD83D\uDCA4'),
             React.createElement('h2', {style: {color:'#1B4F72',marginBottom:'8px'}}, 'Rest Day'),
             React.createElement('p', {style: {fontSize:'13px',color:'#718096'}},
-              'Sunday is your rest day! Your brain consolidates memories during rest. Try watching a German video or podcast for fun.')
-          ) :
+              'Sunday is your rest day! But you can still learn if you want.')
+          ) : null,
 
           today < startDate ? React.createElement('div', {className: 'card card-accent'},
             React.createElement('div', {className: 'empty-state'},
@@ -700,24 +768,32 @@ function App() {
           ) :
 
           React.createElement(React.Fragment, null,
-            // New words section
-            hasNewBatch ? React.createElement('div', {className: 'card card-accent'},
+            // Completed batches today
+            todayLearnCount > 0 ? React.createElement('div', {
+              className: 'card', style: {background:'#EAFAF1',borderColor:'#27AE60'}},
+              React.createElement('span', {style: {color:'#27AE60',fontWeight:600}},
+                '\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!')
+            ) : null,
+
+            // Next batch to learn (always shown if available)
+            hasNextBatch ? React.createElement('div', {className: 'card card-accent'},
               React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center'}},
                 React.createElement('div', null,
                   React.createElement('div', {className: 'review-type-label',
-                    style: {color:'#27AE60'}}, '\uD83C\uDF31 New Words'),
-                  React.createElement('strong', null, 'Batch ' + currentBatch),
+                    style: {color:'#27AE60'}},
+                    todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'),
+                  React.createElement('strong', null, 'Batch ' + nextBatch),
                   React.createElement('span', {style: {fontSize:'12px',color:'#718096',marginLeft:'8px'}},
-                    batches[currentBatch-1].length + ' words')
+                    batches[nextBatch-1].length + ' words')
                 ),
                 React.createElement('button', {
                   className: 'btn btn-success btn-sm',
                   style: {width:'auto'},
-                  onClick: function() { startSession("learn", currentBatch); }
-                }, 'Start Learning')
+                  onClick: function() { startSession("learn", nextBatch); }
+                }, todayLearnCount === 0 ? 'Start Learning' : 'Learn Next Batch')
               ),
               React.createElement('div', {className: 'word-list', style: {maxHeight:'100px',marginTop:'8px'}},
-                batches[currentBatch-1].map(function(wi, i) {
+                batches[nextBatch-1].map(function(wi, i) {
                   var wd = getWord(wi);
                   return React.createElement('div', {className: 'word-row', key: i},
                     React.createElement('span', {className: 'tag ' + wd.typeClass}, wd.type),
@@ -728,17 +804,11 @@ function App() {
               )
             ) :
 
-            todayCompleted.learn && currentBatch ? React.createElement('div', {
-              className: 'card', style: {background:'#EAFAF1',borderColor:'#27AE60'}},
-              React.createElement('span', {style: {color:'#27AE60',fontWeight:600}},
-                '\u2705 Batch ' + currentBatch + ' learned today!')
-            ) :
-
-            studyDay > batches.length ? React.createElement('div', {
+            React.createElement('div', {
               className: 'card', style: {background:'#FEF9E7'}},
               React.createElement('span', {style: {color:'#B7950B',fontWeight:600}},
                 '\uD83C\uDFC6 All 1500 words introduced! Focus on reviews.')
-            ) : null,
+            ),
 
             // Reviews section
             reviewsDue.length > 0 ? React.createElement('div', null,
@@ -772,6 +842,13 @@ function App() {
               React.createElement('span', {style: {color:'#27AE60'}},
                 '\u2705 All reviews completed for today!')
             ),
+
+            // Behind schedule tip
+            scheduleGap < -2 ? React.createElement('div', {className: 'tip-box',
+              style: {background:'#FDEDEC',borderColor:'#F5B7B1'}},
+              React.createElement('strong', null, '\u26A0\uFE0F Catching up: '),
+              'You\'re ' + Math.abs(scheduleGap) + ' batches behind. Try learning 2-3 batches today to catch up! No pressure though \u2014 go at your own pace.'
+            ) :
 
             // Science tip
             React.createElement('div', {className: 'tip-box', style: {marginTop:'16px'}},
