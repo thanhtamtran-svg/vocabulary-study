@@ -90,7 +90,6 @@ function App() {
   const [startDate, setStartDate] = useState(() => {
     if (saved?.startDate) return parseDate(saved.startDate);
     const d = new Date();
-    d.setDate(d.getDate() + (1 + 7 - d.getDay()) % 7);
     d.setHours(0,0,0,0);
     return d;
   });
