@@ -398,6 +398,12 @@ entrypoint = "./functions/explain-word/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/explain-word/*.html" ]
 
+[functions.verify-password]
+enabled = true
+verify_jwt = false
+import_map = "./functions/verify-password/deno.json"
+entrypoint = "./functions/verify-password/index.ts"
+
 [functions.send-reminder]
 enabled = true
 verify_jwt = false

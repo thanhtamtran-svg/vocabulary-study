@@ -1581,7 +1581,7 @@ function App({onHome}) {
 }
 
 // ===== HOME SCREEN (Language Picker) =====
-const PASSWORDS = { german: 'tam', english: 'tam' };
+const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 
 function Home() {
   const [language, setLanguage] = useState(() => {
@@ -1592,7 +1592,8 @@ function Home() {
   });
   const [pendingLang, setPendingLang] = useState(null);
   const [passInput, setPassInput] = useState('');
-  const [passError, setPassError] = useState(false);
+  const [passError, setPassError] = useState('');
+  const [passLoading, setPassLoading] = useState(false);
 
   function trySelectLanguage(lang) {
     if (authenticated) {
@@ -1601,20 +1602,33 @@ function Home() {
     } else {
       setPendingLang(lang);
       setPassInput('');
-      setPassError(false);
+      setPassError('');
     }
   }
 
   function submitPassword() {
-    if (passInput === PASSWORDS[pendingLang]) {
-      localStorage.setItem('vocab_auth', 'true');
-      localStorage.setItem('vocab_language', pendingLang);
-      setAuthenticated(true);
-      setLanguage(pendingLang);
-      setPendingLang(null);
-    } else {
-      setPassError(true);
-    }
+    if (!passInput.trim()) return;
+    setPassLoading(true);
+    setPassError('');
+    fetch(VERIFY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: passInput })
+    }).then(function(res) { return res.json(); }).then(function(data) {
+      setPassLoading(false);
+      if (data.ok) {
+        localStorage.setItem('vocab_auth', 'true');
+        localStorage.setItem('vocab_language', pendingLang);
+        setAuthenticated(true);
+        setLanguage(pendingLang);
+        setPendingLang(null);
+      } else {
+        setPassError(data.error || 'Incorrect password');
+      }
+    }).catch(function() {
+      setPassLoading(false);
+      setPassError('Connection error. Please try again.');
+    });
   }
 
   function goHome() {
@@ -1658,15 +1672,16 @@ function Home() {
           value: passInput,
           placeholder: 'Password',
           style: {maxWidth:'240px',margin:'0 auto',display:'block',textAlign:'center'},
-          onChange: function(e) { setPassInput(e.target.value); setPassError(false); },
-          onKeyDown: function(e) { if (e.key === 'Enter') submitPassword(); }
+          onChange: function(e) { setPassInput(e.target.value); setPassError(''); },
+          onKeyDown: function(e) { if (e.key === 'Enter' && !passLoading) submitPassword(); }
         }),
-        passError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}, 'Incorrect password') : null,
+        passError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}, passError) : null,
         React.createElement('button', {
           className: 'btn btn-primary',
           style: {marginTop:'16px',maxWidth:'240px'},
+          disabled: passLoading,
           onClick: submitPassword
-        }, 'Enter')
+        }, passLoading ? 'Verifying...' : 'Enter')
       )
     );
   }
