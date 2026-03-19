@@ -435,7 +435,32 @@ function App({onHome}) {
   }, [exerciseProgress]);
 
   // ===== EXERCISE GENERATOR =====
-  // Select words for exercise: prioritize words needing review, mix stages & types
+  // Compute exercise stats for dashboard
+  var exerciseStats = useMemo(function() {
+    var weak = [], due = [], strong = [], neverPracticed = [];
+    Object.keys(progress).forEach(function(k) {
+      if (!progress[k] || !progress[k].learned) return;
+      var wi = parseInt(k);
+      var ep = exerciseProgress[wi] || {};
+      var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
+      var isDue = today >= nextReview;
+      var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
+
+      if (!ep.attempts) {
+        neverPracticed.push(wi);
+      } else if (accuracy !== null && accuracy < 0.6) {
+        weak.push(wi);
+      } else if (isDue) {
+        due.push(wi);
+      } else if (ep.streak >= 5) {
+        strong.push(wi);
+      }
+    });
+    return {weak: weak, due: due, strong: strong, neverPracticed: neverPracticed,
+      totalPracticed: totalLearned - neverPracticed.length};
+  }, [progress, exerciseProgress, totalLearned, today]);
+
+  // Select words for exercise: prioritize mistakes, then due, then new
   function selectExerciseWords() {
     var learned = [];
     Object.keys(progress).forEach(function(k) {
@@ -444,29 +469,37 @@ function App({onHome}) {
         var w = words[wi];
         var ep = exerciseProgress[wi] || {};
         var stage = getMemoryStage(progress[k]);
-        var daysSinceExercise = ep.lastExercise ? Math.floor((today - parseDate(ep.lastExercise)) / 86400000) : 999;
         var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
         var isDue = today >= nextReview;
+        var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
+        var isWeak = accuracy !== null && accuracy < 0.6;
+        var neverPracticed = !ep.attempts;
+
+        // Priority scoring: weak > due > never practiced > strong
+        var priority = 0;
+        if (isWeak) priority = 200 + (1 - (accuracy || 0)) * 100; // 200-300
+        else if (isDue) priority = 100 + (5 - stage) * 15; // 100-175
+        else if (neverPracticed) priority = 50 + (5 - stage) * 5; // 50-75
+        else priority = Math.max(0, 20 - (ep.streak || 0) * 3); // 0-20
+
         learned.push({
           wi: wi, stage: stage, type: w[3], cat: w[2],
           confidence: progress[k].confidence || 0,
-          streak: ep.streak || 0,
-          daysSince: daysSinceExercise,
-          isDue: isDue,
-          priority: isDue ? 100 - (ep.streak || 0) * 10 + (5 - stage) * 20 : (5 - stage) * 5
+          streak: ep.streak || 0, isDue: isDue,
+          isWeak: isWeak, neverPracticed: neverPracticed,
+          accuracy: accuracy, priority: priority
         });
       }
     });
     if (learned.length < 5) return null;
 
-    // Sort by priority (highest first), then shuffle top candidates
+    // Sort by priority (highest first)
     learned.sort(function(a, b) { return b.priority - a.priority; });
 
-    // Take top 20 candidates, then pick 6 ensuring type diversity
+    // Take top candidates, pick 6 ensuring type diversity
     var candidates = learned.slice(0, Math.min(30, learned.length));
     var selected = [];
     var usedTypes = {};
-    // First pass: pick one from each type
     for (var i = 0; i < candidates.length && selected.length < 6; i++) {
       var t = candidates[i].type;
       if (!usedTypes[t] || Object.keys(usedTypes).length >= 5) {
@@ -476,17 +509,14 @@ function App({onHome}) {
         i--;
       }
     }
-    // Fill remaining
     for (var i = 0; i < candidates.length && selected.length < 6; i++) {
       selected.push(candidates[i]);
     }
-
-    // Shuffle selected
+    // Shuffle
     for (var i = selected.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
       var tmp = selected[i]; selected[i] = selected[j]; selected[j] = tmp;
     }
-
     return selected;
   }
 
@@ -547,7 +577,48 @@ function App({onHome}) {
     }
   }
 
-  // Generate exercise items with cognitive progression + AI sentences
+  // Helper: make shuffled multiple choice options
+  function makeOptions(targetWi, targetText, distractorCount) {
+    var dists = getDistractors(targetWi, distractorCount);
+    var opts = dists.map(function(di) { return {wi: di, text: words[di][1]}; });
+    opts.push({wi: targetWi, text: targetText});
+    for (var i = opts.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
+    }
+    return opts;
+  }
+
+  // Helper: make reverse options (show English, pick German)
+  function makeReverseOptions(targetWi, targetText) {
+    var dists = getDistractors(targetWi, 3);
+    var opts = dists.map(function(di) { return {wi: di, text: words[di][0]}; });
+    opts.push({wi: targetWi, text: targetText});
+    for (var i = opts.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
+    }
+    return opts;
+  }
+
+  // Get AI sentence for a word, or fall back to template
+  function getAiSentence(w, wordType, aiSentences) {
+    var wordKey = w.german.toLowerCase();
+    var aiSents = aiSentences && aiSentences[wordKey] ? aiSentences[wordKey].sentences : null;
+    if (aiSents && aiSents.length > 0) {
+      var pick = aiSents[Math.floor(Math.random() * aiSents.length)];
+      var germanBase = w.german.replace(/^(der|die|das)\s+/i, '');
+      var regex = new RegExp('\\b' + germanBase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+      if (regex.test(pick.de)) {
+        return {template: pick.de.replace(regex, '___'), full: pick.de, ai: true};
+      }
+    }
+    var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
+    var t = templates[Math.floor(Math.random() * templates.length)];
+    return {template: t, full: t.replace('___', w.german), ai: false};
+  }
+
+  // Generate exercise items — varied by word strength
   function generateExerciseItems(selectedWords, aiSentences, aiPassage) {
     var items = [];
 
@@ -555,63 +626,78 @@ function App({onHome}) {
       var wi = sw.wi;
       var w = getWord(wi);
       var wordType = words[wi][3];
-      var wordKey = w.german.toLowerCase();
+      var ep = exerciseProgress[wi] || {};
+      var isWeak = sw.isWeak;
+      var isStrong = ep.streak >= 4;
+      var sent = getAiSentence(w, wordType, aiSentences);
 
-      // Get AI sentence for this word, or fall back to template
-      var aiSents = aiSentences && aiSentences[wordKey] ? aiSentences[wordKey].sentences : null;
-      var template, sentenceFull;
-      if (aiSents && aiSents.length > 0) {
-        var pick = aiSents[Math.floor(Math.random() * aiSents.length)];
-        // Create fill-in-the-blank from AI sentence
-        var germanBase = w.german.replace(/^(der|die|das)\s+/i, '');
-        // Try to find the word in the sentence (case insensitive)
-        var regex = new RegExp('\\b' + germanBase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
-        if (regex.test(pick.de)) {
-          template = pick.de.replace(regex, '___');
-          sentenceFull = pick.de;
+      // === ROUND 1 (Remember) ===
+      // Weak words: standard DE→EN multiple choice (easier)
+      // Strong words: reverse EN→DE multiple choice (harder) or listening
+      if (isStrong && Math.random() > 0.5) {
+        // Reverse: "Which German word means 'mother'?"
+        var revOpts = makeReverseOptions(wi, w.german);
+        items.push({
+          type: 'reverse_choice', level: 'Remember', wordIdx: wi,
+          prompt: 'Which German word means "' + w.english + '"?',
+          options: revOpts, correctAnswer: w.german,
+          germanWord: w.german, wordInfo: w
+        });
+      } else if (isStrong && Math.random() > 0.3) {
+        // Listening: hear word, pick meaning
+        items.push({
+          type: 'listening', level: 'Remember', wordIdx: wi,
+          prompt: 'Listen and choose the correct meaning:',
+          options: makeOptions(wi, w.english, 3), correctAnswer: w.english,
+          germanWord: w.german, wordInfo: w
+        });
+      } else {
+        // Standard: "What does X mean?"
+        items.push({
+          type: 'multiple_choice', level: 'Remember', wordIdx: wi,
+          prompt: 'What does "' + w.german + '" mean?',
+          options: makeOptions(wi, w.english, 3), correctAnswer: w.english,
+          germanWord: w.german, wordInfo: w
+        });
+      }
+
+      // === ROUND 2 (Understand) ===
+      // Weak words: fill blank (must recall)
+      // Strong words: sometimes skip (they know it) or reverse fill blank
+      if (isStrong && Math.random() > 0.6) {
+        // Reverse fill blank: given German sentence with blank, fill English
+        if (sent.ai) {
+          items.push({
+            type: 'fill_english', level: 'Understand', wordIdx: wi,
+            prompt: 'What does the missing word mean?\n' + sent.template.replace('___', '______'),
+            correctAnswer: w.english.toLowerCase(),
+            fullAnswer: w.english,
+            germanWord: w.german, wordInfo: w
+          });
         } else {
-          // Word not directly found, use as-is with hint
-          var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
-          template = templates[Math.floor(Math.random() * templates.length)];
-          sentenceFull = template.replace('___', w.german);
+          items.push({
+            type: 'fill_blank', level: 'Understand', wordIdx: wi,
+            prompt: 'Type the German word for: ' + w.english,
+            correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
+            fullAnswer: w.german, germanWord: w.german, wordInfo: w
+          });
         }
       } else {
-        var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
-        template = templates[Math.floor(Math.random() * templates.length)];
-        sentenceFull = template.replace('___', w.german);
+        items.push({
+          type: 'fill_blank', level: 'Understand', wordIdx: wi,
+          prompt: 'Type the German word for: ' + w.english,
+          correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
+          fullAnswer: w.german, germanWord: w.german, wordInfo: w
+        });
       }
 
-      // Round 1 (Remember): Multiple choice
-      var distractors1 = getDistractors(wi, 3);
-      var options1 = distractors1.map(function(di) { return {wi: di, text: words[di][1]}; });
-      options1.push({wi: wi, text: w.english});
-      for (var i = options1.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var tmp = options1[i]; options1[i] = options1[j]; options1[j] = tmp;
-      }
-      items.push({
-        type: 'multiple_choice', level: 'Remember', wordIdx: wi,
-        prompt: 'What does "' + w.german + '" mean?',
-        options: options1, correctAnswer: w.english,
-        germanWord: w.german, wordInfo: w
-      });
-
-      // Round 2 (Understand): Fill in the blank
-      items.push({
-        type: 'fill_blank', level: 'Understand', wordIdx: wi,
-        prompt: 'Type the German word for: ' + w.english,
-        correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-        fullAnswer: w.german, germanWord: w.german, wordInfo: w
-      });
-
-      // Round 3 (Apply): Sentence completion with AI sentence
+      // === ROUND 3 (Apply) ===
       items.push({
         type: 'sentence_complete', level: 'Apply', wordIdx: wi,
-        prompt: template.replace('___', '______'),
+        prompt: sent.template.replace('___', '______'),
         hint: w.english,
         correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-        fullAnswer: w.german,
-        sentence: sentenceFull,
+        fullAnswer: w.german, sentence: sent.full,
         germanWord: w.german, wordInfo: w
       });
     });
@@ -673,6 +759,15 @@ function App({onHome}) {
 
   const [exerciseLoading, setExerciseLoading] = useState(false);
 
+  // Autoplay pronunciation for listening exercises
+  useEffect(function() {
+    if (view !== 'exercise' || !exerciseSession) return;
+    var item = exerciseSession.items[exerciseIdx];
+    if (item && item.type === 'listening' && !exerciseFeedback) {
+      setTimeout(function() { speakGerman(item.germanWord); }, 300);
+    }
+  }, [view, exerciseIdx, exerciseSession]);
+
   // Enter key handler for exercise view
   useEffect(function() {
     if (view !== 'exercise' || !exerciseSession) return;
@@ -685,7 +780,7 @@ function App({onHome}) {
       if (exerciseFeedback) {
         // Feedback showing → advance to next
         nextExerciseItem();
-      } else if ((item.type === 'multiple_choice' || item.type === 'reading') && exerciseSelectedIdx >= 0) {
+      } else if ((item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') && exerciseSelectedIdx >= 0) {
         // Option selected → check answer
         checkExerciseAnswer();
       }
@@ -739,10 +834,13 @@ function App({onHome}) {
     var correct = false;
     var userAnswer = '';
 
-    if (item.type === 'multiple_choice' || item.type === 'reading') {
+    if (item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
+    } else if (item.type === 'fill_english') {
+      userAnswer = exerciseAnswer.trim();
+      correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
     } else {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
@@ -1506,8 +1604,17 @@ function App({onHome}) {
             React.createElement('p', {style: {fontSize:'15px',fontWeight:600,color:'#2E3033',marginBottom:'16px',lineHeight:'1.5'}},
               exItem.prompt),
 
-            // Multiple choice
-            exItem.type === 'multiple_choice' && !exerciseFeedback ?
+            // Listening: auto-play pronunciation
+            exItem.type === 'listening' && !exerciseFeedback ?
+              React.createElement('button', {
+                style: {display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
+                  padding:'14px',borderRadius:'12px',background:'#324A8410',border:'2px solid #324A84',
+                  cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'#324A84',fontWeight:600},
+                onClick: function() { speakGerman(exItem.germanWord); }
+              }, '\uD83D\uDD0A Play again') : null,
+
+            // All choice-based types (multiple_choice, reverse_choice, listening)
+            (exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && !exerciseFeedback ?
               React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
                 exItem.options.map(function(opt, oi) {
                   var isSelected = exerciseSelectedIdx === oi;
@@ -1524,8 +1631,8 @@ function App({onHome}) {
                 })
               ) : null,
 
-            // Multiple choice feedback state
-            exItem.type === 'multiple_choice' && exerciseFeedback ?
+            // Choice-based feedback state
+            (exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && exerciseFeedback ?
               React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
                 exItem.options.map(function(opt, oi) {
                   var isCorrect = opt.wi === exItem.wordIdx;
@@ -1542,8 +1649,8 @@ function App({onHome}) {
                 })
               ) : null,
 
-            // Fill in blank / sentence complete input
-            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && !exerciseFeedback ?
+            // Fill in blank / sentence complete / fill english input
+            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
               React.createElement('div', null,
                 exItem.hint ? React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}},
                   '\uD83D\uDCA1 Hint: ' + exItem.hint) : null,
@@ -1569,7 +1676,7 @@ function App({onHome}) {
               ) : null,
 
             // Text input feedback
-            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && exerciseFeedback ?
+            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
               React.createElement('div', null,
                 React.createElement('div', {style: {
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
@@ -1650,7 +1757,7 @@ function App({onHome}) {
             !exerciseFeedback ?
               React.createElement('button', {
                 className: 'btn btn-primary',
-                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading') ? exerciseSelectedIdx < 0 :
+                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
                   !exerciseAnswer.trim(),
                 onClick: checkExerciseAnswer
               }, 'Check Answer') :
@@ -1991,8 +2098,21 @@ function App({onHome}) {
                 React.createElement('div', null,
                   React.createElement('div', {className: 'review-type-label', style: {color:'#324A84'}},
                     '\uD83C\uDFAF Practice Mode'),
-                  React.createElement('span', {style: {fontSize:'12px',color:'#718096'}},
-                    'Strengthen your vocabulary with exercises')
+                  React.createElement('div', {style: {display:'flex',gap:'8px',flexWrap:'wrap',marginTop:'4px'}},
+                    exerciseStats.weak.length > 0 ? React.createElement('span', {
+                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#E74C3C18',color:'#E74C3C',fontWeight:600}
+                    }, exerciseStats.weak.length + ' weak') : null,
+                    exerciseStats.due.length > 0 ? React.createElement('span', {
+                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#D6763518',color:'#D67635',fontWeight:600}
+                    }, exerciseStats.due.length + ' due') : null,
+                    exerciseStats.neverPracticed.length > 0 ? React.createElement('span', {
+                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#324A8418',color:'#324A84',fontWeight:600}
+                    }, exerciseStats.neverPracticed.length + ' new') : null,
+                    exerciseStats.weak.length === 0 && exerciseStats.due.length === 0 && exerciseStats.neverPracticed.length === 0 ?
+                      React.createElement('span', {
+                        style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#7E947018',color:'#7E9470',fontWeight:600}
+                      }, '\u2705 All caught up!') : null
+                  )
                 ),
                 React.createElement('button', {
                   className: 'btn btn-sm',
