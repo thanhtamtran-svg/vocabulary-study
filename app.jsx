@@ -702,41 +702,76 @@ function App({onHome}) {
       });
     });
 
-    // Round 4 (Analyze): Reading comprehension — one passage for all words
+    // Round 4 (Analyze): Reading comprehension — true content questions about the passage
     if (aiPassage) {
       try {
         var passage = typeof aiPassage === 'string' ? JSON.parse(aiPassage) : aiPassage;
-        if (passage && passage.text && passage.words_used && passage.words_used.length > 0) {
-          // Pick 2-3 words from the passage for comprehension questions
-          var passageWords = passage.words_used.slice(0, 3);
-          passageWords.forEach(function(pw) {
-            var pwLower = pw.toLowerCase();
-            // Find the word index for this passage word
-            var matchedSw = selectedWords.find(function(sw) {
-              return getWord(sw.wi).german.toLowerCase() === pwLower ||
-                     getWord(sw.wi).german.toLowerCase().replace(/^(der|die|das)\s+/, '') === pwLower;
-            });
-            if (!matchedSw) return;
-            var w = getWord(matchedSw.wi);
+        if (passage && passage.text && passage.translation) {
+          // Generate comprehension questions from the passage content
+          var sentences = passage.translation.split(/\.\s+/).filter(function(s) { return s.trim().length > 10; });
+          var firstWord = selectedWords[0] ? getWord(selectedWords[0].wi) : {german:'', wordInfo:{}};
 
-            // Reading comprehension: what does the word mean in context?
-            var distractors = getDistractors(matchedSw.wi, 3);
-            var opts = distractors.map(function(di) { return {wi: di, text: words[di][1]}; });
-            opts.push({wi: matchedSw.wi, text: w.english});
-            for (var i = opts.length - 1; i > 0; i--) {
-              var j = Math.floor(Math.random() * (i + 1));
-              var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
-            }
+          // Question 1: True/False about a fact in the passage
+          if (sentences.length >= 2) {
+            var trueFact = sentences[0].replace(/\.$/, '').trim();
+            // Create a false version by changing a key detail
+            var falseOptions = [
+              'The text is about going to work.',
+              'The text mentions only one person.',
+              'Nobody is happy in this story.',
+              'The events happen at night.'
+            ];
+            var trueOpt = {wi: -1, text: trueFact, isCorrect: true};
+            var falseOpt = {wi: -2, text: falseOptions[Math.floor(Math.random() * falseOptions.length)], isCorrect: false};
+            var tf_opts = Math.random() > 0.5 ? [trueOpt, falseOpt] : [falseOpt, trueOpt];
+            // Add 2 more false options
+            var extraFalse = falseOptions.filter(function(f) { return f !== falseOpt.text; }).slice(0, 2);
+            extraFalse.forEach(function(ef, i) {
+              tf_opts.splice(Math.floor(Math.random() * (tf_opts.length + 1)), 0, {wi: -(i+3), text: ef, isCorrect: false});
+            });
 
             items.push({
-              type: 'reading', level: 'Analyze', wordIdx: matchedSw.wi,
-              prompt: 'Read the passage, then answer:\nWhat does "' + w.german + '" mean in this text?',
+              type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
+              prompt: 'Read the passage. Which statement is TRUE?',
               passage: passage.text,
               passageTitle: passage.title || 'Lesetext',
               passageTranslation: passage.translation || '',
-              options: opts, correctAnswer: w.english,
-              germanWord: w.german, wordInfo: w
+              options: tf_opts,
+              correctIdx: tf_opts.findIndex(function(o) { return o.isCorrect; }),
+              germanWord: firstWord.german,
+              wordInfo: firstWord
             });
+          }
+
+          // Question 2: What is the passage about?
+          var topicOptions = [
+            'A day at school',
+            'Shopping at a store',
+            'A visit to the doctor',
+            'Cooking dinner'
+          ];
+          var realTopic = passage.title ? passage.title.replace(/^(Ein |Eine |Der |Die |Das |Mein |Meine )/, '') : 'daily life';
+          var topicOpts = [{text: passage.translation.split('.')[0].trim().substring(0, 60), isCorrect: true, wi: -10}];
+          topicOptions.forEach(function(t, i) {
+            topicOpts.push({text: t, isCorrect: false, wi: -(11+i)});
+          });
+          // Shuffle
+          for (var i = topicOpts.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = topicOpts[i]; topicOpts[i] = topicOpts[j]; topicOpts[j] = tmp;
+          }
+          topicOpts = topicOpts.slice(0, 4);
+
+          items.push({
+            type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
+            prompt: 'What is this passage mainly about?',
+            passage: passage.text,
+            passageTitle: passage.title || 'Lesetext',
+            passageTranslation: passage.translation || '',
+            options: topicOpts,
+            correctIdx: topicOpts.findIndex(function(o) { return o.isCorrect; }),
+            germanWord: firstWord.german,
+            wordInfo: firstWord
           });
         }
       } catch(e) { console.warn('Failed to parse passage:', e); }
@@ -780,7 +815,7 @@ function App({onHome}) {
       if (exerciseFeedback) {
         // Feedback showing → advance to next
         nextExerciseItem();
-      } else if ((item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') && exerciseSelectedIdx >= 0) {
+      } else if ((item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reading_comprehension' || item.type === 'reverse_choice' || item.type === 'listening') && exerciseSelectedIdx >= 0) {
         // Option selected → check answer
         checkExerciseAnswer();
       }
@@ -834,7 +869,11 @@ function App({onHome}) {
     var correct = false;
     var userAnswer = '';
 
-    if (item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') {
+    if (item.type === 'reading_comprehension') {
+      if (exerciseSelectedIdx < 0) return;
+      userAnswer = item.options[exerciseSelectedIdx].text;
+      correct = exerciseSelectedIdx === item.correctIdx;
+    } else if (item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
@@ -1699,7 +1738,7 @@ function App({onHome}) {
               ) : null,
 
             // Reading exercise — passage + multiple choice
-            exItem.type === 'reading' && exItem.passage ?
+            (exItem.type === 'reading' || exItem.type === 'reading_comprehension') && exItem.passage ?
               React.createElement('div', null,
                 React.createElement('div', {style: {
                   padding:'14px 16px',borderRadius:'10px',background:'#f8f6f0',
@@ -1729,7 +1768,9 @@ function App({onHome}) {
                   React.createElement('div', null,
                     React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px',marginBottom:'10px'}},
                       exItem.options.map(function(opt, oi) {
-                        var isCorrect = opt.wi === exItem.wordIdx;
+                        var isCorrect = exItem.type === 'reading_comprehension'
+                          ? oi === exItem.correctIdx
+                          : opt.wi === exItem.wordIdx;
                         var wasSelected = exerciseSelectedIdx === oi;
                         return React.createElement('div', {
                           key: oi,
@@ -1765,7 +1806,7 @@ function App({onHome}) {
             !exerciseFeedback ?
               React.createElement('button', {
                 className: 'btn btn-primary',
-                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
+                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
                   !exerciseAnswer.trim(),
                 onClick: checkExerciseAnswer
               }, 'Check Answer') :
