@@ -515,110 +515,163 @@ function App({onHome}) {
     return result;
   }
 
-  // Simple A1 sentence templates by word type
+  // Fallback sentence templates (used when AI sentences aren't available)
   var SENTENCE_TEMPLATES = {
-    0: [ // Noun
-      "Ich sehe ___ jeden Tag.", "Das ist ___ .", "Wo ist ___ ?",
-      "Ich brauche ___ .", "___ ist sehr wichtig.", "Hast du ___ ?",
-      "Ich mag ___ .", "___ ist hier."
-    ],
-    1: [ // Verb
-      "Ich ___ jeden Tag.", "Wir ___ zusammen.", "Kannst du ___ ?",
-      "Ich möchte ___ .", "Er/Sie ___ gern.", "Wir müssen ___ ."
-    ],
-    2: [ // Adjective
-      "Das ist sehr ___ .", "Der Mann ist ___ .", "Das Essen ist ___ .",
-      "Ich finde das ___ .", "Es ist ___ heute.", "Sie ist ___ ."
-    ],
-    3: [ // Grammar
-      "Ich sage ___ .", "___ ist richtig.", "Wir benutzen ___ oft.",
-      "___ kommt zuerst."
-    ],
-    4: [ // Expression
-      "Man sagt ___ .", "Auf Deutsch sagen wir ___ .",
-      "___ benutzt man oft.", "Ich sage oft ___ ."
-    ],
-    5: [ // Foundational
-      "___ ist wichtig.", "Das ist ___ .", "Ich kenne ___ .",
-      "___ kommt oft vor."
-    ]
+    0: ["Ich sehe ___ jeden Tag.", "Das ist ___ .", "Wo ist ___ ?", "Ich brauche ___ .", "Hast du ___ ?"],
+    1: ["Ich ___ jeden Tag.", "Wir ___ zusammen.", "Kannst du ___ ?", "Ich möchte ___ ."],
+    2: ["Das ist sehr ___ .", "Der Mann ist ___ .", "Ich finde das ___ ."],
+    3: ["Ich sage ___ .", "___ ist richtig.", "Wir benutzen ___ oft."],
+    4: ["Man sagt ___ .", "Auf Deutsch sagen wir ___ ."],
+    5: ["___ ist wichtig.", "Das ist ___ .", "Ich kenne ___ ."]
   };
 
-  // Generate exercise items with cognitive progression
-  function generateExerciseItems(selectedWords) {
-    var items = [];
-    var allLearned = Object.keys(progress).filter(function(k) { return progress[k] && progress[k].learned; }).map(Number);
+  // Fetch or generate AI sentences for exercise words
+  async function fetchExerciseSentences(selectedWords) {
+    var wordsPayload = selectedWords.map(function(sw) {
+      var w = getWord(sw.wi);
+      return {german: w.german, english: w.english, type: w.type, category: w.cat};
+    });
 
-    selectedWords.forEach(function(sw, swIdx) {
+    try {
+      var response = await fetch(SUPABASE_URL + '/functions/v1/generate-sentences', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({words: wordsPayload})
+      });
+      if (!response.ok) return null;
+      var result = await response.json();
+      return result.data || null;
+    } catch(e) {
+      console.warn('Failed to fetch AI sentences:', e);
+      return null;
+    }
+  }
+
+  // Generate exercise items with cognitive progression + AI sentences
+  function generateExerciseItems(selectedWords, aiSentences, aiPassage) {
+    var items = [];
+
+    selectedWords.forEach(function(sw) {
       var wi = sw.wi;
       var w = getWord(wi);
       var wordType = words[wi][3];
-      var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
-      var template = templates[Math.floor(Math.random() * templates.length)];
+      var wordKey = w.german.toLowerCase();
 
-      // Cognitive progression: easier exercises first, harder later
-      // Round 1 (Remember): Multiple choice — recognize the meaning
+      // Get AI sentence for this word, or fall back to template
+      var aiSents = aiSentences && aiSentences[wordKey] ? aiSentences[wordKey].sentences : null;
+      var template, sentenceFull;
+      if (aiSents && aiSents.length > 0) {
+        var pick = aiSents[Math.floor(Math.random() * aiSents.length)];
+        // Create fill-in-the-blank from AI sentence
+        var germanBase = w.german.replace(/^(der|die|das)\s+/i, '');
+        // Try to find the word in the sentence (case insensitive)
+        var regex = new RegExp('\\b' + germanBase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+        if (regex.test(pick.de)) {
+          template = pick.de.replace(regex, '___');
+          sentenceFull = pick.de;
+        } else {
+          // Word not directly found, use as-is with hint
+          var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
+          template = templates[Math.floor(Math.random() * templates.length)];
+          sentenceFull = template.replace('___', w.german);
+        }
+      } else {
+        var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
+        template = templates[Math.floor(Math.random() * templates.length)];
+        sentenceFull = template.replace('___', w.german);
+      }
+
+      // Round 1 (Remember): Multiple choice
       var distractors1 = getDistractors(wi, 3);
       var options1 = distractors1.map(function(di) { return {wi: di, text: words[di][1]}; });
       options1.push({wi: wi, text: w.english});
-      // Shuffle options
       for (var i = options1.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = options1[i]; options1[i] = options1[j]; options1[j] = tmp;
       }
       items.push({
-        type: 'multiple_choice',
-        level: 'Remember',
-        wordIdx: wi,
+        type: 'multiple_choice', level: 'Remember', wordIdx: wi,
         prompt: 'What does "' + w.german + '" mean?',
-        options: options1,
-        correctAnswer: w.english,
-        germanWord: w.german,
-        wordInfo: w
+        options: options1, correctAnswer: w.english,
+        germanWord: w.german, wordInfo: w
       });
 
-      // Round 2 (Understand): Fill in the blank — recall German from English
+      // Round 2 (Understand): Fill in the blank
       items.push({
-        type: 'fill_blank',
-        level: 'Understand',
-        wordIdx: wi,
+        type: 'fill_blank', level: 'Understand', wordIdx: wi,
         prompt: 'Type the German word for: ' + w.english,
         correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-        fullAnswer: w.german,
-        germanWord: w.german,
-        wordInfo: w
+        fullAnswer: w.german, germanWord: w.german, wordInfo: w
       });
 
-      // Round 3 (Apply): Sentence completion — use word in context
+      // Round 3 (Apply): Sentence completion with AI sentence
       items.push({
-        type: 'sentence_complete',
-        level: 'Apply',
-        wordIdx: wi,
+        type: 'sentence_complete', level: 'Apply', wordIdx: wi,
         prompt: template.replace('___', '______'),
         hint: w.english,
         correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
         fullAnswer: w.german,
-        sentence: template.replace('___', w.german),
-        germanWord: w.german,
-        wordInfo: w
+        sentence: sentenceFull,
+        germanWord: w.german, wordInfo: w
       });
     });
 
-    // Interleave: don't group same word's exercises together
-    // Reorder: all Round 1 first (shuffled), then Round 2, then Round 3
+    // Round 4 (Analyze): Reading comprehension — one passage for all words
+    if (aiPassage) {
+      try {
+        var passage = typeof aiPassage === 'string' ? JSON.parse(aiPassage) : aiPassage;
+        if (passage && passage.text && passage.words_used && passage.words_used.length > 0) {
+          // Pick 2-3 words from the passage for comprehension questions
+          var passageWords = passage.words_used.slice(0, 3);
+          passageWords.forEach(function(pw) {
+            var pwLower = pw.toLowerCase();
+            // Find the word index for this passage word
+            var matchedSw = selectedWords.find(function(sw) {
+              return getWord(sw.wi).german.toLowerCase() === pwLower ||
+                     getWord(sw.wi).german.toLowerCase().replace(/^(der|die|das)\s+/, '') === pwLower;
+            });
+            if (!matchedSw) return;
+            var w = getWord(matchedSw.wi);
+
+            // Reading comprehension: what does the word mean in context?
+            var distractors = getDistractors(matchedSw.wi, 3);
+            var opts = distractors.map(function(di) { return {wi: di, text: words[di][1]}; });
+            opts.push({wi: matchedSw.wi, text: w.english});
+            for (var i = opts.length - 1; i > 0; i--) {
+              var j = Math.floor(Math.random() * (i + 1));
+              var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
+            }
+
+            items.push({
+              type: 'reading', level: 'Analyze', wordIdx: matchedSw.wi,
+              prompt: 'Read the passage, then answer:\nWhat does "' + w.german + '" mean in this text?',
+              passage: passage.text,
+              passageTitle: passage.title || 'Lesetext',
+              passageTranslation: passage.translation || '',
+              options: opts, correctAnswer: w.english,
+              germanWord: w.german, wordInfo: w
+            });
+          });
+        }
+      } catch(e) { console.warn('Failed to parse passage:', e); }
+    }
+
+    // Interleave: Round 1 → 2 → 3 → 4, shuffled within each
     var round1 = items.filter(function(it) { return it.level === 'Remember'; });
     var round2 = items.filter(function(it) { return it.level === 'Understand'; });
     var round3 = items.filter(function(it) { return it.level === 'Apply'; });
-    // Shuffle within each round
-    [round1, round2, round3].forEach(function(arr) {
+    var round4 = items.filter(function(it) { return it.level === 'Analyze'; });
+    [round1, round2, round3, round4].forEach(function(arr) {
       for (var i = arr.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
       }
     });
 
-    return round1.concat(round2).concat(round3);
+    return round1.concat(round2).concat(round3).concat(round4);
   }
+
+  const [exerciseLoading, setExerciseLoading] = useState(false);
 
   function startExercise() {
     var selected = selectExerciseWords();
@@ -626,14 +679,38 @@ function App({onHome}) {
       alert('You need at least 5 learned words to start exercises. Keep learning!');
       return;
     }
-    var items = generateExerciseItems(selected);
-    setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
-    setExerciseIdx(0);
-    setExerciseAnswer('');
-    setExerciseFeedback(null);
-    setExerciseResults([]);
-    setExerciseSelectedIdx(-1);
-    setView('exercise');
+    setExerciseLoading(true);
+
+    // Fetch AI sentences (async), then start exercise
+    fetchExerciseSentences(selected).then(function(aiData) {
+      // Extract passage from any word's data
+      var aiPassage = null;
+      if (aiData) {
+        Object.keys(aiData).forEach(function(k) {
+          if (aiData[k] && aiData[k].passage && !aiPassage) aiPassage = aiData[k].passage;
+        });
+      }
+      var items = generateExerciseItems(selected, aiData, aiPassage);
+      setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
+      setExerciseIdx(0);
+      setExerciseAnswer('');
+      setExerciseFeedback(null);
+      setExerciseResults([]);
+      setExerciseSelectedIdx(-1);
+      setExerciseLoading(false);
+      setView('exercise');
+    }).catch(function() {
+      // Fall back to exercises without AI
+      var items = generateExerciseItems(selected, null, null);
+      setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
+      setExerciseIdx(0);
+      setExerciseAnswer('');
+      setExerciseFeedback(null);
+      setExerciseResults([]);
+      setExerciseSelectedIdx(-1);
+      setExerciseLoading(false);
+      setView('exercise');
+    });
   }
 
   function checkExerciseAnswer() {
@@ -641,7 +718,7 @@ function App({onHome}) {
     var correct = false;
     var userAnswer = '';
 
-    if (item.type === 'multiple_choice') {
+    if (item.type === 'multiple_choice' || item.type === 'reading') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
@@ -1359,8 +1436,8 @@ function App({onHome}) {
     var exItem = exerciseSession.items[exerciseIdx];
     var exTotal = exerciseSession.items.length;
     var exProgressPct = ((exerciseIdx + (exerciseFeedback ? 1 : 0)) / exTotal * 100);
-    var levelColors = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470'};
-    var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F'};
+    var levelColors = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470', Analyze: '#8E44AD'};
+    var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F', Analyze: '\uD83D\uDCD6'};
 
     return (
       React.createElement('div', {className: 'app'},
@@ -1479,6 +1556,59 @@ function App({onHome}) {
                 exerciseFeedback.sentence ? React.createElement('p', {
                   style: {fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}
                 }, '\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence) : null
+              ) : null,
+
+            // Reading exercise — passage + multiple choice
+            exItem.type === 'reading' && exItem.passage ?
+              React.createElement('div', null,
+                React.createElement('div', {style: {
+                  padding:'14px 16px',borderRadius:'10px',background:'#f8f6f0',
+                  border:'1px solid #e8e2d6',marginBottom:'14px',lineHeight:'1.7',fontSize:'14px'
+                }},
+                  React.createElement('div', {style: {fontSize:'11px',fontWeight:700,color:'#D67635',
+                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'6px'}},
+                    '\uD83D\uDCD6 ' + (exItem.passageTitle || 'Lesetext')),
+                  React.createElement('p', {style: {margin:0,color:'#2E3033'}}, exItem.passage)
+                ),
+                !exerciseFeedback ?
+                  React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
+                    exItem.options.map(function(opt, oi) {
+                      var isSelected = exerciseSelectedIdx === oi;
+                      return React.createElement('button', {
+                        key: oi,
+                        style: {
+                          padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
+                          border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
+                          background: isSelected ? '#324A8410' : '#fff',
+                          cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
+                        },
+                        onClick: function() { setExerciseSelectedIdx(oi); }
+                      }, opt.text);
+                    })
+                  ) :
+                  React.createElement('div', null,
+                    React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px',marginBottom:'10px'}},
+                      exItem.options.map(function(opt, oi) {
+                        var isCorrect = opt.wi === exItem.wordIdx;
+                        var wasSelected = exerciseSelectedIdx === oi;
+                        return React.createElement('div', {
+                          key: oi,
+                          style: {
+                            padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
+                            border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
+                            background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
+                            fontWeight: isCorrect ? 600 : 400
+                          }
+                        }, (isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text);
+                      })
+                    ),
+                    exItem.passageTranslation ? React.createElement('details', {style: {marginTop:'8px'}},
+                      React.createElement('summary', {style: {fontSize:'12px',color:'#94a3b8',cursor:'pointer'}},
+                        'Show English translation'),
+                      React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginTop:'4px',lineHeight:'1.5',fontStyle:'italic'}},
+                        exItem.passageTranslation)
+                    ) : null
+                  )
               ) : null
           ),
 
@@ -1495,7 +1625,7 @@ function App({onHome}) {
             !exerciseFeedback ?
               React.createElement('button', {
                 className: 'btn btn-primary',
-                disabled: exItem.type === 'multiple_choice' ? exerciseSelectedIdx < 0 :
+                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading') ? exerciseSelectedIdx < 0 :
                   !exerciseAnswer.trim(),
                 onClick: checkExerciseAnswer
               }, 'Check Answer') :
@@ -1561,13 +1691,13 @@ function App({onHome}) {
           // Results by level
           React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
             React.createElement('h2', {style: {marginBottom:'12px'}}, 'Performance by Stage'),
-            ['Remember', 'Understand', 'Apply'].map(function(level) {
+            ['Remember', 'Understand', 'Apply', 'Analyze'].map(function(level) {
               var levelResults = exResults.filter(function(r) { return r.level === level; });
               var levelCorrect = levelResults.filter(function(r) { return r.correct; }).length;
               var levelTotal = levelResults.length;
               if (levelTotal === 0) return null;
               var pct = Math.round(levelCorrect / levelTotal * 100);
-              var levelColor = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470'}[level];
+              var levelColor = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470', Analyze: '#8E44AD'}[level];
               return React.createElement('div', {key: level, style: {marginBottom:'10px'}},
                 React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}},
                   React.createElement('span', {style: {fontSize:'13px',fontWeight:600,color: levelColor}}, level),
@@ -1841,9 +1971,10 @@ function App({onHome}) {
                 ),
                 React.createElement('button', {
                   className: 'btn btn-sm',
+                  disabled: exerciseLoading,
                   style: {width:'auto',background:'#324A84',color:'#fff',border:'none'},
                   onClick: startExercise
-                }, 'Exercise')
+                }, exerciseLoading ? 'Loading...' : 'Exercise')
               )
             ) : null,
 
