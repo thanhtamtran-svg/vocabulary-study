@@ -1050,8 +1050,7 @@ function App({onHome}) {
 
   // ===== NAV HELPER =====
   function renderNav(active) {
-    // Language flag based on what user is studying
-    var langFlag = '\uD83C\uDDE9\uD83C\uDDEA'; // German flag default
+    var langFlagUrl = 'https://flagcdn.com/w40/de.png'; // German flag default
     var items = [
       {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
       {id: 'progress', icon: '\uD83D\uDCC8', label: 'Progress'},
@@ -1063,8 +1062,12 @@ function App({onHome}) {
         onHome ? React.createElement('button', {
           key: 'lang',
           onClick: onHome,
-          style: {minWidth:'50px',fontSize:'16px',padding:'14px 4px 12px'}
-        }, langFlag) : null,
+          style: {minWidth:'46px',padding:'10px 4px 8px',display:'flex',alignItems:'center',justifyContent:'center'}
+        }, React.createElement('img', {
+          src: langFlagUrl,
+          alt: 'Language',
+          style: {width:'24px',height:'18px',objectFit:'cover',borderRadius:'2px'}
+        })) : null,
         items.map(function(item) {
           return React.createElement('button', {
             key: item.id,
@@ -1786,13 +1789,15 @@ function Home() {
       ),
       React.createElement('div', {className: 'language-grid'},
         React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('german'); }},
-          React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDE9\uD83C\uDDEA'),
+          React.createElement('div', {className: 'language-flag'},
+            React.createElement('img', {src: 'https://flagcdn.com/w80/de.png', alt: 'German flag'})),
           React.createElement('div', {className: 'language-name'}, 'German'),
           React.createElement('div', {className: 'language-desc'}, '1500 words \u2022 A1-B1'),
           React.createElement('div', {className: 'language-tag active-tag'}, 'Active')
         ),
         React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('english'); }},
-          React.createElement('div', {className: 'language-flag'}, '\uD83C\uDDEC\uD83C\uDDE7'),
+          React.createElement('div', {className: 'language-flag'},
+            React.createElement('img', {src: 'https://flagcdn.com/w80/gb.png', alt: 'English flag'})),
           React.createElement('div', {className: 'language-name'}, 'English'),
           React.createElement('div', {className: 'language-desc'}, 'Coming soon'),
           React.createElement('div', {className: 'language-tag soon-tag'}, 'Soon')
