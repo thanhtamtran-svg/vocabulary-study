@@ -545,6 +545,93 @@ function App({onHome}) {
     return result;
   }
 
+  // ===== VERB CONJUGATION DATA (A1 present tense) =====
+  // Map: infinitive → {ich, du, er, wir, ihr, sie}
+  var CONJUGATIONS = {
+    'sein': {ich:'bin',du:'bist',er:'ist',wir:'sind',ihr:'seid',sie:'sind'},
+    'haben': {ich:'habe',du:'hast',er:'hat',wir:'haben',ihr:'habt',sie:'haben'},
+    'werden': {ich:'werde',du:'wirst',er:'wird',wir:'werden',ihr:'werdet',sie:'werden'},
+    'können': {ich:'kann',du:'kannst',er:'kann',wir:'können',ihr:'könnt',sie:'können'},
+    'müssen': {ich:'muss',du:'musst',er:'muss',wir:'müssen',ihr:'müsst',sie:'müssen'},
+    'sollen': {ich:'soll',du:'sollst',er:'soll',wir:'sollen',ihr:'sollt',sie:'sollen'},
+    'wollen': {ich:'will',du:'willst',er:'will',wir:'wollen',ihr:'wollt',sie:'wollen'},
+    'dürfen': {ich:'darf',du:'darfst',er:'darf',wir:'dürfen',ihr:'dürft',sie:'dürfen'},
+    'mögen': {ich:'mag',du:'magst',er:'mag',wir:'mögen',ihr:'mögt',sie:'mögen'},
+    'machen': {ich:'mache',du:'machst',er:'macht',wir:'machen',ihr:'macht',sie:'machen'},
+    'gehen': {ich:'gehe',du:'gehst',er:'geht',wir:'gehen',ihr:'geht',sie:'gehen'},
+    'kommen': {ich:'komme',du:'kommst',er:'kommt',wir:'kommen',ihr:'kommt',sie:'kommen'},
+    'sehen': {ich:'sehe',du:'siehst',er:'sieht',wir:'sehen',ihr:'seht',sie:'sehen'},
+    'geben': {ich:'gebe',du:'gibst',er:'gibt',wir:'geben',ihr:'gebt',sie:'geben'},
+    'nehmen': {ich:'nehme',du:'nimmst',er:'nimmt',wir:'nehmen',ihr:'nehmt',sie:'nehmen'},
+    'finden': {ich:'finde',du:'findest',er:'findet',wir:'finden',ihr:'findet',sie:'finden'},
+    'sagen': {ich:'sage',du:'sagst',er:'sagt',wir:'sagen',ihr:'sagt',sie:'sagen'},
+    'sprechen': {ich:'spreche',du:'sprichst',er:'spricht',wir:'sprechen',ihr:'sprecht',sie:'sprechen'},
+    'hören': {ich:'höre',du:'hörst',er:'hört',wir:'hören',ihr:'hört',sie:'hören'},
+    'schreiben': {ich:'schreibe',du:'schreibst',er:'schreibt',wir:'schreiben',ihr:'schreibt',sie:'schreiben'},
+    'lesen': {ich:'lese',du:'liest',er:'liest',wir:'lesen',ihr:'lest',sie:'lesen'},
+    'lernen': {ich:'lerne',du:'lernst',er:'lernt',wir:'lernen',ihr:'lernt',sie:'lernen'},
+    'arbeiten': {ich:'arbeite',du:'arbeitest',er:'arbeitet',wir:'arbeiten',ihr:'arbeitet',sie:'arbeiten'},
+    'spielen': {ich:'spiele',du:'spielst',er:'spielt',wir:'spielen',ihr:'spielt',sie:'spielen'},
+    'kaufen': {ich:'kaufe',du:'kaufst',er:'kauft',wir:'kaufen',ihr:'kauft',sie:'kaufen'},
+    'essen': {ich:'esse',du:'isst',er:'isst',wir:'essen',ihr:'esst',sie:'essen'},
+    'trinken': {ich:'trinke',du:'trinkst',er:'trinkt',wir:'trinken',ihr:'trinkt',sie:'trinken'},
+    'schlafen': {ich:'schlafe',du:'schläfst',er:'schläft',wir:'schlafen',ihr:'schlaft',sie:'schlafen'},
+    'fahren': {ich:'fahre',du:'fährst',er:'fährt',wir:'fahren',ihr:'fahrt',sie:'fahren'},
+    'laufen': {ich:'laufe',du:'läufst',er:'läuft',wir:'laufen',ihr:'lauft',sie:'laufen'},
+    'helfen': {ich:'helfe',du:'hilfst',er:'hilft',wir:'helfen',ihr:'helft',sie:'helfen'},
+    'wissen': {ich:'weiß',du:'weißt',er:'weiß',wir:'wissen',ihr:'wisst',sie:'wissen'},
+    'denken': {ich:'denke',du:'denkst',er:'denkt',wir:'denken',ihr:'denkt',sie:'denken'},
+    'brauchen': {ich:'brauche',du:'brauchst',er:'braucht',wir:'brauchen',ihr:'braucht',sie:'brauchen'},
+    'wohnen': {ich:'wohne',du:'wohnst',er:'wohnt',wir:'wohnen',ihr:'wohnt',sie:'wohnen'},
+    'kochen': {ich:'koche',du:'kochst',er:'kocht',wir:'kochen',ihr:'kocht',sie:'kochen'},
+    'tanzen': {ich:'tanze',du:'tanzt',er:'tanzt',wir:'tanzen',ihr:'tanzt',sie:'tanzen'},
+    'schwimmen': {ich:'schwimme',du:'schwimmst',er:'schwimmt',wir:'schwimmen',ihr:'schwimmt',sie:'schwimmen'},
+    'singen': {ich:'singe',du:'singst',er:'singt',wir:'singen',ihr:'singt',sie:'singen'},
+    'bringen': {ich:'bringe',du:'bringst',er:'bringt',wir:'bringen',ihr:'bringt',sie:'bringen'},
+    'verstehen': {ich:'verstehe',du:'verstehst',er:'versteht',wir:'verstehen',ihr:'versteht',sie:'verstehen'},
+    'vergessen': {ich:'vergesse',du:'vergisst',er:'vergisst',wir:'vergessen',ihr:'vergesst',sie:'vergessen'},
+    'beginnen': {ich:'beginne',du:'beginnst',er:'beginnt',wir:'beginnen',ihr:'beginnt',sie:'beginnen'},
+    'bekommen': {ich:'bekomme',du:'bekommst',er:'bekommt',wir:'bekommen',ihr:'bekommt',sie:'bekommen'},
+    'bleiben': {ich:'bleibe',du:'bleibst',er:'bleibt',wir:'bleiben',ihr:'bleibt',sie:'bleiben'},
+    'stehen': {ich:'stehe',du:'stehst',er:'steht',wir:'stehen',ihr:'steht',sie:'stehen'},
+    'sitzen': {ich:'sitze',du:'sitzt',er:'sitzt',wir:'sitzen',ihr:'sitzt',sie:'sitzen'},
+    'liegen': {ich:'liege',du:'liegst',er:'liegt',wir:'liegen',ihr:'liegt',sie:'liegen'},
+    'tragen': {ich:'trage',du:'trägst',er:'trägt',wir:'tragen',ihr:'tragt',sie:'tragen'},
+    'waschen': {ich:'wasche',du:'wäschst',er:'wäscht',wir:'waschen',ihr:'wascht',sie:'waschen'},
+    'öffnen': {ich:'öffne',du:'öffnest',er:'öffnet',wir:'öffnen',ihr:'öffnet',sie:'öffnen'},
+    'schließen': {ich:'schließe',du:'schließt',er:'schließt',wir:'schließen',ihr:'schließt',sie:'schließen'},
+    'heißen': {ich:'heiße',du:'heißt',er:'heißt',wir:'heißen',ihr:'heißt',sie:'heißen'},
+    'leben': {ich:'lebe',du:'lebst',er:'lebt',wir:'leben',ihr:'lebt',sie:'leben'},
+    'lieben': {ich:'liebe',du:'liebst',er:'liebt',wir:'lieben',ihr:'liebt',sie:'lieben'},
+    'fragen': {ich:'frage',du:'fragst',er:'fragt',wir:'fragen',ihr:'fragt',sie:'fragen'},
+    'antworten': {ich:'antworte',du:'antwortest',er:'antwortet',wir:'antworten',ihr:'antwortet',sie:'antworten'},
+    'warten': {ich:'warte',du:'wartest',er:'wartet',wir:'warten',ihr:'wartet',sie:'warten'},
+    'zahlen': {ich:'zahle',du:'zahlst',er:'zahlt',wir:'zahlen',ihr:'zahlt',sie:'zahlen'},
+    'bezahlen': {ich:'bezahle',du:'bezahlst',er:'bezahlt',wir:'bezahlen',ihr:'bezahlt',sie:'bezahlen'},
+    'reisen': {ich:'reise',du:'reist',er:'reist',wir:'reisen',ihr:'reist',sie:'reisen'},
+    'besuchen': {ich:'besuche',du:'besuchst',er:'besucht',wir:'besuchen',ihr:'besucht',sie:'besuchen'},
+    'zeigen': {ich:'zeige',du:'zeigst',er:'zeigt',wir:'zeigen',ihr:'zeigt',sie:'zeigen'}
+  };
+
+  var PRONOUNS = ['ich', 'du', 'er/sie/es', 'wir', 'ihr', 'sie/Sie'];
+  var PRONOUN_KEYS = ['ich', 'du', 'er', 'wir', 'ihr', 'sie'];
+
+  // Generate regular conjugation as fallback
+  function conjugateRegular(infinitive) {
+    var stem = infinitive.replace(/(en|n)$/, '');
+    var needsE = /[dt]$/.test(stem); // arbeit-en → arbeit-e-st
+    return {
+      ich: stem + 'e', du: stem + (needsE ? 'est' : 'st'),
+      er: stem + (needsE ? 'et' : 't'), wir: infinitive,
+      ihr: stem + (needsE ? 'et' : 't'), sie: infinitive
+    };
+  }
+
+  function getConjugation(infinitive) {
+    var key = infinitive.toLowerCase();
+    return CONJUGATIONS[key] || conjugateRegular(key);
+  }
+
   // Fallback sentence templates (used when AI sentences aren't available)
   var SENTENCE_TEMPLATES = {
     0: ["Ich sehe ___ jeden Tag.", "Das ist ___ .", "Wo ist ___ ?", "Ich brauche ___ .", "Hast du ___ ?"],
@@ -662,26 +749,34 @@ function App({onHome}) {
       }
 
       // === ROUND 2 (Understand) ===
-      // Weak words: fill blank (must recall)
-      // Strong words: sometimes skip (they know it) or reverse fill blank
-      if (isStrong && Math.random() > 0.6) {
-        // Reverse fill blank: given German sentence with blank, fill English
-        if (sent.ai) {
-          items.push({
-            type: 'fill_english', level: 'Understand', wordIdx: wi,
-            prompt: 'What does the missing word mean?\n' + sent.template.replace('___', '______'),
-            correctAnswer: w.english.toLowerCase(),
-            fullAnswer: w.english,
-            germanWord: w.german, wordInfo: w
-          });
-        } else {
-          items.push({
-            type: 'fill_blank', level: 'Understand', wordIdx: wi,
-            prompt: 'Type the German word for: ' + w.english,
-            correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-            fullAnswer: w.german, germanWord: w.german, wordInfo: w
-          });
-        }
+      // Verbs: conjugation exercise
+      var isVerb = wordType === 1;
+      if (isVerb) {
+        var conj = getConjugation(w.german);
+        var pronIdx = Math.floor(Math.random() * PRONOUNS.length);
+        var pronoun = PRONOUNS[pronIdx];
+        var pronounKey = PRONOUN_KEYS[pronIdx];
+        var conjugated = conj[pronounKey];
+        items.push({
+          type: 'conjugation', level: 'Understand', wordIdx: wi,
+          prompt: 'Conjugate "' + w.german + '" for ' + pronoun + ':',
+          pronoun: pronoun,
+          pronounKey: pronounKey,
+          infinitive: w.german,
+          correctAnswer: conjugated,
+          fullAnswer: pronoun + ' ' + conjugated,
+          fullTable: conj,
+          germanWord: w.german, wordInfo: w
+        });
+      } else if (isStrong && Math.random() > 0.6 && sent.ai) {
+        // Strong non-verbs: reverse fill blank
+        items.push({
+          type: 'fill_english', level: 'Understand', wordIdx: wi,
+          prompt: 'What does the missing word mean?\n' + sent.template.replace('___', '______'),
+          correctAnswer: w.english.toLowerCase(),
+          fullAnswer: w.english,
+          germanWord: w.german, wordInfo: w
+        });
       } else {
         items.push({
           type: 'fill_blank', level: 'Understand', wordIdx: wi,
@@ -880,6 +975,11 @@ function App({onHome}) {
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
       correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
+    } else if (item.type === 'conjugation') {
+      userAnswer = exerciseAnswer.trim();
+      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
+      correct = normalize(userAnswer) === normalize(item.correctAnswer) ||
+                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase();
     } else {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
@@ -1690,6 +1790,66 @@ function App({onHome}) {
               ) : null,
 
             // Fill in blank / sentence complete / fill english input
+            // Conjugation exercise: show pronoun prominently
+            exItem.type === 'conjugation' && !exerciseFeedback ?
+              React.createElement('div', null,
+                React.createElement('div', {style: {
+                  display:'flex',alignItems:'center',gap:'12px',marginBottom:'12px',
+                  padding:'12px 16px',borderRadius:'10px',background:'#324A8410'
+                }},
+                  React.createElement('span', {style: {fontSize:'20px',fontWeight:700,color:'#324A84'}},
+                    exItem.pronoun),
+                  React.createElement('input', {
+                    type: 'text', value: exerciseAnswer,
+                    onChange: function(e) { setExerciseAnswer(e.target.value); },
+                    onKeyDown: function(e) {
+                      if (e.key !== 'Enter') return;
+                      if (exerciseFeedback) { nextExerciseItem(); }
+                      else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
+                    },
+                    placeholder: exItem.pronoun + ' ...',
+                    autoFocus: true, autoComplete: 'off', autoCapitalize: 'off',
+                    style: {flex:1,padding:'10px 14px',fontSize:'16px',borderRadius:'8px',
+                      border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}
+                  })
+                )
+              ) : null,
+
+            // Conjugation feedback: show answer + full conjugation table
+            exItem.type === 'conjugation' && exerciseFeedback ?
+              React.createElement('div', null,
+                !exerciseFeedback.correct ? React.createElement('div', {style: {
+                  padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
+                  background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
+                  textDecoration:'line-through',color:'#E74C3C'
+                }}, '\u274C ' + exItem.pronoun + ' ' + exerciseFeedback.userAnswer) : null,
+                React.createElement('div', {style: {
+                  padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
+                  background:'#7E947018',border:'2px solid #7E9470',marginBottom:'12px'
+                }}, '\u2705 ' + exItem.fullAnswer),
+                // Full conjugation table
+                React.createElement('div', {style: {
+                  padding:'12px',borderRadius:'10px',background:'#f8f6f0',border:'1px solid #e8e2d6'
+                }},
+                  React.createElement('div', {style: {fontSize:'11px',fontWeight:700,color:'#D67635',
+                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'8px'}},
+                    '\uD83D\uDCDD Full conjugation: ' + exItem.infinitive),
+                  PRONOUNS.map(function(p, pi) {
+                    var pk = PRONOUN_KEYS[pi];
+                    var isTarget = pk === exItem.pronounKey;
+                    return React.createElement('div', {key: pi, style: {
+                      display:'flex',justifyContent:'space-between',padding:'4px 8px',
+                      borderRadius:'4px',fontSize:'13px',
+                      background: isTarget ? '#324A8415' : 'transparent',
+                      fontWeight: isTarget ? 700 : 400
+                    }},
+                      React.createElement('span', {style: {color:'#718096',minWidth:'70px'}}, p),
+                      React.createElement('span', {style: {color:'#2E3033'}}, exItem.fullTable[pk])
+                    );
+                  })
+                )
+              ) : null,
+
             (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
               React.createElement('div', null,
                 exItem.hint ? React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}},
