@@ -12,8 +12,8 @@ self.addEventListener('push', function(event) {
   var data = {
     title: 'Vocabulary Study',
     body: 'Time to study your German words! 📚',
-    icon: '/apple-touch-icon.png',
-    badge: '/favicon.svg',
+    icon: './apple-touch-icon.png',
+    badge: './favicon.svg',
     tag: 'study-reminder',
     data: { url: '/' }
   };
