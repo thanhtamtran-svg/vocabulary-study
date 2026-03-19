@@ -673,6 +673,27 @@ function App({onHome}) {
 
   const [exerciseLoading, setExerciseLoading] = useState(false);
 
+  // Enter key handler for exercise view
+  useEffect(function() {
+    if (view !== 'exercise' || !exerciseSession) return;
+    function handleKeyDown(e) {
+      if (e.key !== 'Enter') return;
+      // Don't interfere with text input (it has its own handler)
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+
+      var item = exerciseSession.items[exerciseIdx];
+      if (exerciseFeedback) {
+        // Feedback showing → advance to next
+        nextExerciseItem();
+      } else if ((item.type === 'multiple_choice' || item.type === 'reading') && exerciseSelectedIdx >= 0) {
+        // Option selected → check answer
+        checkExerciseAnswer();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return function() { window.removeEventListener('keydown', handleKeyDown); };
+  }, [view, exerciseSession, exerciseIdx, exerciseFeedback, exerciseSelectedIdx]);
+
   function startExercise() {
     var selected = selectExerciseWords();
     if (!selected || selected.length < 3) {
@@ -1530,7 +1551,11 @@ function App({onHome}) {
                   type: 'text',
                   value: exerciseAnswer,
                   onChange: function(e) { setExerciseAnswer(e.target.value); },
-                  onKeyDown: function(e) { if (e.key === 'Enter' && exerciseAnswer.trim()) checkExerciseAnswer(); },
+                  onKeyDown: function(e) {
+                    if (e.key !== 'Enter') return;
+                    if (exerciseFeedback) { nextExerciseItem(); }
+                    else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
+                  },
                   placeholder: 'Type your answer...',
                   autoFocus: true,
                   autoComplete: 'off',
