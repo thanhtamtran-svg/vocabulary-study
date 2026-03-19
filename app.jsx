@@ -351,6 +351,11 @@ function App({onHome}) {
   // Push notification state
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
+
+  // Reset state
+  const [resetStep, setResetStep] = useState(0); // 0=idle, 1=confirm, 2=password, 3=resetting
+  const [resetPass, setResetPass] = useState('');
+  const [resetError, setResetError] = useState('');
   const [pushSubscription, setPushSubscription] = useState(null);
   const [reminderHour, setReminderHour] = useState(() => {
     try { return parseInt(localStorage.getItem('vocab_reminder_hour')) || 8; } catch { return 8; }
@@ -1640,16 +1645,82 @@ function App({onHome}) {
 
           React.createElement('h2', null, 'Reset'),
           React.createElement('div', {className: 'card'},
-            React.createElement('button', {
+            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}},
+              'This will permanently delete all your learning progress. This action cannot be undone.'),
+
+            // Step 0: Show reset button
+            resetStep === 0 ? React.createElement('button', {
               className: 'btn btn-secondary',
               style: {color:'#E74C3C'},
-              onClick: function() {
-                if (confirm("Reset ALL progress? This cannot be undone!")) {
-                  setProgress({});
-                  setTodayCompleted({learn: false, reviews: {}});
-                }
-              }
-            }, 'Reset All Progress')
+              onClick: function() { setResetStep(1); }
+            }, 'Reset All Progress') : null,
+
+            // Step 1: Are you sure?
+            resetStep === 1 ? React.createElement('div', null,
+              React.createElement('p', {style: {fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px'}},
+                '\u26A0\uFE0F Are you sure? All your progress will be permanently lost.'),
+              React.createElement('div', {className: 'btn-group'},
+                React.createElement('button', {
+                  className: 'btn btn-secondary btn-sm',
+                  onClick: function() { setResetStep(0); }
+                }, 'Cancel'),
+                React.createElement('button', {
+                  className: 'btn btn-sm',
+                  style: {background:'#E74C3C',color:'#fff'},
+                  onClick: function() { setResetStep(2); setResetPass(''); setResetError(''); }
+                }, 'Yes, reset everything')
+              )
+            ) : null,
+
+            // Step 2: Enter password
+            resetStep === 2 ? React.createElement('div', null,
+              React.createElement('p', {style: {fontSize:'13px',color:'#2E3033',fontWeight:600,marginBottom:'10px'}},
+                '\uD83D\uDD12 Enter your password to confirm reset'),
+              React.createElement('input', {
+                type: 'password',
+                value: resetPass,
+                placeholder: 'Password',
+                style: {marginBottom:'8px'},
+                onChange: function(e) { setResetPass(e.target.value); setResetError(''); },
+                onKeyDown: function(e) { if (e.key === 'Enter') document.getElementById('reset-confirm-btn')?.click(); }
+              }),
+              resetError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginBottom:'8px'}}, resetError) : null,
+              React.createElement('div', {className: 'btn-group'},
+                React.createElement('button', {
+                  className: 'btn btn-secondary btn-sm',
+                  onClick: function() { setResetStep(0); setResetPass(''); setResetError(''); }
+                }, 'Cancel'),
+                React.createElement('button', {
+                  id: 'reset-confirm-btn',
+                  className: 'btn btn-sm',
+                  style: {background:'#E74C3C',color:'#fff'},
+                  disabled: resetStep === 3,
+                  onClick: function() {
+                    if (!resetPass.trim()) { setResetError('Please enter your password'); return; }
+                    setResetStep(3);
+                    fetch(VERIFY_URL, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ password: resetPass })
+                    }).then(function(res) { return res.json(); }).then(function(data) {
+                      if (data.ok) {
+                        setProgress({});
+                        setTodayCompleted({learnCount: 0, learnedBatches: [], reviews: {}});
+                        setResetStep(0);
+                        setResetPass('');
+                        alert('All progress has been reset.');
+                      } else {
+                        setResetError(data.error || 'Incorrect password');
+                        setResetStep(2);
+                      }
+                    }).catch(function() {
+                      setResetError('Connection error. Please try again.');
+                      setResetStep(2);
+                    });
+                  }
+                }, resetStep === 3 ? 'Verifying...' : 'Confirm Reset')
+              )
+            ) : null
           ),
 
           onHome ? React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
