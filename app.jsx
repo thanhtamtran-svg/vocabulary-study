@@ -111,7 +111,9 @@ function urlBase64ToUint8Array(base64String) {
 
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
-  var reg = await navigator.serviceWorker.register('/sw.js');
+  // Use relative path so it works on both root and subdirectory deployments
+  var basePath = new URL('.', window.location.href).pathname;
+  var reg = await navigator.serviceWorker.register(basePath + 'sw.js');
   await navigator.serviceWorker.ready;
   return reg;
 }
