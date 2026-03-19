@@ -418,6 +418,292 @@ function App({onHome}) {
     speakGerman(w.german);
   }, [view, currentIdx, sessionWords]);
 
+  // ===== EXERCISE STATE =====
+  const [exerciseSession, setExerciseSession] = useState(null); // {items:[], targetWords:[]}
+  const [exerciseIdx, setExerciseIdx] = useState(0);
+  const [exerciseAnswer, setExerciseAnswer] = useState('');
+  const [exerciseFeedback, setExerciseFeedback] = useState(null); // {correct, message, correctAnswer}
+  const [exerciseResults, setExerciseResults] = useState([]); // [{wordIdx, type, correct, answer}]
+  const [exerciseProgress, setExerciseProgress] = useState(() => {
+    try { var d = localStorage.getItem('vocab_exercise_progress'); return d ? JSON.parse(d) : {}; } catch { return {}; }
+  }); // {wordIdx: {attempts, correct, lastExercise, nextReview, streak}}
+  const [exerciseSelectedIdx, setExerciseSelectedIdx] = useState(-1); // for multiple choice
+
+  // Save exercise progress
+  useEffect(function() {
+    try { localStorage.setItem('vocab_exercise_progress', JSON.stringify(exerciseProgress)); } catch(e) {}
+  }, [exerciseProgress]);
+
+  // ===== EXERCISE GENERATOR =====
+  // Select words for exercise: prioritize words needing review, mix stages & types
+  function selectExerciseWords() {
+    var learned = [];
+    Object.keys(progress).forEach(function(k) {
+      if (progress[k] && progress[k].learned) {
+        var wi = parseInt(k);
+        var w = words[wi];
+        var ep = exerciseProgress[wi] || {};
+        var stage = getMemoryStage(progress[k]);
+        var daysSinceExercise = ep.lastExercise ? Math.floor((today - parseDate(ep.lastExercise)) / 86400000) : 999;
+        var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
+        var isDue = today >= nextReview;
+        learned.push({
+          wi: wi, stage: stage, type: w[3], cat: w[2],
+          confidence: progress[k].confidence || 0,
+          streak: ep.streak || 0,
+          daysSince: daysSinceExercise,
+          isDue: isDue,
+          priority: isDue ? 100 - (ep.streak || 0) * 10 + (5 - stage) * 20 : (5 - stage) * 5
+        });
+      }
+    });
+    if (learned.length < 5) return null;
+
+    // Sort by priority (highest first), then shuffle top candidates
+    learned.sort(function(a, b) { return b.priority - a.priority; });
+
+    // Take top 20 candidates, then pick 6 ensuring type diversity
+    var candidates = learned.slice(0, Math.min(30, learned.length));
+    var selected = [];
+    var usedTypes = {};
+    // First pass: pick one from each type
+    for (var i = 0; i < candidates.length && selected.length < 6; i++) {
+      var t = candidates[i].type;
+      if (!usedTypes[t] || Object.keys(usedTypes).length >= 5) {
+        selected.push(candidates[i]);
+        usedTypes[t] = true;
+        candidates.splice(i, 1);
+        i--;
+      }
+    }
+    // Fill remaining
+    for (var i = 0; i < candidates.length && selected.length < 6; i++) {
+      selected.push(candidates[i]);
+    }
+
+    // Shuffle selected
+    for (var i = selected.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = selected[i]; selected[i] = selected[j]; selected[j] = tmp;
+    }
+
+    return selected;
+  }
+
+  // Generate distractors for multiple choice (same type preferred)
+  function getDistractors(targetWi, count) {
+    var targetWord = words[targetWi];
+    var targetType = targetWord[3];
+    var all = [];
+    Object.keys(progress).forEach(function(k) {
+      var wi = parseInt(k);
+      if (wi !== targetWi && progress[k] && progress[k].learned) {
+        all.push({wi: wi, sameType: words[wi][3] === targetType});
+      }
+    });
+    // Prefer same type
+    all.sort(function(a, b) { return (b.sameType ? 1 : 0) - (a.sameType ? 1 : 0); });
+    var result = [];
+    for (var i = 0; i < all.length && result.length < count; i++) {
+      result.push(all[i].wi);
+    }
+    // Shuffle
+    for (var i = result.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = result[i]; result[i] = result[j]; result[j] = tmp;
+    }
+    return result;
+  }
+
+  // Simple A1 sentence templates by word type
+  var SENTENCE_TEMPLATES = {
+    0: [ // Noun
+      "Ich sehe ___ jeden Tag.", "Das ist ___ .", "Wo ist ___ ?",
+      "Ich brauche ___ .", "___ ist sehr wichtig.", "Hast du ___ ?",
+      "Ich mag ___ .", "___ ist hier."
+    ],
+    1: [ // Verb
+      "Ich ___ jeden Tag.", "Wir ___ zusammen.", "Kannst du ___ ?",
+      "Ich möchte ___ .", "Er/Sie ___ gern.", "Wir müssen ___ ."
+    ],
+    2: [ // Adjective
+      "Das ist sehr ___ .", "Der Mann ist ___ .", "Das Essen ist ___ .",
+      "Ich finde das ___ .", "Es ist ___ heute.", "Sie ist ___ ."
+    ],
+    3: [ // Grammar
+      "Ich sage ___ .", "___ ist richtig.", "Wir benutzen ___ oft.",
+      "___ kommt zuerst."
+    ],
+    4: [ // Expression
+      "Man sagt ___ .", "Auf Deutsch sagen wir ___ .",
+      "___ benutzt man oft.", "Ich sage oft ___ ."
+    ],
+    5: [ // Foundational
+      "___ ist wichtig.", "Das ist ___ .", "Ich kenne ___ .",
+      "___ kommt oft vor."
+    ]
+  };
+
+  // Generate exercise items with cognitive progression
+  function generateExerciseItems(selectedWords) {
+    var items = [];
+    var allLearned = Object.keys(progress).filter(function(k) { return progress[k] && progress[k].learned; }).map(Number);
+
+    selectedWords.forEach(function(sw, swIdx) {
+      var wi = sw.wi;
+      var w = getWord(wi);
+      var wordType = words[wi][3];
+      var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
+      var template = templates[Math.floor(Math.random() * templates.length)];
+
+      // Cognitive progression: easier exercises first, harder later
+      // Round 1 (Remember): Multiple choice — recognize the meaning
+      var distractors1 = getDistractors(wi, 3);
+      var options1 = distractors1.map(function(di) { return {wi: di, text: words[di][1]}; });
+      options1.push({wi: wi, text: w.english});
+      // Shuffle options
+      for (var i = options1.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = options1[i]; options1[i] = options1[j]; options1[j] = tmp;
+      }
+      items.push({
+        type: 'multiple_choice',
+        level: 'Remember',
+        wordIdx: wi,
+        prompt: 'What does "' + w.german + '" mean?',
+        options: options1,
+        correctAnswer: w.english,
+        germanWord: w.german,
+        wordInfo: w
+      });
+
+      // Round 2 (Understand): Fill in the blank — recall German from English
+      items.push({
+        type: 'fill_blank',
+        level: 'Understand',
+        wordIdx: wi,
+        prompt: 'Type the German word for: ' + w.english,
+        correctAnswer: w.german.toLowerCase().replace(/^(der|die|das)\s+/i, ''),
+        fullAnswer: w.german,
+        germanWord: w.german,
+        wordInfo: w
+      });
+
+      // Round 3 (Apply): Sentence completion — use word in context
+      items.push({
+        type: 'sentence_complete',
+        level: 'Apply',
+        wordIdx: wi,
+        prompt: template.replace('___', '______'),
+        hint: w.english,
+        correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
+        fullAnswer: w.german,
+        sentence: template.replace('___', w.german),
+        germanWord: w.german,
+        wordInfo: w
+      });
+    });
+
+    // Interleave: don't group same word's exercises together
+    // Reorder: all Round 1 first (shuffled), then Round 2, then Round 3
+    var round1 = items.filter(function(it) { return it.level === 'Remember'; });
+    var round2 = items.filter(function(it) { return it.level === 'Understand'; });
+    var round3 = items.filter(function(it) { return it.level === 'Apply'; });
+    // Shuffle within each round
+    [round1, round2, round3].forEach(function(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+    });
+
+    return round1.concat(round2).concat(round3);
+  }
+
+  function startExercise() {
+    var selected = selectExerciseWords();
+    if (!selected || selected.length < 3) {
+      alert('You need at least 5 learned words to start exercises. Keep learning!');
+      return;
+    }
+    var items = generateExerciseItems(selected);
+    setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
+    setExerciseIdx(0);
+    setExerciseAnswer('');
+    setExerciseFeedback(null);
+    setExerciseResults([]);
+    setExerciseSelectedIdx(-1);
+    setView('exercise');
+  }
+
+  function checkExerciseAnswer() {
+    var item = exerciseSession.items[exerciseIdx];
+    var correct = false;
+    var userAnswer = '';
+
+    if (item.type === 'multiple_choice') {
+      if (exerciseSelectedIdx < 0) return;
+      userAnswer = item.options[exerciseSelectedIdx].text;
+      correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
+    } else {
+      userAnswer = exerciseAnswer.trim();
+      var normalizedAnswer = userAnswer.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss');
+      var normalizedCorrect = item.correctAnswer.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss');
+      // Also accept with umlauts
+      correct = normalizedAnswer === normalizedCorrect ||
+                userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
+    }
+
+    setExerciseFeedback({
+      correct: correct,
+      correctAnswer: item.fullAnswer || item.correctAnswer,
+      sentence: item.sentence || null,
+      message: correct
+        ? ['Great job!', 'Correct!', 'Well done!', 'Exactly right!'][Math.floor(Math.random() * 4)]
+        : 'The correct answer is: ' + (item.fullAnswer || item.correctAnswer)
+    });
+
+    setExerciseResults(function(prev) {
+      return prev.concat([{
+        wordIdx: item.wordIdx,
+        type: item.type,
+        level: item.level,
+        correct: correct,
+        answer: userAnswer
+      }]);
+    });
+
+    // Update exercise progress for this word
+    setExerciseProgress(function(prev) {
+      var ep = prev[item.wordIdx] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
+      var newStreak = correct ? ep.streak + 1 : 0;
+      // Spaced review intervals: 1, 2, 3, 5, 7, 14, 30 days based on streak
+      var intervals = [1, 2, 3, 5, 7, 14, 30];
+      var nextInterval = intervals[Math.min(newStreak, intervals.length - 1)];
+      var nextDate = addDays(today, nextInterval);
+      return Object.assign({}, prev, {
+        [item.wordIdx]: {
+          attempts: ep.attempts + 1,
+          correct: ep.correct + (correct ? 1 : 0),
+          streak: newStreak,
+          lastExercise: dateKey(today),
+          nextReview: dateKey(nextDate)
+        }
+      });
+    });
+  }
+
+  function nextExerciseItem() {
+    if (exerciseIdx + 1 >= exerciseSession.items.length) {
+      setView('exercise-complete');
+    } else {
+      setExerciseIdx(exerciseIdx + 1);
+      setExerciseAnswer('');
+      setExerciseFeedback(null);
+      setExerciseSelectedIdx(-1);
+    }
+  }
+
   // Browse state (hoisted to avoid hooks-in-conditional bug)
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState(-1);
@@ -1062,6 +1348,282 @@ function App({onHome}) {
     );
   }
 
+  // ===== EXERCISE VIEW =====
+  if (view === 'exercise' && exerciseSession) {
+    var exItem = exerciseSession.items[exerciseIdx];
+    var exTotal = exerciseSession.items.length;
+    var exProgressPct = ((exerciseIdx + (exerciseFeedback ? 1 : 0)) / exTotal * 100);
+    var levelColors = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470'};
+    var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F'};
+
+    return (
+      React.createElement('div', {className: 'app'},
+        React.createElement('div', {className: 'content', style: {paddingTop:'16px'}},
+          // Header
+          React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}},
+            React.createElement('button', {
+              className: 'btn btn-secondary btn-sm',
+              style: {width:'auto',padding:'6px 12px'},
+              onClick: function() {
+                if (exerciseResults.length > 0 && !confirm('Exit exercise? Your progress will be saved.')) return;
+                setView('dashboard');
+              }
+            }, '\u2190 Exit'),
+            React.createElement('span', {style: {fontSize:'13px',color:'#718096',fontWeight:600}},
+              (exerciseIdx + 1) + ' / ' + exTotal),
+            React.createElement('span', {
+              style: {fontSize:'11px',padding:'3px 10px',borderRadius:'12px',fontWeight:600,
+                background: levelColors[exItem.level] + '18', color: levelColors[exItem.level]}
+            }, levelIcons[exItem.level] + ' ' + exItem.level)
+          ),
+
+          // Progress bar
+          React.createElement('div', {className: 'progress-bar', style: {height:'6px',marginBottom:'20px'}},
+            React.createElement('div', {className: 'progress-fill',
+              style: {width: exProgressPct + '%', background: 'linear-gradient(90deg,#324A84,#7E9470)',
+                transition: 'width 0.3s ease'}})
+          ),
+
+          // Word info badge
+          React.createElement('div', {style: {textAlign:'center',marginBottom:'12px'}},
+            React.createElement('span', {className: 'tag ' + exItem.wordInfo.typeClass,
+              style: {fontSize:'11px'}}, exItem.wordInfo.type),
+            React.createElement('span', {style: {fontSize:'11px',color:'#94a3b8',marginLeft:'8px'}},
+              exItem.wordInfo.cat)
+          ),
+
+          // Exercise card
+          React.createElement('div', {className: 'card', style: {
+            border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? '#7E9470' : '#E74C3C')) : '2px solid #e2e8f0',
+            transition: 'border-color 0.2s ease', minHeight:'180px'
+          }},
+
+            // Prompt
+            React.createElement('p', {style: {fontSize:'15px',fontWeight:600,color:'#2E3033',marginBottom:'16px',lineHeight:'1.5'}},
+              exItem.prompt),
+
+            // Multiple choice
+            exItem.type === 'multiple_choice' && !exerciseFeedback ?
+              React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
+                exItem.options.map(function(opt, oi) {
+                  var isSelected = exerciseSelectedIdx === oi;
+                  return React.createElement('button', {
+                    key: oi,
+                    style: {
+                      padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
+                      border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
+                      background: isSelected ? '#324A8410' : '#fff',
+                      cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
+                    },
+                    onClick: function() { setExerciseSelectedIdx(oi); }
+                  }, opt.text);
+                })
+              ) : null,
+
+            // Multiple choice feedback state
+            exItem.type === 'multiple_choice' && exerciseFeedback ?
+              React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
+                exItem.options.map(function(opt, oi) {
+                  var isCorrect = opt.wi === exItem.wordIdx;
+                  var wasSelected = exerciseSelectedIdx === oi;
+                  return React.createElement('div', {
+                    key: oi,
+                    style: {
+                      padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
+                      border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
+                      background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
+                      fontWeight: isCorrect ? 600 : 400
+                    }
+                  }, (isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text);
+                })
+              ) : null,
+
+            // Fill in blank / sentence complete input
+            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && !exerciseFeedback ?
+              React.createElement('div', null,
+                exItem.hint ? React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}},
+                  '\uD83D\uDCA1 Hint: ' + exItem.hint) : null,
+                React.createElement('input', {
+                  type: 'text',
+                  value: exerciseAnswer,
+                  onChange: function(e) { setExerciseAnswer(e.target.value); },
+                  onKeyDown: function(e) { if (e.key === 'Enter' && exerciseAnswer.trim()) checkExerciseAnswer(); },
+                  placeholder: 'Type your answer...',
+                  autoFocus: true,
+                  autoComplete: 'off',
+                  autoCapitalize: 'off',
+                  style: {
+                    width:'100%',padding:'12px 16px',fontSize:'16px',borderRadius:'10px',
+                    border:'2px solid #e2e8f0',outline:'none',boxSizing:'border-box',
+                    fontFamily:'inherit'
+                  }
+                })
+              ) : null,
+
+            // Text input feedback
+            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && exerciseFeedback ?
+              React.createElement('div', null,
+                React.createElement('div', {style: {
+                  padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
+                  background: exerciseFeedback.correct ? '#7E947018' : '#E74C3C10',
+                  border: '2px solid ' + (exerciseFeedback.correct ? '#7E9470' : '#E74C3C'),
+                  marginBottom:'8px'
+                }},
+                  (exerciseFeedback.correct ? '\u2705 ' : '\u274C ') + (exerciseFeedback.correctAnswer)),
+                exerciseFeedback.sentence ? React.createElement('p', {
+                  style: {fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}
+                }, '\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence) : null
+              ) : null
+          ),
+
+          // Feedback message
+          exerciseFeedback ? React.createElement('div', {style: {
+            textAlign:'center',padding:'12px',margin:'12px 0',borderRadius:'10px',
+            background: exerciseFeedback.correct ? '#f0fdf4' : '#fef2f2',
+            color: exerciseFeedback.correct ? '#166534' : '#991b1b',
+            fontWeight:600,fontSize:'14px'
+          }}, exerciseFeedback.message) : null,
+
+          // Action buttons
+          React.createElement('div', {style: {marginTop:'16px'}},
+            !exerciseFeedback ?
+              React.createElement('button', {
+                className: 'btn btn-primary',
+                disabled: exItem.type === 'multiple_choice' ? exerciseSelectedIdx < 0 :
+                  !exerciseAnswer.trim(),
+                onClick: checkExerciseAnswer
+              }, 'Check Answer') :
+              React.createElement('button', {
+                className: 'btn btn-primary',
+                onClick: nextExerciseItem
+              }, exerciseIdx + 1 >= exTotal ? 'See Results' : 'Next \u2192')
+          )
+        )
+      )
+    );
+  }
+
+  // ===== EXERCISE COMPLETE =====
+  if (view === 'exercise-complete' && exerciseSession) {
+    var exResults = exerciseResults;
+    var exCorrect = exResults.filter(function(r) { return r.correct; }).length;
+    var exTotalQ = exResults.length;
+    var exPct = exTotalQ > 0 ? Math.round(exCorrect / exTotalQ * 100) : 0;
+    var exDuration = Math.round((Date.now() - exerciseSession.startTime) / 60000);
+
+    // Group results by word
+    var wordResults = {};
+    exResults.forEach(function(r) {
+      if (!wordResults[r.wordIdx]) wordResults[r.wordIdx] = {correct: 0, total: 0, types: []};
+      wordResults[r.wordIdx].total++;
+      if (r.correct) wordResults[r.wordIdx].correct++;
+      wordResults[r.wordIdx].types.push({type: r.type, level: r.level, correct: r.correct});
+    });
+
+    // Words that need more practice
+    var weakWords = Object.keys(wordResults).filter(function(wi) {
+      return wordResults[wi].correct < wordResults[wi].total;
+    }).map(Number);
+
+    var exMessage = exPct >= 90 ? 'Outstanding!' : exPct >= 70 ? 'Great work!' :
+                    exPct >= 50 ? 'Good effort!' : 'Keep practicing!';
+    var exEmoji = exPct >= 90 ? '\uD83C\uDF1F' : exPct >= 70 ? '\uD83D\uDCAA' :
+                  exPct >= 50 ? '\uD83D\uDC4D' : '\uD83C\uDF31';
+
+    return (
+      React.createElement('div', {className: 'app'},
+        React.createElement('div', {className: 'content', style: {paddingTop:'32px'}},
+          React.createElement('div', {style: {textAlign:'center',marginBottom:'24px'}},
+            React.createElement('div', {style: {fontSize:'56px',marginBottom:'8px'}}, exEmoji),
+            React.createElement('h1', {style: {marginBottom:'4px'}}, exMessage),
+            React.createElement('p', {style: {color:'#718096',fontSize:'13px'}},
+              'Exercise session complete' + (exDuration > 0 ? ' \u2022 ' + exDuration + ' min' : ''))
+          ),
+
+          // Stats
+          React.createElement('div', {className: 'stat-grid'},
+            React.createElement('div', {className: 'stat'},
+              React.createElement('div', {className: 'num', style: {color: exPct >= 70 ? '#7E9470' : '#D67635'}}, exPct + '%'),
+              React.createElement('div', {className: 'label'}, 'Accuracy')
+            ),
+            React.createElement('div', {className: 'stat'},
+              React.createElement('div', {className: 'num'}, exCorrect + '/' + exTotalQ),
+              React.createElement('div', {className: 'label'}, 'Correct')
+            )
+          ),
+
+          // Results by level
+          React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
+            React.createElement('h2', {style: {marginBottom:'12px'}}, 'Performance by Stage'),
+            ['Remember', 'Understand', 'Apply'].map(function(level) {
+              var levelResults = exResults.filter(function(r) { return r.level === level; });
+              var levelCorrect = levelResults.filter(function(r) { return r.correct; }).length;
+              var levelTotal = levelResults.length;
+              if (levelTotal === 0) return null;
+              var pct = Math.round(levelCorrect / levelTotal * 100);
+              var levelColor = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470'}[level];
+              return React.createElement('div', {key: level, style: {marginBottom:'10px'}},
+                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}},
+                  React.createElement('span', {style: {fontSize:'13px',fontWeight:600,color: levelColor}}, level),
+                  React.createElement('span', {style: {fontSize:'12px',color:'#718096'}}, levelCorrect + '/' + levelTotal)
+                ),
+                React.createElement('div', {className: 'progress-bar', style: {height:'6px'}},
+                  React.createElement('div', {className: 'progress-fill',
+                    style: {width: pct + '%', background: levelColor}})
+                )
+              );
+            })
+          ),
+
+          // Word breakdown
+          React.createElement('div', {className: 'card', style: {marginTop:'12px'}},
+            React.createElement('h2', {style: {marginBottom:'12px'}}, 'Words Practiced'),
+            React.createElement('div', {className: 'word-list'},
+              Object.keys(wordResults).map(function(wi) {
+                var wr = wordResults[wi];
+                var w = getWord(parseInt(wi));
+                var allCorrect = wr.correct === wr.total;
+                return React.createElement('div', {className: 'word-row', key: wi},
+                  React.createElement('span', null,
+                    React.createElement('strong', null, w.german)),
+                  React.createElement('span', {style: {color:'#718096'}}, w.english),
+                  React.createElement('span', {style: {color: allCorrect ? '#7E9470' : '#D67635', fontWeight:600}},
+                    wr.correct + '/' + wr.total + (allCorrect ? ' \u2705' : ' \u26A0\uFE0F'))
+                );
+              })
+            )
+          ),
+
+          // Weak words encouragement
+          weakWords.length > 0 ? React.createElement('div', {className: 'tip-box',
+            style: {marginTop:'12px',background:'#FFF8E1',borderColor:'#E9B746'}},
+            React.createElement('strong', null, '\uD83D\uDCA1 Focus words: '),
+            weakWords.map(function(wi) { return getWord(wi).german; }).join(', '),
+            ' — these will appear more often in future exercises.'
+          ) : React.createElement('div', {className: 'tip-box',
+            style: {marginTop:'12px',background:'#f0fdf4',borderColor:'#7E9470'}},
+            React.createElement('strong', null, '\uD83C\uDF1F Perfect session! '),
+            'All words answered correctly. They\'ll be reviewed at longer intervals now.'
+          ),
+
+          // Buttons
+          React.createElement('div', {style: {display:'flex',gap:'10px',marginTop:'16px'}},
+            React.createElement('button', {
+              className: 'btn btn-primary',
+              style: {flex:1},
+              onClick: function() { setView('dashboard'); }
+            }, 'Back to Dashboard'),
+            totalLearned >= 5 ? React.createElement('button', {
+              className: 'btn btn-secondary',
+              style: {flex:1},
+              onClick: startExercise
+            }, 'Practice Again') : null
+          )
+        )
+      )
+    );
+  }
+
   // ===== NAV HELPER =====
   function renderNav(active) {
     var langFlagUrl = 'https://flagcdn.com/w40/de.png'; // German flag default
@@ -1260,6 +1822,24 @@ function App({onHome}) {
               React.createElement('span', {style: {color:'#27AE60'}},
                 '\u2705 All reviews completed for today!')
             ),
+
+            // Exercise section
+            totalLearned >= 5 ? React.createElement('div', {className: 'card card-accent', style: {marginTop:'12px',
+              borderColor:'#324A84',background:'#324A8408'}},
+              React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center'}},
+                React.createElement('div', null,
+                  React.createElement('div', {className: 'review-type-label', style: {color:'#324A84'}},
+                    '\uD83C\uDFAF Practice Mode'),
+                  React.createElement('span', {style: {fontSize:'12px',color:'#718096'}},
+                    'Strengthen your vocabulary with exercises')
+                ),
+                React.createElement('button', {
+                  className: 'btn btn-sm',
+                  style: {width:'auto',background:'#324A84',color:'#fff',border:'none'},
+                  onClick: startExercise
+                }, 'Exercise')
+              )
+            ) : null,
 
             // Behind schedule tip
             scheduleGap < -2 ? React.createElement('div', {className: 'tip-box',
