@@ -1693,11 +1693,11 @@ function Home() {
       React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
       React.createElement('span', null, '')
     ),
-    React.createElement('div', {className: 'content', style: {paddingTop:'40px'}},
+    React.createElement('div', {className: 'content', style: {paddingTop:'32px'}},
       React.createElement('div', {style: {textAlign:'center',marginBottom:'30px'}},
-        React.createElement('div', {style: {fontSize:'48px',marginBottom:'8px'}}, '\uD83D\uDCDA'),
-        React.createElement('h1', {style: {fontSize:'22px',marginBottom:'4px'}}, 'What would you like to study today?'),
-        React.createElement('p', {style: {color:'#718096',fontSize:'13px'}}, 'Choose a language to get started')
+        React.createElement('img', {src: 'uniques-logo.png', alt: 'UniqueS', style: {width:'160px',marginBottom:'16px'}}),
+        React.createElement('h1', {style: {fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}, 'What would you like to study today?'),
+        React.createElement('p', {style: {color:'#7E9470',fontSize:'13px'}}, 'Choose a language to get started')
       ),
       React.createElement('div', {className: 'language-grid'},
         React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('german'); }},
@@ -1718,7 +1718,7 @@ function Home() {
     React.createElement('div', {style: {padding:'12px 16px',textAlign:'center',fontSize:'11px',color:'#A0AEC0',lineHeight:'1.6',flexShrink:0}},
       React.createElement('div', null, '\u00A9 2026 Tam Tran Thanh. All rights reserved.'),
       React.createElement('div', null, 'Contact us: ',
-        React.createElement('a', {href: 'mailto:uniques@officience.com', style: {color:'#1B4F72',textDecoration:'none'}}, 'uniques@officience.com')
+        React.createElement('a', {href: 'mailto:uniques@officience.com', style: {color:'#D67635',textDecoration:'none'}}, 'uniques@officience.com')
       )
     )
   );
