@@ -583,7 +583,7 @@ function App({onHome}) {
         level: 'Understand',
         wordIdx: wi,
         prompt: 'Type the German word for: ' + w.english,
-        correctAnswer: w.german.toLowerCase().replace(/^(der|die|das)\s+/i, ''),
+        correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
         fullAnswer: w.german,
         germanWord: w.german,
         wordInfo: w
