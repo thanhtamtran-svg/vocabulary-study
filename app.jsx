@@ -1050,6 +1050,8 @@ function App({onHome}) {
 
   // ===== NAV HELPER =====
   function renderNav(active) {
+    // Language flag based on what user is studying
+    var langFlag = '\uD83C\uDDE9\uD83C\uDDEA'; // German flag default
     var items = [
       {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
       {id: 'progress', icon: '\uD83D\uDCC8', label: 'Progress'},
@@ -1058,6 +1060,11 @@ function App({onHome}) {
     ];
     return React.createElement(React.Fragment, null,
       React.createElement('nav', {className: 'nav'},
+        onHome ? React.createElement('button', {
+          key: 'lang',
+          onClick: onHome,
+          style: {minWidth:'50px',fontSize:'16px',padding:'14px 4px 12px'}
+        }, langFlag) : null,
         items.map(function(item) {
           return React.createElement('button', {
             key: item.id,
