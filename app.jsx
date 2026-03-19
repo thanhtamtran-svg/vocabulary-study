@@ -647,11 +647,17 @@ function App({onHome}) {
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
     } else {
       userAnswer = exerciseAnswer.trim();
-      var normalizedAnswer = userAnswer.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss');
-      var normalizedCorrect = item.correctAnswer.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss');
-      // Also accept with umlauts
-      correct = normalizedAnswer === normalizedCorrect ||
-                userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
+      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
+      var stripArticle = function(s) { return s.replace(/^(der|die|das)\s+/i, ''); };
+      var na = normalize(userAnswer);
+      var nc = normalize(item.correctAnswer);
+      // Accept: exact match, with/without article, with/without umlauts, full german word
+      var fullGerman = item.fullAnswer || item.germanWord || '';
+      correct = na === nc ||
+                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase() ||
+                normalize(stripArticle(userAnswer)) === nc ||
+                na === normalize(fullGerman) ||
+                normalize(stripArticle(userAnswer)) === normalize(stripArticle(fullGerman));
     }
 
     setExerciseFeedback({
