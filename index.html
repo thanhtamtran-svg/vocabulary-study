@@ -27,8 +27,8 @@ body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;backgroun
 .app{max-width:480px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 60px rgba(0,0,0,0.06);display:flex;flex-direction:column}
 
 /* ===== NAVIGATION ===== */
-.nav{display:flex;background:#1B4F72;overflow-x:auto;flex-shrink:0;padding:0 4px}
-.nav button{flex:1;padding:12px 6px 10px;color:rgba(255,255,255,0.55);background:none;border:none;border-bottom:2px solid transparent;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;min-width:70px;letter-spacing:0.01em}
+.nav{display:flex;background:#1B4F72;overflow-x:auto;flex-shrink:0;padding:env(safe-area-inset-top,0) 4px 0}
+.nav button{flex:1;padding:14px 6px 12px;color:rgba(255,255,255,0.55);background:none;border:none;border-bottom:2px solid transparent;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;min-width:70px;letter-spacing:0.01em}
 .nav button.active{color:#fff;background:rgba(255,255,255,0.08);border-bottom-color:#5DADE2}
 .nav button:hover{color:rgba(255,255,255,0.9)}
 
@@ -113,9 +113,12 @@ h2{font-size:15px;font-weight:600;color:#64748b;margin:20px 0 10px;text-transfor
 
 /* ===== WORD LIST ===== */
 .word-list{max-height:200px;overflow-y:auto;margin:8px 0}
-.word-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;font-size:13px;border-bottom:1px solid #f1f5f9;gap:8px;transition:background .15s}
+.word-row{display:flex;align-items:center;padding:8px 10px;font-size:13px;border-bottom:1px solid #f1f5f9;gap:8px;transition:background .15s}
 .word-row:last-child{border-bottom:none}
 .word-row:hover{background:#f8fafc}
+.word-row .tag{min-width:72px;text-align:center;flex-shrink:0}
+.word-row strong{flex:1;text-align:left}
+.word-row span:last-child{flex:1;text-align:right;color:#64748b}
 
 /* ===== TABS ===== */
 .tabs{display:flex;gap:6px;margin:12px 0;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
@@ -149,7 +152,7 @@ select:focus{border-color:#5DADE2}
 .settings-row:last-child{border-bottom:none}
 
 /* ===== SESSION HEADER ===== */
-.session-header{padding:14px 18px;background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.session-header{padding:14px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 14px);background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .session-header button{background:none;border:none;color:rgba(255,255,255,0.8);cursor:pointer;font-size:14px;font-weight:500;padding:4px 8px;border-radius:6px;transition:all .15s}
 .session-header button:hover{color:#fff;background:rgba(255,255,255,0.1)}
 
@@ -192,7 +195,7 @@ select:focus{border-color:#5DADE2}
 .word-image-credit a{color:#64748b;text-decoration:none}
 
 /* ===== HOME SCREEN ===== */
-.home-header{padding:16px 18px;background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.home-header{padding:16px 18px;padding-top:calc(env(safe-area-inset-top,0px) + 16px);background:#1B4F72;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
 .language-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
 .language-card{background:#fff;border:2px solid #eef1f5;border-radius:16px;padding:28px 14px;text-align:center;cursor:pointer;transition:all .2s ease;display:flex;flex-direction:column;align-items:center;gap:8px}
 .language-card:hover{border-color:#5DADE2;box-shadow:0 8px 24px rgba(27,79,114,0.1);transform:translateY(-3px)}
@@ -219,6 +222,6 @@ select:focus{border-color:#5DADE2}
 <div id="root"></div>
 <script src="vocab-data.js?v=14"></script>
 <script src="emoji-data.js?v=14"></script>
-<script src="app.jsx?v=22" type="text/babel"></script>
+<script src="app.jsx?v=23" type="text/babel"></script>
 </body>
 </html>
