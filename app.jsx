@@ -95,6 +95,85 @@ async function fetchExplanation(word) {
   return data.explanation;
 }
 
+// ===== PUSH NOTIFICATIONS =====
+const VAPID_PUBLIC_KEY = 'BK4ScZTP21q8ppg_bEmkoGzZyH2X9IKDuenJ2p9MPm84tOrX0_EAEmrBwMbbNyuBctwWeZPojMJzptw25mHBNAU';
+
+function urlBase64ToUint8Array(base64String) {
+  var padding = '='.repeat((4 - base64String.length % 4) % 4);
+  var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  var rawData = window.atob(base64);
+  var outputArray = new Uint8Array(rawData.length);
+  for (var i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+async function registerServiceWorker() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
+  var reg = await navigator.serviceWorker.register('/sw.js');
+  await navigator.serviceWorker.ready;
+  return reg;
+}
+
+async function subscribeToPush(reg) {
+  var sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+  });
+  return sub;
+}
+
+async function savePushSubscription(sub, email, reminderHour) {
+  var keys = sub.toJSON().keys;
+  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({
+      user_email: email || null,
+      endpoint: sub.endpoint,
+      keys_p256dh: keys.p256dh,
+      keys_auth: keys.auth,
+      reminder_hour: reminderHour || 8,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
+      active: true,
+      updated_at: new Date().toISOString()
+    })
+  });
+  return res.ok;
+}
+
+async function updateReminderHour(endpoint, hour) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(endpoint), {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    },
+    body: JSON.stringify({ reminder_hour: hour, updated_at: new Date().toISOString() })
+  });
+  return res.ok;
+}
+
+async function deactivatePushSubscription(endpoint) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(endpoint), {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    },
+    body: JSON.stringify({ active: false, updated_at: new Date().toISOString() })
+  });
+  return res.ok;
+}
+
 const TYPE_TAGS = ["tag-noun","tag-verb","tag-adj","tag-gram","tag-expr","tag-found"];
 const TYPE_NAMES = VOCAB_DATA.types;
 const REVIEW_LABELS = {2:"Review +2",3:"Review +3",5:"Review +5",7:"Review +7"};
@@ -233,6 +312,28 @@ function App({onHome}) {
   // Word image state
   const [wordImage, setWordImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
+
+  // Push notification state
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+  const [pushSubscription, setPushSubscription] = useState(null);
+  const [reminderHour, setReminderHour] = useState(() => {
+    try { return parseInt(localStorage.getItem('vocab_reminder_hour')) || 8; } catch { return 8; }
+  });
+
+  // Check existing push subscription on mount
+  useEffect(function() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    navigator.serviceWorker.ready.then(function(reg) {
+      reg.pushManager.getSubscription().then(function(sub) {
+        if (sub) {
+          setPushSubscription(sub);
+          setPushEnabled(true);
+        }
+      });
+    });
+    registerServiceWorker();
+  }, []);
 
   // Cloud sync state
   const [syncEmail, setSyncEmail] = useState(() => {
@@ -1354,6 +1455,97 @@ function App({onHome}) {
                   }
                 }, 'Connect')
               )
+          ),
+
+          React.createElement('h2', null, 'Daily Reminder'),
+          React.createElement('div', {className: 'card'},
+            React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
+              'Get a daily push notification reminding you to study. Works on Android and iOS (Add to Home Screen required).'),
+            !('PushManager' in window) ?
+              React.createElement('p', {style: {fontSize:'12px',color:'#E74C3C'}},
+                'Push notifications are not supported in this browser. On iOS, add this app to your Home Screen first.') :
+            pushEnabled ?
+              React.createElement('div', null,
+                React.createElement('div', {className: 'settings-row'},
+                  React.createElement('span', null, 'Status'),
+                  React.createElement('span', {style: {color:'#27AE60',fontWeight:600}}, '\uD83D\uDD14 Active')
+                ),
+                React.createElement('div', {className: 'settings-row'},
+                  React.createElement('span', null, 'Remind me at'),
+                  React.createElement('select', {
+                    value: reminderHour,
+                    style: {padding:'6px 10px',borderRadius:'6px',border:'1px solid #e2e8f0',fontSize:'13px'},
+                    onChange: function(e) {
+                      var hour = parseInt(e.target.value);
+                      setReminderHour(hour);
+                      localStorage.setItem('vocab_reminder_hour', hour);
+                      if (pushSubscription) {
+                        updateReminderHour(pushSubscription.endpoint, hour);
+                      }
+                    }
+                  },
+                    React.createElement('option', {value: 6}, '6:00 AM'),
+                    React.createElement('option', {value: 7}, '7:00 AM'),
+                    React.createElement('option', {value: 8}, '8:00 AM'),
+                    React.createElement('option', {value: 9}, '9:00 AM'),
+                    React.createElement('option', {value: 10}, '10:00 AM'),
+                    React.createElement('option', {value: 12}, '12:00 PM'),
+                    React.createElement('option', {value: 18}, '6:00 PM'),
+                    React.createElement('option', {value: 20}, '8:00 PM'),
+                    React.createElement('option', {value: 21}, '9:00 PM')
+                  )
+                ),
+                React.createElement('button', {
+                  className: 'btn btn-secondary btn-sm',
+                  style: {marginTop:'10px',color:'#E74C3C'},
+                  onClick: function() {
+                    setPushLoading(true);
+                    if (pushSubscription) {
+                      deactivatePushSubscription(pushSubscription.endpoint).then(function() {
+                        pushSubscription.unsubscribe();
+                        setPushSubscription(null);
+                        setPushEnabled(false);
+                        setPushLoading(false);
+                      });
+                    }
+                  }
+                }, 'Disable Reminders')
+              ) :
+              React.createElement('button', {
+                className: 'btn btn-primary',
+                disabled: pushLoading,
+                onClick: function() {
+                  setPushLoading(true);
+                  registerServiceWorker().then(function(reg) {
+                    if (!reg) {
+                      alert('Service Worker not supported');
+                      setPushLoading(false);
+                      return;
+                    }
+                    return Notification.requestPermission().then(function(perm) {
+                      if (perm !== 'granted') {
+                        alert('Notification permission denied. Please enable it in your browser settings.');
+                        setPushLoading(false);
+                        return;
+                      }
+                      return subscribeToPush(reg).then(function(sub) {
+                        return savePushSubscription(sub, syncEmail, reminderHour).then(function(ok) {
+                          if (ok) {
+                            setPushSubscription(sub);
+                            setPushEnabled(true);
+                          } else {
+                            alert('Failed to save subscription. Please try again.');
+                          }
+                          setPushLoading(false);
+                        });
+                      });
+                    });
+                  }).catch(function(err) {
+                    alert('Failed to enable notifications: ' + err.message);
+                    setPushLoading(false);
+                  });
+                }
+              }, pushLoading ? 'Enabling...' : '\uD83D\uDD14 Enable Daily Reminder')
           ),
 
           React.createElement('h2', null, 'Reset'),

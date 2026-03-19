@@ -5,6 +5,8 @@
   "display": "standalone",
   "background_color": "#1B4F72",
   "theme_color": "#1B4F72",
+  "scope": ".",
+  "permissions": ["notifications"],
   "icons": [
     {
       "src": "icon-192.svg",
