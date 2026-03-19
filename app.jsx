@@ -369,6 +369,15 @@ function App({onHome}) {
         if (sub) {
           setPushSubscription(sub);
           setPushEnabled(true);
+          // Fetch reminder hour from DB
+          fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(sub.endpoint) + '&select=reminder_hour&active=eq.true', {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+          }).then(function(r) { return r.json(); }).then(function(rows) {
+            if (rows && rows.length > 0 && rows[0].reminder_hour != null) {
+              setReminderHour(rows[0].reminder_hour);
+              localStorage.setItem('vocab_reminder_hour', rows[0].reminder_hour);
+            }
+          }).catch(function() {});
         }
       });
     });
@@ -1566,8 +1575,15 @@ function App({onHome}) {
                     React.createElement('option', {value: 8}, '8:00 AM'),
                     React.createElement('option', {value: 9}, '9:00 AM'),
                     React.createElement('option', {value: 10}, '10:00 AM'),
+                    React.createElement('option', {value: 11}, '11:00 AM'),
                     React.createElement('option', {value: 12}, '12:00 PM'),
+                    React.createElement('option', {value: 13}, '1:00 PM'),
+                    React.createElement('option', {value: 14}, '2:00 PM'),
+                    React.createElement('option', {value: 15}, '3:00 PM'),
+                    React.createElement('option', {value: 16}, '4:00 PM'),
+                    React.createElement('option', {value: 17}, '5:00 PM'),
                     React.createElement('option', {value: 18}, '6:00 PM'),
+                    React.createElement('option', {value: 19}, '7:00 PM'),
                     React.createElement('option', {value: 20}, '8:00 PM'),
                     React.createElement('option', {value: 21}, '9:00 PM')
                   )
