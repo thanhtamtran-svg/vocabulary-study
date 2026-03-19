@@ -1491,24 +1491,6 @@ function App({onHome}) {
             )
           ),
 
-          React.createElement('h2', null, 'Backup & Restore'),
-          React.createElement('div', {className: 'card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
-              'Your progress saves automatically to this browser. Use export/import for backup or to transfer between devices.'),
-            React.createElement('div', {className: 'btn-group'},
-              React.createElement('button', {className: 'btn btn-primary', onClick: exportProgress},
-                '\uD83D\uDCBE Export Backup'),
-              React.createElement('label', {className: 'btn btn-secondary', style: {cursor:'pointer'}},
-                '\uD83D\uDCC2 Import',
-                React.createElement('input', {
-                  type: 'file', accept: '.json',
-                  onChange: importProgress,
-                  style: {display:'none'}
-                })
-              )
-            )
-          ),
-
           React.createElement('h2', null, 'Cloud Sync'),
           React.createElement('div', {className: 'card'},
             React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
@@ -1721,6 +1703,24 @@ function App({onHome}) {
                 }, resetStep === 3 ? 'Verifying...' : 'Confirm Reset')
               )
             ) : null
+          ),
+
+          React.createElement('h2', null, 'Backup & Restore'),
+          React.createElement('div', {className: 'card'},
+            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}},
+              'Your progress saves automatically to this browser. Use export/import for backup or to transfer between devices.'),
+            React.createElement('div', {className: 'btn-group'},
+              React.createElement('button', {className: 'btn btn-primary', onClick: exportProgress},
+                '\uD83D\uDCBE Export Backup'),
+              React.createElement('label', {className: 'btn btn-secondary', style: {cursor:'pointer'}},
+                '\uD83D\uDCC2 Import',
+                React.createElement('input', {
+                  type: 'file', accept: '.json',
+                  onChange: importProgress,
+                  style: {display:'none'}
+                })
+              )
+            )
           ),
 
           onHome ? React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
