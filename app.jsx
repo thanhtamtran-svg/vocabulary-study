@@ -1999,7 +1999,7 @@ function App({onHome}) {
                   disabled: exerciseLoading,
                   style: {width:'auto',background:'#324A84',color:'#fff',border:'none'},
                   onClick: startExercise
-                }, exerciseLoading ? 'Loading...' : 'Exercise')
+                }, exerciseLoading ? '\u2728 Generating...' : 'Exercise')
               )
             ) : null,
 

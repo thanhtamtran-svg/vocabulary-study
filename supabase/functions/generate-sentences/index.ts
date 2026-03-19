@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const claudeKey = Deno.env.get("CLAUDE_API_KEY")!;
+    const claudeKey = Deno.env.get("ANTHROPIC_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Check which words already have sentences cached
@@ -131,12 +131,20 @@ Only output valid JSON. No markdown, no explanation.`;
       });
     }
 
+    // Normalize AI response keys to lowercase
+    const normalizedSentences: Record<string, any> = {};
+    if (parsed.sentences) {
+      for (const [k, v] of Object.entries(parsed.sentences)) {
+        normalizedSentences[k.toLowerCase()] = v;
+      }
+    }
+
     // Save sentences to DB
     const passageText = parsed.passage ? JSON.stringify(parsed.passage) : null;
 
     for (const w of uncached) {
       const key = w.german.toLowerCase();
-      const sentences = parsed.sentences?.[key] || [];
+      const sentences = normalizedSentences[key] || [];
       if (sentences.length > 0) {
         await supabase.from("vocab_sentences").upsert({
           word: key,
@@ -154,7 +162,7 @@ Only output valid JSON. No markdown, no explanation.`;
         result[key] = { sentences: cached[key].sentences, passage: cached[key].passage };
       } else {
         result[key] = {
-          sentences: parsed.sentences?.[key] || [],
+          sentences: normalizedSentences[key] || [],
           passage: passageText,
         };
       }
