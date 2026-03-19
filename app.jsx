@@ -1697,6 +1697,13 @@ function Home() {
           React.createElement('div', {className: 'language-desc'}, 'Coming soon'),
           React.createElement('div', {className: 'language-tag soon-tag'}, 'Soon')
         )
+      ),
+
+      React.createElement('div', {style: {marginTop:'auto',paddingTop:'40px',paddingBottom:'16px',textAlign:'center',fontSize:'11px',color:'#A0AEC0',lineHeight:'1.6'}},
+        React.createElement('div', null, '\u00A9 2026 Tam Tran Thanh. All rights reserved.'),
+        React.createElement('div', null, 'Contact us: ',
+          React.createElement('a', {href: 'mailto:uniques@officience.com', style: {color:'#1B4F72',textDecoration:'none'}}, 'uniques@officience.com')
+        )
       )
     )
   );
