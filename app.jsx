@@ -858,6 +858,7 @@ function App({onHome}) {
 
     setExerciseFeedback({
       correct: correct,
+      userAnswer: userAnswer,
       correctAnswer: item.fullAnswer || item.correctAnswer,
       sentence: item.sentence || null,
       message: correct
@@ -1678,13 +1679,20 @@ function App({onHome}) {
             // Text input feedback
             (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
               React.createElement('div', null,
+                // Show user's wrong answer first
+                !exerciseFeedback.correct ? React.createElement('div', {style: {
+                  padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
+                  background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
+                  textDecoration:'line-through',color:'#E74C3C'
+                }}, '\u274C ' + exerciseFeedback.userAnswer) : null,
+                // Show correct answer
                 React.createElement('div', {style: {
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                  background: exerciseFeedback.correct ? '#7E947018' : '#E74C3C10',
-                  border: '2px solid ' + (exerciseFeedback.correct ? '#7E9470' : '#E74C3C'),
+                  background: exerciseFeedback.correct ? '#7E947018' : '#7E947012',
+                  border: '2px solid #7E9470',
                   marginBottom:'8px'
                 }},
-                  (exerciseFeedback.correct ? '\u2705 ' : '\u274C ') + (exerciseFeedback.correctAnswer)),
+                  '\u2705 ' + exerciseFeedback.correctAnswer),
                 exerciseFeedback.sentence ? React.createElement('p', {
                   style: {fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}
                 }, '\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence) : null
