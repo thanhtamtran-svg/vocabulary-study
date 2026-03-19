@@ -176,6 +176,39 @@ async function deactivatePushSubscription(endpoint) {
   return res.ok;
 }
 
+// ===== MEMORY STAGES =====
+// Compute a word's memory stage (1-5) based on confidence + review history
+function getMemoryStage(wordProgress) {
+  if (!wordProgress || !wordProgress.learned) return 0; // not learned
+  var conf = wordProgress.confidence || 0;
+  var reviews = wordProgress.reviews || [];
+  var reviewSessions = reviews.filter(function(r) { return r.type === 'review'; });
+  var reviewCount = reviewSessions.length;
+
+  // Stage 5: Mastered — confidence 4 AND completed all 4 review intervals
+  if (conf >= 4 && reviewCount >= 4) return 5;
+
+  // Stage 4: Strong — confidence 3-4 AND completed 3+ review intervals
+  if (conf >= 3 && reviewCount >= 3) return 4;
+
+  // Stage 3: Practicing — confidence 3+ OR completed 2+ reviews
+  if (conf >= 3 || reviewCount >= 2) return 3;
+
+  // Stage 2: Familiar — confidence 2+ OR completed at least 1 review
+  if (conf >= 2 || reviewCount >= 1) return 2;
+
+  // Stage 1: New — just learned, low confidence, no reviews yet
+  return 1;
+}
+
+const MEMORY_STAGES = [
+  {level: 1, name: 'New',        desc: 'Just learned, needs frequent review', color: '#E74C3C', bg: '#fef2f2'},
+  {level: 2, name: 'Familiar',   desc: 'Recognized, review every 2 days',     color: '#D67635', bg: '#fff7ed'},
+  {level: 3, name: 'Practicing', desc: 'Getting stronger, review every 5 days', color: '#E9B746', bg: '#fefce8'},
+  {level: 4, name: 'Strong',     desc: 'Solid recall, review every 7 days',   color: '#7E9470', bg: '#f0fdf4'},
+  {level: 5, name: 'Mastered',   desc: 'Fully retained, no review needed',    color: '#324A84', bg: '#eff6ff'}
+];
+
 const TYPE_TAGS = ["tag-noun","tag-verb","tag-adj","tag-gram","tag-expr","tag-found"];
 const TYPE_NAMES = VOCAB_DATA.types;
 const REVIEW_LABELS = {2:"Review +2",3:"Review +3",5:"Review +5",7:"Review +7"};
@@ -1224,10 +1257,14 @@ function App({onHome}) {
 
   // ===== PROGRESS VIEW =====
   if (view === "progress") {
-    var byConf = [0,0,0,0,0];
-    Object.values(progress).forEach(function(p) {
-      if (p.learned) byConf[p.confidence || 0]++;
+    // Compute memory stages for all words
+    var stageCounts = [0, 0, 0, 0, 0, 0]; // index 0 = not learned, 1-5 = stages
+    Object.keys(progress).forEach(function(k) {
+      var stage = getMemoryStage(progress[k]);
+      stageCounts[stage]++;
     });
+    var notLearned = 1500 - totalLearned;
+    var maxStageCount = Math.max.apply(null, stageCounts.slice(1).concat([1])); // for bar scaling
 
     return (
       React.createElement('div', {className: 'app'},
@@ -1241,38 +1278,79 @@ function App({onHome}) {
               React.createElement('div', {className: 'label'}, 'Learned')
             ),
             React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, totalMastered),
-              React.createElement('div', {className: 'label'}, 'Mastered (4/4)')
+              React.createElement('div', {className: 'num'}, stageCounts[5]),
+              React.createElement('div', {className: 'label'}, 'Mastered')
             ),
             React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, 1500 - totalLearned),
+              React.createElement('div', {className: 'num'}, notLearned),
               React.createElement('div', {className: 'label'}, 'Remaining')
             ),
             React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, Math.ceil((1500 - totalLearned)/8)),
+              React.createElement('div', {className: 'num'}, Math.ceil(notLearned / 8)),
               React.createElement('div', {className: 'label'}, 'Days to go')
             )
           ),
 
-          React.createElement('h2', null, 'Confidence Breakdown'),
-          React.createElement('div', {className: 'card'},
-            [{label:"Not started", count: 1500 - totalLearned, color:"#CBD5E0"},
-             {label:"No recall (1)", count: byConf[1], color:"#E74C3C"},
-             {label:"Partial (2)", count: byConf[2], color:"#F39C12"},
-             {label:"Slow but correct (3)", count: byConf[3], color:"#F1C40F"},
-             {label:"Instant recall (4)", count: byConf[4], color:"#27AE60"}
-            ].map(function(item, i) {
-              return React.createElement('div', {key: i, style: {margin:'6px 0'}},
-                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'12px',marginBottom:'2px'}},
-                  React.createElement('span', null, item.label),
-                  React.createElement('span', {style: {fontWeight:600}}, item.count)
-                ),
-                React.createElement('div', {className: 'progress-bar'},
-                  React.createElement('div', {className: 'progress-fill',
-                    style: {width: (item.count/1500*100) + '%', background: item.color}})
-                )
-              );
-            })
+          // Memory Stages Bar Chart
+          React.createElement('h2', null, 'Memory Stages'),
+          React.createElement('div', {className: 'card memory-stages-card'},
+            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'16px',lineHeight:'1.5'}},
+              'Words move up through 5 memory stages as you review them. Higher stages need less frequent review.'),
+
+            // Bar chart
+            React.createElement('div', {className: 'stage-chart'},
+              MEMORY_STAGES.map(function(stage, i) {
+                var count = stageCounts[stage.level];
+                var pct = totalLearned > 0 ? Math.round(count / totalLearned * 100) : 0;
+                var barWidth = maxStageCount > 0 ? Math.max(count / maxStageCount * 100, count > 0 ? 4 : 0) : 0;
+
+                return React.createElement('div', {key: i, className: 'stage-row'},
+                  // Stage label
+                  React.createElement('div', {className: 'stage-label'},
+                    React.createElement('span', {className: 'stage-dot', style: {background: stage.color}}),
+                    React.createElement('span', {className: 'stage-name'}, stage.name)
+                  ),
+                  // Bar
+                  React.createElement('div', {className: 'stage-bar-track'},
+                    React.createElement('div', {className: 'stage-bar-fill',
+                      style: {width: barWidth + '%', background: stage.color}
+                    })
+                  ),
+                  // Count
+                  React.createElement('div', {className: 'stage-count'},
+                    React.createElement('span', {style: {fontWeight:600}}, count),
+                    React.createElement('span', {className: 'stage-pct'}, pct > 0 ? ' (' + pct + '%)' : '')
+                  )
+                );
+              })
+            ),
+
+            // Not learned row
+            totalLearned < 1500 ? React.createElement('div', {className: 'stage-row', style: {marginTop:'12px',paddingTop:'12px',borderTop:'1px solid #F5EBDC'}},
+              React.createElement('div', {className: 'stage-label'},
+                React.createElement('span', {className: 'stage-dot', style: {background: '#CBD5E0'}}),
+                React.createElement('span', {className: 'stage-name', style: {color:'#94a3b8'}}, 'Not started')
+              ),
+              React.createElement('div', {className: 'stage-bar-track'},
+                React.createElement('div', {className: 'stage-bar-fill',
+                  style: {width: (notLearned / 1500 * 100) + '%', background: '#CBD5E0'}
+                })
+              ),
+              React.createElement('div', {className: 'stage-count', style: {color:'#94a3b8'}},
+                React.createElement('span', {style: {fontWeight:600}}, notLearned)
+              )
+            ) : null,
+
+            // Stage legend
+            React.createElement('div', {className: 'stage-legend'},
+              MEMORY_STAGES.map(function(stage, i) {
+                return React.createElement('div', {key: i, className: 'stage-legend-item', style: {background: stage.bg, borderColor: stage.color}},
+                  React.createElement('div', {style: {fontWeight:600,fontSize:'12px',color: stage.color, fontFamily:'Montserrat,sans-serif'}},
+                    'Lv.' + stage.level + ' ' + stage.name),
+                  React.createElement('div', {style: {fontSize:'11px',color:'#64748b',marginTop:'2px'}}, stage.desc)
+                );
+              })
+            )
           ),
 
           React.createElement('h2', null, 'By Category'),
@@ -1282,14 +1360,14 @@ function App({onHome}) {
               words.forEach(function(w, wi) { if (w[2] === ci) catWords.push(wi); });
               var learned = catWords.filter(function(wi) { return progress[wi]?.learned; }).length;
               return React.createElement('div', {key: ci, style: {margin:'6px 0'}},
-                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'11px'}},
+                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'12px'}},
                   React.createElement('span', null, cat),
-                  React.createElement('span', null, learned + '/' + catWords.length)
+                  React.createElement('span', {style: {fontWeight:500,color:'#64748b'}}, learned + '/' + catWords.length)
                 ),
                 React.createElement('div', {className: 'progress-bar', style: {height:'5px'}},
                   React.createElement('div', {className: 'progress-fill',
                     style: {width: (catWords.length ? learned/catWords.length*100 : 0) + '%',
-                      background:'#2E86C1'}})
+                      background:'#324A84'}})
                 )
               );
             })
