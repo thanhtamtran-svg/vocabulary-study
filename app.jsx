@@ -1499,7 +1499,7 @@ function App({onHome}) {
 
     return (
       React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {textAlign:'center',paddingTop:'40px'}},
+        React.createElement('div', {className: 'content', style: {textAlign:'center',paddingTop:'max(40px, env(safe-area-inset-top, 40px))'}},
           React.createElement('div', {style: {fontSize:'64px',marginBottom:'12px'}}, '\uD83C\uDF89'),
           React.createElement('h1', null, 'Session Complete!'),
           React.createElement('p', {style: {color:'#718096',margin:'8px 0 20px'}},
@@ -1560,7 +1560,7 @@ function App({onHome}) {
 
     return (
       React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {paddingTop:'16px'}},
+        React.createElement('div', {className: 'content', style: {paddingTop:'max(16px, env(safe-area-inset-top, 16px))'}},
           // Header
           React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}},
             React.createElement('button', {
@@ -1800,7 +1800,7 @@ function App({onHome}) {
 
     return (
       React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {paddingTop:'32px'}},
+        React.createElement('div', {className: 'content', style: {paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}},
           React.createElement('div', {style: {textAlign:'center',marginBottom:'24px'}},
             React.createElement('div', {style: {fontSize:'56px',marginBottom:'8px'}}, exEmoji),
             React.createElement('h1', {style: {marginBottom:'4px'}}, exMessage),
@@ -2730,7 +2730,7 @@ function Home() {
       React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
       React.createElement('span', null, '')
     ),
-    React.createElement('div', {className: 'content', style: {paddingTop:'32px'}},
+    React.createElement('div', {className: 'content', style: {paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}},
       React.createElement('div', {style: {textAlign:'center',marginBottom:'30px'}},
         React.createElement('img', {src: 'uniques-logo.png', alt: 'UniqueS', style: {width:'160px',marginBottom:'16px'}}),
         React.createElement('h1', {style: {fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}, 'What would you like to study today?'),
