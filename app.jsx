@@ -1712,8 +1712,8 @@ function App({onHome}) {
           React.createElement('button', {
             className: 'btn btn-primary',
             style: {marginTop:'12px'},
-            onClick: function() { setView("dashboard"); }
-          }, 'Back to Dashboard')
+            onClick: function() { setView(sessionType && sessionType.type === 'browse' ? 'browse' : 'dashboard'); }
+          }, sessionType && sessionType.type === 'browse' ? 'Back to Browse' : 'Back to Dashboard')
         )
       )
     );
@@ -2547,7 +2547,17 @@ function App({onHome}) {
               var conf = progress[w.idx]?.confidence || 0;
               var isLearned = progress[w.idx]?.learned;
               var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
-              return React.createElement('div', {className: 'word-row', key: i},
+              return React.createElement('div', {className: 'word-row', key: i,
+                style: {cursor:'pointer'},
+                onClick: function() {
+                  var wordData = {idx: w.idx, ...getWord(w.idx)};
+                  setSessionWords([wordData]);
+                  setSessionType({type: 'browse', batchIdx: 0, interval: 0});
+                  setCurrentIdx(0);
+                  setFlipped(false);
+                  setStreak(0);
+                  setView('session');
+                }},
                 React.createElement('div', {style: {flex:1}},
                   typeof WORD_EMOJIS !== 'undefined' ? React.createElement('span', {style: {marginRight:'4px'}}, WORD_EMOJIS[w.idx]) : null,
                   React.createElement('strong', null, w.german),
