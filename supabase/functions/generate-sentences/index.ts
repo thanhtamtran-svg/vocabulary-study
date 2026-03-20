@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const claudeKey = Deno.env.get("ANTHROPIC_API_KEY")!;
+    const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Check which words already have sentences cached
@@ -93,30 +93,28 @@ Respond in this exact JSON format:
 
 Only output valid JSON. No markdown, no explanation.`;
 
-    const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": claudeKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 2000,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      }
+    );
 
-    if (!claudeResponse.ok) {
-      const errText = await claudeResponse.text();
-      return new Response(JSON.stringify({ error: "Claude API error", details: errText.slice(0, 200) }), {
+    if (!geminiResponse.ok) {
+      const errText = await geminiResponse.text();
+      return new Response(JSON.stringify({ error: "Gemini API error", details: errText.slice(0, 200) }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const claudeData = await claudeResponse.json();
-    const text = claudeData.content?.[0]?.text || "";
+    const geminiData = await geminiResponse.json();
+    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     // Parse JSON from response
     let parsed: any;
