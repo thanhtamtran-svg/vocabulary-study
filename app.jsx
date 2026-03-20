@@ -2227,7 +2227,7 @@ function App({onHome}) {
 
   // ===== NAV HELPER =====
   function renderNav(active) {
-    var langFlagUrl = 'https://flagcdn.com/w40/de.png'; // German flag default
+    var langFlagUrl = 'https://flagcdn.com/w40/de.png';
     var items = [
       {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
       {id: 'progress', icon: '\uD83D\uDCC8', label: 'Progress'},
@@ -2235,14 +2235,16 @@ function App({onHome}) {
       {id: 'settings', icon: '\u2699\uFE0F', label: 'Settings'}
     ];
     return React.createElement(React.Fragment, null,
+      // Desktop sidebar (hidden on mobile via CSS)
+      renderDesktopSidebar(active),
+      // Mobile nav (hidden on desktop via CSS)
       React.createElement('nav', {className: 'nav'},
         onHome ? React.createElement('button', {
           key: 'lang',
           onClick: onHome,
           style: {minWidth:'46px',padding:'10px 4px 8px',display:'flex',alignItems:'center',justifyContent:'center'}
         }, React.createElement('img', {
-          src: langFlagUrl,
-          alt: 'Language',
+          src: langFlagUrl, alt: 'Language',
           style: {width:'24px',height:'18px',objectFit:'cover',borderRadius:'2px'}
         })) : null,
         items.map(function(item) {
@@ -2253,15 +2255,58 @@ function App({onHome}) {
           }, item.icon + ' ' + item.label);
         })
       ),
+      // Sync bar (hidden on desktop via CSS — shown in sidebar instead)
       syncEmail ? React.createElement('div', {className: 'sync-bar'},
         React.createElement('div', {className: 'sync-dot ' +
           (syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'offline' : 'online')}),
-        React.createElement('span', null,
-          syncMsg || ('\u2601\uFE0F ' + syncEmail)
-        )
+        React.createElement('span', null, syncMsg || ('\u2601\uFE0F ' + syncEmail))
       ) : null
     );
   }
+
+  // Desktop sidebar (rendered separately, hidden on mobile via CSS)
+  function renderDesktopSidebar(active) {
+    var langFlagUrl = 'https://flagcdn.com/w40/de.png';
+    var items = [
+      {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
+      {id: 'progress', icon: '\uD83D\uDCC8', label: 'Progress'},
+      {id: 'browse', icon: '\uD83D\uDCDA', label: 'Browse'},
+      {id: 'settings', icon: '\u2699\uFE0F', label: 'Settings'}
+    ];
+    return React.createElement('aside', {className: 'desktop-sidebar'},
+      // Logo
+      React.createElement('div', {className: 'sidebar-logo'},
+        React.createElement('img', {src: langFlagUrl, alt: 'DE'}),
+        React.createElement('span', null, 'German 1500')
+      ),
+      // Nav items
+      items.map(function(item) {
+        return React.createElement('button', {
+          key: item.id,
+          className: active === item.id ? 'active' : '',
+          onClick: function() { setView(item.id); }
+        },
+          React.createElement('span', {className: 'sidebar-icon'}, item.icon),
+          item.label
+        );
+      }),
+      // Language switch
+      onHome ? React.createElement('button', {onClick: onHome},
+        React.createElement('span', {className: 'sidebar-icon'}, '\uD83C\uDF10'),
+        'Switch Language'
+      ) : null,
+      // Sync status
+      React.createElement('div', {className: 'sidebar-footer'},
+        syncEmail ? React.createElement('span', null,
+          React.createElement('span', {style: {
+            display:'inline-block',width:'6px',height:'6px',borderRadius:'50%',marginRight:'6px',
+            background: syncStatus === 'error' ? '#dc2626' : '#16a34a'
+          }}), syncEmail
+        ) : '\u00A9 2026 Tam Tran Thanh'
+      )
+    );
+  }
+
 
   // ===== DASHBOARD =====
   if (view === "dashboard") {

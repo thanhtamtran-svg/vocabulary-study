@@ -231,12 +231,97 @@ select:focus{border-color:#D67635}
 .stage-pct{color:#94a3b8;font-weight:400}
 .stage-legend{display:grid;grid-template-columns:1fr;gap:6px;margin-top:18px;padding-top:14px;border-top:1px solid #F5EBDC}
 .stage-legend-item{padding:8px 10px;border-radius:8px;border-left:3px solid}
+
+/* ===== DESKTOP WRAPPER (used by JS for sidebar layout) ===== */
+.desktop-layout{display:flex;min-height:100vh;max-width:1200px;margin:0 auto}
+.desktop-sidebar{display:none}
+
+/* ===== TABLET (640px+) ===== */
+@media(min-width:640px){
+  .app{max-width:640px}
+  .content{padding:28px 28px}
+  h1{font-size:24px}
+  .flashcard{height:280px}
+  .flashcard-word{font-size:34px}
+  .flashcard-english{font-size:28px}
+  .stat .num{font-size:32px}
+  .card{padding:22px}
+  .confidence-btns{gap:10px}
+  .conf-btn{padding:16px 8px;font-size:12px}
+  .btn{padding:14px 24px;font-size:15px}
+  .word-row{padding:10px 14px;font-size:14px}
+  .tip-box{font-size:14px;padding:16px}
+  .ai-explain-box{font-size:14px;padding:18px}
+}
+
+/* ===== DESKTOP (1024px+) ===== */
+@media(min-width:1024px){
+  body{background:#eee6d6}
+  .app{max-width:none;box-shadow:none;flex:1;min-width:0}
+  .desktop-layout{background:#F9F3EA;box-shadow:0 0 80px rgba(0,0,0,0.08);border-radius:0}
+
+  /* Sidebar navigation */
+  .desktop-sidebar{display:flex;flex-direction:column;width:220px;background:#2E3033;flex-shrink:0;padding:24px 0;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .desktop-sidebar .sidebar-logo{padding:12px 20px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:12px}
+  .desktop-sidebar .sidebar-logo img{width:28px;height:21px;object-fit:cover;border-radius:3px}
+  .desktop-sidebar .sidebar-logo span{color:#F9F3EA;font-family:'Montserrat',sans-serif;font-size:15px;font-weight:700;letter-spacing:-0.01em}
+  .desktop-sidebar button{display:flex;align-items:center;gap:10px;padding:12px 20px;color:rgba(255,255,255,0.5);background:none;border:none;font-size:14px;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;text-align:left;border-left:3px solid transparent;width:100%}
+  .desktop-sidebar button:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.04)}
+  .desktop-sidebar button.active{color:#E9B746;background:rgba(255,255,255,0.06);border-left-color:#E9B746}
+  .desktop-sidebar .sidebar-icon{font-size:18px;width:24px;text-align:center}
+  .desktop-sidebar .sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.3)}
+
+  /* Hide mobile nav on desktop */
+  .nav{display:none!important}
+  .sync-bar{display:none!important}
+
+  /* App gets left margin for sidebar */
+  .app{margin-left:220px;max-width:800px;margin-right:auto}
+
+  /* Sidebar fixed on left */
+  .desktop-sidebar{position:fixed;left:0;top:0;bottom:0;z-index:200}
+
+  /* Content area */
+  .content{padding:32px 40px;max-width:800px}
+  h1{font-size:26px;margin-bottom:20px}
+  h2{font-size:12px}
+  .flashcard{height:320px}
+  .flashcard-word{font-size:38px}
+  .flashcard-english{font-size:30px}
+  .flashcard-face{padding:28px}
+  .stat-grid{gap:14px}
+  .stat{padding:20px}
+  .stat .num{font-size:36px}
+  .stat .label{font-size:13px}
+  .card{padding:24px;margin:12px 0;border-radius:16px}
+  .btn{padding:14px 28px;font-size:15px;border-radius:12px}
+  .btn-sm{padding:10px 18px;font-size:13px}
+  .confidence-btns{gap:12px;max-width:500px;margin:14px auto}
+  .conf-btn{padding:18px 10px;font-size:13px;border-radius:12px}
+  .word-list{max-height:400px}
+  .word-row{padding:12px 16px;font-size:14px}
+  .word-row .tag{min-width:80px;font-size:11px}
+  .tip-box{font-size:14px;padding:18px;border-radius:12px}
+  .tabs{gap:8px}
+  .tab{padding:9px 18px;font-size:13px}
+  .settings-row{padding:14px 0}
+  .ai-explain-box{font-size:14px;padding:20px;border-radius:14px}
+  .language-grid{gap:16px;max-width:400px;margin:20px auto}
+  .language-card{padding:36px 20px;border-radius:18px}
+  .stage-bar-track{height:24px}
+  .stage-name{font-size:13px}
+  .stage-count{font-size:13px}
+  input[type="text"],input[type="email"],input[type="password"]{padding:12px 16px;font-size:15px}
+  select{padding:12px 16px;font-size:15px}
+  .sunday-banner{padding:32px}
+  .progress-bar{height:8px}
+}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script src="vocab-data.js?v=14"></script>
 <script src="emoji-data.js?v=14"></script>
-<script src="app.jsx?v=56" type="text/babel"></script>
+<script src="app.jsx?v=57" type="text/babel"></script>
 </body>
 </html>
