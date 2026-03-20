@@ -2290,19 +2290,25 @@ function App({onHome}) {
           item.label
         );
       }),
+      // Divider
+      React.createElement('div', {style: {margin:'8px 24px',borderTop:'1px solid #f0ebe3'}}),
       // Language switch
       onHome ? React.createElement('button', {onClick: onHome},
         React.createElement('span', {className: 'sidebar-icon'}, '\uD83C\uDF10'),
         'Switch Language'
       ) : null,
-      // Sync status
+      // Footer
       React.createElement('div', {className: 'sidebar-footer'},
-        syncEmail ? React.createElement('span', null,
-          React.createElement('span', {style: {
-            display:'inline-block',width:'6px',height:'6px',borderRadius:'50%',marginRight:'6px',
-            background: syncStatus === 'error' ? '#dc2626' : '#16a34a'
-          }}), syncEmail
-        ) : '\u00A9 2026 Tam Tran Thanh'
+        syncEmail ? React.createElement('div', null,
+          React.createElement('div', {style: {display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}},
+            React.createElement('span', {style: {
+              display:'inline-block',width:'7px',height:'7px',borderRadius:'50%',
+              background: syncStatus === 'error' ? '#dc2626' : '#16a34a'
+            }}),
+            React.createElement('span', {style: {fontSize:'12px',color:'#718096'}}, 'Synced')
+          ),
+          React.createElement('div', {style: {fontSize:'11px',color:'#b0b8c4',overflow:'hidden',textOverflow:'ellipsis'}}, syncEmail)
+        ) : React.createElement('span', null, '\u00A9 2026 Tam Tran Thanh')
       )
     );
   }
