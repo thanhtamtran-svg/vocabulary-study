@@ -90,7 +90,7 @@ async function fetchIPA(germanWord) {
     }
 
     // Generate via Gemini (lightweight text call via generate-sentences function pattern)
-    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
+    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -135,7 +135,7 @@ async function fetchDefinition(germanWord, englishWord) {
     }
 
     // Generate via Gemini
-    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
+    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
