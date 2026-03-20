@@ -416,6 +416,12 @@ verify_jwt = false
 import_map = "./functions/generate-sentences/deno.json"
 entrypoint = "./functions/generate-sentences/index.ts"
 
+[functions.generate-ipa-def]
+enabled = true
+verify_jwt = false
+import_map = "./functions/generate-ipa-def/deno.json"
+entrypoint = "./functions/generate-ipa-def/index.ts"
+
 [functions.generate-image]
 enabled = true
 verify_jwt = false

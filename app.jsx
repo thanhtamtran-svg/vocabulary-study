@@ -76,90 +76,35 @@ async function fetchWordImage(germanWord, englishWord, wordType) {
   }
 }
 
-// ===== IPA PRONUNCIATION =====
-async function fetchIPA(germanWord) {
+// ===== IPA + DEFINITION (via edge function) =====
+async function fetchIPAAndDefinition(germanWord, englishWord) {
   var key = germanWord.toLowerCase().trim();
   try {
-    // Check cache
-    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_ipa?word=eq.' + encodeURIComponent(key) + '&select=ipa', {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    if (cacheRes.ok) {
-      var cacheData = await cacheRes.json();
-      if (cacheData && cacheData.length > 0 && cacheData[0].ipa) return cacheData[0].ipa;
-    }
+    // Check both caches first
+    var results = await Promise.all([
+      fetch(SUPABASE_URL + '/rest/v1/vocab_ipa?word=eq.' + encodeURIComponent(key) + '&select=ipa', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      }).then(function(r) { return r.ok ? r.json() : []; }),
+      fetch(SUPABASE_URL + '/rest/v1/vocab_definitions?word=eq.' + encodeURIComponent(key) + '&select=definition', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      }).then(function(r) { return r.ok ? r.json() : []; })
+    ]);
+    var cachedIpa = results[0]?.[0]?.ipa || null;
+    var cachedDef = results[1]?.[0]?.definition || null;
 
-    // Generate via Gemini (lightweight text call via generate-sentences function pattern)
-    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
+    if (cachedIpa && cachedDef) return { ipa: cachedIpa, definition: cachedDef };
+
+    // Generate missing via edge function
+    var res = await fetch(SUPABASE_URL + '/functions/v1/generate-ipa-def', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: 'Give me ONLY the IPA (International Phonetic Alphabet) transcription for the German word "' + germanWord + '". Return ONLY the IPA in square brackets like [ˈhaloː]. No explanation, no other text.' }] }]
-      })
+      body: JSON.stringify({ word: germanWord, english: englishWord })
     });
-    if (!geminiRes.ok) return null;
-    var geminiData = await geminiRes.json();
-    var ipaText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    // Extract IPA from response (between brackets or slashes)
-    var match = ipaText.match(/[\[\/](.*?)[\]\/]/);
-    var ipa = match ? match[1] : ipaText.trim().replace(/[\[\]\/]/g, '');
-    if (!ipa || ipa.length > 60) return null;
-
-    // Cache it (fire and forget via REST)
-    fetch(SUPABASE_URL + '/rest/v1/vocab_ipa', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({ word: key, ipa: ipa })
-    }).catch(function() {});
-
-    return ipa;
+    if (!res.ok) return { ipa: cachedIpa, definition: cachedDef };
+    var data = await res.json();
+    return { ipa: data.ipa || cachedIpa, definition: data.definition || cachedDef };
   } catch(e) {
-    return null;
-  }
-}
-
-// ===== GERMAN DEFINITION (A1) =====
-async function fetchDefinition(germanWord, englishWord) {
-  var key = germanWord.toLowerCase().trim();
-  try {
-    // Check cache
-    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_definitions?word=eq.' + encodeURIComponent(key) + '&select=definition', {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    });
-    if (cacheRes.ok) {
-      var cacheData = await cacheRes.json();
-      if (cacheData && cacheData.length > 0 && cacheData[0].definition) return cacheData[0].definition;
-    }
-
-    // Generate via Gemini
-    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: 'Write a very simple definition in German (A1 level) for the German word "' + germanWord + '" (English: ' + englishWord + '). The definition should be ONE short sentence that a child or beginner can understand. Use only A1 vocabulary. Do NOT include the word itself in the definition. Return ONLY the definition sentence, nothing else.' }] }]
-      })
-    });
-    if (!geminiRes.ok) return null;
-    var geminiData = await geminiRes.json();
-    var def = (geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().replace(/^["']|["']$/g, '');
-    if (!def || def.length > 150) return null;
-
-    // Cache
-    fetch(SUPABASE_URL + '/rest/v1/vocab_definitions', {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify({ word: key, definition: def })
-    }).catch(function() {});
-
-    return def;
-  } catch(e) {
-    return null;
+    return { ipa: null, definition: null };
   }
 }
 
@@ -520,15 +465,12 @@ function App({onHome}) {
         setAiSaveStatus('saved');
       }
     });
-    // Fetch IPA
+    // Fetch IPA + German definition (single call, cached)
     setWordIPA('');
-    fetchIPA(w.german).then(function(ipa) {
-      if (ipa) setWordIPA(ipa);
-    });
-    // Fetch German definition
     setWordDefinition('');
-    fetchDefinition(w.german, w.english).then(function(def) {
-      if (def) setWordDefinition(def);
+    fetchIPAAndDefinition(w.german, w.english).then(function(result) {
+      if (result.ipa) setWordIPA(result.ipa);
+      if (result.definition) setWordDefinition(result.definition);
     });
     // Autoplay pronunciation
     speakGerman(w.german);
