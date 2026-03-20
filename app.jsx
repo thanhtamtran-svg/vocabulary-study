@@ -1558,13 +1558,13 @@ function App({onHome}) {
                 // AI cartoon image illustrating the definition (small, centered)
                 defImage ? React.createElement('img', {
                   src: defImage.url, alt: '',
-                  style: {width:'140px',height:'140px',objectFit:'contain',borderRadius:'10px',
-                    background:'#fff',margin:'0 auto 14px',display:'block'}
+                  style: {width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
+                    background:'#fff',margin:'0 auto 10px',display:'block'}
                 }) : null,
                 // German definition
                 wordDefinition ? React.createElement('div', {style: {
-                  fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'10px',
-                  padding:'8px 12px',borderRadius:'8px',background:'#f8f6f0',
+                  fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
+                  padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
                   fontStyle:'italic',textAlign:'center'
                 }}, wordDefinition) : null,
                 // German word + IPA + speaker
