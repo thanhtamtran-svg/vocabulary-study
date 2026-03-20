@@ -1528,18 +1528,19 @@ function App({onHome}) {
                   'Tap to flip')
               ),
               React.createElement('div', {className: 'flashcard-face flashcard-back'},
-                React.createElement('div', {style: {display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}},
-                  typeof WORD_EMOJIS !== 'undefined' ? React.createElement('span', {style: {fontSize:'28px'}}, WORD_EMOJIS[w.idx]) : null,
-                  React.createElement('span', {className: 'tag ' + w.typeClass}, w.type)
-                ),
+                // AI cartoon image (small, centered)
+                wordImage ? React.createElement('img', {
+                  src: wordImage.url, alt: '',
+                  style: {width:'120px',height:'120px',objectFit:'contain',borderRadius:'10px',
+                    background:'#fff',margin:'0 auto 8px',display:'block'}
+                }) : null,
+                // German definition
                 wordDefinition ? React.createElement('div', {style: {
                   fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
                   padding:'8px 12px',borderRadius:'8px',background:'#f8f6f0',
                   fontStyle:'italic',textAlign:'center'
-                }}, '\uD83D\uDDE3\uFE0F ' + wordDefinition) : null,
-                React.createElement('div', {className: 'flashcard-english',
-                  style: wordDefinition ? {fontSize:'14px',color:'#94a3b8',marginTop:'2px'} : {}
-                }, w.english),
+                }}, wordDefinition) : null,
+                // German word + IPA + speaker
                 React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'4px',gap:'6px'}},
                   React.createElement('span', {style: {fontSize:'15px',color:'#718096'}}, w.german),
                   wordIPA ? React.createElement('span', {style: {fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}},
