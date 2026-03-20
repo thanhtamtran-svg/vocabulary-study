@@ -65,7 +65,7 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:#7E9
 .flashcard-container{perspective:1000px;margin:10px 0}
 .flashcard{width:100%;height:240px;position:relative;cursor:pointer;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d}
 .flashcard.flipped{transform:rotateY(180deg)}
-.flashcard-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.08);overflow:hidden}
+.flashcard-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.08)}
 .flashcard-front{background:linear-gradient(145deg,#324A84 0%,#3d5a9e 50%,#4a6ab5 100%);color:#fff}
 .flashcard-back{background:#fff;border:2px solid #F5EBDC;transform:rotateY(180deg)}
 .flashcard-word{font-size:30px;font-weight:700;margin-bottom:4px;letter-spacing:-0.01em}
@@ -231,100 +231,12 @@ select:focus{border-color:#D67635}
 .stage-pct{color:#94a3b8;font-weight:400}
 .stage-legend{display:grid;grid-template-columns:1fr;gap:6px;margin-top:18px;padding-top:14px;border-top:1px solid #F5EBDC}
 .stage-legend-item{padding:8px 10px;border-radius:8px;border-left:3px solid}
-
-/* ===== DESKTOP LAYOUT (>= 768px) ===== */
-@media (min-width: 768px) {
-  /* App shell: full width on desktop */
-  .app{max-width:none;width:100%;box-shadow:none;position:relative}
-
-  /* Sidebar Navigation */
-  .nav{flex-direction:column;width:220px;min-width:220px;padding:20px 8px;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;border-right:1px solid rgba(255,255,255,0.08);gap:4px}
-  .nav button{flex:none;padding:12px 16px;text-align:left;border-bottom:none;border-radius:10px;font-size:13px;min-width:auto;display:flex;align-items:center;gap:10px;justify-content:flex-start}
-  .nav button.active{background:rgba(255,255,255,0.1);border-bottom:none}
-  .nav button:hover{background:rgba(255,255,255,0.06)}
-
-  /* Content area: offset by sidebar, centered content */
-  .content{margin-left:220px;padding:32px 40px;max-width:860px}
-
-  /* Sync bar: offset by sidebar */
-  .sync-bar{margin-left:220px}
-
-  /* Wider cards */
-  .card{padding:24px}
-  h1{font-size:26px}
-
-  /* Flashcard: wider but not taller on desktop */
-  .flashcard-container{max-width:480px;margin:16px auto}
-  .flashcard{height:260px}
-  .flashcard-word{font-size:28px;word-break:break-word;text-align:center;max-width:100%}
-
-  /* Stat grid: 4 cols */
-  .stat-grid{grid-template-columns:1fr 1fr 1fr 1fr;gap:16px}
-  .stat{padding:20px}
-  .stat .num{font-size:32px}
-
-  /* Word list */
-  .word-list{max-height:500px}
-  .word-row{padding:12px 16px;font-size:14px}
-
-  /* Confidence buttons */
-  .confidence-btns{max-width:480px;margin:16px auto}
-
-  /* AI explain */
-  .ai-explain-box{max-width:640px;margin:16px auto}
-
-  /* Dual coding prompt */
-  .dual-coding-prompt{max-width:480px;margin:12px auto}
-
-  /* Language grid */
-  .language-grid{grid-template-columns:1fr 1fr 1fr;max-width:600px;margin:20px auto}
-
-  /* Browse tabs */
-  .tabs{gap:8px}
-  .tab{padding:9px 18px;font-size:13px}
-
-  /* Tip box */
-  .tip-box{max-width:640px}
-
-  /* Progress chart */
-  .memory-stages-card{max-width:700px}
-  .stage-bar-track{height:24px}
-  .stage-label{min-width:120px}
-  .stage-name{font-size:13px}
-  .stage-count{font-size:13px}
-
-  /* Settings */
-  .settings-row{padding:14px 0}
-
-  /* Session views (no sidebar — full screen immersive) */
-  .session-header{padding-top:14px}
-  .session-header + .content{margin-left:0;max-width:640px;margin-right:auto;margin-left:auto}
-
-  /* Home/password screens (no sidebar) */
-  .home-header{padding-top:16px}
-  .home-header + .content{margin-left:auto;margin-right:auto;max-width:600px}
-
-  /* Scrollbar */
-  ::-webkit-scrollbar{width:6px}
-}
-
-/* ===== LARGE DESKTOP (>= 1200px) ===== */
-@media (min-width: 1200px) {
-  .nav{width:260px;min-width:260px;padding:24px 12px}
-  .nav button{padding:14px 20px;font-size:14px}
-  .content{margin-left:260px;padding:40px 60px;max-width:960px}
-  .sync-bar{margin-left:260px}
-  .flashcard{height:280px}
-  .flashcard-word{font-size:32px}
-  .flashcard-container{max-width:520px}
-  .session-header + .content{max-width:720px}
-}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script src="vocab-data.js?v=14"></script>
 <script src="emoji-data.js?v=14"></script>
-<script src="app.jsx?v=58" type="text/babel"></script>
+<script src="app.jsx?v=56" type="text/babel"></script>
 </body>
 </html>
