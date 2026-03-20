@@ -41,7 +41,21 @@ Deno.serve(async (req) => {
 
     // Generate image with Gemini
     const geminiKey = Deno.env.get("GEMINI_API_KEY")!;
-    const prompt = `Generate a simple cartoon illustration for the German word "${word}" (meaning: ${english}).
+
+    let prompt: string;
+    if (type === "definition") {
+      // Generate image illustrating a German definition sentence
+      prompt = `Generate a simple cartoon illustration that visually depicts this German sentence: "${english}"
+
+Style requirements:
+- Simple cartoon scene on a clean white background
+- Colorful comic style, like an educational flashcard for children
+- The illustration should clearly show the action or situation described in the sentence
+- A viewer should be able to understand what the sentence means just by looking at the image
+- Funny, exaggerated, and memorable
+- ABSOLUTELY NO TEXT, no labels, no letters, no words anywhere in the image`;
+    } else {
+      prompt = `Generate a simple cartoon illustration for the German word "${word}" (meaning: ${english}).
 
 Style requirements:
 - Single cartoon character or object, centered on a clean white background
@@ -53,6 +67,7 @@ Style requirements:
 ${type === "Verb" ? "- Show a character performing the action" : ""}
 ${type === "Adjective" ? "- Show a character or object clearly demonstrating the quality" : ""}
 ${type === "Expression" ? "- Show a character using body language/facial expression to convey the meaning" : ""}`;
+    }
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${geminiKey}`,

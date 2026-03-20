@@ -398,6 +398,7 @@ function App({onHome}) {
 
   // German definition state
   const [wordDefinition, setWordDefinition] = useState('');
+  const [defImage, setDefImage] = useState(null); // {url} for definition illustration
 
   // Push notification state
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -468,9 +469,35 @@ function App({onHome}) {
     // Fetch IPA + German definition (single call, cached)
     setWordIPA('');
     setWordDefinition('');
+    setDefImage(null);
     fetchIPAAndDefinition(w.german, w.english).then(function(result) {
       if (result.ipa) setWordIPA(result.ipa);
-      if (result.definition) setWordDefinition(result.definition);
+      if (result.definition) {
+        setWordDefinition(result.definition);
+        // Generate image based on definition sentence (use definition as key for caching)
+        var defKey = 'def_' + w.german.toLowerCase();
+        // Check cache first
+        fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        }).then(function(r) { return r.ok ? r.json() : []; }).then(function(cached) {
+          if (cached && cached.length > 0 && cached[0].image_base64) {
+            setDefImage({ url: cached[0].image_base64 });
+          } else {
+            // Generate via edge function with definition as prompt
+            fetch(SUPABASE_URL + '/functions/v1/generate-image', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                word: defKey,
+                english: result.definition,
+                type: 'definition'
+              })
+            }).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
+              if (data && data.image) setDefImage({ url: data.image });
+            }).catch(function() {});
+          }
+        });
+      }
     });
     // Autoplay pronunciation
     speakGerman(w.german);
@@ -1528,12 +1555,16 @@ function App({onHome}) {
                   'Tap to flip')
               ),
               React.createElement('div', {className: 'flashcard-face flashcard-back'},
-                // AI cartoon image (small, centered)
-                wordImage ? React.createElement('img', {
-                  src: wordImage.url, alt: '',
-                  style: {width:'120px',height:'120px',objectFit:'contain',borderRadius:'10px',
+                // AI cartoon image illustrating the definition (small, centered)
+                defImage ? React.createElement('img', {
+                  src: defImage.url, alt: '',
+                  style: {width:'140px',height:'140px',objectFit:'contain',borderRadius:'10px',
                     background:'#fff',margin:'0 auto 8px',display:'block'}
-                }) : null,
+                }) : (imageLoading ? React.createElement('div', {style: {
+                  width:'140px',height:'140px',margin:'0 auto 8px',borderRadius:'10px',
+                  background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',
+                  fontSize:'12px',color:'#b0b8c4'
+                }}, 'Loading...') : null),
                 // German definition
                 wordDefinition ? React.createElement('div', {style: {
                   fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
@@ -1548,8 +1579,7 @@ function App({onHome}) {
                   React.createElement('button', {className: 'speak-btn back',
                     onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
                     '\uD83D\uDD0A')
-                ),
-                React.createElement('div', {className: 'flashcard-category'}, w.cat)
+                )
               )
             )
           ),
