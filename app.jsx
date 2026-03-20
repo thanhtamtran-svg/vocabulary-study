@@ -76,6 +76,51 @@ async function fetchWordImage(germanWord, englishWord, wordType) {
   }
 }
 
+// ===== IPA PRONUNCIATION =====
+async function fetchIPA(germanWord) {
+  var key = germanWord.toLowerCase().trim();
+  try {
+    // Check cache
+    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_ipa?word=eq.' + encodeURIComponent(key) + '&select=ipa', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (cacheRes.ok) {
+      var cacheData = await cacheRes.json();
+      if (cacheData && cacheData.length > 0 && cacheData[0].ipa) return cacheData[0].ipa;
+    }
+
+    // Generate via Gemini (lightweight text call via generate-sentences function pattern)
+    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: 'Give me ONLY the IPA (International Phonetic Alphabet) transcription for the German word "' + germanWord + '". Return ONLY the IPA in square brackets like [ˈhaloː]. No explanation, no other text.' }] }]
+      })
+    });
+    if (!geminiRes.ok) return null;
+    var geminiData = await geminiRes.json();
+    var ipaText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    // Extract IPA from response (between brackets or slashes)
+    var match = ipaText.match(/[\[\/](.*?)[\]\/]/);
+    var ipa = match ? match[1] : ipaText.trim().replace(/[\[\]\/]/g, '');
+    if (!ipa || ipa.length > 60) return null;
+
+    // Cache it (fire and forget via REST)
+    fetch(SUPABASE_URL + '/rest/v1/vocab_ipa', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ word: key, ipa: ipa })
+    }).catch(function() {});
+
+    return ipa;
+  } catch(e) {
+    return null;
+  }
+}
+
 // ===== AI EXPLAIN =====
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
@@ -361,6 +406,9 @@ function App({onHome}) {
   const [wordImage, setWordImage] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
 
+  // IPA pronunciation state
+  const [wordIPA, setWordIPA] = useState('');
+
   // Push notification state
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
@@ -426,6 +474,11 @@ function App({onHome}) {
         setAiExplanation(text);
         setAiSaveStatus('saved');
       }
+    });
+    // Fetch IPA
+    setWordIPA('');
+    fetchIPA(w.german).then(function(ipa) {
+      if (ipa) setWordIPA(ipa);
     });
     // Autoplay pronunciation
     speakGerman(w.german);
@@ -1474,6 +1527,10 @@ function App({onHome}) {
                     onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
                     '\uD83D\uDD0A')
                 ),
+                wordIPA ? React.createElement('div', {style: {
+                  fontSize:'14px',color:'#94a3b8',fontFamily:'serif',fontStyle:'italic',
+                  marginTop:'2px',letterSpacing:'0.5px'
+                }}, '/' + wordIPA + '/') : null,
                 React.createElement('div', {className: 'flashcard-meta'}, w.cat),
                 React.createElement('div', {style: {marginTop:'6px',fontSize:'11px',opacity:0.6}},
                   'Tap to flip')
@@ -1484,8 +1541,10 @@ function App({onHome}) {
                   React.createElement('span', {className: 'tag ' + w.typeClass}, w.type)
                 ),
                 React.createElement('div', {className: 'flashcard-english'}, w.english),
-                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'4px'}},
+                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'4px',gap:'6px'}},
                   React.createElement('span', {style: {fontSize:'15px',color:'#718096'}}, w.german),
+                  wordIPA ? React.createElement('span', {style: {fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}},
+                    '/' + wordIPA + '/') : null,
                   React.createElement('button', {className: 'speak-btn back',
                     onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
                     '\uD83D\uDD0A')
