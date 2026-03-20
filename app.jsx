@@ -2245,7 +2245,7 @@ function App({onHome}) {
                 ),
                 React.createElement('button', {
                   className: 'btn btn-success btn-sm',
-                  style: {width:'auto'},
+                  style: {width:'auto',minWidth:'120px'},
                   onClick: function() { startSession("learn", nextBatch); }
                 }, todayLearnCount === 0 ? 'Start Learning' : 'Learn Next Batch')
               ),
@@ -2288,7 +2288,7 @@ function App({onHome}) {
                     ),
                     React.createElement('button', {
                       className: 'btn btn-primary btn-sm',
-                      style: {width:'auto'},
+                      style: {width:'auto',minWidth:'120px'},
                       onClick: function() { startSession("review", r.batch, r.interval); }
                     }, 'Review')
                   )
@@ -2326,7 +2326,7 @@ function App({onHome}) {
                 React.createElement('button', {
                   className: 'btn btn-sm',
                   disabled: exerciseLoading,
-                  style: {width:'auto',background:'#324A84',color:'#fff',border:'none'},
+                  style: {width:'auto',minWidth:'120px',background:'#324A84',color:'#fff',border:'none'},
                   onClick: startExercise
                 }, exerciseLoading ? '\u2728 Generating...' : 'Exercise')
               )
