@@ -635,7 +635,7 @@ function App({onHome}) {
   // Fallback sentence templates (used when AI sentences aren't available)
   var SENTENCE_TEMPLATES = {
     0: ["Ich sehe ___ jeden Tag.", "Das ist ___ .", "Wo ist ___ ?", "Ich brauche ___ .", "Hast du ___ ?"],
-    1: ["Ich ___ jeden Tag.", "Wir ___ zusammen.", "Kannst du ___ ?", "Ich möchte ___ ."],
+    1: ["Ich ___ jeden Tag.", "Wir ___ zusammen.", "Er ___ gern.", "Sie ___ oft."],
     2: ["Das ist sehr ___ .", "Der Mann ist ___ .", "Ich finde das ___ ."],
     3: ["Ich sage ___ .", "___ ist richtig.", "Wir benutzen ___ oft."],
     4: ["Man sagt ___ .", "Auf Deutsch sagen wir ___ ."],
@@ -787,12 +787,41 @@ function App({onHome}) {
       }
 
       // === ROUND 3 (Apply) ===
+      // For verbs with fallback templates: use conjugated form (ich) instead of infinitive
+      var sentCorrectAnswer = w.german.replace(/^(der|die|das)\s+/i, '');
+      var sentFullAnswer = w.german;
+      var sentPrompt = sent.template.replace('___', '______');
+      var sentFull = sent.full;
+      if (isVerb && !sent.ai) {
+        // Fallback templates use "Ich ___" pattern — need conjugated form
+        var verbConj = getConjugation(w.german);
+        // Detect which pronoun the template uses
+        var templateLower = sent.template.toLowerCase();
+        if (templateLower.startsWith('ich ') || templateLower.includes(' ich ')) {
+          sentCorrectAnswer = verbConj.ich;
+          sentFullAnswer = verbConj.ich;
+          sentFull = sent.template.replace('___', verbConj.ich);
+        } else if (templateLower.startsWith('wir ') || templateLower.includes(' wir ')) {
+          sentCorrectAnswer = verbConj.wir;
+          sentFullAnswer = verbConj.wir;
+          sentFull = sent.template.replace('___', verbConj.wir);
+        } else if (templateLower.startsWith('er') || templateLower.startsWith('sie')) {
+          sentCorrectAnswer = verbConj.er;
+          sentFullAnswer = verbConj.er;
+          sentFull = sent.template.replace('___', verbConj.er);
+        } else {
+          // Default to ich form
+          sentCorrectAnswer = verbConj.ich;
+          sentFullAnswer = verbConj.ich;
+          sentFull = sent.template.replace('___', verbConj.ich);
+        }
+      }
       items.push({
         type: 'sentence_complete', level: 'Apply', wordIdx: wi,
-        prompt: sent.template.replace('___', '______'),
-        hint: w.english,
-        correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-        fullAnswer: w.german, sentence: sent.full,
+        prompt: sentPrompt,
+        hint: w.english + (isVerb && !sent.ai ? ' (conjugate!)' : ''),
+        correctAnswer: sentCorrectAnswer,
+        fullAnswer: sentFullAnswer, sentence: sentFull,
         germanWord: w.german, wordInfo: w
       });
     });
