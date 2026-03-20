@@ -1559,20 +1559,16 @@ function App({onHome}) {
                 defImage ? React.createElement('img', {
                   src: defImage.url, alt: '',
                   style: {width:'140px',height:'140px',objectFit:'contain',borderRadius:'10px',
-                    background:'#fff',margin:'0 auto 8px',display:'block'}
-                }) : (imageLoading ? React.createElement('div', {style: {
-                  width:'140px',height:'140px',margin:'0 auto 8px',borderRadius:'10px',
-                  background:'#f0f0f0',display:'flex',alignItems:'center',justifyContent:'center',
-                  fontSize:'12px',color:'#b0b8c4'
-                }}, 'Loading...') : null),
+                    background:'#fff',margin:'0 auto 14px',display:'block'}
+                }) : null,
                 // German definition
                 wordDefinition ? React.createElement('div', {style: {
-                  fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
+                  fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'10px',
                   padding:'8px 12px',borderRadius:'8px',background:'#f8f6f0',
                   fontStyle:'italic',textAlign:'center'
                 }}, wordDefinition) : null,
                 // German word + IPA + speaker
-                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'4px',gap:'6px'}},
+                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}},
                   React.createElement('span', {style: {fontSize:'15px',color:'#718096'}}, w.german),
                   wordIPA ? React.createElement('span', {style: {fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}},
                     '/' + wordIPA + '/') : null,
