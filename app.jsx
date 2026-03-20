@@ -44,23 +44,36 @@ async function cloudPush(email, state) {
   return !res.error;
 }
 
-// ===== UNSPLASH IMAGE =====
-const UNSPLASH_KEY = 'POIpL2lpBJPWn99F-d0pzkxSSTlueqR1IxvGeu-gF5Y';
+// ===== AI IMAGE (Gemini) =====
+async function fetchWordImage(germanWord, englishWord, wordType) {
+  try {
+    // First check cache via REST API (fast, no edge function call needed)
+    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(germanWord.toLowerCase()) + '&select=image_base64', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (cacheRes.ok) {
+      var cacheData = await cacheRes.json();
+      if (cacheData && cacheData.length > 0 && cacheData[0].image_base64) {
+        return { url: cacheData[0].image_base64, credit: 'AI Generated', link: null };
+      }
+    }
 
-async function fetchWordImage(englishWord) {
-  var res = await fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(englishWord) + '&per_page=1&orientation=landscape', {
-    headers: { 'Authorization': 'Client-ID ' + UNSPLASH_KEY }
-  });
-  if (!res.ok) return null;
-  var data = await res.json();
-  if (data.results && data.results.length > 0) {
-    return {
-      url: data.results[0].urls.small,
-      credit: data.results[0].user.name,
-      link: data.results[0].user.links.html
-    };
+    // Generate via edge function
+    var res = await fetch(SUPABASE_URL + '/functions/v1/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ word: germanWord, english: englishWord, type: wordType || '' })
+    });
+    if (!res.ok) return null;
+    var data = await res.json();
+    if (data.image) {
+      return { url: data.image, credit: 'AI Generated', link: null };
+    }
+    return null;
+  } catch(e) {
+    console.warn('Image fetch failed:', e);
+    return null;
   }
-  return null;
 }
 
 // ===== AI EXPLAIN =====
@@ -399,7 +412,7 @@ function App({onHome}) {
     if (!w) return;
     setWordImage(null);
     setImageLoading(true);
-    fetchWordImage(w.english).then(function(img) {
+    fetchWordImage(w.german, w.english, w.type).then(function(img) {
       setWordImage(img);
       setImageLoading(false);
     }).catch(function() { setImageLoading(false); });
@@ -1490,12 +1503,8 @@ function App({onHome}) {
           !flipped ? React.createElement('div', {className: 'word-image-container'},
             imageLoading ? React.createElement('div', {style: {textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}, 'Loading image...') : null,
             wordImage ? React.createElement('div', null,
-              React.createElement('img', {src: wordImage.url, alt: w.english, className: 'word-image'}),
-              React.createElement('div', {className: 'word-image-credit'},
-                'Photo by ',
-                React.createElement('a', {href: wordImage.link + '?utm_source=german1500&utm_medium=referral', target: '_blank', rel: 'noopener'}, wordImage.credit),
-                ' on Unsplash'
-              )
+              React.createElement('img', {src: wordImage.url, alt: w.english, className: 'word-image',
+                style: {borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}})
             ) : null,
             !imageLoading && !wordImage ? React.createElement('div', {style: {textAlign:'center',fontSize:'48px',padding:'20px'}},
               typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'
