@@ -121,6 +121,48 @@ async function fetchIPA(germanWord) {
   }
 }
 
+// ===== GERMAN DEFINITION (A1) =====
+async function fetchDefinition(germanWord, englishWord) {
+  var key = germanWord.toLowerCase().trim();
+  try {
+    // Check cache
+    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_definitions?word=eq.' + encodeURIComponent(key) + '&select=definition', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (cacheRes.ok) {
+      var cacheData = await cacheRes.json();
+      if (cacheData && cacheData.length > 0 && cacheData[0].definition) return cacheData[0].definition;
+    }
+
+    // Generate via Gemini
+    var geminiRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCbsax9O3GyFSF-dwIo95Wm_9xQklHSnoU', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: 'Write a very simple definition in German (A1 level) for the German word "' + germanWord + '" (English: ' + englishWord + '). The definition should be ONE short sentence that a child or beginner can understand. Use only A1 vocabulary. Do NOT include the word itself in the definition. Return ONLY the definition sentence, nothing else.' }] }]
+      })
+    });
+    if (!geminiRes.ok) return null;
+    var geminiData = await geminiRes.json();
+    var def = (geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().replace(/^["']|["']$/g, '');
+    if (!def || def.length > 150) return null;
+
+    // Cache
+    fetch(SUPABASE_URL + '/rest/v1/vocab_definitions', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ word: key, definition: def })
+    }).catch(function() {});
+
+    return def;
+  } catch(e) {
+    return null;
+  }
+}
+
 // ===== AI EXPLAIN =====
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
@@ -409,6 +451,9 @@ function App({onHome}) {
   // IPA pronunciation state
   const [wordIPA, setWordIPA] = useState('');
 
+  // German definition state
+  const [wordDefinition, setWordDefinition] = useState('');
+
   // Push notification state
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
@@ -479,6 +524,11 @@ function App({onHome}) {
     setWordIPA('');
     fetchIPA(w.german).then(function(ipa) {
       if (ipa) setWordIPA(ipa);
+    });
+    // Fetch German definition
+    setWordDefinition('');
+    fetchDefinition(w.german, w.english).then(function(def) {
+      if (def) setWordDefinition(def);
     });
     // Autoplay pronunciation
     speakGerman(w.german);
@@ -1540,7 +1590,14 @@ function App({onHome}) {
                   typeof WORD_EMOJIS !== 'undefined' ? React.createElement('span', {style: {fontSize:'28px'}}, WORD_EMOJIS[w.idx]) : null,
                   React.createElement('span', {className: 'tag ' + w.typeClass}, w.type)
                 ),
-                React.createElement('div', {className: 'flashcard-english'}, w.english),
+                wordDefinition ? React.createElement('div', {style: {
+                  fontSize:'15px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
+                  padding:'8px 12px',borderRadius:'8px',background:'#f8f6f0',
+                  fontStyle:'italic',textAlign:'center'
+                }}, '\uD83D\uDDE3\uFE0F ' + wordDefinition) : null,
+                React.createElement('div', {className: 'flashcard-english',
+                  style: wordDefinition ? {fontSize:'14px',color:'#94a3b8',marginTop:'2px'} : {}
+                }, w.english),
                 React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'4px',gap:'6px'}},
                   React.createElement('span', {style: {fontSize:'15px',color:'#718096'}}, w.german),
                   wordIPA ? React.createElement('span', {style: {fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}},
