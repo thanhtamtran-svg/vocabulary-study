@@ -1427,9 +1427,10 @@ function App({onHome}) {
     return (
       React.createElement('div', {className: 'app'},
         React.createElement('div', {className: 'session-header'},
-          React.createElement('button', {onClick: function() { setView("dashboard"); }}, '\u2190 Back'),
+          React.createElement('button', {onClick: function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}, '\u2190 Back'),
           React.createElement('span', {style: {fontSize:'13px',fontWeight:600}},
-            isLearn ? 'Learn Batch ' + sessionType.batchIdx
+            sessionType.type === 'browse' ? w.german
+              : isLearn ? 'Learn Batch ' + sessionType.batchIdx
               : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'
           ),
           React.createElement('span', {style: {fontSize:'12px'}},
