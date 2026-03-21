@@ -2989,7 +2989,19 @@ function Home() {
     try { return localStorage.getItem('vocab_language') || null; } catch { return null; }
   });
   const [authenticated, setAuthenticated] = useState(() => {
-    try { return localStorage.getItem('vocab_auth') === 'true'; } catch { return false; }
+    try {
+      var token = localStorage.getItem('vocab_auth_token');
+      if (!token) return false;
+      // Check token format and expiry: "vocab_auth:timestamp:signature"
+      var parts = token.split(':');
+      if (parts.length < 3 || parts[0] !== 'vocab_auth') return false;
+      var expires = parseInt(parts[1], 10);
+      if (isNaN(expires) || Date.now() > expires) {
+        localStorage.removeItem('vocab_auth_token');
+        return false;
+      }
+      return true;
+    } catch { return false; }
   });
   const [pendingLang, setPendingLang] = useState(null);
   const [passInput, setPassInput] = useState('');
@@ -3017,8 +3029,8 @@ function Home() {
       body: JSON.stringify({ password: passInput })
     }).then(function(res) { return res.json(); }).then(function(data) {
       setPassLoading(false);
-      if (data.ok) {
-        localStorage.setItem('vocab_auth', 'true');
+      if (data.ok && data.token) {
+        localStorage.setItem('vocab_auth_token', data.token);
         localStorage.setItem('vocab_language', pendingLang);
         setAuthenticated(true);
         setLanguage(pendingLang);

@@ -2,8 +2,8 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Origin": "https://thanhtamtran-svg.github.io",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
@@ -195,6 +195,15 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Verify cron secret — only allow calls from Supabase cron or authorized callers
+    const cronSecret = Deno.env.get("CRON_SECRET");
+    const providedSecret = req.headers.get("x-cron-secret") || req.headers.get("authorization")?.replace("Bearer ", "");
+    if (cronSecret && providedSecret !== cronSecret) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     let testMode = false;
     try { const b = await req.json(); testMode = b?.test === true; } catch { /* ok */ }
 
@@ -232,11 +241,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ sent, expired, total: subs.length, errors, testMode }), {
+    return new Response(JSON.stringify({ sent, expired, total: subs.length, errorCount: errors.length, testMode }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err).slice(0, 300) }), {
+    return new Response(JSON.stringify({ error: "Something went wrong" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -31,6 +31,45 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// Timing-safe string comparison
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+  // HMAC both with a fixed key — equal inputs produce equal HMACs
+  const key = await crypto.subtle.importKey(
+    "raw", encoder.encode("vocab-study-compare"),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const [hmacA, hmacB] = await Promise.all([
+    crypto.subtle.sign("HMAC", key, aBytes),
+    crypto.subtle.sign("HMAC", key, bBytes),
+  ]);
+  const arrA = new Uint8Array(hmacA);
+  const arrB = new Uint8Array(hmacB);
+  if (arrA.length !== arrB.length) return false;
+  let result = 0;
+  for (let i = 0; i < arrA.length; i++) {
+    result |= arrA[i] ^ arrB[i];
+  }
+  return result === 0;
+}
+
+// Generate a session token (HMAC-signed, expires in 30 days)
+async function generateSessionToken(): Promise<string> {
+  const secret = Deno.env.get("APP_PASSWORD") || "default";
+  const encoder = new TextEncoder();
+  const expires = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 days
+  const payload = `vocab_auth:${expires}`;
+  const key = await crypto.subtle.importKey(
+    "raw", encoder.encode(secret + "_session_key"),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
+  const sigHex = Array.from(sig).map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${payload}:${sigHex}`;
+}
+
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
@@ -63,10 +102,18 @@ Deno.serve(async (req) => {
       );
     }
 
-    const isCorrect = password === correctPassword;
+    const isCorrect = await timingSafeEqual(password, correctPassword);
+
+    if (isCorrect) {
+      const token = await generateSessionToken();
+      return new Response(
+        JSON.stringify({ ok: true, token }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     return new Response(
-      JSON.stringify({ ok: isCorrect }),
+      JSON.stringify({ ok: false }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (_err) {
