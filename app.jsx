@@ -376,6 +376,104 @@ function App({onHome}) {
     return {learnCount: 0, learnedBatches: [], reviews: {}};
   });
 
+  // Daily streak state
+  const [studyDates, setStudyDates] = useState(() => {
+    try { var d = localStorage.getItem('vocab_study_dates'); return d ? JSON.parse(d) : []; } catch { return []; }
+  });
+
+  // Calculate daily streak with 2-day freeze
+  const dailyStreak = useMemo(() => {
+    if (!studyDates.length) return {count: 0, status: 'none', frozenDays: 0};
+    var sorted = studyDates.slice().sort().reverse(); // most recent first
+    var todayStr = dateKey(todayDate());
+    var studiedToday = sorted[0] === todayStr;
+
+    // Build streak counting backwards from today
+    var count = 0;
+    var frozenDays = 0;
+    var consecutiveMissed = 0;
+    var checkDate = new Date();
+    checkDate.setHours(0,0,0,0);
+
+    // If not studied today, start checking from today
+    if (!studiedToday) {
+      consecutiveMissed = 1;
+      // Check how many days missed since last study
+      var lastStudy = parseDate(sorted[0]);
+      var daysSinceLast = Math.round((checkDate - lastStudy) / 86400000);
+      if (daysSinceLast > 3) return {count: 0, status: 'lost', frozenDays: 0};
+      if (daysSinceLast === 1) consecutiveMissed = 0; // studied yesterday, just not today yet
+    }
+
+    // Count streak: go backwards through dates
+    var dateSet = new Set(sorted);
+    var d = new Date(checkDate);
+    if (!studiedToday) d.setDate(d.getDate() - 1); // start from yesterday if not studied today
+
+    while (true) {
+      var dk = dateKey(d);
+      if (dateSet.has(dk)) {
+        count++;
+        consecutiveMissed = 0;
+        d.setDate(d.getDate() - 1);
+      } else {
+        consecutiveMissed++;
+        if (consecutiveMissed > 2) break; // 3+ missed = streak broken
+        frozenDays++;
+        d.setDate(d.getDate() - 1);
+      }
+      if (count > 365) break; // safety
+    }
+
+    var status = 'active';
+    if (!studiedToday) {
+      var lastStudyDate = parseDate(sorted[0]);
+      var missedDays = Math.round((checkDate - lastStudyDate) / 86400000);
+      if (missedDays >= 3) { status = 'lost'; count = 0; frozenDays = 0; }
+      else if (missedDays === 2) status = 'danger';
+      else if (missedDays === 1) status = 'warning';
+    }
+
+    return {count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday};
+  }, [studyDates]);
+
+  // Record today as a study day when user completes a batch or exercise
+  function recordStudyDay() {
+    var todayStr = dateKey(todayDate());
+    setStudyDates(function(prev) {
+      if (prev.includes(todayStr)) return prev;
+      var updated = prev.concat([todayStr]);
+      localStorage.setItem('vocab_study_dates', JSON.stringify(updated));
+      return updated;
+    });
+  }
+
+  // Weekly calendar data (Mon-Sun)
+  const weekDays = useMemo(() => {
+    var result = [];
+    var d = new Date();
+    d.setHours(0,0,0,0);
+    var dayOfWeek = d.getDay(); // 0=Sun
+    var monday = new Date(d);
+    monday.setDate(d.getDate() - ((dayOfWeek + 6) % 7));
+    var dateSet = new Set(studyDates);
+    for (var i = 0; i < 7; i++) {
+      var wd = new Date(monday);
+      wd.setDate(monday.getDate() + i);
+      var dk = dateKey(wd);
+      var isPast = wd < todayDate();
+      var isToday = dk === dateKey(todayDate());
+      result.push({
+        label: ['M','T','W','T','F','S','S'][i],
+        studied: dateSet.has(dk),
+        isPast: isPast,
+        isToday: isToday,
+        date: dk
+      });
+    }
+    return result;
+  }, [studyDates]);
+
   // Session state (not persisted)
   const [sessionWords, setSessionWords] = useState([]);
   const [sessionType, setSessionType] = useState(null);
@@ -1183,6 +1281,7 @@ function App({onHome}) {
 
   function nextExerciseItem() {
     if (exerciseIdx + 1 >= exerciseSession.items.length) {
+      recordStudyDay();
       setView('exercise-complete');
     } else {
       setExerciseIdx(exerciseIdx + 1);
@@ -1419,6 +1518,7 @@ function App({onHome}) {
         const key = 'r' + sessionType.interval + '_b' + sessionType.batchIdx;
         setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, [key]: true}}));
       }
+      recordStudyDay();
       setView("complete");
     }
   }
@@ -2425,12 +2525,85 @@ function App({onHome}) {
           ) :
 
           React.createElement(React.Fragment, null,
-            // Completed batches today
-            todayLearnCount > 0 ? React.createElement('div', {
-              className: 'card', style: {background:'#EAFAF1',borderColor:'#27AE60'}},
-              React.createElement('span', {style: {color:'#27AE60',fontWeight:600}},
-                '\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!')
-            ) : null,
+            // Daily Streak Widget
+            React.createElement('div', {className: 'card', style: {
+              background: dailyStreak.status === 'danger' ? '#FFF5F5' :
+                dailyStreak.status === 'warning' ? '#FFFBEB' :
+                dailyStreak.studiedToday ? '#F0FFF4' : '#FFFFFF',
+              borderColor: dailyStreak.status === 'danger' ? '#E74C3C' :
+                dailyStreak.status === 'warning' ? '#E9B746' :
+                dailyStreak.studiedToday ? '#7E9470' : '#e2e8f0',
+              padding: '16px', textAlign: 'center'
+            }},
+              // Flame + streak count
+              React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',marginBottom:'12px'}},
+                React.createElement('span', {style: {fontSize:'32px'}},
+                  dailyStreak.count > 0 ? '\uD83D\uDD25' : '\u2744\uFE0F'),
+                React.createElement('span', {style: {fontSize:'28px',fontWeight:800,fontFamily:'Montserrat,sans-serif',
+                  color: dailyStreak.count > 0 ? '#D67635' : '#94a3b8'}},
+                  dailyStreak.count),
+                React.createElement('span', {style: {fontSize:'14px',fontWeight:600,color:'#718096'}},
+                  dailyStreak.count === 1 ? 'day streak' : 'day streak')
+              ),
+
+              // Warning/danger messages
+              dailyStreak.status === 'warning' && !dailyStreak.studiedToday ? React.createElement('div', {style: {
+                fontSize:'13px',color:'#D67635',fontWeight:600,marginBottom:'10px',
+                padding:'6px 12px',background:'#FFF8F0',borderRadius:'8px',border:'1px solid #F5EBDC'
+              }}, '\u26A0\uFE0F Your streak is at risk! Study today to keep it going!') : null,
+
+              dailyStreak.status === 'danger' ? React.createElement('div', {style: {
+                fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px',
+                padding:'6px 12px',background:'#FEF2F2',borderRadius:'8px',border:'1px solid #FECACA'
+              }}, '\uD83D\uDEA8 Last chance! Study today or lose your ' + dailyStreak.count + '-day streak!') : null,
+
+              dailyStreak.status === 'lost' ? React.createElement('div', {style: {
+                fontSize:'13px',color:'#718096',marginBottom:'10px'
+              }}, 'Start a new streak today! Every journey begins with one step.') : null,
+
+              // Weekly calendar
+              React.createElement('div', {style: {display:'flex',justifyContent:'center',gap:'6px',marginBottom:'12px'}},
+                weekDays.map(function(wd, i) {
+                  return React.createElement('div', {key: i, style: {textAlign:'center',width:'32px'}},
+                    React.createElement('div', {style: {fontSize:'10px',color:'#94a3b8',marginBottom:'4px',fontWeight:600}}, wd.label),
+                    React.createElement('div', {style: {
+                      width:'28px',height:'28px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',
+                      fontSize:'14px',margin:'0 auto',
+                      background: wd.studied ? '#7E9470' : wd.isToday ? '#FFF8F0' : 'transparent',
+                      color: wd.studied ? '#fff' : '#94a3b8',
+                      border: wd.isToday && !wd.studied ? '2px dashed #D67635' :
+                        wd.isPast && !wd.studied ? '1px solid #E74C3C33' : '1px solid transparent',
+                      fontWeight: wd.isToday ? 700 : 400
+                    }}, wd.studied ? '\u2713' : wd.isPast && !wd.studied ? '\u2022' : '')
+                  );
+                })
+              ),
+
+              // Milestone progress
+              dailyStreak.count > 0 ? (function() {
+                var milestones = [7, 14, 30, 60, 100, 365];
+                var next = milestones.find(function(m) { return m > dailyStreak.count; }) || 365;
+                var prev = milestones.filter(function(m) { return m <= dailyStreak.count; });
+                var prevM = prev.length > 0 ? prev[prev.length - 1] : 0;
+                var pct = Math.min(100, Math.round((dailyStreak.count - prevM) / (next - prevM) * 100));
+                return React.createElement('div', {style: {marginTop:'4px'}},
+                  React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#94a3b8',marginBottom:'4px'}},
+                    React.createElement('span', null, dailyStreak.count + ' days'),
+                    React.createElement('span', null, '\uD83C\uDFC6 ' + next + ' days')
+                  ),
+                  React.createElement('div', {style: {height:'6px',background:'#e2e8f0',borderRadius:'3px',overflow:'hidden'}},
+                    React.createElement('div', {style: {height:'100%',width: pct + '%',
+                      background:'linear-gradient(90deg, #D67635, #E9B746)',borderRadius:'3px',
+                      transition:'width 0.5s ease'}})
+                  )
+                );
+              })() : null,
+
+              // Studied today confirmation
+              dailyStreak.studiedToday ? React.createElement('div', {style: {
+                fontSize:'12px',color:'#7E9470',fontWeight:600,marginTop:'8px'
+              }}, '\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!') : null
+            ),
 
             // Next batch to learn (always shown if available)
             hasNextBatch ? React.createElement('div', {className: 'card card-accent'},
