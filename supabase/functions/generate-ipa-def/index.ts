@@ -57,6 +57,55 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
+
+    // === EXPLAIN MISTAKE MODE ===
+    if (body?.mode === "explain-mistake") {
+      const geminiKey = Deno.env.get("GEMINI_API_KEY");
+      if (!geminiKey) {
+        return new Response(JSON.stringify({ explanation: "Service unavailable" }), {
+          status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const userAns = String(body.userAnswer || "").slice(0, 100);
+      const correctAns = String(body.correctAnswer || "").slice(0, 100);
+      const germanWord = String(body.germanWord || "").slice(0, 100);
+      const englishWord = String(body.englishWord || "").slice(0, 100);
+      const exType = String(body.exerciseType || "").slice(0, 50);
+      const sentence = String(body.sentence || "").slice(0, 200);
+
+      const prompt = `You are a friendly German A1 teacher. A student got an exercise wrong.
+
+Exercise type: ${exType}
+${sentence ? "Sentence: " + sentence : ""}
+German word: ${germanWord}${englishWord ? " (" + englishWord + ")" : ""}
+Student answered: "${userAns}"
+Correct answer: "${correctAns}"
+
+Explain briefly (2-3 sentences max) why their answer was wrong and help them remember the correct answer. Focus on:
+- Spelling mistakes (umlauts ä/ö/ü, ß vs ss, etc.)
+- Grammar errors (wrong article, wrong conjugation)
+- Common confusion with similar words
+- A quick memory tip if helpful
+
+Be encouraging, not critical. Use simple English. Use **bold** for key words.`;
+
+      const gemRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+        }
+      );
+      const gemData = await gemRes.json();
+      const explanation = gemData?.candidates?.[0]?.content?.parts?.[0]?.text || "Could not generate explanation.";
+
+      return new Response(JSON.stringify({ explanation }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // === NORMAL IPA/DEF MODE ===
     const word = validateWord(body?.word);
     const english = typeof body?.english === "string" ? body.english.trim().slice(0, 100) : "";
 

@@ -508,6 +508,8 @@ function App({onHome}) {
   const [exerciseIdx, setExerciseIdx] = useState(0);
   const [exerciseAnswer, setExerciseAnswer] = useState('');
   const [exerciseFeedback, setExerciseFeedback] = useState(null); // {correct, message, correctAnswer}
+  const [exerciseWhyLoading, setExerciseWhyLoading] = useState(false);
+  const [exerciseWhyText, setExerciseWhyText] = useState('');
   const [exerciseResults, setExerciseResults] = useState([]); // [{wordIdx, type, correct, answer}]
   const [exerciseProgress, setExerciseProgress] = useState(() => {
     try { var d = localStorage.getItem('vocab_exercise_progress'); return d ? JSON.parse(d) : {}; } catch { return {}; }
@@ -1149,6 +1151,36 @@ function App({onHome}) {
     });
   }
 
+  function explainWrongAnswer() {
+    if (exerciseWhyLoading || exerciseWhyText) return;
+    var item = exerciseSession.items[exerciseIdx];
+    var userAns = exerciseFeedback.userAnswer;
+    var correctAns = exerciseFeedback.correctAnswer;
+    setExerciseWhyLoading(true);
+    fetch(SUPABASE_URL + '/functions/v1/generate-ipa-def', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        mode: 'explain-mistake',
+        userAnswer: userAns,
+        correctAnswer: correctAns,
+        germanWord: item.germanWord || item.word || correctAns,
+        englishWord: item.englishWord || item.english || '',
+        exerciseType: item.type,
+        sentence: item.sentence || ''
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      setExerciseWhyText(data.explanation || 'Could not explain.');
+      setExerciseWhyLoading(false);
+    })
+    .catch(function() {
+      setExerciseWhyText('Could not load explanation.');
+      setExerciseWhyLoading(false);
+    });
+  }
+
   function nextExerciseItem() {
     if (exerciseIdx + 1 >= exerciseSession.items.length) {
       setView('exercise-complete');
@@ -1157,6 +1189,8 @@ function App({onHome}) {
       setExerciseAnswer('');
       setExerciseFeedback(null);
       setExerciseSelectedIdx(-1);
+      setExerciseWhyText('');
+      setExerciseWhyLoading(false);
     }
   }
 
@@ -2105,6 +2139,27 @@ function App({onHome}) {
             color: exerciseFeedback.correct ? '#166534' : '#991b1b',
             fontWeight:600,fontSize:'14px'
           }}, exerciseFeedback.message) : null,
+
+          // "Why?" button for wrong answers
+          exerciseFeedback && !exerciseFeedback.correct ? React.createElement('div', {style: {textAlign:'center', marginBottom:'8px'}},
+            !exerciseWhyText ? React.createElement('button', {
+              style: {
+                background: 'none', border: '1px solid #D67635', color: '#D67635',
+                padding: '6px 16px', borderRadius: '8px', cursor: 'pointer',
+                fontSize: '13px', fontWeight: 600
+              },
+              disabled: exerciseWhyLoading,
+              onClick: explainWrongAnswer
+            }, exerciseWhyLoading ? 'Thinking...' : '\uD83E\uDD14 Why was I wrong?') : null,
+            exerciseWhyText ? React.createElement('div', {style: {
+              textAlign: 'left', padding: '12px 16px', margin: '8px 0',
+              background: '#FFF8F0', border: '1px solid #F5EBDC', borderRadius: '10px',
+              fontSize: '13px', lineHeight: '1.6', color: '#2E3033'
+            }},
+              React.createElement('div', {style: {fontWeight: 700, color: '#D67635', marginBottom: '6px', fontSize: '13px'}}, '\uD83D\uDCA1 AI Teacher'),
+              React.createElement('div', {dangerouslySetInnerHTML: {__html: exerciseWhyText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}})
+            ) : null
+          ) : null,
 
           // Action buttons
           React.createElement('div', {style: {marginTop:'16px'}},
