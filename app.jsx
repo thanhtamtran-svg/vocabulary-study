@@ -1697,7 +1697,20 @@ function App({onHome}) {
                 React.createElement('button', {
                   className: 'btn btn-sm btn-secondary',
                   style: {padding:'4px 8px',fontSize:'10px'},
-                  onClick: function() { setAiExplanation(''); }
+                  onClick: function() {
+                    // Clear from UI
+                    setAiExplanation('');
+                    setAiSaveStatus('');
+                    // Delete from database cache so it regenerates next time
+                    var wordLower = w.german.toLowerCase().trim();
+                    fetch(SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(wordLower), {
+                      method: 'DELETE',
+                      headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_KEY
+                      }
+                    });
+                  }
                 }, '\u2715')
               ),
               React.createElement('div', {className: 'ai-explain-content'},
