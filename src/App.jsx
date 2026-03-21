@@ -1574,73 +1574,77 @@ function App({onHome}) {
   // ===== SETUP SCREEN =====
   if (!started) {
     return (
-      React.createElement('div', {className: 'app'},
-        React.createElement('div', {style: {padding:'24px',textAlign:'center'}},
-          React.createElement('div', {style: {fontSize:'48px',marginBottom:'16px'}}, '\uD83C\uDDE9\uD83C\uDDEA'),
-          React.createElement('h1', {style: {fontSize:'22px',marginBottom:'4px'}}, 'German 1500'),
-          React.createElement('p', {style: {color:'#718096',fontSize:'13px',marginBottom:'24px'}},
-            'Master 1500 words with science-based spaced repetition'),
+      <div className="app">
+        <div style={{padding:'24px',textAlign:'center'}}>
+          <div style={{fontSize:'48px',marginBottom:'16px'}}>{'\uD83C\uDDE9\uD83C\uDDEA'}</div>
+          <h1 style={{fontSize:'22px',marginBottom:'4px'}}>German 1500</h1>
+          <p style={{color:'#718096',fontSize:'13px',marginBottom:'24px'}}>
+            Master 1500 words with science-based spaced repetition
+          </p>
 
-          React.createElement('div', {className: 'card card-accent'},
-            React.createElement('h2', null, 'When do you want to start?'),
-            React.createElement('p', {style: {fontSize:'12px',color:'#718096',margin:'6px 0 12px'}},
-              'Pick your first study day (ideally a Monday)'),
-            React.createElement('input', {
-              type: 'date',
-              value: dateKey(startDate),
-              onChange: function(e) {
+          <div className="card card-accent">
+            <h2>When do you want to start?</h2>
+            <p style={{fontSize:'12px',color:'#718096',margin:'6px 0 12px'}}>
+              Pick your first study day (ideally a Monday)
+            </p>
+            <input
+              type="date"
+              value={dateKey(startDate)}
+              onChange={function(e) {
                 const d = new Date(e.target.value + 'T00:00:00');
                 if (!isNaN(d)) setStartDate(d);
-              }
-            })
-          ),
+              }}
+            />
+          </div>
 
-          React.createElement('div', {className: 'card', style: {textAlign:'left'}},
-            React.createElement('h2', null, 'Your daily commitment'),
-            React.createElement('div', {className: 'task-item'},
-              React.createElement('div', {className: 'task-badge badge-new'}, '8'),
-              React.createElement('div', null,
-                React.createElement('strong', null, 'New words'),
-                React.createElement('br'),
-                React.createElement('span', {style: {fontSize:'11px',color:'#718096'}},
-                  'Interleaved mix of nouns, verbs, adjectives')
-              )
-            ),
-            React.createElement('div', {className: 'task-item'},
-              React.createElement('div', {className: 'task-badge badge-r2'}, '+'),
-              React.createElement('div', null,
-                React.createElement('strong', null, '2357 Reviews'),
-                React.createElement('br'),
-                React.createElement('span', {style: {fontSize:'11px',color:'#718096'}},
-                  'Previous batches on schedule: Day +2, +3, +5, +7')
-              )
-            ),
-            React.createElement('div', {style: {textAlign:'center',margin:'8px 0'}},
-              React.createElement('span', {className: 'phase-indicator',
-                style: {background:'#EBF5FB',color:'#1B4F72'}},
-                '~45-60 min/day \u2022 28 weeks')
-            )
-          ),
+          <div className="card" style={{textAlign:'left'}}>
+            <h2>Your daily commitment</h2>
+            <div className="task-item">
+              <div className="task-badge badge-new">8</div>
+              <div>
+                <strong>New words</strong>
+                <br />
+                <span style={{fontSize:'11px',color:'#718096'}}>
+                  Interleaved mix of nouns, verbs, adjectives
+                </span>
+              </div>
+            </div>
+            <div className="task-item">
+              <div className="task-badge badge-r2">+</div>
+              <div>
+                <strong>2357 Reviews</strong>
+                <br />
+                <span style={{fontSize:'11px',color:'#718096'}}>
+                  Previous batches on schedule: Day +2, +3, +5, +7
+                </span>
+              </div>
+            </div>
+            <div style={{textAlign:'center',margin:'8px 0'}}>
+              <span className="phase-indicator" style={{background:'#EBF5FB',color:'#1B4F72'}}>
+                ~45-60 min/day {'\u2022'} 28 weeks
+              </span>
+            </div>
+          </div>
 
-          React.createElement('button', {
-            className: 'btn btn-primary',
-            style: {marginTop:'12px'},
-            onClick: function() { setStarted(true); }
-          }, 'Start My Journey'),
+          <button
+            className="btn btn-primary"
+            style={{marginTop:'12px'}}
+            onClick={function() { setStarted(true); }}
+          >Start My Journey</button>
 
-          React.createElement('div', {style: {marginTop:'16px'}},
-            React.createElement('label', {className: 'btn btn-secondary btn-sm',
-              style: {cursor:'pointer',display:'inline-flex'}},
-              'Load Saved Progress',
-              React.createElement('input', {
-                type: 'file', accept: '.json',
-                onChange: importProgress,
-                style: {display:'none'}
-              })
-            )
-          )
-        )
-      )
+          <div style={{marginTop:'16px'}}>
+            <label className="btn btn-secondary btn-sm" style={{cursor:'pointer',display:'inline-flex'}}>
+              Load Saved Progress
+              <input
+                type="file"
+                accept=".json"
+                onChange={importProgress}
+                style={{display:'none'}}
+              />
+            </label>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -1652,125 +1656,134 @@ function App({onHome}) {
     var reviewInterval = sessionType.interval;
 
     return (
-      React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'session-header'},
-          React.createElement('button', {onClick: function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}, '\u2190 Back'),
-          React.createElement('span', {style: {fontSize:'13px',fontWeight:600}},
-            sessionType.type === 'browse' ? w.german
+      <div className="app">
+        <div className="session-header">
+          <button onClick={function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}>{'\u2190'} Back</button>
+          <span style={{fontSize:'13px',fontWeight:600}}>
+            {sessionType.type === 'browse' ? w.german
               : isLearn ? 'Learn Batch ' + sessionType.batchIdx
-              : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'
-          ),
-          React.createElement('span', {style: {fontSize:'12px'}},
-            (currentIdx + 1) + '/' + sessionWords.length)
-        ),
+              : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'}
+          </span>
+          <span style={{fontSize:'12px'}}>
+            {(currentIdx + 1) + '/' + sessionWords.length}
+          </span>
+        </div>
 
-        React.createElement('div', {className: 'content'},
-          React.createElement('div', {className: 'progress-bar'},
-            React.createElement('div', {className: 'progress-fill',
-              style: {width: ((currentIdx)/sessionWords.length*100) + '%', background:'#27AE60'}})
-          ),
+        <div className="content">
+          <div className="progress-bar">
+            <div className="progress-fill"
+              style={{width: ((currentIdx)/sessionWords.length*100) + '%', background:'#27AE60'}} />
+          </div>
 
-          streak >= 3 ? React.createElement('div', {
-            style: {textAlign:'center',fontSize:'12px',color:'#F39C12',fontWeight:600,margin:'4px 0'}
-          }, '\uD83D\uDD25 ' + streak + ' word streak!') : null,
+          {streak >= 3 ? <div style={{textAlign:'center',fontSize:'12px',color:'#F39C12',fontWeight:600,margin:'4px 0'}}>
+            {'\uD83D\uDD25 ' + streak + ' word streak!'}
+          </div> : null}
 
-          React.createElement('div', {className: 'flashcard-container',
-            onClick: function() { setFlipped(!flipped); speakGerman(w.german); }},
-            React.createElement('div', {className: 'flashcard' + (flipped ? ' flipped' : '')},
-              React.createElement('div', {className: 'flashcard-face flashcard-front'},
-                React.createElement('div', {style: {display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}},
-                  typeof WORD_EMOJIS !== 'undefined' ? React.createElement('span', {style: {fontSize:'28px'}}, WORD_EMOJIS[w.idx]) : null,
-                  React.createElement('span', {className: 'tag ' + w.typeClass}, w.type)
-                ),
-                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center'}},
-                  React.createElement('div', {className: 'flashcard-word'}, w.german),
-                  React.createElement('button', {className: 'speak-btn',
-                    onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
-                    '\uD83D\uDD0A')
-                ),
-                wordIPA ? React.createElement('div', {style: {
+          <div className="flashcard-container"
+            onClick={function() { setFlipped(!flipped); speakGerman(w.german); }}>
+            <div className={'flashcard' + (flipped ? ' flipped' : '')}>
+              <div className="flashcard-face flashcard-front">
+                <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
+                  {typeof WORD_EMOJIS !== 'undefined' ? <span style={{fontSize:'28px'}}>{WORD_EMOJIS[w.idx]}</span> : null}
+                  <span className={'tag ' + w.typeClass}>{w.type}</span>
+                </div>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <div className="flashcard-word">{w.german}</div>
+                  <button className="speak-btn"
+                    onClick={function(e) { e.stopPropagation(); speakGerman(w.german); }}>
+                    {'\uD83D\uDD0A'}
+                  </button>
+                </div>
+                {wordIPA ? <div style={{
                   fontSize:'14px',color:'#94a3b8',fontFamily:'serif',fontStyle:'italic',
                   marginTop:'2px',letterSpacing:'0.5px'
-                }}, '/' + wordIPA + '/') : null,
-                React.createElement('div', {className: 'flashcard-meta'}, w.cat),
-                React.createElement('div', {style: {marginTop:'6px',fontSize:'11px',opacity:0.6}},
-                  'Tap to flip')
-              ),
-              React.createElement('div', {className: 'flashcard-face flashcard-back'},
-                // AI cartoon image illustrating the definition (small, centered)
-                defImage ? React.createElement('img', {
-                  src: defImage.url, alt: '',
-                  style: {width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
-                    background:'#fff',margin:'0 auto 10px',display:'block'}
-                }) : null,
-                // German definition
-                wordDefinition ? React.createElement('div', {style: {
+                }}>{'/' + wordIPA + '/'}</div> : null}
+                <div className="flashcard-meta">{w.cat}</div>
+                <div style={{marginTop:'6px',fontSize:'11px',opacity:0.6}}>
+                  Tap to flip
+                </div>
+              </div>
+              <div className="flashcard-face flashcard-back">
+                {/* AI cartoon image illustrating the definition (small, centered) */}
+                {defImage ? <img
+                  src={defImage.url} alt=""
+                  style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
+                    background:'#fff',margin:'0 auto 10px',display:'block'}}
+                /> : null}
+                {/* German definition */}
+                {wordDefinition ? <div style={{
                   fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
                   padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
                   fontStyle:'italic',textAlign:'center'
-                }}, wordDefinition) : null,
-                // German word + IPA + speaker
-                React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}},
-                  React.createElement('span', {style: {fontSize:'15px',color:'#718096'}}, w.german),
-                  wordIPA ? React.createElement('span', {style: {fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}},
-                    '/' + wordIPA + '/') : null,
-                  React.createElement('button', {className: 'speak-btn back',
-                    onClick: function(e) { e.stopPropagation(); speakGerman(w.german); }},
-                    '\uD83D\uDD0A')
-                )
-              )
-            )
-          ),
+                }}>{wordDefinition}</div> : null}
+                {/* German word + IPA + speaker */}
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}}>
+                  <span style={{fontSize:'15px',color:'#718096'}}>{w.german}</span>
+                  {wordIPA ? <span style={{fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}}>
+                    {'/' + wordIPA + '/'}
+                  </span> : null}
+                  <button className="speak-btn back"
+                    onClick={function(e) { e.stopPropagation(); speakGerman(w.german); }}>
+                    {'\uD83D\uDD0A'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          isLearn && !flipped ? React.createElement('div', {className: 'dual-coding-prompt'},
-            React.createElement('strong', null, '\uD83C\uDFA8 Dual Coding: '), tip
-          ) : null,
+          {isLearn && !flipped ? <div className="dual-coding-prompt">
+            <strong>{'\uD83C\uDFA8'} Dual Coding: </strong>{tip}
+          </div> : null}
 
-          // Word image (front side)
-          !flipped ? React.createElement('div', {className: 'word-image-container'},
-            imageLoading ? React.createElement('div', {style: {textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}, 'Loading image...') : null,
-            wordImage ? React.createElement('div', null,
-              React.createElement('img', {src: wordImage.url, alt: w.english, className: 'word-image',
-                style: {borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}})
-            ) : null,
-            !imageLoading && !wordImage ? React.createElement('div', {style: {textAlign:'center',fontSize:'48px',padding:'20px'}},
-              typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'
-            ) : null
-          ) : null,
+          {/* Word image (front side) */}
+          {!flipped ? <div className="word-image-container">
+            {imageLoading ? <div style={{textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}>Loading image...</div> : null}
+            {wordImage ? <div>
+              <img src={wordImage.url} alt={w.english} className="word-image"
+                style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}} />
+            </div> : null}
+            {!imageLoading && !wordImage ? <div style={{textAlign:'center',fontSize:'48px',padding:'20px'}}>
+              {typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'}
+            </div> : null}
+          </div> : null}
 
-          !isLearn && !flipped && reviewInterval ? React.createElement('div', {className: 'tip-box'},
-            React.createElement('strong', null, '\uD83C\uDFAF Method: '), REVIEW_METHODS[reviewInterval]
-          ) : null,
+          {!isLearn && !flipped && reviewInterval ? <div className="tip-box">
+            <strong>{'\uD83C\uDFAF'} Method: </strong>{REVIEW_METHODS[reviewInterval]}
+          </div> : null}
 
-          flipped ? React.createElement(React.Fragment, null,
-            isLearn ? React.createElement('div', {className: 'dual-coding-prompt'},
-              React.createElement('strong', null, '\u270D\uFE0F Elaboration: '),
-              'Create a personal sentence using "', React.createElement('em', null, w.german),
-              '" connected to your own life.'
-            ) : null,
-            React.createElement('p', {
-              style: {textAlign:'center',fontSize:'12px',color:'#718096',margin:'8px 0'}
-            }, 'How well did you know this?'),
-            React.createElement('div', {className: 'confidence-btns'},
-              React.createElement('button', {className: 'conf-btn conf-1',
-                onClick: function(e) { e.stopPropagation(); rateWord(1); }},
-                '\u274C', React.createElement('br'), 'No idea'),
-              React.createElement('button', {className: 'conf-btn conf-2',
-                onClick: function(e) { e.stopPropagation(); rateWord(2); }},
-                '\uD83E\uDD14', React.createElement('br'), 'Partial'),
-              React.createElement('button', {className: 'conf-btn conf-3',
-                onClick: function(e) { e.stopPropagation(); rateWord(3); }},
-                '\uD83D\uDE10', React.createElement('br'), 'Slow'),
-              React.createElement('button', {className: 'conf-btn conf-4',
-                onClick: function(e) { e.stopPropagation(); rateWord(4); }},
-                '\u2705', React.createElement('br'), 'Instant')
-            ),
+          {flipped ? <>
+            {isLearn ? <div className="dual-coding-prompt">
+              <strong>{'\u270D\uFE0F'} Elaboration: </strong>
+              {'Create a personal sentence using "'}<em>{w.german}</em>
+              {'" connected to your own life.'}
+            </div> : null}
+            <p style={{textAlign:'center',fontSize:'12px',color:'#718096',margin:'8px 0'}}>
+              How well did you know this?
+            </p>
+            <div className="confidence-btns">
+              <button className="conf-btn conf-1"
+                onClick={function(e) { e.stopPropagation(); rateWord(1); }}>
+                {'\u274C'}<br />No idea
+              </button>
+              <button className="conf-btn conf-2"
+                onClick={function(e) { e.stopPropagation(); rateWord(2); }}>
+                {'\uD83E\uDD14'}<br />Partial
+              </button>
+              <button className="conf-btn conf-3"
+                onClick={function(e) { e.stopPropagation(); rateWord(3); }}>
+                {'\uD83D\uDE10'}<br />Slow
+              </button>
+              <button className="conf-btn conf-4"
+                onClick={function(e) { e.stopPropagation(); rateWord(4); }}>
+                {'\u2705'}<br />Instant
+              </button>
+            </div>
 
-            // AI Explain button
-            !aiExplanation && !aiLoading ? React.createElement('button', {
-              className: 'btn btn-secondary',
-              style: {marginTop:'10px',fontSize:'13px',gap:'6px'},
-              onClick: function() {
+            {/* AI Explain button */}
+            {!aiExplanation && !aiLoading ? <button
+              className="btn btn-secondary"
+              style={{marginTop:'10px',fontSize:'13px',gap:'6px'}}
+              onClick={function() {
                 setAiLoading(true);
                 setAiError('');
                 setAiSaveStatus('');
@@ -1788,22 +1801,23 @@ function App({onHome}) {
                   setAiError('Could not load explanation. Try again.');
                   setAiLoading(false);
                 });
-              }
-            }, '\uD83E\uDD16 Explain this word') : null,
+              }}
+            >{'\uD83E\uDD16'} Explain this word</button> : null}
 
-            // Loading state
-            aiLoading ? React.createElement('div', {className: 'ai-explain-box'},
-              React.createElement('div', {style: {textAlign:'center',color:'#718096',padding:'16px'}},
-                '\u23F3 Asking AI teacher...')
-            ) : null,
+            {/* Loading state */}
+            {aiLoading ? <div className="ai-explain-box">
+              <div style={{textAlign:'center',color:'#718096',padding:'16px'}}>
+                {'\u23F3'} Asking AI teacher...
+              </div>
+            </div> : null}
 
-            // Error state
-            aiError ? React.createElement('div', {className: 'ai-explain-box',
-              style: {borderColor:'#E74C3C',background:'#FEF5F5'}},
-              React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',margin:0}}, aiError),
-              React.createElement('button', {className: 'btn btn-sm btn-secondary',
-                style: {marginTop:'8px'},
-                onClick: function() {
+            {/* Error state */}
+            {aiError ? <div className="ai-explain-box"
+              style={{borderColor:'#E74C3C',background:'#FEF5F5'}}>
+              <p style={{color:'#E74C3C',fontSize:'12px',margin:0}}>{aiError}</p>
+              <button className="btn btn-sm btn-secondary"
+                style={{marginTop:'8px'}}
+                onClick={function() {
                   setAiError('');
                   setAiLoading(true);
                   setAiSaveStatus('');
@@ -1820,26 +1834,26 @@ function App({onHome}) {
                     setAiError('Could not load explanation. Try again.');
                     setAiLoading(false);
                   });
-                }
-              }, 'Retry')
-            ) : null,
+                }}
+              >Retry</button>
+            </div> : null}
 
-            // Explanation result
-            aiExplanation ? React.createElement('div', {className: 'ai-explain-box'},
-              React.createElement('div', {className: 'ai-explain-header'},
-                React.createElement('span', {style: {display:'flex',alignItems:'center',gap:'6px'}},
-                  '\uD83E\uDD16 AI Teacher',
-                  aiSaveStatus === 'saving' ? React.createElement('span', {
-                    style: {fontSize:'10px',color:'#F39C12',background:'#FEF9E7',padding:'2px 6px',borderRadius:'4px',fontWeight:600}
-                  }, '\u23F3 Saving...') : null,
-                  aiSaveStatus === 'saved' ? React.createElement('span', {
-                    style: {fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}
-                  }, '\u2705 Saved') : null
-                ),
-                React.createElement('button', {
-                  className: 'btn btn-sm btn-secondary',
-                  style: {padding:'4px 8px',fontSize:'10px'},
-                  onClick: function() {
+            {/* Explanation result */}
+            {aiExplanation ? <div className="ai-explain-box">
+              <div className="ai-explain-header">
+                <span style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                  {'\uD83E\uDD16'} AI Teacher
+                  {aiSaveStatus === 'saving' ? <span style={{fontSize:'10px',color:'#F39C12',background:'#FEF9E7',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
+                    {'\u23F3'} Saving...
+                  </span> : null}
+                  {aiSaveStatus === 'saved' ? <span style={{fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
+                    {'\u2705'} Saved
+                  </span> : null}
+                </span>
+                <button
+                  className="btn btn-sm btn-secondary"
+                  style={{padding:'4px 8px',fontSize:'10px'}}
+                  onClick={function() {
                     // Clear from UI
                     setAiExplanation('');
                     setAiSaveStatus('');
@@ -1852,11 +1866,11 @@ function App({onHome}) {
                         'Authorization': 'Bearer ' + SUPABASE_KEY
                       }
                     });
-                  }
-                }, '\u2715')
-              ),
-              React.createElement('div', {className: 'ai-explain-content'},
-                (function() {
+                  }}
+                >{'\u2715'}</button>
+              </div>
+              <div className="ai-explain-content">
+                {(function() {
                   // Parse markdown inline: **bold** and *italic*
                   function renderInline(text, key) {
                     var parts = [];
@@ -1864,8 +1878,8 @@ function App({onHome}) {
                     var last = 0, m;
                     while ((m = re.exec(text)) !== null) {
                       if (m.index > last) parts.push(text.slice(last, m.index));
-                      if (m[1]) parts.push(React.createElement('strong', {key: key + '_b' + m.index}, m[1]));
-                      else if (m[2]) parts.push(React.createElement('em', {key: key + '_i' + m.index}, m[2]));
+                      if (m[1]) parts.push(<strong key={key + '_b' + m.index}>{m[1]}</strong>);
+                      else if (m[2]) parts.push(<em key={key + '_i' + m.index}>{m[2]}</em>);
                       last = re.lastIndex;
                     }
                     if (last < text.length) parts.push(text.slice(last));
@@ -1879,41 +1893,41 @@ function App({onHome}) {
                     if (line.match(/^\|[-|\s]+\|$/)) return acc;
                     // Headers → compact section label
                     if (line.match(/^#+\s/)) {
-                      acc.push(React.createElement('div', {key: i, className: 'ai-section-title'}, line.replace(/^#+\s/, '')));
+                      acc.push(<div key={i} className="ai-section-title">{line.replace(/^#+\s/, '')}</div>);
                       return acc;
                     }
                     // Bullet points
-                    if (line.match(/^[-•]\s/)) {
-                      acc.push(React.createElement('div', {key: i, className: 'ai-bullet'}, renderInline(line.replace(/^[-•]\s/, ''), i)));
+                    if (line.match(/^[-\u2022]\s/)) {
+                      acc.push(<div key={i} className="ai-bullet">{renderInline(line.replace(/^[-\u2022]\s/, ''), i)}</div>);
                       return acc;
                     }
                     // Table rows → render as styled conjugation row
                     if (line.match(/^\|.*\|$/)) {
                       var cells = line.split('|').filter(function(c) { return c.trim(); });
                       if (cells.length >= 2) {
-                        acc.push(React.createElement('div', {key: i, style: {
+                        acc.push(<div key={i} style={{
                           display:'flex', justifyContent:'space-between', alignItems:'center',
                           padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
                           background: i % 2 === 0 ? '#f8f6f0' : '#fff',
                           fontSize:'13px', border:'1px solid #F5EBDC'
-                        }},
-                          React.createElement('span', {style: {color:'#7E9470',fontWeight:600,minWidth:'70px'}}, cells[0].trim()),
-                          React.createElement('span', {style: {color:'#324A84',fontWeight:600}}, renderInline(cells[1].trim(), i))
-                        ));
+                        }}>
+                          <span style={{color:'#7E9470',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>
+                          <span style={{color:'#324A84',fontWeight:600}}>{renderInline(cells[1].trim(), i)}</span>
+                        </div>);
                       }
                       return acc;
                     }
                     // Regular line
-                    acc.push(React.createElement('div', {key: i, className: 'ai-line'}, renderInline(line, i)));
+                    acc.push(<div key={i} className="ai-line">{renderInline(line, i)}</div>);
                     return acc;
                   }, []);
-                })()
-              )
-            ) : null
+                })()}
+              </div>
+            </div> : null}
 
-          ) : null
-        )
-      )
+          </> : null}
+        </div>
+      </div>
     );
   }
 
@@ -1925,55 +1939,56 @@ function App({onHome}) {
     }, 0) / batchWords.length;
 
     return (
-      React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {textAlign:'center',paddingTop:'max(40px, env(safe-area-inset-top, 40px))'}},
-          React.createElement('div', {style: {fontSize:'64px',marginBottom:'12px'}}, '\uD83C\uDF89'),
-          React.createElement('h1', null, 'Session Complete!'),
-          React.createElement('p', {style: {color:'#718096',margin:'8px 0 20px'}},
-            sessionType.type === "learn"
+      <div className="app">
+        <div className="content" style={{textAlign:'center',paddingTop:'max(40px, env(safe-area-inset-top, 40px))'}}>
+          <div style={{fontSize:'64px',marginBottom:'12px'}}>{'\uD83C\uDF89'}</div>
+          <h1>Session Complete!</h1>
+          <p style={{color:'#718096',margin:'8px 0 20px'}}>
+            {sessionType.type === "learn"
               ? 'Batch ' + sessionType.batchIdx + ' learned!'
-              : 'Review completed!'
-          ),
-          React.createElement('div', {className: 'stat-grid'},
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, batchWords.length),
-              React.createElement('div', {className: 'label'}, 'Words practiced')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, avgConf.toFixed(1)),
-              React.createElement('div', {className: 'label'}, 'Avg confidence')
-            )
-          ),
+              : 'Review completed!'}
+          </p>
+          <div className="stat-grid">
+            <div className="stat">
+              <div className="num">{batchWords.length}</div>
+              <div className="label">Words practiced</div>
+            </div>
+            <div className="stat">
+              <div className="num">{avgConf.toFixed(1)}</div>
+              <div className="label">Avg confidence</div>
+            </div>
+          </div>
 
-          React.createElement('div', {className: 'card', style: {textAlign:'left'}},
-            React.createElement('h2', null, 'Words in this session:'),
-            React.createElement('div', {className: 'word-list'},
-              batchWords.map(function(w, i) {
+          <div className="card" style={{textAlign:'left'}}>
+            <h2>Words in this session:</h2>
+            <div className="word-list">
+              {batchWords.map(function(w, i) {
                 var conf = progress[w.idx]?.confidence || 0;
                 var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
-                return React.createElement('div', {className: 'word-row', key: i},
-                  React.createElement('span', null,
-                    typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] + ' ' : '',
-                    React.createElement('strong', null, w.german)),
-                  React.createElement('span', null, w.english),
-                  React.createElement('span', null, icons[conf])
-                );
-              })
-            )
-          ),
+                return <div className="word-row" key={i}>
+                  <span>
+                    {typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] + ' ' : ''}
+                    <strong>{w.german}</strong>
+                  </span>
+                  <span>{w.english}</span>
+                  <span>{icons[conf]}</span>
+                </div>;
+              })}
+            </div>
+          </div>
 
-          sessionType.type === "learn" ? React.createElement('div', {className: 'tip-box'},
-            React.createElement('strong', null, '\uD83E\uDDE0 Thinking Pause: '),
-            'Take a 5-10 minute break now. Walk, stretch, or close your eyes and mentally replay these words. This rest helps your brain consolidate!'
-          ) : null,
+          {sessionType.type === "learn" ? <div className="tip-box">
+            <strong>{'\uD83E\uDDE0'} Thinking Pause: </strong>
+            Take a 5-10 minute break now. Walk, stretch, or close your eyes and mentally replay these words. This rest helps your brain consolidate!
+          </div> : null}
 
-          React.createElement('button', {
-            className: 'btn btn-primary',
-            style: {marginTop:'12px'},
-            onClick: function() { setView(sessionType && sessionType.type === 'browse' ? 'browse' : 'dashboard'); }
-          }, sessionType && sessionType.type === 'browse' ? 'Back to Browse' : 'Back to Dashboard')
-        )
-      )
+          <button
+            className="btn btn-primary"
+            style={{marginTop:'12px'}}
+            onClick={function() { setView(sessionType && sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}
+          >{sessionType && sessionType.type === 'browse' ? 'Back to Browse' : 'Back to Dashboard'}</button>
+        </div>
+      </div>
     );
   }
 
@@ -1986,305 +2001,317 @@ function App({onHome}) {
     var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F', Analyze: '\uD83D\uDCD6'};
 
     return (
-      React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {paddingTop:'max(16px, env(safe-area-inset-top, 16px))'}},
-          // Header
-          React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}},
-            React.createElement('button', {
-              className: 'btn btn-secondary btn-sm',
-              style: {width:'auto',padding:'6px 12px'},
-              onClick: function() {
+      <div className="app">
+        <div className="content" style={{paddingTop:'max(16px, env(safe-area-inset-top, 16px))'}}>
+          {/* Header */}
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
+            <button
+              className="btn btn-secondary btn-sm"
+              style={{width:'auto',padding:'6px 12px'}}
+              onClick={function() {
                 if (exerciseResults.length > 0 && !confirm('Exit exercise? Your progress will be saved.')) return;
                 setView('dashboard');
-              }
-            }, '\u2190 Exit'),
-            React.createElement('span', {style: {fontSize:'13px',color:'#718096',fontWeight:600}},
-              (exerciseIdx + 1) + ' / ' + exTotal),
-            React.createElement('span', {
-              style: {fontSize:'11px',padding:'3px 10px',borderRadius:'12px',fontWeight:600,
-                background: levelColors[exItem.level] + '18', color: levelColors[exItem.level]}
-            }, levelIcons[exItem.level] + ' ' + exItem.level)
-          ),
+              }}
+            >{'\u2190'} Exit</button>
+            <span style={{fontSize:'13px',color:'#718096',fontWeight:600}}>
+              {(exerciseIdx + 1) + ' / ' + exTotal}
+            </span>
+            <span style={{fontSize:'11px',padding:'3px 10px',borderRadius:'12px',fontWeight:600,
+              background: levelColors[exItem.level] + '18', color: levelColors[exItem.level]}}>
+              {levelIcons[exItem.level] + ' ' + exItem.level}
+            </span>
+          </div>
 
-          // Progress bar
-          React.createElement('div', {className: 'progress-bar', style: {height:'6px',marginBottom:'20px'}},
-            React.createElement('div', {className: 'progress-fill',
-              style: {width: exProgressPct + '%', background: 'linear-gradient(90deg,#324A84,#7E9470)',
-                transition: 'width 0.3s ease'}})
-          ),
+          {/* Progress bar */}
+          <div className="progress-bar" style={{height:'6px',marginBottom:'20px'}}>
+            <div className="progress-fill"
+              style={{width: exProgressPct + '%', background: 'linear-gradient(90deg,#324A84,#7E9470)',
+                transition: 'width 0.3s ease'}} />
+          </div>
 
-          // Word info badge
-          React.createElement('div', {style: {textAlign:'center',marginBottom:'12px'}},
-            React.createElement('span', {className: 'tag ' + exItem.wordInfo.typeClass,
-              style: {fontSize:'11px'}}, exItem.wordInfo.type),
-            React.createElement('span', {style: {fontSize:'11px',color:'#94a3b8',marginLeft:'8px'}},
-              exItem.wordInfo.cat)
-          ),
+          {/* Word info badge */}
+          <div style={{textAlign:'center',marginBottom:'12px'}}>
+            <span className={'tag ' + exItem.wordInfo.typeClass}
+              style={{fontSize:'11px'}}>{exItem.wordInfo.type}</span>
+            <span style={{fontSize:'11px',color:'#94a3b8',marginLeft:'8px'}}>
+              {exItem.wordInfo.cat}
+            </span>
+          </div>
 
-          // Exercise card
-          React.createElement('div', {className: 'card', style: {
+          {/* Exercise card */}
+          <div className="card" style={{
             border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? '#7E9470' : '#E74C3C')) : '2px solid #e2e8f0',
             transition: 'border-color 0.2s ease', minHeight:'180px'
-          }},
+          }}>
 
-            // Prompt
-            React.createElement('p', {style: {fontSize:'15px',fontWeight:600,color:'#2E3033',marginBottom:'16px',lineHeight:'1.5'}},
-              exItem.prompt),
+            {/* Prompt */}
+            <p style={{fontSize:'15px',fontWeight:600,color:'#2E3033',marginBottom:'16px',lineHeight:'1.5'}}>
+              {exItem.prompt}
+            </p>
 
-            // Listening: auto-play pronunciation
-            exItem.type === 'listening' && !exerciseFeedback ?
-              React.createElement('button', {
-                style: {display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
+            {/* Listening: auto-play pronunciation */}
+            {exItem.type === 'listening' && !exerciseFeedback ?
+              <button
+                style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
                   padding:'14px',borderRadius:'12px',background:'#324A8410',border:'2px solid #324A84',
-                  cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'#324A84',fontWeight:600},
-                onClick: function() { speakGerman(exItem.germanWord); }
-              }, '\uD83D\uDD0A Play again') : null,
+                  cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'#324A84',fontWeight:600}}
+                onClick={function() { speakGerman(exItem.germanWord); }}
+              >{'\uD83D\uDD0A'} Play again</button> : null}
 
-            // All choice-based types (multiple_choice, reverse_choice, listening)
-            (exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && !exerciseFeedback ?
-              React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
-                exItem.options.map(function(opt, oi) {
+            {/* All choice-based types (multiple_choice, reverse_choice, listening) */}
+            {(exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && !exerciseFeedback ?
+              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                {exItem.options.map(function(opt, oi) {
                   var isSelected = exerciseSelectedIdx === oi;
-                  return React.createElement('button', {
-                    key: oi,
-                    style: {
+                  return <button
+                    key={oi}
+                    style={{
                       padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
                       border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
                       background: isSelected ? '#324A8410' : '#fff',
                       cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
-                    },
-                    onClick: function() { setExerciseSelectedIdx(oi); }
-                  }, opt.text);
-                })
-              ) : null,
+                    }}
+                    onClick={function() { setExerciseSelectedIdx(oi); }}
+                  >{opt.text}</button>;
+                })}
+              </div> : null}
 
-            // Choice-based feedback state
-            (exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && exerciseFeedback ?
-              React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
-                exItem.options.map(function(opt, oi) {
+            {/* Choice-based feedback state */}
+            {(exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && exerciseFeedback ?
+              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                {exItem.options.map(function(opt, oi) {
                   var isCorrect = opt.wi === exItem.wordIdx;
                   var wasSelected = exerciseSelectedIdx === oi;
-                  return React.createElement('div', {
-                    key: oi,
-                    style: {
+                  return <div
+                    key={oi}
+                    style={{
                       padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
                       border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
                       background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
                       fontWeight: isCorrect ? 600 : 400
-                    }
-                  }, (isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text);
-                })
-              ) : null,
+                    }}
+                  >{(isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text}</div>;
+                })}
+              </div> : null}
 
-            // Fill in blank / sentence complete / fill english input
-            // Conjugation exercise: show pronoun prominently
-            exItem.type === 'conjugation' && !exerciseFeedback ?
-              React.createElement('div', null,
-                React.createElement('div', {style: {
+            {/* Conjugation exercise: show pronoun prominently */}
+            {exItem.type === 'conjugation' && !exerciseFeedback ?
+              <div>
+                <div style={{
                   display:'flex',alignItems:'center',gap:'12px',marginBottom:'12px',
                   padding:'12px 16px',borderRadius:'10px',background:'#324A8410'
-                }},
-                  React.createElement('span', {style: {fontSize:'20px',fontWeight:700,color:'#324A84'}},
-                    exItem.pronoun),
-                  React.createElement('input', {
-                    type: 'text', value: exerciseAnswer,
-                    onChange: function(e) { setExerciseAnswer(e.target.value); },
-                    onKeyDown: function(e) {
+                }}>
+                  <span style={{fontSize:'20px',fontWeight:700,color:'#324A84'}}>
+                    {exItem.pronoun}
+                  </span>
+                  <input
+                    type="text" value={exerciseAnswer}
+                    onChange={function(e) { setExerciseAnswer(e.target.value); }}
+                    onKeyDown={function(e) {
                       if (e.key !== 'Enter') return;
                       if (exerciseFeedback) { nextExerciseItem(); }
                       else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
-                    },
-                    placeholder: exItem.pronoun + ' ...',
-                    autoFocus: true, autoComplete: 'off', autoCapitalize: 'off',
-                    style: {flex:1,padding:'10px 14px',fontSize:'16px',borderRadius:'8px',
-                      border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}
-                  })
-                )
-              ) : null,
+                    }}
+                    placeholder={exItem.pronoun + ' ...'}
+                    autoFocus={true} autoComplete="off" autoCapitalize="off"
+                    style={{flex:1,padding:'10px 14px',fontSize:'16px',borderRadius:'8px',
+                      border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}}
+                  />
+                </div>
+              </div> : null}
 
-            // Conjugation feedback: show answer + full conjugation table
-            exItem.type === 'conjugation' && exerciseFeedback ?
-              React.createElement('div', null,
-                !exerciseFeedback.correct ? React.createElement('div', {style: {
+            {/* Conjugation feedback: show answer + full conjugation table */}
+            {exItem.type === 'conjugation' && exerciseFeedback ?
+              <div>
+                {!exerciseFeedback.correct ? <div style={{
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                   background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
                   textDecoration:'line-through',color:'#E74C3C'
-                }}, '\u274C ' + exItem.pronoun + ' ' + exerciseFeedback.userAnswer) : null,
-                React.createElement('div', {style: {
+                }}>{'\u274C ' + exItem.pronoun + ' ' + exerciseFeedback.userAnswer}</div> : null}
+                <div style={{
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                   background:'#7E947018',border:'2px solid #7E9470',marginBottom:'12px'
-                }}, '\u2705 ' + exItem.fullAnswer),
-                // Full conjugation table
-                React.createElement('div', {style: {
+                }}>{'\u2705 ' + exItem.fullAnswer}</div>
+                {/* Full conjugation table */}
+                <div style={{
                   padding:'12px',borderRadius:'10px',background:'#f8f6f0',border:'1px solid #e8e2d6'
-                }},
-                  React.createElement('div', {style: {fontSize:'11px',fontWeight:700,color:'#D67635',
-                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'8px'}},
-                    '\uD83D\uDCDD Full conjugation: ' + exItem.infinitive),
-                  PRONOUNS.map(function(p, pi) {
+                }}>
+                  <div style={{fontSize:'11px',fontWeight:700,color:'#D67635',
+                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'8px'}}>
+                    {'\uD83D\uDCDD Full conjugation: ' + exItem.infinitive}
+                  </div>
+                  {PRONOUNS.map(function(p, pi) {
                     var pk = PRONOUN_KEYS[pi];
                     var isTarget = pk === exItem.pronounKey;
-                    return React.createElement('div', {key: pi, style: {
+                    return <div key={pi} style={{
                       display:'flex',justifyContent:'space-between',padding:'4px 8px',
                       borderRadius:'4px',fontSize:'13px',
                       background: isTarget ? '#324A8415' : 'transparent',
                       fontWeight: isTarget ? 700 : 400
-                    }},
-                      React.createElement('span', {style: {color:'#718096',minWidth:'70px'}}, p),
-                      React.createElement('span', {style: {color:'#2E3033'}}, exItem.fullTable[pk])
-                    );
-                  })
-                )
-              ) : null,
+                    }}>
+                      <span style={{color:'#718096',minWidth:'70px'}}>{p}</span>
+                      <span style={{color:'#2E3033'}}>{exItem.fullTable[pk]}</span>
+                    </div>;
+                  })}
+                </div>
+              </div> : null}
 
-            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
-              React.createElement('div', null,
-                exItem.hint ? React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}},
-                  '\uD83D\uDCA1 Hint: ' + exItem.hint) : null,
-                React.createElement('input', {
-                  type: 'text',
-                  value: exerciseAnswer,
-                  onChange: function(e) { setExerciseAnswer(e.target.value); },
-                  onKeyDown: function(e) {
+            {/* Fill in blank / sentence complete / fill english input */}
+            {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
+              <div>
+                {exItem.hint ? <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}}>
+                  {'\uD83D\uDCA1 Hint: ' + exItem.hint}
+                </p> : null}
+                <input
+                  type="text"
+                  value={exerciseAnswer}
+                  onChange={function(e) { setExerciseAnswer(e.target.value); }}
+                  onKeyDown={function(e) {
                     if (e.key !== 'Enter') return;
                     if (exerciseFeedback) { nextExerciseItem(); }
                     else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
-                  },
-                  placeholder: 'Type your answer...',
-                  autoFocus: true,
-                  autoComplete: 'off',
-                  autoCapitalize: 'off',
-                  style: {
+                  }}
+                  placeholder="Type your answer..."
+                  autoFocus={true}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  style={{
                     width:'100%',padding:'12px 16px',fontSize:'16px',borderRadius:'10px',
                     border:'2px solid #e2e8f0',outline:'none',boxSizing:'border-box',
                     fontFamily:'inherit'
-                  }
-                })
-              ) : null,
+                  }}
+                />
+              </div> : null}
 
-            // Text input feedback
-            (exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
-              React.createElement('div', null,
-                // Show user's wrong answer first
-                !exerciseFeedback.correct ? React.createElement('div', {style: {
+            {/* Text input feedback */}
+            {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
+              <div>
+                {/* Show user's wrong answer first */}
+                {!exerciseFeedback.correct ? <div style={{
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                   background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
                   textDecoration:'line-through',color:'#E74C3C'
-                }}, '\u274C ' + exerciseFeedback.userAnswer) : null,
-                // Show correct answer
-                React.createElement('div', {style: {
+                }}>{'\u274C ' + exerciseFeedback.userAnswer}</div> : null}
+                {/* Show correct answer */}
+                <div style={{
                   padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                   background: exerciseFeedback.correct ? '#7E947018' : '#7E947012',
                   border: '2px solid #7E9470',
                   marginBottom:'8px'
-                }},
-                  '\u2705 ' + exerciseFeedback.correctAnswer),
-                exerciseFeedback.sentence ? React.createElement('p', {
-                  style: {fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}
-                }, '\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence) : null
-              ) : null,
+                }}>
+                  {'\u2705 ' + exerciseFeedback.correctAnswer}
+                </div>
+                {exerciseFeedback.sentence ? <p style={{fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}}>
+                  {'\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence}
+                </p> : null}
+              </div> : null}
 
-            // Reading exercise — passage + multiple choice
-            (exItem.type === 'reading' || exItem.type === 'reading_comprehension') && exItem.passage ?
-              React.createElement('div', null,
-                React.createElement('div', {style: {
+            {/* Reading exercise — passage + multiple choice */}
+            {(exItem.type === 'reading' || exItem.type === 'reading_comprehension') && exItem.passage ?
+              <div>
+                <div style={{
                   padding:'14px 16px',borderRadius:'10px',background:'#f8f6f0',
                   border:'1px solid #e8e2d6',marginBottom:'14px',lineHeight:'1.7',fontSize:'14px'
-                }},
-                  React.createElement('div', {style: {fontSize:'11px',fontWeight:700,color:'#D67635',
-                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'6px'}},
-                    '\uD83D\uDCD6 ' + (exItem.passageTitle || 'Lesetext')),
-                  React.createElement('p', {style: {margin:0,color:'#2E3033'}}, exItem.passage)
-                ),
-                !exerciseFeedback ?
-                  React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px'}},
-                    exItem.options.map(function(opt, oi) {
+                }}>
+                  <div style={{fontSize:'11px',fontWeight:700,color:'#D67635',
+                    textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'6px'}}>
+                    {'\uD83D\uDCD6 ' + (exItem.passageTitle || 'Lesetext')}
+                  </div>
+                  <p style={{margin:0,color:'#2E3033'}}>{exItem.passage}</p>
+                </div>
+                {!exerciseFeedback ?
+                  <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                    {exItem.options.map(function(opt, oi) {
                       var isSelected = exerciseSelectedIdx === oi;
-                      return React.createElement('button', {
-                        key: oi,
-                        style: {
+                      return <button
+                        key={oi}
+                        style={{
                           padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
                           border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
                           background: isSelected ? '#324A8410' : '#fff',
                           cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
-                        },
-                        onClick: function() { setExerciseSelectedIdx(oi); }
-                      }, opt.text);
-                    })
-                  ) :
-                  React.createElement('div', null,
-                    React.createElement('div', {style: {display:'flex',flexDirection:'column',gap:'8px',marginBottom:'10px'}},
-                      exItem.options.map(function(opt, oi) {
+                        }}
+                        onClick={function() { setExerciseSelectedIdx(oi); }}
+                      >{opt.text}</button>;
+                    })}
+                  </div> :
+                  <div>
+                    <div style={{display:'flex',flexDirection:'column',gap:'8px',marginBottom:'10px'}}>
+                      {exItem.options.map(function(opt, oi) {
                         var isCorrect = exItem.type === 'reading_comprehension'
                           ? oi === exItem.correctIdx
                           : opt.wi === exItem.wordIdx;
                         var wasSelected = exerciseSelectedIdx === oi;
-                        return React.createElement('div', {
-                          key: oi,
-                          style: {
+                        return <div
+                          key={oi}
+                          style={{
                             padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
                             border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
                             background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
                             fontWeight: isCorrect ? 600 : 400
-                          }
-                        }, (isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text);
-                      })
-                    ),
-                    exItem.passageTranslation ? React.createElement('details', {style: {marginTop:'8px'}},
-                      React.createElement('summary', {style: {fontSize:'12px',color:'#94a3b8',cursor:'pointer'}},
-                        'Show English translation'),
-                      React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginTop:'4px',lineHeight:'1.5',fontStyle:'italic'}},
-                        exItem.passageTranslation)
-                    ) : null
-                  )
-              ) : null
-          ),
+                          }}
+                        >{(isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text}</div>;
+                      })}
+                    </div>
+                    {exItem.passageTranslation ? <details style={{marginTop:'8px'}}>
+                      <summary style={{fontSize:'12px',color:'#94a3b8',cursor:'pointer'}}>
+                        Show English translation
+                      </summary>
+                      <p style={{fontSize:'12px',color:'#718096',marginTop:'4px',lineHeight:'1.5',fontStyle:'italic'}}>
+                        {exItem.passageTranslation}
+                      </p>
+                    </details> : null}
+                  </div>
+                }
+              </div> : null}
+          </div>
 
-          // Feedback message
-          exerciseFeedback ? React.createElement('div', {style: {
+          {/* Feedback message */}
+          {exerciseFeedback ? <div style={{
             textAlign:'center',padding:'12px',margin:'12px 0',borderRadius:'10px',
             background: exerciseFeedback.correct ? '#f0fdf4' : '#fef2f2',
             color: exerciseFeedback.correct ? '#166534' : '#991b1b',
             fontWeight:600,fontSize:'14px'
-          }}, exerciseFeedback.message) : null,
+          }}>{exerciseFeedback.message}</div> : null}
 
-          // "Why?" button for wrong answers
-          exerciseFeedback && !exerciseFeedback.correct ? React.createElement('div', {style: {textAlign:'center', marginBottom:'8px'}},
-            !exerciseWhyText ? React.createElement('button', {
-              style: {
+          {/* "Why?" button for wrong answers */}
+          {exerciseFeedback && !exerciseFeedback.correct ? <div style={{textAlign:'center', marginBottom:'8px'}}>
+            {!exerciseWhyText ? <button
+              style={{
                 background: 'none', border: '1px solid #D67635', color: '#D67635',
                 padding: '6px 16px', borderRadius: '8px', cursor: 'pointer',
                 fontSize: '13px', fontWeight: 600
-              },
-              disabled: exerciseWhyLoading,
-              onClick: explainWrongAnswer
-            }, exerciseWhyLoading ? 'Thinking...' : '\uD83E\uDD14 Why was I wrong?') : null,
-            exerciseWhyText ? React.createElement('div', {style: {
+              }}
+              disabled={exerciseWhyLoading}
+              onClick={explainWrongAnswer}
+            >{exerciseWhyLoading ? 'Thinking...' : '\uD83E\uDD14 Why was I wrong?'}</button> : null}
+            {exerciseWhyText ? <div style={{
               textAlign: 'left', padding: '12px 16px', margin: '8px 0',
               background: '#FFF8F0', border: '1px solid #F5EBDC', borderRadius: '10px',
               fontSize: '13px', lineHeight: '1.6', color: '#2E3033'
-            }},
-              React.createElement('div', {style: {fontWeight: 700, color: '#D67635', marginBottom: '6px', fontSize: '13px'}}, '\uD83D\uDCA1 AI Teacher'),
-              React.createElement('div', {dangerouslySetInnerHTML: {__html: exerciseWhyText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}})
-            ) : null
-          ) : null,
+            }}>
+              <div style={{fontWeight: 700, color: '#D67635', marginBottom: '6px', fontSize: '13px'}}>{'\uD83D\uDCA1'} AI Teacher</div>
+              <div dangerouslySetInnerHTML={{__html: exerciseWhyText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}} />
+            </div> : null}
+          </div> : null}
 
-          // Action buttons
-          React.createElement('div', {style: {marginTop:'16px'}},
-            !exerciseFeedback ?
-              React.createElement('button', {
-                className: 'btn btn-primary',
-                disabled: (exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
-                  !exerciseAnswer.trim(),
-                onClick: checkExerciseAnswer
-              }, 'Check Answer') :
-              React.createElement('button', {
-                className: 'btn btn-primary',
-                onClick: nextExerciseItem
-              }, exerciseIdx + 1 >= exTotal ? 'See Results' : 'Next \u2192')
-          )
-        )
-      )
+          {/* Action buttons */}
+          <div style={{marginTop:'16px'}}>
+            {!exerciseFeedback ?
+              <button
+                className="btn btn-primary"
+                disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
+                  !exerciseAnswer.trim()}
+                onClick={checkExerciseAnswer}
+              >Check Answer</button> :
+              <button
+                className="btn btn-primary"
+                onClick={nextExerciseItem}
+              >{exerciseIdx + 1 >= exTotal ? 'See Results' : 'Next \u2192'}</button>
+            }
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -2316,96 +2343,99 @@ function App({onHome}) {
                   exPct >= 50 ? '\uD83D\uDC4D' : '\uD83C\uDF31';
 
     return (
-      React.createElement('div', {className: 'app'},
-        React.createElement('div', {className: 'content', style: {paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}},
-          React.createElement('div', {style: {textAlign:'center',marginBottom:'24px'}},
-            React.createElement('div', {style: {fontSize:'56px',marginBottom:'8px'}}, exEmoji),
-            React.createElement('h1', {style: {marginBottom:'4px'}}, exMessage),
-            React.createElement('p', {style: {color:'#718096',fontSize:'13px'}},
-              'Exercise session complete' + (exDuration > 0 ? ' \u2022 ' + exDuration + ' min' : ''))
-          ),
+      <div className="app">
+        <div className="content" style={{paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}}>
+          <div style={{textAlign:'center',marginBottom:'24px'}}>
+            <div style={{fontSize:'56px',marginBottom:'8px'}}>{exEmoji}</div>
+            <h1 style={{marginBottom:'4px'}}>{exMessage}</h1>
+            <p style={{color:'#718096',fontSize:'13px'}}>
+              {'Exercise session complete' + (exDuration > 0 ? ' \u2022 ' + exDuration + ' min' : '')}
+            </p>
+          </div>
 
-          // Stats
-          React.createElement('div', {className: 'stat-grid'},
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num', style: {color: exPct >= 70 ? '#7E9470' : '#D67635'}}, exPct + '%'),
-              React.createElement('div', {className: 'label'}, 'Accuracy')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, exCorrect + '/' + exTotalQ),
-              React.createElement('div', {className: 'label'}, 'Correct')
-            )
-          ),
+          {/* Stats */}
+          <div className="stat-grid">
+            <div className="stat">
+              <div className="num" style={{color: exPct >= 70 ? '#7E9470' : '#D67635'}}>{exPct + '%'}</div>
+              <div className="label">Accuracy</div>
+            </div>
+            <div className="stat">
+              <div className="num">{exCorrect + '/' + exTotalQ}</div>
+              <div className="label">Correct</div>
+            </div>
+          </div>
 
-          // Results by level
-          React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
-            React.createElement('h2', {style: {marginBottom:'12px'}}, 'Performance by Stage'),
-            ['Remember', 'Understand', 'Apply', 'Analyze'].map(function(level) {
+          {/* Results by level */}
+          <div className="card" style={{marginTop:'16px'}}>
+            <h2 style={{marginBottom:'12px'}}>Performance by Stage</h2>
+            {['Remember', 'Understand', 'Apply', 'Analyze'].map(function(level) {
               var levelResults = exResults.filter(function(r) { return r.level === level; });
               var levelCorrect = levelResults.filter(function(r) { return r.correct; }).length;
               var levelTotal = levelResults.length;
               if (levelTotal === 0) return null;
               var pct = Math.round(levelCorrect / levelTotal * 100);
               var levelColor = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470', Analyze: '#8E44AD'}[level];
-              return React.createElement('div', {key: level, style: {marginBottom:'10px'}},
-                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}},
-                  React.createElement('span', {style: {fontSize:'13px',fontWeight:600,color: levelColor}}, level),
-                  React.createElement('span', {style: {fontSize:'12px',color:'#718096'}}, levelCorrect + '/' + levelTotal)
-                ),
-                React.createElement('div', {className: 'progress-bar', style: {height:'6px'}},
-                  React.createElement('div', {className: 'progress-fill',
-                    style: {width: pct + '%', background: levelColor}})
-                )
-              );
-            })
-          ),
+              return <div key={level} style={{marginBottom:'10px'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
+                  <span style={{fontSize:'13px',fontWeight:600,color: levelColor}}>{level}</span>
+                  <span style={{fontSize:'12px',color:'#718096'}}>{levelCorrect + '/' + levelTotal}</span>
+                </div>
+                <div className="progress-bar" style={{height:'6px'}}>
+                  <div className="progress-fill"
+                    style={{width: pct + '%', background: levelColor}} />
+                </div>
+              </div>;
+            })}
+          </div>
 
-          // Word breakdown
-          React.createElement('div', {className: 'card', style: {marginTop:'12px'}},
-            React.createElement('h2', {style: {marginBottom:'12px'}}, 'Words Practiced'),
-            React.createElement('div', {className: 'word-list'},
-              Object.keys(wordResults).map(function(wi) {
+          {/* Word breakdown */}
+          <div className="card" style={{marginTop:'12px'}}>
+            <h2 style={{marginBottom:'12px'}}>Words Practiced</h2>
+            <div className="word-list">
+              {Object.keys(wordResults).map(function(wi) {
                 var wr = wordResults[wi];
                 var w = getWord(parseInt(wi));
                 var allCorrect = wr.correct === wr.total;
-                return React.createElement('div', {className: 'word-row', key: wi},
-                  React.createElement('span', null,
-                    React.createElement('strong', null, w.german)),
-                  React.createElement('span', {style: {color:'#718096'}}, w.english),
-                  React.createElement('span', {style: {color: allCorrect ? '#7E9470' : '#D67635', fontWeight:600}},
-                    wr.correct + '/' + wr.total + (allCorrect ? ' \u2705' : ' \u26A0\uFE0F'))
-                );
-              })
-            )
-          ),
+                return <div className="word-row" key={wi}>
+                  <span>
+                    <strong>{w.german}</strong>
+                  </span>
+                  <span style={{color:'#718096'}}>{w.english}</span>
+                  <span style={{color: allCorrect ? '#7E9470' : '#D67635', fontWeight:600}}>
+                    {wr.correct + '/' + wr.total + (allCorrect ? ' \u2705' : ' \u26A0\uFE0F')}
+                  </span>
+                </div>;
+              })}
+            </div>
+          </div>
 
-          // Weak words encouragement
-          weakWords.length > 0 ? React.createElement('div', {className: 'tip-box',
-            style: {marginTop:'12px',background:'#FFF8E1',borderColor:'#E9B746'}},
-            React.createElement('strong', null, '\uD83D\uDCA1 Focus words: '),
-            weakWords.map(function(wi) { return getWord(wi).german; }).join(', '),
-            ' — these will appear more often in future exercises.'
-          ) : React.createElement('div', {className: 'tip-box',
-            style: {marginTop:'12px',background:'#f0fdf4',borderColor:'#7E9470'}},
-            React.createElement('strong', null, '\uD83C\uDF1F Perfect session! '),
-            'All words answered correctly. They\'ll be reviewed at longer intervals now.'
-          ),
+          {/* Weak words encouragement */}
+          {weakWords.length > 0 ? <div className="tip-box"
+            style={{marginTop:'12px',background:'#FFF8E1',borderColor:'#E9B746'}}>
+            <strong>{'\uD83D\uDCA1'} Focus words: </strong>
+            {weakWords.map(function(wi) { return getWord(wi).german; }).join(', ')}
+            {' \u2014 these will appear more often in future exercises.'}
+          </div> : <div className="tip-box"
+            style={{marginTop:'12px',background:'#f0fdf4',borderColor:'#7E9470'}}>
+            <strong>{'\uD83C\uDF1F'} Perfect session! </strong>
+            {"All words answered correctly. They'll be reviewed at longer intervals now."}
+          </div>}
 
-          // Buttons
-          React.createElement('div', {style: {display:'flex',gap:'10px',marginTop:'16px'}},
-            React.createElement('button', {
-              className: 'btn btn-primary',
-              style: {flex:1},
-              onClick: function() { setView('dashboard'); }
-            }, 'Back to Dashboard'),
-            totalLearned >= 5 ? React.createElement('button', {
-              className: 'btn btn-secondary',
-              style: {flex:1},
-              onClick: startExercise
-            }, 'Practice Again') : null
-          )
-        )
-      )
+          {/* Buttons */}
+          <div style={{display:'flex',gap:'10px',marginTop:'16px'}}>
+            <button
+              className="btn btn-primary"
+              style={{flex:1}}
+              onClick={function() { setView('dashboard'); }}
+            >Back to Dashboard</button>
+            {totalLearned >= 5 ? <button
+              className="btn btn-secondary"
+              style={{flex:1}}
+              onClick={startExercise}
+            >Practice Again</button> : null}
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -2418,33 +2448,35 @@ function App({onHome}) {
       {id: 'browse', icon: '\uD83D\uDCDA', label: 'Browse'},
       {id: 'settings', icon: '\u2699\uFE0F', label: 'Settings'}
     ];
-    return React.createElement(React.Fragment, null,
-      React.createElement('nav', {className: 'nav'},
-        onHome ? React.createElement('button', {
-          key: 'lang',
-          onClick: onHome,
-          style: {minWidth:'46px',padding:'10px 4px 8px',display:'flex',alignItems:'center',justifyContent:'center'}
-        }, React.createElement('img', {
-          src: langFlagUrl,
-          alt: 'Language',
-          style: {width:'24px',height:'18px',objectFit:'cover',borderRadius:'2px'}
-        })) : null,
-        items.map(function(item) {
-          return React.createElement('button', {
-            key: item.id,
-            className: active === item.id ? 'active' : '',
-            onClick: function() { setView(item.id); }
-          }, item.icon + ' ' + item.label);
-        })
-      ),
-      syncEmail ? React.createElement('div', {className: 'sync-bar'},
-        React.createElement('div', {className: 'sync-dot ' +
-          (syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'offline' : 'online')}),
-        React.createElement('span', null,
-          syncMsg || ('\u2601\uFE0F ' + syncEmail)
-        )
-      ) : null
-    );
+    return <>
+      <nav className="nav">
+        {onHome ? <button
+          key="lang"
+          onClick={onHome}
+          style={{minWidth:'46px',padding:'10px 4px 8px',display:'flex',alignItems:'center',justifyContent:'center'}}
+        >
+          <img
+            src={langFlagUrl}
+            alt="Language"
+            style={{width:'24px',height:'18px',objectFit:'cover',borderRadius:'2px'}}
+          />
+        </button> : null}
+        {items.map(function(item) {
+          return <button
+            key={item.id}
+            className={active === item.id ? 'active' : ''}
+            onClick={function() { setView(item.id); }}
+          >{item.icon + ' ' + item.label}</button>;
+        })}
+      </nav>
+      {syncEmail ? <div className="sync-bar">
+        <div className={'sync-dot ' +
+          (syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'offline' : 'online')} />
+        <span>
+          {syncMsg || ('\u2601\uFE0F ' + syncEmail)}
+        </span>
+      </div> : null}
+    </>;
   }
 
   // ===== DASHBOARD =====
@@ -2470,71 +2502,77 @@ function App({onHome}) {
     }
 
     return (
-      React.createElement('div', {className: 'app'},
-        renderNav('dashboard'),
-        React.createElement('div', {className: 'content'},
-          React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}},
-            React.createElement('div', null,
-              React.createElement('h1', {style: {marginBottom:'2px'}}, "Today's Plan"),
-              React.createElement('p', {style: {fontSize:'12px',color:'#718096'}},
-                formatDate(today) + ' \u2022 Day ' + studyDay + ' \u2022 Week ' + weekNum)
-            ),
-            React.createElement('span', {className: 'phase-indicator',
-              style: {background: phaseColors[phase] + '22', color: phaseColors[phase]}},
-              'Phase ' + phase + ': ' + phaseNames[phase])
-          ),
+      <div className="app">
+        {renderNav('dashboard')}
+        <div className="content">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
+            <div>
+              <h1 style={{marginBottom:'2px'}}>Today's Plan</h1>
+              <p style={{fontSize:'12px',color:'#718096'}}>
+                {formatDate(today) + ' \u2022 Day ' + studyDay + ' \u2022 Week ' + weekNum}
+              </p>
+            </div>
+            <span className="phase-indicator"
+              style={{background: phaseColors[phase] + '22', color: phaseColors[phase]}}>
+              {'Phase ' + phase + ': ' + phaseNames[phase]}
+            </span>
+          </div>
 
-          // Schedule indicator
-          studyDay > 0 ? React.createElement('div', {
-            style: {display:'flex',alignItems:'center',gap:'6px',padding:'8px 12px',
-              background: scheduleColor + '11',borderRadius:'8px',margin:'8px 0',
-              border:'1px solid ' + scheduleColor + '33'}},
-            React.createElement('span', null, scheduleIcon),
-            React.createElement('span', {style: {fontSize:'12px',fontWeight:600,color: scheduleColor}},
-              scheduleText),
-            React.createElement('span', {style: {fontSize:'11px',color:'#718096',marginLeft:'auto'}},
-              batchesCompleted + '/' + batches.length + ' batches \u2022 ' +
-              todayLearnCount + ' today')
-          ) : null,
+          {/* Schedule indicator */}
+          {studyDay > 0 ? <div style={{display:'flex',alignItems:'center',gap:'6px',padding:'8px 12px',
+            background: scheduleColor + '11',borderRadius:'8px',margin:'8px 0',
+            border:'1px solid ' + scheduleColor + '33'}}>
+            <span>{scheduleIcon}</span>
+            <span style={{fontSize:'12px',fontWeight:600,color: scheduleColor}}>
+              {scheduleText}
+            </span>
+            <span style={{fontSize:'11px',color:'#718096',marginLeft:'auto'}}>
+              {batchesCompleted + '/' + batches.length + ' batches \u2022 ' +
+              todayLearnCount + ' today'}
+            </span>
+          </div> : null}
 
-          React.createElement('div', {className: 'stat-grid'},
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, totalLearned),
-              React.createElement('div', {className: 'label'}, 'Words learned')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, Math.round(totalLearned/1500*100) + '%'),
-              React.createElement('div', {className: 'label'}, 'Overall progress')
-            )
-          ),
+          <div className="stat-grid">
+            <div className="stat">
+              <div className="num">{totalLearned}</div>
+              <div className="label">Words learned</div>
+            </div>
+            <div className="stat">
+              <div className="num">{Math.round(totalLearned/1500*100) + '%'}</div>
+              <div className="label">Overall progress</div>
+            </div>
+          </div>
 
-          React.createElement('div', {className: 'progress-bar', style: {height:'10px',marginBottom:'16px'}},
-            React.createElement('div', {className: 'progress-fill',
-              style: {width: (totalLearned/1500*100) + '%',
-                background:'linear-gradient(90deg,#27AE60,#2ECC71)'}})
-          ),
+          <div className="progress-bar" style={{height:'10px',marginBottom:'16px'}}>
+            <div className="progress-fill"
+              style={{width: (totalLearned/1500*100) + '%',
+                background:'linear-gradient(90deg,#27AE60,#2ECC71)'}} />
+          </div>
 
-          // Sunday rest suggestion (but still allow learning)
-          isSunday ? React.createElement('div', {className: 'sunday-banner'},
-            React.createElement('div', {className: 'icon'}, '\uD83D\uDCA4'),
-            React.createElement('h2', {style: {color:'#1B4F72',marginBottom:'8px'}}, 'Rest Day'),
-            React.createElement('p', {style: {fontSize:'13px',color:'#718096'}},
-              'Sunday is your rest day! But you can still learn if you want.')
-          ) : null,
+          {/* Sunday rest suggestion (but still allow learning) */}
+          {isSunday ? <div className="sunday-banner">
+            <div className="icon">{'\uD83D\uDCA4'}</div>
+            <h2 style={{color:'#1B4F72',marginBottom:'8px'}}>Rest Day</h2>
+            <p style={{fontSize:'13px',color:'#718096'}}>
+              Sunday is your rest day! But you can still learn if you want.
+            </p>
+          </div> : null}
 
-          today < startDate ? React.createElement('div', {className: 'card card-accent'},
-            React.createElement('div', {className: 'empty-state'},
-              React.createElement('div', {className: 'icon'}, '\uD83D\uDCC5'),
-              React.createElement('p', null, 'Your plan starts on ',
-                React.createElement('strong', null, formatDate(startDate))),
-              React.createElement('p', {style: {fontSize:'12px',marginTop:'4px'}},
-                'Get your flashcard notebook ready!')
-            )
-          ) :
+          {today < startDate ? <div className="card card-accent">
+            <div className="empty-state">
+              <div className="icon">{'\uD83D\uDCC5'}</div>
+              <p>Your plan starts on {' '}
+                <strong>{formatDate(startDate)}</strong>
+              </p>
+              <p style={{fontSize:'12px',marginTop:'4px'}}>
+                Get your flashcard notebook ready!
+              </p>
+            </div>
+          </div> :
 
-          React.createElement(React.Fragment, null,
-            // Daily Streak Widget
-            React.createElement('div', {className: 'card', style: {
+          <>
+            {/* Daily Streak Widget */}
+            <div className="card" style={{
               background: dailyStreak.status === 'danger' ? '#FFF5F5' :
                 dailyStreak.status === 'warning' ? '#FFFBEB' :
                 dailyStreak.studiedToday ? '#F0FFF4' : '#FFFFFF',
@@ -2542,39 +2580,42 @@ function App({onHome}) {
                 dailyStreak.status === 'warning' ? '#E9B746' :
                 dailyStreak.studiedToday ? '#7E9470' : '#e2e8f0',
               padding: '16px', textAlign: 'center'
-            }},
-              // Flame + streak count
-              React.createElement('div', {style: {display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',marginBottom:'12px'}},
-                React.createElement('span', {style: {fontSize:'32px'}},
-                  dailyStreak.count > 0 ? '\uD83D\uDD25' : '\u2744\uFE0F'),
-                React.createElement('span', {style: {fontSize:'28px',fontWeight:800,fontFamily:'Montserrat,sans-serif',
-                  color: dailyStreak.count > 0 ? '#D67635' : '#94a3b8'}},
-                  dailyStreak.count),
-                React.createElement('span', {style: {fontSize:'14px',fontWeight:600,color:'#718096'}},
-                  dailyStreak.count === 1 ? 'day streak' : 'day streak')
-              ),
+            }}>
+              {/* Flame + streak count */}
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',marginBottom:'12px'}}>
+                <span style={{fontSize:'32px'}}>
+                  {dailyStreak.count > 0 ? '\uD83D\uDD25' : '\u2744\uFE0F'}
+                </span>
+                <span style={{fontSize:'28px',fontWeight:800,fontFamily:'Montserrat,sans-serif',
+                  color: dailyStreak.count > 0 ? '#D67635' : '#94a3b8'}}>
+                  {dailyStreak.count}
+                </span>
+                <span style={{fontSize:'14px',fontWeight:600,color:'#718096'}}>
+                  {dailyStreak.count === 1 ? 'day streak' : 'day streak'}
+                </span>
+              </div>
 
-              // Warning/danger messages
-              dailyStreak.status === 'warning' && !dailyStreak.studiedToday ? React.createElement('div', {style: {
+              {/* Warning/danger messages */}
+              {dailyStreak.status === 'warning' && !dailyStreak.studiedToday ? <div style={{
                 fontSize:'13px',color:'#D67635',fontWeight:600,marginBottom:'10px',
                 padding:'6px 12px',background:'#FFF8F0',borderRadius:'8px',border:'1px solid #F5EBDC'
-              }}, '\u26A0\uFE0F Your streak is at risk! Study today to keep it going!') : null,
+              }}>{'\u26A0\uFE0F Your streak is at risk! Study today to keep it going!'}</div> : null}
 
-              dailyStreak.status === 'danger' ? React.createElement('div', {style: {
+              {dailyStreak.status === 'danger' ? <div style={{
                 fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px',
                 padding:'6px 12px',background:'#FEF2F2',borderRadius:'8px',border:'1px solid #FECACA'
-              }}, '\uD83D\uDEA8 Last chance! Study today or lose your ' + dailyStreak.count + '-day streak!') : null,
+              }}>{'\uD83D\uDEA8 Last chance! Study today or lose your ' + dailyStreak.count + '-day streak!'}</div> : null}
 
-              dailyStreak.status === 'lost' ? React.createElement('div', {style: {
+              {dailyStreak.status === 'lost' ? <div style={{
                 fontSize:'13px',color:'#718096',marginBottom:'10px'
-              }}, 'Start a new streak today! Every journey begins with one step.') : null,
+              }}>Start a new streak today! Every journey begins with one step.</div> : null}
 
-              // Weekly calendar
-              React.createElement('div', {style: {display:'flex',justifyContent:'center',gap:'6px',marginBottom:'12px'}},
-                weekDays.map(function(wd, i) {
-                  return React.createElement('div', {key: i, style: {textAlign:'center',width:'32px'}},
-                    React.createElement('div', {style: {fontSize:'10px',color:'#94a3b8',marginBottom:'4px',fontWeight:600}}, wd.label),
-                    React.createElement('div', {style: {
+              {/* Weekly calendar */}
+              <div style={{display:'flex',justifyContent:'center',gap:'6px',marginBottom:'12px'}}>
+                {weekDays.map(function(wd, i) {
+                  return <div key={i} style={{textAlign:'center',width:'32px'}}>
+                    <div style={{fontSize:'10px',color:'#94a3b8',marginBottom:'4px',fontWeight:600}}>{wd.label}</div>
+                    <div style={{
                       width:'28px',height:'28px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',
                       fontSize:'14px',margin:'0 auto',
                       background: wd.studied ? '#7E9470' : wd.isToday ? '#FFF8F0' : 'transparent',
@@ -2582,152 +2623,159 @@ function App({onHome}) {
                       border: wd.isToday && !wd.studied ? '2px dashed #D67635' :
                         wd.isPast && !wd.studied ? '1px solid #E74C3C33' : '1px solid transparent',
                       fontWeight: wd.isToday ? 700 : 400
-                    }}, wd.studied ? '\u2713' : wd.isPast && !wd.studied ? '\u2022' : '')
-                  );
-                })
-              ),
+                    }}>{wd.studied ? '\u2713' : wd.isPast && !wd.studied ? '\u2022' : ''}</div>
+                  </div>;
+                })}
+              </div>
 
-              // Milestone progress
-              dailyStreak.count > 0 ? (function() {
+              {/* Milestone progress */}
+              {dailyStreak.count > 0 ? (function() {
                 var milestones = [7, 14, 30, 60, 100, 365];
                 var next = milestones.find(function(m) { return m > dailyStreak.count; }) || 365;
                 var prev = milestones.filter(function(m) { return m <= dailyStreak.count; });
                 var prevM = prev.length > 0 ? prev[prev.length - 1] : 0;
                 var pct = Math.min(100, Math.round((dailyStreak.count - prevM) / (next - prevM) * 100));
-                return React.createElement('div', {style: {marginTop:'4px'}},
-                  React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#94a3b8',marginBottom:'4px'}},
-                    React.createElement('span', null, dailyStreak.count + ' days'),
-                    React.createElement('span', null, '\uD83C\uDFC6 ' + next + ' days')
-                  ),
-                  React.createElement('div', {style: {height:'6px',background:'#e2e8f0',borderRadius:'3px',overflow:'hidden'}},
-                    React.createElement('div', {style: {height:'100%',width: pct + '%',
+                return <div style={{marginTop:'4px'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#94a3b8',marginBottom:'4px'}}>
+                    <span>{dailyStreak.count + ' days'}</span>
+                    <span>{'\uD83C\uDFC6 ' + next + ' days'}</span>
+                  </div>
+                  <div style={{height:'6px',background:'#e2e8f0',borderRadius:'3px',overflow:'hidden'}}>
+                    <div style={{height:'100%',width: pct + '%',
                       background:'linear-gradient(90deg, #D67635, #E9B746)',borderRadius:'3px',
-                      transition:'width 0.5s ease'}})
-                  )
-                );
-              })() : null,
+                      transition:'width 0.5s ease'}} />
+                  </div>
+                </div>;
+              })() : null}
 
-              // Studied today confirmation
-              dailyStreak.studiedToday ? React.createElement('div', {style: {
+              {/* Studied today confirmation */}
+              {dailyStreak.studiedToday ? <div style={{
                 fontSize:'12px',color:'#7E9470',fontWeight:600,marginTop:'8px'
-              }}, '\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!') : null
-            ),
+              }}>{'\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!'}</div> : null}
+            </div>
 
-            // Next batch to learn (always shown if available)
-            hasNextBatch ? React.createElement('div', {className: 'card card-accent'},
-              React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center'}},
-                React.createElement('div', null,
-                  React.createElement('div', {className: 'review-type-label',
-                    style: {color:'#27AE60'}},
-                    todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'),
-                  React.createElement('strong', null, 'Batch ' + nextBatch),
-                  React.createElement('span', {style: {fontSize:'12px',color:'#718096',marginLeft:'8px'}},
-                    batches[nextBatch-1].length + ' words')
-                ),
-                React.createElement('button', {
-                  className: 'btn btn-success btn-sm',
-                  style: {width:'auto'},
-                  onClick: function() { startSession("learn", nextBatch); }
-                }, todayLearnCount === 0 ? 'Start Learning' : 'Learn Next Batch')
-              ),
-              React.createElement('div', {className: 'word-list', style: {maxHeight:'100px',marginTop:'8px'}},
-                batches[nextBatch-1].map(function(wi, i) {
+            {/* Next batch to learn (always shown if available) */}
+            {hasNextBatch ? <div className="card card-accent">
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div>
+                  <div className="review-type-label"
+                    style={{color:'#27AE60'}}>
+                    {todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'}
+                  </div>
+                  <strong>{'Batch ' + nextBatch}</strong>
+                  <span style={{fontSize:'12px',color:'#718096',marginLeft:'8px'}}>
+                    {batches[nextBatch-1].length + ' words'}
+                  </span>
+                </div>
+                <button
+                  className="btn btn-success btn-sm"
+                  style={{width:'auto'}}
+                  onClick={function() { startSession("learn", nextBatch); }}
+                >{todayLearnCount === 0 ? 'Start Learning' : 'Learn Next Batch'}</button>
+              </div>
+              <div className="word-list" style={{maxHeight:'100px',marginTop:'8px'}}>
+                {batches[nextBatch-1].map(function(wi, i) {
                   var wd = getWord(wi);
-                  return React.createElement('div', {className: 'word-row', key: i},
-                    React.createElement('span', {className: 'tag ' + wd.typeClass}, wd.type),
-                    React.createElement('strong', null, wd.german),
-                    React.createElement('span', null, wd.english)
-                  );
-                })
-              )
-            ) :
+                  return <div className="word-row" key={i}>
+                    <span className={'tag ' + wd.typeClass}>{wd.type}</span>
+                    <strong>{wd.german}</strong>
+                    <span>{wd.english}</span>
+                  </div>;
+                })}
+              </div>
+            </div> :
 
-            React.createElement('div', {
-              className: 'card', style: {background:'#FEF9E7'}},
-              React.createElement('span', {style: {color:'#B7950B',fontWeight:600}},
-                '\uD83C\uDFC6 All 1500 words introduced! Focus on reviews.')
-            ),
+            <div className="card" style={{background:'#FEF9E7'}}>
+              <span style={{color:'#B7950B',fontWeight:600}}>
+                {'\uD83C\uDFC6 All 1500 words introduced! Focus on reviews.'}
+              </span>
+            </div>}
 
-            // Reviews section
-            reviewsDue.length > 0 ? React.createElement('div', null,
-              React.createElement('h2', {style: {marginTop:'16px'}},
-                '\uD83D\uDD04 Reviews Due (' + reviewsDue.length + ')'),
-              reviewsDue.map(function(r, i) {
+            {/* Reviews section */}
+            {reviewsDue.length > 0 ? <div>
+              <h2 style={{marginTop:'16px'}}>
+                {'\uD83D\uDD04 Reviews Due (' + reviewsDue.length + ')'}
+              </h2>
+              {reviewsDue.map(function(r, i) {
                 var badgeColors = {2:'#F39C12',3:'#E74C3C',5:'#8E44AD',7:'#1B4F72'};
-                return React.createElement('div', {className: 'card', key: i, style: {padding:'12px'}},
-                  React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center'}},
-                    React.createElement('div', {style: {display:'flex',alignItems:'center',gap:'10px'}},
-                      React.createElement('div', {className: 'task-badge',
-                        style: {background: badgeColors[r.interval]}}, '+' + r.interval),
-                      React.createElement('div', null,
-                        React.createElement('div', {className: 'review-type-label',
-                          style: {color: badgeColors[r.interval]}},
-                          REVIEW_LABELS[r.interval]),
-                        React.createElement('span', {style: {fontSize:'12px',color:'#718096'}},
-                          'Batch ' + r.batch + ' \u2022 ' + batches[r.batch-1].length + ' words')
-                      )
-                    ),
-                    React.createElement('button', {
-                      className: 'btn btn-primary btn-sm',
-                      style: {width:'auto'},
-                      onClick: function() { startSession("review", r.batch, r.interval); }
-                    }, 'Review')
-                  )
-                );
-              })
-            ) : React.createElement('div', {
-              className: 'card', style: {background:'#EAFAF1',marginTop:'12px',textAlign:'center'}},
-              React.createElement('span', {style: {color:'#27AE60'}},
-                '\u2705 All reviews completed for today!')
-            ),
+                return <div className="card" key={i} style={{padding:'12px'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
+                      <div className="task-badge"
+                        style={{background: badgeColors[r.interval]}}>{'+' + r.interval}</div>
+                      <div>
+                        <div className="review-type-label"
+                          style={{color: badgeColors[r.interval]}}>
+                          {REVIEW_LABELS[r.interval]}
+                        </div>
+                        <span style={{fontSize:'12px',color:'#718096'}}>
+                          {'Batch ' + r.batch + ' \u2022 ' + batches[r.batch-1].length + ' words'}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      className="btn btn-primary btn-sm"
+                      style={{width:'auto'}}
+                      onClick={function() { startSession("review", r.batch, r.interval); }}
+                    >Review</button>
+                  </div>
+                </div>;
+              })}
+            </div> : <div
+              className="card" style={{background:'#EAFAF1',marginTop:'12px',textAlign:'center'}}>
+              <span style={{color:'#27AE60'}}>
+                {'\u2705 All reviews completed for today!'}
+              </span>
+            </div>}
 
-            // Exercise section
-            totalLearned >= 5 ? React.createElement('div', {className: 'card card-accent', style: {marginTop:'12px',
-              borderColor:'#324A84',background:'#324A8408'}},
-              React.createElement('div', {style: {display:'flex',justifyContent:'space-between',alignItems:'center'}},
-                React.createElement('div', null,
-                  React.createElement('div', {className: 'review-type-label', style: {color:'#324A84'}},
-                    '\uD83C\uDFAF Practice Mode'),
-                  React.createElement('div', {style: {display:'flex',gap:'8px',flexWrap:'wrap',marginTop:'4px'}},
-                    exerciseStats.weak.length > 0 ? React.createElement('span', {
-                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#E74C3C18',color:'#E74C3C',fontWeight:600}
-                    }, exerciseStats.weak.length + ' weak') : null,
-                    exerciseStats.due.length > 0 ? React.createElement('span', {
-                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#D6763518',color:'#D67635',fontWeight:600}
-                    }, exerciseStats.due.length + ' due') : null,
-                    exerciseStats.neverPracticed.length > 0 ? React.createElement('span', {
-                      style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#324A8418',color:'#324A84',fontWeight:600}
-                    }, exerciseStats.neverPracticed.length + ' new') : null,
-                    exerciseStats.weak.length === 0 && exerciseStats.due.length === 0 && exerciseStats.neverPracticed.length === 0 ?
-                      React.createElement('span', {
-                        style: {fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#7E947018',color:'#7E9470',fontWeight:600}
-                      }, '\u2705 All caught up!') : null
-                  )
-                ),
-                React.createElement('button', {
-                  className: 'btn btn-sm',
-                  disabled: exerciseLoading,
-                  style: {width:'auto',background:'#324A84',color:'#fff',border:'none'},
-                  onClick: startExercise
-                }, exerciseLoading ? '\u2728 Generating...' : 'Exercise')
-              )
-            ) : null,
+            {/* Exercise section */}
+            {totalLearned >= 5 ? <div className="card card-accent" style={{marginTop:'12px',
+              borderColor:'#324A84',background:'#324A8408'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div>
+                  <div className="review-type-label" style={{color:'#324A84'}}>
+                    {'\uD83C\uDFAF Practice Mode'}
+                  </div>
+                  <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginTop:'4px'}}>
+                    {exerciseStats.weak.length > 0 ? <span
+                      style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#E74C3C18',color:'#E74C3C',fontWeight:600}}
+                    >{exerciseStats.weak.length + ' weak'}</span> : null}
+                    {exerciseStats.due.length > 0 ? <span
+                      style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#D6763518',color:'#D67635',fontWeight:600}}
+                    >{exerciseStats.due.length + ' due'}</span> : null}
+                    {exerciseStats.neverPracticed.length > 0 ? <span
+                      style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#324A8418',color:'#324A84',fontWeight:600}}
+                    >{exerciseStats.neverPracticed.length + ' new'}</span> : null}
+                    {exerciseStats.weak.length === 0 && exerciseStats.due.length === 0 && exerciseStats.neverPracticed.length === 0 ?
+                      <span
+                        style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#7E947018',color:'#7E9470',fontWeight:600}}
+                      >{'\u2705 All caught up!'}</span> : null}
+                  </div>
+                </div>
+                <button
+                  className="btn btn-sm"
+                  disabled={exerciseLoading}
+                  style={{width:'auto',background:'#324A84',color:'#fff',border:'none'}}
+                  onClick={startExercise}
+                >{exerciseLoading ? '\u2728 Generating...' : 'Exercise'}</button>
+              </div>
+            </div> : null}
 
-            // Behind schedule tip
-            scheduleGap < -2 ? React.createElement('div', {className: 'tip-box',
-              style: {background:'#FDEDEC',borderColor:'#F5B7B1'}},
-              React.createElement('strong', null, '\u26A0\uFE0F Catching up: '),
-              'You\'re ' + Math.abs(scheduleGap) + ' batches behind. Try learning 2-3 batches today to catch up! No pressure though \u2014 go at your own pace.'
-            ) :
+            {/* Behind schedule tip */}
+            {scheduleGap < -2 ? <div className="tip-box"
+              style={{background:'#FDEDEC',borderColor:'#F5B7B1'}}>
+              <strong>{'\u26A0\uFE0F'} Catching up: </strong>
+              {"You're " + Math.abs(scheduleGap) + ' batch' + (Math.abs(scheduleGap) > 1 ? 'es' : '') + ' behind. Try learning 2-3 batches today to catch up! No pressure though \u2014 go at your own pace.'}
+            </div> :
 
-            // Science tip
-            React.createElement('div', {className: 'tip-box', style: {marginTop:'16px'}},
-              React.createElement('strong', null, '\uD83D\uDCA1 Science Tip: '),
-              SCIENCE_TIPS[studyDay % SCIENCE_TIPS.length]
-            )
-          )
-        )
-      )
+            /* Science tip */
+            <div className="tip-box" style={{marginTop:'16px'}}>
+              <strong>{'\uD83D\uDCA1'} Science Tip: </strong>
+              {SCIENCE_TIPS[studyDay % SCIENCE_TIPS.length]}
+            </div>}
+          </>}
+        </div>
+      </div>
     );
   }
 
@@ -2743,113 +2791,115 @@ function App({onHome}) {
     var maxStageCount = Math.max.apply(null, stageCounts.slice(1).concat([1])); // for bar scaling
 
     return (
-      React.createElement('div', {className: 'app'},
-        renderNav('progress'),
-        React.createElement('div', {className: 'content'},
-          React.createElement('h1', null, 'Your Progress'),
+      <div className="app">
+        {renderNav('progress')}
+        <div className="content">
+          <h1>Your Progress</h1>
 
-          React.createElement('div', {className: 'stat-grid'},
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, totalLearned),
-              React.createElement('div', {className: 'label'}, 'Learned')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, stageCounts[5]),
-              React.createElement('div', {className: 'label'}, 'Mastered')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, notLearned),
-              React.createElement('div', {className: 'label'}, 'Remaining')
-            ),
-            React.createElement('div', {className: 'stat'},
-              React.createElement('div', {className: 'num'}, Math.ceil(notLearned / 8)),
-              React.createElement('div', {className: 'label'}, 'Days to go')
-            )
-          ),
+          <div className="stat-grid">
+            <div className="stat">
+              <div className="num">{totalLearned}</div>
+              <div className="label">Learned</div>
+            </div>
+            <div className="stat">
+              <div className="num">{stageCounts[5]}</div>
+              <div className="label">Mastered</div>
+            </div>
+            <div className="stat">
+              <div className="num">{notLearned}</div>
+              <div className="label">Remaining</div>
+            </div>
+            <div className="stat">
+              <div className="num">{Math.ceil(notLearned / 8)}</div>
+              <div className="label">Days to go</div>
+            </div>
+          </div>
 
-          // Memory Stages Bar Chart
-          React.createElement('h2', null, 'Memory Stages'),
-          React.createElement('div', {className: 'card memory-stages-card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'16px',lineHeight:'1.5'}},
-              'Words move up through 5 memory stages as you review them. Higher stages need less frequent review.'),
+          {/* Memory Stages Bar Chart */}
+          <h2>Memory Stages</h2>
+          <div className="card memory-stages-card">
+            <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'16px',lineHeight:'1.5'}}>
+              Words move up through 5 memory stages as you review them. Higher stages need less frequent review.
+            </p>
 
-            // Bar chart
-            React.createElement('div', {className: 'stage-chart'},
-              MEMORY_STAGES.map(function(stage, i) {
+            {/* Bar chart */}
+            <div className="stage-chart">
+              {MEMORY_STAGES.map(function(stage, i) {
                 var count = stageCounts[stage.level];
                 var pct = totalLearned > 0 ? Math.round(count / totalLearned * 100) : 0;
                 var barWidth = maxStageCount > 0 ? Math.max(count / maxStageCount * 100, count > 0 ? 4 : 0) : 0;
 
-                return React.createElement('div', {key: i, className: 'stage-row'},
-                  // Stage label
-                  React.createElement('div', {className: 'stage-label'},
-                    React.createElement('span', {className: 'stage-dot', style: {background: stage.color}}),
-                    React.createElement('span', {className: 'stage-name'}, stage.name)
-                  ),
-                  // Bar
-                  React.createElement('div', {className: 'stage-bar-track'},
-                    React.createElement('div', {className: 'stage-bar-fill',
-                      style: {width: barWidth + '%', background: stage.color}
-                    })
-                  ),
-                  // Count
-                  React.createElement('div', {className: 'stage-count'},
-                    React.createElement('span', {style: {fontWeight:600}}, count),
-                    React.createElement('span', {className: 'stage-pct'}, pct > 0 ? ' (' + pct + '%)' : '')
-                  )
-                );
-              })
-            ),
+                return <div key={i} className="stage-row">
+                  {/* Stage label */}
+                  <div className="stage-label">
+                    <span className="stage-dot" style={{background: stage.color}} />
+                    <span className="stage-name">{stage.name}</span>
+                  </div>
+                  {/* Bar */}
+                  <div className="stage-bar-track">
+                    <div className="stage-bar-fill"
+                      style={{width: barWidth + '%', background: stage.color}}
+                    />
+                  </div>
+                  {/* Count */}
+                  <div className="stage-count">
+                    <span style={{fontWeight:600}}>{count}</span>
+                    <span className="stage-pct">{pct > 0 ? ' (' + pct + '%)' : ''}</span>
+                  </div>
+                </div>;
+              })}
+            </div>
 
-            // Not learned row
-            totalLearned < 1500 ? React.createElement('div', {className: 'stage-row', style: {marginTop:'12px',paddingTop:'12px',borderTop:'1px solid #F5EBDC'}},
-              React.createElement('div', {className: 'stage-label'},
-                React.createElement('span', {className: 'stage-dot', style: {background: '#CBD5E0'}}),
-                React.createElement('span', {className: 'stage-name', style: {color:'#94a3b8'}}, 'Not started')
-              ),
-              React.createElement('div', {className: 'stage-bar-track'},
-                React.createElement('div', {className: 'stage-bar-fill',
-                  style: {width: (notLearned / 1500 * 100) + '%', background: '#CBD5E0'}
-                })
-              ),
-              React.createElement('div', {className: 'stage-count', style: {color:'#94a3b8'}},
-                React.createElement('span', {style: {fontWeight:600}}, notLearned)
-              )
-            ) : null,
+            {/* Not learned row */}
+            {totalLearned < 1500 ? <div className="stage-row" style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid #F5EBDC'}}>
+              <div className="stage-label">
+                <span className="stage-dot" style={{background: '#CBD5E0'}} />
+                <span className="stage-name" style={{color:'#94a3b8'}}>Not started</span>
+              </div>
+              <div className="stage-bar-track">
+                <div className="stage-bar-fill"
+                  style={{width: (notLearned / 1500 * 100) + '%', background: '#CBD5E0'}}
+                />
+              </div>
+              <div className="stage-count" style={{color:'#94a3b8'}}>
+                <span style={{fontWeight:600}}>{notLearned}</span>
+              </div>
+            </div> : null}
 
-            // Stage legend
-            React.createElement('div', {className: 'stage-legend'},
-              MEMORY_STAGES.map(function(stage, i) {
-                return React.createElement('div', {key: i, className: 'stage-legend-item', style: {background: stage.bg, borderColor: stage.color}},
-                  React.createElement('div', {style: {fontWeight:600,fontSize:'12px',color: stage.color, fontFamily:'Montserrat,sans-serif'}},
-                    'Lv.' + stage.level + ' ' + stage.name),
-                  React.createElement('div', {style: {fontSize:'11px',color:'#64748b',marginTop:'2px'}}, stage.desc)
-                );
-              })
-            )
-          ),
+            {/* Stage legend */}
+            <div className="stage-legend">
+              {MEMORY_STAGES.map(function(stage, i) {
+                return <div key={i} className="stage-legend-item" style={{background: stage.bg, borderColor: stage.color}}>
+                  <div style={{fontWeight:600,fontSize:'12px',color: stage.color, fontFamily:'Montserrat,sans-serif'}}>
+                    {'Lv.' + stage.level + ' ' + stage.name}
+                  </div>
+                  <div style={{fontSize:'11px',color:'#64748b',marginTop:'2px'}}>{stage.desc}</div>
+                </div>;
+              })}
+            </div>
+          </div>
 
-          React.createElement('h2', null, 'By Category'),
-          React.createElement('div', {className: 'card', style: {maxHeight:'300px',overflowY:'auto'}},
-            cats.map(function(cat, ci) {
+          <h2>By Category</h2>
+          <div className="card" style={{maxHeight:'300px',overflowY:'auto'}}>
+            {cats.map(function(cat, ci) {
               var catWords = [];
               words.forEach(function(w, wi) { if (w[2] === ci) catWords.push(wi); });
               var learned = catWords.filter(function(wi) { return progress[wi]?.learned; }).length;
-              return React.createElement('div', {key: ci, style: {margin:'6px 0'}},
-                React.createElement('div', {style: {display:'flex',justifyContent:'space-between',fontSize:'12px'}},
-                  React.createElement('span', null, cat),
-                  React.createElement('span', {style: {fontWeight:500,color:'#64748b'}}, learned + '/' + catWords.length)
-                ),
-                React.createElement('div', {className: 'progress-bar', style: {height:'5px'}},
-                  React.createElement('div', {className: 'progress-fill',
-                    style: {width: (catWords.length ? learned/catWords.length*100 : 0) + '%',
-                      background:'#324A84'}})
-                )
-              );
-            })
-          )
-        )
-      )
+              return <div key={ci} style={{margin:'6px 0'}}>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px'}}>
+                  <span>{cat}</span>
+                  <span style={{fontWeight:500,color:'#64748b'}}>{learned + '/' + catWords.length}</span>
+                </div>
+                <div className="progress-bar" style={{height:'5px'}}>
+                  <div className="progress-fill"
+                    style={{width: (catWords.length ? learned/catWords.length*100 : 0) + '%',
+                      background:'#324A84'}} />
+                </div>
+              </div>;
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -2865,43 +2915,44 @@ function App({onHome}) {
     }).slice(0, 100);
 
     return (
-      React.createElement('div', {className: 'app'},
-        renderNav('browse'),
-        React.createElement('div', {className: 'content'},
-          React.createElement('h1', null, 'Browse All Words'),
-          React.createElement('input', {
-            type: 'text',
-            placeholder: 'Search German or English...',
-            value: searchTerm,
-            onChange: function(e) { setSearchTerm(e.target.value); },
-            style: {marginBottom:'8px'}
-          }),
+      <div className="app">
+        {renderNav('browse')}
+        <div className="content">
+          <h1>Browse All Words</h1>
+          <input
+            type="text"
+            placeholder="Search German or English..."
+            value={searchTerm}
+            onChange={function(e) { setSearchTerm(e.target.value); }}
+            style={{marginBottom:'8px'}}
+          />
 
-          React.createElement('div', {className: 'tabs'},
-            React.createElement('button', {
-              className: 'tab' + (filterType === -1 ? ' active' : ''),
-              onClick: function() { setFilterType(-1); }
-            }, 'All types'),
-            TYPE_NAMES.map(function(t, i) {
-              return React.createElement('button', {
-                key: i,
-                className: 'tab' + (filterType === i ? ' active' : ''),
-                onClick: function() { setFilterType(i); }
-              }, t);
-            })
-          ),
+          <div className="tabs">
+            <button
+              className={'tab' + (filterType === -1 ? ' active' : '')}
+              onClick={function() { setFilterType(-1); }}
+            >All types</button>
+            {TYPE_NAMES.map(function(t, i) {
+              return <button
+                key={i}
+                className={'tab' + (filterType === i ? ' active' : '')}
+                onClick={function() { setFilterType(i); }}
+              >{t}</button>;
+            })}
+          </div>
 
-          React.createElement('p', {style: {fontSize:'11px',color:'#718096',marginBottom:'6px'}},
-            'Showing ' + filtered.length + ' of 1500 words'),
+          <p style={{fontSize:'11px',color:'#718096',marginBottom:'6px'}}>
+            {'Showing ' + filtered.length + ' of 1500 words'}
+          </p>
 
-          React.createElement('div', {style: {maxHeight:'500px',overflowY:'auto'}},
-            filtered.map(function(w, i) {
+          <div style={{maxHeight:'500px',overflowY:'auto'}}>
+            {filtered.map(function(w, i) {
               var conf = progress[w.idx]?.confidence || 0;
               var isLearned = progress[w.idx]?.learned;
               var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
-              return React.createElement('div', {className: 'word-row', key: i,
-                style: {cursor:'pointer'},
-                onClick: function() {
+              return <div className="word-row" key={i}
+                style={{cursor:'pointer'}}
+                onClick={function() {
                   var wordData = {idx: w.idx, ...getWord(w.idx)};
                   setSessionWords([wordData]);
                   setSessionType({type: 'browse', batchIdx: 0, interval: 0});
@@ -2909,151 +2960,159 @@ function App({onHome}) {
                   setFlipped(false);
                   setStreak(0);
                   setView('session');
-                }},
-                React.createElement('div', {style: {flex:1}},
-                  typeof WORD_EMOJIS !== 'undefined' ? React.createElement('span', {style: {marginRight:'4px'}}, WORD_EMOJIS[w.idx]) : null,
-                  React.createElement('strong', null, w.german),
-                  React.createElement('span', {className: 'tag ' + TYPE_TAGS[w.typeIdx],
-                    style: {marginLeft:'6px'}}, TYPE_NAMES[w.typeIdx])
-                ),
-                React.createElement('span', {style: {color:'#718096',flex:1}}, w.english),
-                React.createElement('span', {style: {fontSize:'11px'}},
-                  isLearned ? icons[conf] : '\u2B24')
-              );
-            })
-          )
-        )
-      )
+                }}>
+                <div style={{flex:1}}>
+                  {typeof WORD_EMOJIS !== 'undefined' ? <span style={{marginRight:'4px'}}>{WORD_EMOJIS[w.idx]}</span> : null}
+                  <strong>{w.german}</strong>
+                  <span className={'tag ' + TYPE_TAGS[w.typeIdx]}
+                    style={{marginLeft:'6px'}}>{TYPE_NAMES[w.typeIdx]}</span>
+                </div>
+                <span style={{color:'#718096',flex:1}}>{w.english}</span>
+                <span style={{fontSize:'11px'}}>
+                  {isLearned ? icons[conf] : '\u2B24'}
+                </span>
+              </div>;
+            })}
+          </div>
+        </div>
+      </div>
     );
   }
 
   // ===== SETTINGS =====
   if (view === "settings") {
     return (
-      React.createElement('div', {className: 'app'},
-        renderNav('settings'),
-        React.createElement('div', {className: 'content'},
-          React.createElement('h1', null, 'Settings'),
+      <div className="app">
+        {renderNav('settings')}
+        <div className="content">
+          <h1>Settings</h1>
 
-          React.createElement('div', {className: 'card'},
-            React.createElement('div', {className: 'settings-row'},
-              React.createElement('span', null, 'Start date'),
-              React.createElement('input', {
-                type: 'date',
-                value: dateKey(startDate),
-                style: {width:'auto'},
-                onChange: function(e) {
+          <div className="card">
+            <div className="settings-row">
+              <span>Start date</span>
+              <input
+                type="date"
+                value={dateKey(startDate)}
+                style={{width:'auto'}}
+                onChange={function(e) {
                   var d = new Date(e.target.value + 'T00:00:00');
                   if (!isNaN(d)) setStartDate(d);
-                }
-              })
-            ),
-            React.createElement('div', {className: 'settings-row'},
-              React.createElement('span', null, 'Current study day'),
-              React.createElement('strong', null, studyDay)
-            ),
-            React.createElement('div', {className: 'settings-row'},
-              React.createElement('span', null, 'Week / Phase'),
-              React.createElement('span', null, 'Week ' + weekNum + ' / Phase ' + phase)
-            ),
-            React.createElement('div', {className: 'settings-row'},
-              React.createElement('span', null, 'Auto-save'),
-              React.createElement('span', {style: {color:'#27AE60',fontWeight:600}}, '\u2705 Enabled')
-            )
-          ),
+                }}
+              />
+            </div>
+            <div className="settings-row">
+              <span>Current study day</span>
+              <strong>{studyDay}</strong>
+            </div>
+            <div className="settings-row">
+              <span>Week / Phase</span>
+              <span>{'Week ' + weekNum + ' / Phase ' + phase}</span>
+            </div>
+            <div className="settings-row">
+              <span>Auto-save</span>
+              <span style={{color:'#27AE60',fontWeight:600}}>{'\u2705 Enabled'}</span>
+            </div>
+          </div>
 
-          React.createElement('h2', null, 'Cloud Sync'),
-          React.createElement('div', {className: 'card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
-              'Sync progress across devices. Enter the same email on each device to keep them in sync.'),
-            syncEmail ?
-              React.createElement('div', null,
-                React.createElement('div', {className: 'settings-row'},
-                  React.createElement('span', null, 'Synced as'),
-                  React.createElement('strong', {style: {fontSize:'12px'}}, syncEmail)
-                ),
-                React.createElement('div', {className: 'settings-row'},
-                  React.createElement('span', null, 'Status'),
-                  React.createElement('span', {style: {color: syncStatus === 'error' ? '#E74C3C' : '#27AE60', fontWeight:600, fontSize:'12px'}},
-                    syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Error' : 'Connected')
-                ),
-                React.createElement('div', {className: 'btn-group', style: {marginTop:'10px'}},
-                  React.createElement('button', {className: 'btn btn-primary btn-sm',
-                    onClick: function() { connectSync(syncEmail); }},
-                    'Sync Now'),
-                  React.createElement('button', {className: 'btn btn-secondary btn-sm',
-                    style: {color:'#E74C3C'},
-                    onClick: disconnectSync},
-                    'Disconnect')
-                )
-              ) :
-              React.createElement('div', null,
-                React.createElement('input', {
-                  type: 'email',
-                  id: 'sync-email-input',
-                  placeholder: 'Enter your email...',
-                  style: {marginBottom:'8px'}
-                }),
-                React.createElement('button', {
-                  className: 'btn btn-primary btn-sm',
-                  onClick: function() {
+          <h2>Cloud Sync</h2>
+          <div className="card">
+            <p style={{fontSize:'12px',color:'#718096',marginBottom:'10px'}}>
+              Sync progress across devices. Enter the same email on each device to keep them in sync.
+            </p>
+            {syncEmail ?
+              <div>
+                <div className="settings-row">
+                  <span>Synced as</span>
+                  <strong style={{fontSize:'12px'}}>{syncEmail}</strong>
+                </div>
+                <div className="settings-row">
+                  <span>Status</span>
+                  <span style={{color: syncStatus === 'error' ? '#E74C3C' : '#27AE60', fontWeight:600, fontSize:'12px'}}>
+                    {syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Error' : 'Connected'}
+                  </span>
+                </div>
+                <div className="btn-group" style={{marginTop:'10px'}}>
+                  <button className="btn btn-primary btn-sm"
+                    onClick={function() { connectSync(syncEmail); }}>
+                    Sync Now
+                  </button>
+                  <button className="btn btn-secondary btn-sm"
+                    style={{color:'#E74C3C'}}
+                    onClick={disconnectSync}>
+                    Disconnect
+                  </button>
+                </div>
+              </div> :
+              <div>
+                <input
+                  type="email"
+                  id="sync-email-input"
+                  placeholder="Enter your email..."
+                  style={{marginBottom:'8px'}}
+                />
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={function() {
                     var email = document.getElementById('sync-email-input').value.trim();
                     if (email && email.includes('@')) connectSync(email);
                     else alert('Please enter a valid email');
-                  }
-                }, 'Connect')
-              )
-          ),
+                  }}
+                >Connect</button>
+              </div>
+            }
+          </div>
 
-          React.createElement('h2', null, 'Daily Reminder'),
-          React.createElement('div', {className: 'card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#718096',marginBottom:'10px'}},
-              'Get a daily push notification reminding you to study. Works on Android and iOS (Add to Home Screen required).'),
-            !('PushManager' in window) ?
-              React.createElement('p', {style: {fontSize:'12px',color:'#E74C3C'}},
-                'Push notifications are not supported in this browser. On iOS, add this app to your Home Screen first.') :
+          <h2>Daily Reminder</h2>
+          <div className="card">
+            <p style={{fontSize:'12px',color:'#718096',marginBottom:'10px'}}>
+              Get a daily push notification reminding you to study. Works on Android and iOS (Add to Home Screen required).
+            </p>
+            {!('PushManager' in window) ?
+              <p style={{fontSize:'12px',color:'#E74C3C'}}>
+                Push notifications are not supported in this browser. On iOS, add this app to your Home Screen first.
+              </p> :
             pushEnabled ?
-              React.createElement('div', null,
-                React.createElement('div', {className: 'settings-row'},
-                  React.createElement('span', null, 'Status'),
-                  React.createElement('span', {style: {color:'#27AE60',fontWeight:600}}, '\uD83D\uDD14 Active')
-                ),
-                React.createElement('div', {className: 'settings-row'},
-                  React.createElement('span', null, 'Remind me at'),
-                  React.createElement('select', {
-                    value: reminderHour,
-                    style: {padding:'6px 10px',borderRadius:'6px',border:'1px solid #e2e8f0',fontSize:'13px'},
-                    onChange: function(e) {
+              <div>
+                <div className="settings-row">
+                  <span>Status</span>
+                  <span style={{color:'#27AE60',fontWeight:600}}>{'\uD83D\uDD14 Active'}</span>
+                </div>
+                <div className="settings-row">
+                  <span>Remind me at</span>
+                  <select
+                    value={reminderHour}
+                    style={{padding:'6px 10px',borderRadius:'6px',border:'1px solid #e2e8f0',fontSize:'13px'}}
+                    onChange={function(e) {
                       var hour = parseInt(e.target.value);
                       setReminderHour(hour);
                       localStorage.setItem('vocab_reminder_hour', hour);
                       if (pushSubscription) {
                         updateReminderHour(pushSubscription.endpoint, hour);
                       }
-                    }
-                  },
-                    React.createElement('option', {value: 6}, '6:00 AM'),
-                    React.createElement('option', {value: 7}, '7:00 AM'),
-                    React.createElement('option', {value: 8}, '8:00 AM'),
-                    React.createElement('option', {value: 9}, '9:00 AM'),
-                    React.createElement('option', {value: 10}, '10:00 AM'),
-                    React.createElement('option', {value: 11}, '11:00 AM'),
-                    React.createElement('option', {value: 12}, '12:00 PM'),
-                    React.createElement('option', {value: 13}, '1:00 PM'),
-                    React.createElement('option', {value: 14}, '2:00 PM'),
-                    React.createElement('option', {value: 15}, '3:00 PM'),
-                    React.createElement('option', {value: 16}, '4:00 PM'),
-                    React.createElement('option', {value: 17}, '5:00 PM'),
-                    React.createElement('option', {value: 18}, '6:00 PM'),
-                    React.createElement('option', {value: 19}, '7:00 PM'),
-                    React.createElement('option', {value: 20}, '8:00 PM'),
-                    React.createElement('option', {value: 21}, '9:00 PM')
-                  )
-                ),
-                React.createElement('button', {
-                  className: 'btn btn-secondary btn-sm',
-                  style: {marginTop:'10px',color:'#E74C3C'},
-                  onClick: function() {
+                    }}
+                  >
+                    <option value={6}>6:00 AM</option>
+                    <option value={7}>7:00 AM</option>
+                    <option value={8}>8:00 AM</option>
+                    <option value={9}>9:00 AM</option>
+                    <option value={10}>10:00 AM</option>
+                    <option value={11}>11:00 AM</option>
+                    <option value={12}>12:00 PM</option>
+                    <option value={13}>1:00 PM</option>
+                    <option value={14}>2:00 PM</option>
+                    <option value={15}>3:00 PM</option>
+                    <option value={16}>4:00 PM</option>
+                    <option value={17}>5:00 PM</option>
+                    <option value={18}>6:00 PM</option>
+                    <option value={19}>7:00 PM</option>
+                    <option value={20}>8:00 PM</option>
+                    <option value={21}>9:00 PM</option>
+                  </select>
+                </div>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  style={{marginTop:'10px',color:'#E74C3C'}}
+                  onClick={function() {
                     setPushLoading(true);
                     if (pushSubscription) {
                       deactivatePushSubscription(pushSubscription.endpoint).then(function() {
@@ -3063,13 +3122,13 @@ function App({onHome}) {
                         setPushLoading(false);
                       });
                     }
-                  }
-                }, 'Disable Reminders')
-              ) :
-              React.createElement('button', {
-                className: 'btn btn-primary',
-                disabled: pushLoading,
-                onClick: function() {
+                  }}
+                >Disable Reminders</button>
+              </div> :
+              <button
+                className="btn btn-primary"
+                disabled={pushLoading}
+                onClick={function() {
                   setPushLoading(true);
                   registerServiceWorker().then(function(reg) {
                     if (!reg) {
@@ -3099,63 +3158,67 @@ function App({onHome}) {
                     alert('Failed to enable notifications: ' + err.message);
                     setPushLoading(false);
                   });
-                }
-              }, pushLoading ? 'Enabling...' : '\uD83D\uDD14 Enable Daily Reminder')
-          ),
+                }}
+              >{pushLoading ? 'Enabling...' : '\uD83D\uDD14 Enable Daily Reminder'}</button>
+            }
+          </div>
 
-          React.createElement('h2', null, 'Reset'),
-          React.createElement('div', {className: 'card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}},
-              'This will permanently delete all your learning progress. This action cannot be undone.'),
+          <h2>Reset</h2>
+          <div className="card">
+            <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}}>
+              This will permanently delete all your learning progress. This action cannot be undone.
+            </p>
 
-            // Step 0: Show reset button
-            resetStep === 0 ? React.createElement('button', {
-              className: 'btn btn-secondary',
-              style: {color:'#E74C3C'},
-              onClick: function() { setResetStep(1); }
-            }, 'Reset All Progress') : null,
+            {/* Step 0: Show reset button */}
+            {resetStep === 0 ? <button
+              className="btn btn-secondary"
+              style={{color:'#E74C3C'}}
+              onClick={function() { setResetStep(1); }}
+            >Reset All Progress</button> : null}
 
-            // Step 1: Are you sure?
-            resetStep === 1 ? React.createElement('div', null,
-              React.createElement('p', {style: {fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px'}},
-                '\u26A0\uFE0F Are you sure? All your progress will be permanently lost.'),
-              React.createElement('div', {className: 'btn-group'},
-                React.createElement('button', {
-                  className: 'btn btn-secondary btn-sm',
-                  onClick: function() { setResetStep(0); }
-                }, 'Cancel'),
-                React.createElement('button', {
-                  className: 'btn btn-sm',
-                  style: {background:'#E74C3C',color:'#fff'},
-                  onClick: function() { setResetStep(2); setResetPass(''); setResetError(''); }
-                }, 'Yes, reset everything')
-              )
-            ) : null,
+            {/* Step 1: Are you sure? */}
+            {resetStep === 1 ? <div>
+              <p style={{fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px'}}>
+                {'\u26A0\uFE0F Are you sure? All your progress will be permanently lost.'}
+              </p>
+              <div className="btn-group">
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={function() { setResetStep(0); }}
+                >Cancel</button>
+                <button
+                  className="btn btn-sm"
+                  style={{background:'#E74C3C',color:'#fff'}}
+                  onClick={function() { setResetStep(2); setResetPass(''); setResetError(''); }}
+                >Yes, reset everything</button>
+              </div>
+            </div> : null}
 
-            // Step 2: Enter password
-            resetStep === 2 ? React.createElement('div', null,
-              React.createElement('p', {style: {fontSize:'13px',color:'#2E3033',fontWeight:600,marginBottom:'10px'}},
-                '\uD83D\uDD12 Enter your password to confirm reset'),
-              React.createElement('input', {
-                type: 'password',
-                value: resetPass,
-                placeholder: 'Password',
-                style: {marginBottom:'8px'},
-                onChange: function(e) { setResetPass(e.target.value); setResetError(''); },
-                onKeyDown: function(e) { if (e.key === 'Enter') document.getElementById('reset-confirm-btn')?.click(); }
-              }),
-              resetError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginBottom:'8px'}}, resetError) : null,
-              React.createElement('div', {className: 'btn-group'},
-                React.createElement('button', {
-                  className: 'btn btn-secondary btn-sm',
-                  onClick: function() { setResetStep(0); setResetPass(''); setResetError(''); }
-                }, 'Cancel'),
-                React.createElement('button', {
-                  id: 'reset-confirm-btn',
-                  className: 'btn btn-sm',
-                  style: {background:'#E74C3C',color:'#fff'},
-                  disabled: resetStep === 3,
-                  onClick: function() {
+            {/* Step 2: Enter password */}
+            {resetStep === 2 ? <div>
+              <p style={{fontSize:'13px',color:'#2E3033',fontWeight:600,marginBottom:'10px'}}>
+                {'\uD83D\uDD12 Enter your password to confirm reset'}
+              </p>
+              <input
+                type="password"
+                value={resetPass}
+                placeholder="Password"
+                style={{marginBottom:'8px'}}
+                onChange={function(e) { setResetPass(e.target.value); setResetError(''); }}
+                onKeyDown={function(e) { if (e.key === 'Enter') document.getElementById('reset-confirm-btn')?.click(); }}
+              />
+              {resetError ? <p style={{color:'#E74C3C',fontSize:'12px',marginBottom:'8px'}}>{resetError}</p> : null}
+              <div className="btn-group">
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={function() { setResetStep(0); setResetPass(''); setResetError(''); }}
+                >Cancel</button>
+                <button
+                  id="reset-confirm-btn"
+                  className="btn btn-sm"
+                  style={{background:'#E74C3C',color:'#fff'}}
+                  disabled={resetStep === 3}
+                  onClick={function() {
                     if (!resetPass.trim()) { setResetError('Please enter your password'); return; }
                     setResetStep(3);
                     fetch(VERIFY_URL, {
@@ -3177,40 +3240,43 @@ function App({onHome}) {
                       setResetError('Connection error. Please try again.');
                       setResetStep(2);
                     });
-                  }
-                }, resetStep === 3 ? 'Verifying...' : 'Confirm Reset')
-              )
-            ) : null
-          ),
+                  }}
+                >{resetStep === 3 ? 'Verifying...' : 'Confirm Reset'}</button>
+              </div>
+            </div> : null}
+          </div>
 
-          React.createElement('h2', null, 'Backup & Restore'),
-          React.createElement('div', {className: 'card'},
-            React.createElement('p', {style: {fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}},
-              'Your progress saves automatically to this browser. Use export/import for backup or to transfer between devices.'),
-            React.createElement('div', {className: 'btn-group'},
-              React.createElement('button', {className: 'btn btn-primary', onClick: exportProgress},
-                '\uD83D\uDCBE Export Backup'),
-              React.createElement('label', {className: 'btn btn-secondary', style: {cursor:'pointer'}},
-                '\uD83D\uDCC2 Import',
-                React.createElement('input', {
-                  type: 'file', accept: '.json',
-                  onChange: importProgress,
-                  style: {display:'none'}
-                })
-              )
-            )
-          ),
+          <h2>Backup & Restore</h2>
+          <div className="card">
+            <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}}>
+              Your progress saves automatically to this browser. Use export/import for backup or to transfer between devices.
+            </p>
+            <div className="btn-group">
+              <button className="btn btn-primary" onClick={exportProgress}>
+                {'\uD83D\uDCBE'} Export Backup
+              </button>
+              <label className="btn btn-secondary" style={{cursor:'pointer'}}>
+                {'\uD83D\uDCC2'} Import
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={importProgress}
+                  style={{display:'none'}}
+                />
+              </label>
+            </div>
+          </div>
 
-          onHome ? React.createElement('div', {className: 'card', style: {marginTop:'16px'}},
-            React.createElement('h2', null, 'Language'),
-            React.createElement('button', {
-              className: 'btn btn-secondary',
-              style: {marginTop:'8px'},
-              onClick: onHome
-            }, '\uD83C\uDF10 Switch Language')
-          ) : null
-        )
-      )
+          {onHome ? <div className="card" style={{marginTop:'16px'}}>
+            <h2>Language</h2>
+            <button
+              className="btn btn-secondary"
+              style={{marginTop:'8px'}}
+              onClick={onHome}
+            >{'\uD83C\uDF10'} Switch Language</button>
+          </div> : null}
+        </div>
+      </div>
     );
   }
 
@@ -3286,94 +3352,102 @@ function Home() {
   }
 
   if (language === 'german' && authenticated) {
-    return React.createElement(App, {onHome: goHome});
+    return <App onHome={goHome} />;
   }
 
   if (language === 'english' && authenticated) {
-    return React.createElement('div', {className: 'app'},
-      React.createElement('div', {className: 'home-header'},
-        React.createElement('button', {onClick: goHome, style: {background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}, '\u2190 Back'),
-        React.createElement('span', {style: {fontSize:'15px',fontWeight:600}}, 'English Vocabulary'),
-        React.createElement('span', null, '')
-      ),
-      React.createElement('div', {className: 'content', style: {textAlign:'center',paddingTop:'60px'}},
-        React.createElement('div', {style: {fontSize:'64px',marginBottom:'16px'}}, '\uD83C\uDDEC\uD83C\uDDE7'),
-        React.createElement('h1', null, 'Coming Soon!'),
-        React.createElement('p', {style: {color:'#718096',margin:'12px 0'}}, 'English vocabulary course is under development.'),
-        React.createElement('button', {className: 'btn btn-primary', style: {marginTop:'20px',maxWidth:'200px',margin:'20px auto'}, onClick: goHome}, 'Back to Home')
-      )
+    return (
+      <div className="app">
+        <div className="home-header">
+          <button onClick={goHome} style={{background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}>{'\u2190'} Back</button>
+          <span style={{fontSize:'15px',fontWeight:600}}>English Vocabulary</span>
+          <span></span>
+        </div>
+        <div className="content" style={{textAlign:'center',paddingTop:'60px'}}>
+          <div style={{fontSize:'64px',marginBottom:'16px'}}>{'\uD83C\uDDEC\uD83C\uDDE7'}</div>
+          <h1>Coming Soon!</h1>
+          <p style={{color:'#718096',margin:'12px 0'}}>English vocabulary course is under development.</p>
+          <button className="btn btn-primary" style={{marginTop:'20px',maxWidth:'200px',margin:'20px auto'}} onClick={goHome}>Back to Home</button>
+        </div>
+      </div>
     );
   }
 
   // Password prompt
   if (pendingLang) {
-    return React.createElement('div', {className: 'app'},
-      React.createElement('div', {className: 'home-header'},
-        React.createElement('button', {onClick: function() { setPendingLang(null); }, style: {background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}, '\u2190 Back'),
-        React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
-        React.createElement('span', null, '')
-      ),
-      React.createElement('div', {className: 'content', style: {paddingTop:'60px',textAlign:'center'}},
-        React.createElement('div', {style: {fontSize:'48px',marginBottom:'12px'}}, '\uD83D\uDD12'),
-        React.createElement('h1', {style: {fontSize:'18px',marginBottom:'16px'}}, 'Enter password to continue'),
-        React.createElement('input', {
-          type: 'password',
-          value: passInput,
-          placeholder: 'Password',
-          style: {maxWidth:'240px',margin:'0 auto',display:'block',textAlign:'center'},
-          onChange: function(e) { setPassInput(e.target.value); setPassError(''); },
-          onKeyDown: function(e) { if (e.key === 'Enter' && !passLoading) submitPassword(); }
-        }),
-        passError ? React.createElement('p', {style: {color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}, passError) : null,
-        React.createElement('button', {
-          className: 'btn btn-primary',
-          style: {marginTop:'16px',maxWidth:'240px'},
-          disabled: passLoading,
-          onClick: submitPassword
-        }, passLoading ? 'Verifying...' : 'Enter')
-      )
+    return (
+      <div className="app">
+        <div className="home-header">
+          <button onClick={function() { setPendingLang(null); }} style={{background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}>{'\u2190'} Back</button>
+          <span style={{fontSize:'15px',fontWeight:700}}>Vocabulary Study</span>
+          <span></span>
+        </div>
+        <div className="content" style={{paddingTop:'60px',textAlign:'center'}}>
+          <div style={{fontSize:'48px',marginBottom:'12px'}}>{'\uD83D\uDD12'}</div>
+          <h1 style={{fontSize:'18px',marginBottom:'16px'}}>Enter password to continue</h1>
+          <input
+            type="password"
+            value={passInput}
+            placeholder="Password"
+            style={{maxWidth:'240px',margin:'0 auto',display:'block',textAlign:'center'}}
+            onChange={function(e) { setPassInput(e.target.value); setPassError(''); }}
+            onKeyDown={function(e) { if (e.key === 'Enter' && !passLoading) submitPassword(); }}
+          />
+          {passError ? <p style={{color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}>{passError}</p> : null}
+          <button
+            className="btn btn-primary"
+            style={{marginTop:'16px',maxWidth:'240px'}}
+            disabled={passLoading}
+            onClick={submitPassword}
+          >{passLoading ? 'Verifying...' : 'Enter'}</button>
+        </div>
+      </div>
     );
   }
 
   // Home screen - language picker
-  return React.createElement('div', {className: 'app'},
-    React.createElement('div', {className: 'home-header'},
-      React.createElement('span', null, ''),
-      React.createElement('span', {style: {fontSize:'15px',fontWeight:700}}, 'Vocabulary Study'),
-      React.createElement('span', null, '')
-    ),
-    React.createElement('div', {className: 'content', style: {paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}},
-      React.createElement('div', {style: {textAlign:'center',marginBottom:'30px'}},
-        React.createElement('a', {href: 'https://uniques.vn/', target: '_blank', rel: 'noopener noreferrer'},
-          React.createElement('img', {src: 'uniques-logo.png', alt: 'UniqueS', style: {width:'160px',marginBottom:'16px'}})
-        ),
-        React.createElement('h1', {style: {fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}, 'What would you like to study today?'),
-        React.createElement('p', {style: {color:'#7E9470',fontSize:'13px'}}, 'Choose a language to get started')
-      ),
-      React.createElement('div', {className: 'language-grid'},
-        React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('german'); }},
-          React.createElement('div', {className: 'language-flag'},
-            React.createElement('img', {src: 'https://flagcdn.com/w80/de.png', alt: 'German flag'})),
-          React.createElement('div', {className: 'language-name'}, 'German'),
-          React.createElement('div', {className: 'language-desc'}, '1500 words \u2022 A1-B1'),
-          React.createElement('div', {className: 'language-tag active-tag'}, 'Active')
-        ),
-        React.createElement('button', {className: 'language-card', onClick: function() { trySelectLanguage('english'); }},
-          React.createElement('div', {className: 'language-flag'},
-            React.createElement('img', {src: 'https://flagcdn.com/w80/gb.png', alt: 'English flag'})),
-          React.createElement('div', {className: 'language-name'}, 'English'),
-          React.createElement('div', {className: 'language-desc'}, 'Coming soon'),
-          React.createElement('div', {className: 'language-tag soon-tag'}, 'Soon')
-        )
-      ),
+  return (
+    <div className="app">
+      <div className="home-header">
+        <span></span>
+        <span style={{fontSize:'15px',fontWeight:700}}>Vocabulary Study</span>
+        <span></span>
+      </div>
+      <div className="content" style={{paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}}>
+        <div style={{textAlign:'center',marginBottom:'30px'}}>
+          <a href="https://uniques.vn/" target="_blank" rel="noopener noreferrer">
+            <img src="uniques-logo.png" alt="UniqueS" style={{width:'160px',marginBottom:'16px'}} />
+          </a>
+          <h1 style={{fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}>What would you like to study today?</h1>
+          <p style={{color:'#7E9470',fontSize:'13px'}}>Choose a language to get started</p>
+        </div>
+        <div className="language-grid">
+          <button className="language-card" onClick={function() { trySelectLanguage('german'); }}>
+            <div className="language-flag">
+              <img src="https://flagcdn.com/w80/de.png" alt="German flag" />
+            </div>
+            <div className="language-name">German</div>
+            <div className="language-desc">{'1500 words \u2022 A1-B1'}</div>
+            <div className="language-tag active-tag">Active</div>
+          </button>
+          <button className="language-card" onClick={function() { trySelectLanguage('english'); }}>
+            <div className="language-flag">
+              <img src="https://flagcdn.com/w80/gb.png" alt="English flag" />
+            </div>
+            <div className="language-name">English</div>
+            <div className="language-desc">Coming soon</div>
+            <div className="language-tag soon-tag">Soon</div>
+          </button>
+        </div>
 
-    ),
-    React.createElement('div', {style: {padding:'12px 16px',textAlign:'center',fontSize:'11px',color:'#A0AEC0',lineHeight:'1.6',flexShrink:0}},
-      React.createElement('div', null, '\u00A9 2026 Tam Tran Thanh. All rights reserved.'),
-      React.createElement('div', null, 'Contact us: ',
-        React.createElement('a', {href: 'mailto:uniques@officience.com', style: {color:'#D67635',textDecoration:'none'}}, 'uniques@officience.com')
-      )
-    )
+      </div>
+      <div style={{padding:'12px 16px',textAlign:'center',fontSize:'11px',color:'#A0AEC0',lineHeight:'1.6',flexShrink:0}}>
+        <div>{'\u00A9 2026 Tam Tran Thanh. All rights reserved.'}</div>
+        <div>Contact us: {' '}
+          <a href="mailto:uniques@officience.com" style={{color:'#D67635',textDecoration:'none'}}>uniques@officience.com</a>
+        </div>
+      </div>
+    </div>
   );
 }
 
