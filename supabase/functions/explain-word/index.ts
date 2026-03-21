@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const word = validateWord(body?.word);
+    const wordType = typeof body?.type === "string" ? body.type.trim() : "";
     if (!word) {
       return new Response(
         JSON.stringify({ error: "Invalid word. Please provide a valid German word (max 50 characters)." }),
@@ -102,7 +103,23 @@ Deno.serve(async (req) => {
     }
 
     // Not cached — call Gemini API with sanitized input
-    const prompt = `You are a Goethe-Institut A1 German teacher. Explain this German word: ${wordLower}
+    const isVerb = wordType.toLowerCase() === "verb";
+    const conjugationSection = isVerb ? `
+
+## Conjugation (Präsens)
+| Pronoun | Conjugation |
+|---------|-------------|
+| ich | [form] |
+| du | [form] |
+| er/sie/es | [form] |
+| wir | [form] |
+| ihr | [form] |
+| sie/Sie | [form] |
+
+If the verb is irregular or has a stem change, mention it clearly.
+` : "";
+
+    const prompt = `You are a Goethe-Institut A1 German teacher. Explain this German word: ${wordLower}${isVerb ? " (this is a verb — include full conjugation table)" : ""}
 
 You MUST use EXACTLY this markdown format (copy the structure precisely):
 
@@ -112,7 +129,7 @@ You MUST use EXACTLY this markdown format (copy the structure precisely):
 **${wordLower}** = [English translation]
 
 ---
-
+${conjugationSection}
 ## Key Grammar Point
 [One clear grammar explanation with examples using **bold** for the target word]
 - [Example 1]

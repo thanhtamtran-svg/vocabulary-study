@@ -125,14 +125,14 @@ async function fetchCachedExplanation(word) {
   return null;
 }
 
-async function fetchExplanation(word) {
+async function fetchExplanation(word, wordType) {
   const res = await fetch(EXPLAIN_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + SUPABASE_KEY
     },
-    body: JSON.stringify({ word: word })
+    body: JSON.stringify({ word: word, type: wordType || '' })
   });
   if (!res.ok) throw new Error('Failed to fetch explanation');
   const data = await res.json();
@@ -1632,7 +1632,7 @@ function App({onHome}) {
                 setAiLoading(true);
                 setAiError('');
                 setAiSaveStatus('');
-                fetchExplanation(w.german).then(function(text) {
+                fetchExplanation(w.german, w.type).then(function(text) {
                   setAiExplanation(text);
                   setAiLoading(false);
                   setAiSaveStatus('saving');
@@ -1665,7 +1665,7 @@ function App({onHome}) {
                   setAiError('');
                   setAiLoading(true);
                   setAiSaveStatus('');
-                  fetchExplanation(w.german).then(function(text) {
+                  fetchExplanation(w.german, w.type).then(function(text) {
                     setAiExplanation(text);
                     setAiLoading(false);
                     setAiSaveStatus('saving');
@@ -1732,11 +1732,19 @@ function App({onHome}) {
                       acc.push(React.createElement('div', {key: i, className: 'ai-bullet'}, renderInline(line.replace(/^[-•]\s/, ''), i)));
                       return acc;
                     }
-                    // Table rows → render as compact items
+                    // Table rows → render as styled conjugation row
                     if (line.match(/^\|.*\|$/)) {
                       var cells = line.split('|').filter(function(c) { return c.trim(); });
                       if (cells.length >= 2) {
-                        acc.push(React.createElement('div', {key: i, className: 'ai-bullet'}, renderInline(cells[0].trim() + ' — ' + cells[1].trim(), i)));
+                        acc.push(React.createElement('div', {key: i, style: {
+                          display:'flex', justifyContent:'space-between', alignItems:'center',
+                          padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
+                          background: i % 2 === 0 ? '#f8f6f0' : '#fff',
+                          fontSize:'13px', border:'1px solid #F5EBDC'
+                        }},
+                          React.createElement('span', {style: {color:'#7E9470',fontWeight:600,minWidth:'70px'}}, cells[0].trim()),
+                          React.createElement('span', {style: {color:'#324A84',fontWeight:600}}, renderInline(cells[1].trim(), i))
+                        ));
                       }
                       return acc;
                     }
