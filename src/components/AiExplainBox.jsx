@@ -98,6 +98,7 @@ export default function AiExplainBox({
         <button
           className="btn btn-sm btn-secondary"
           style={{padding:'4px 8px',fontSize:'10px'}}
+          aria-label="Close AI explanation"
           onClick={handleClear}
         >{'\u2715'}</button>
       </div>

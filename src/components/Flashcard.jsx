@@ -6,9 +6,21 @@ export default function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
   wordImage, imageLoading
 }) {
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onFlip();
+      speakGerman(word.german);
+    }
+  }
+
   return (
     <div className="flashcard-container"
-      onClick={function() { onFlip(); speakGerman(word.german); }}>
+      tabIndex={0}
+      role="button"
+      aria-label={'Flashcard for ' + word.german + '. ' + (flipped ? 'Showing answer: ' + word.english : 'Press Enter or Space to flip.')}
+      onClick={function() { onFlip(); speakGerman(word.german); }}
+      onKeyDown={handleKeyDown}>
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
           <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
@@ -18,6 +30,7 @@ export default function Flashcard({
           <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
             <div className="flashcard-word">{word.german}</div>
             <button className="speak-btn"
+              aria-label={'Pronounce ' + word.german}
               onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
               {'\uD83D\uDD0A'}
             </button>
@@ -51,6 +64,7 @@ export default function Flashcard({
               {'/' + wordIPA + '/'}
             </span> : null}
             <button className="speak-btn back"
+              aria-label={'Pronounce ' + word.german}
               onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
               {'\uD83D\uDD0A'}
             </button>

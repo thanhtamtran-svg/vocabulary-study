@@ -19,19 +19,48 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Simple in-memory rate limiter: max 10 requests per minute per IP
+// Simple in-memory rate limiter
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW = 60_000;
-const RATE_LIMIT_MAX = 10;
+const RATE_LIMIT_MAX_AUTH = 10;
+const RATE_LIMIT_MAX_UNAUTH = 2;
 
-function isRateLimited(ip: string): boolean {
+function isRateLimited(ip: string, authenticated: boolean): boolean {
   const now = Date.now();
+  const max = authenticated ? RATE_LIMIT_MAX_AUTH : RATE_LIMIT_MAX_UNAUTH;
   const timestamps = rateLimitMap.get(ip) || [];
   const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
-  if (recent.length >= RATE_LIMIT_MAX) return true;
+  if (recent.length >= max) return true;
   recent.push(now);
   rateLimitMap.set(ip, recent);
   return false;
+}
+
+// Validate session token from Authorization header
+async function validateAuthToken(req: Request): Promise<boolean> {
+  try {
+    const authHeader = req.headers.get("authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) return false;
+    const token = authHeader.slice(7);
+    const parts = token.split(":");
+    if (parts.length < 3 || parts[0] !== "vocab_auth") return false;
+    const expires = parseInt(parts[1], 10);
+    if (isNaN(expires) || Date.now() > expires) return false;
+    // Verify HMAC signature
+    const payload = parts[0] + ":" + parts[1];
+    const sigHex = parts.slice(2).join(":");
+    const secret = Deno.env.get("APP_PASSWORD") || "default";
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw", encoder.encode(secret + "_session_key"),
+      { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+    );
+    const expectedSig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
+    const expectedHex = Array.from(expectedSig).map(b => b.toString(16).padStart(2, "0")).join("");
+    return sigHex === expectedHex;
+  } catch {
+    return false;
+  }
 }
 
 // Validate word input: must be a short string of letters/hyphens/spaces, max 4 words
@@ -55,9 +84,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Rate limiting
+    // Auth token validation + rate limiting
+    const authenticated = await validateAuthToken(req);
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp)) {
+    if (isRateLimited(clientIp, authenticated)) {
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again later." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }

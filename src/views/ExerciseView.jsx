@@ -2,6 +2,27 @@ import React from 'react';
 import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants.js';
 import { speakGerman } from '../lib/speech.js';
 
+// Safe inline markdown renderer (no dangerouslySetInnerHTML)
+function renderInline(text, key) {
+  var parts = [];
+  var re = /\*\*(.+?)\*\*/g;
+  var last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    parts.push(React.createElement('strong', { key: key + '_b' + m.index }, m[1]));
+    last = re.lastIndex;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length ? parts : [text];
+}
+
+function renderSafeText(text) {
+  if (!text) return null;
+  return text.split('\n').map(function(line, i) {
+    return React.createElement('div', { key: 'line_' + i }, renderInline(line, i));
+  });
+}
+
 export default function ExerciseView({
   exerciseSession, exerciseIdx, exerciseAnswer, setExerciseAnswer,
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
@@ -304,7 +325,7 @@ export default function ExerciseView({
             fontSize: '13px', lineHeight: '1.6', color: '#2E3033'
           }}>
             <div style={{fontWeight: 700, color: '#D67635', marginBottom: '6px', fontSize: '13px'}}>{'\uD83D\uDCA1'} AI Teacher</div>
-            <div dangerouslySetInnerHTML={{__html: exerciseWhyText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}} />
+            <div>{renderSafeText(exerciseWhyText)}</div>
           </div> : null}
         </div> : null}
 

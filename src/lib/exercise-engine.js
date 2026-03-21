@@ -277,13 +277,34 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
           });
         }
 
-        var topicOptions = [
-          'A day at school',
-          'Shopping at a store',
-          'A visit to the doctor',
-          'Cooking dinner'
+        // Generate dynamic false topic options based on the actual passage
+        var allTopicPool = [
+          'A day at school', 'Shopping at a store', 'A visit to the doctor',
+          'Cooking dinner', 'Traveling by train', 'Playing sports',
+          'Working in an office', 'A birthday party', 'Learning to drive',
+          'Going to the cinema', 'A trip to the zoo', 'Cleaning the house',
+          'Eating at a restaurant', 'Meeting new friends', 'Studying for an exam',
+          'Going on vacation', 'A walk in the park', 'Moving to a new city',
+          'A job interview', 'Shopping for clothes'
         ];
-        var realTopic = passage.title ? passage.title.replace(/^(Ein |Eine |Der |Die |Das |Mein |Meine )/, '') : 'daily life';
+        // Derive topic keywords from the passage title and first sentence of translation
+        var passageHint = ((passage.title || '') + ' ' + (passage.translation || '').split('.')[0]).toLowerCase();
+        // Filter out options that are too similar to the real topic
+        var filteredTopics = allTopicPool.filter(function(t) {
+          var tLower = t.toLowerCase();
+          // Remove options that share significant words with the passage
+          var tWords = tLower.split(/\s+/);
+          for (var tw = 0; tw < tWords.length; tw++) {
+            if (tWords[tw].length > 3 && passageHint.indexOf(tWords[tw]) >= 0) return false;
+          }
+          return true;
+        });
+        // Shuffle filtered topics
+        for (var fi = filteredTopics.length - 1; fi > 0; fi--) {
+          var fj = Math.floor(Math.random() * (fi + 1));
+          var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
+        }
+        var topicOptions = filteredTopics.slice(0, 4);
         var topicOpts = [{text: passage.translation.split('.')[0].trim().substring(0, 60), isCorrect: true, wi: -10}];
         topicOptions.forEach(function(t, i) {
           topicOpts.push({text: t, isCorrect: false, wi: -(11+i)});

@@ -18,6 +18,7 @@ import {
   getAiSentence, generateExerciseItems, fetchExerciseSentences
 } from './lib/exercise-engine.js';
 
+import { useToast } from './components/Toast.jsx';
 import SetupScreen from './views/SetupScreen.jsx';
 import Dashboard from './views/Dashboard.jsx';
 import SessionView from './views/SessionView.jsx';
@@ -30,6 +31,7 @@ import SettingsView from './views/SettingsView.jsx';
 
 // ===== MAIN APP =====
 function App({onHome}) {
+  const toast = useToast();
   const saved = useMemo(() => loadState(), []);
 
   const [view, setView] = useState("dashboard");
@@ -223,18 +225,21 @@ function App({onHome}) {
     if (view !== 'session' || !sessionWords.length) return;
     var w = sessionWords[currentIdx];
     if (!w) return;
+    var cancelled = false;
     setWordImage(null);
     setImageLoading(true);
     fetchWordImage(w.german, w.english, w.type).then(function(img) {
+      if (cancelled) return;
       setWordImage(img);
       setImageLoading(false);
-    }).catch(function() { setImageLoading(false); });
+    }).catch(function() { if (!cancelled) setImageLoading(false); });
     // Auto-load cached explanation (no API cost)
     setAiExplanation('');
     setAiError('');
     setAiLoading(false);
     setAiSaveStatus('');
     fetchCachedExplanation(w.german).then(function(text) {
+      if (cancelled) return;
       if (text) {
         setAiExplanation(text);
         setAiSaveStatus('saved');
@@ -245,15 +250,17 @@ function App({onHome}) {
     setWordDefinition('');
     setDefImage(null);
     fetchIPAAndDefinition(w.german, w.english).then(function(result) {
+      if (cancelled) return;
       if (result.ipa) setWordIPA(result.ipa);
       if (result.definition) {
         setWordDefinition(result.definition);
         // Generate image based on definition sentence (use definition as key for caching)
-        var defKey = 'def_' + w.german.toLowerCase();
+        var defKey = 'def ' + w.german.toLowerCase();
         // Check cache first
         fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
         }).then(function(r) { return r.ok ? r.json() : []; }).then(function(cached) {
+          if (cancelled) return;
           if (cached && cached.length > 0 && cached[0].image_base64) {
             setDefImage({ url: cached[0].image_base64 });
           } else {
@@ -267,6 +274,7 @@ function App({onHome}) {
                 type: 'definition'
               })
             }).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
+              if (cancelled) return;
               if (data && data.image) setDefImage({ url: data.image });
             }).catch(function() {});
           }
@@ -275,6 +283,7 @@ function App({onHome}) {
     });
     // Autoplay pronunciation
     speakGerman(w.german);
+    return function() { cancelled = true; };
   }, [view, currentIdx, sessionWords]);
 
   // ===== EXERCISE STATE =====
@@ -397,6 +406,25 @@ function App({onHome}) {
     window.addEventListener('keydown', handleKeyDown);
     return function() { window.removeEventListener('keydown', handleKeyDown); };
   }, [view, exerciseSession, exerciseIdx, exerciseFeedback, exerciseSelectedIdx]);
+
+  // Escape key: go back from session/exercise views
+  useEffect(function() {
+    function handleKeyDown(e) {
+      if (e.key !== 'Escape') return;
+      if (view === 'session') {
+        setView('dashboard');
+      } else if (view === 'exercise') {
+        if (exerciseResults.length > 0 && !confirm('Exit exercise? Your progress will be saved.')) return;
+        setView('dashboard');
+      } else if (view === 'complete' || view === 'exercise-complete') {
+        setView('dashboard');
+      } else if (view === 'progress' || view === 'browse' || view === 'settings') {
+        setView('dashboard');
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return function() { window.removeEventListener('keydown', handleKeyDown); };
+  }, [view, exerciseResults]);
 
   // Migrate old todayCompleted format (learn: true/false → learnCount)
   useEffect(function() {
@@ -615,8 +643,8 @@ function App({onHome}) {
         if (data.todayCompleted && data.completedDate === dateKey(today)) {
           setTodayCompleted(data.todayCompleted);
         }
-        alert("Progress loaded successfully!");
-      } catch { alert("Invalid file format"); }
+        toast.success("Progress loaded successfully!");
+      } catch { toast.error("Invalid file format"); }
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -625,7 +653,7 @@ function App({onHome}) {
   function startExercise() {
     var selected = selectExerciseWords(progress, exerciseProgress, words, today);
     if (!selected || selected.length < 3) {
-      alert('You need at least 5 learned words to start exercises. Keep learning!');
+      toast.info('You need at least 5 learned words to start exercises. Keep learning!');
       return;
     }
     setExerciseLoading(true);

@@ -1,5 +1,6 @@
 import React from 'react';
 import Nav from '../components/Nav.jsx';
+import { useToast } from '../components/Toast.jsx';
 import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase.js';
 import { dateKey } from '../lib/dates.js';
 import { VAPID_PUBLIC_KEY } from '../lib/constants.js';
@@ -92,6 +93,7 @@ export default function SettingsView({
   setProgress, setTodayCompleted,
   exportProgress, importProgress
 }) {
+  var toast = useToast();
   var VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 
   return (
@@ -169,7 +171,7 @@ export default function SettingsView({
                 onClick={function() {
                   var email = document.getElementById('sync-email-input').value.trim();
                   if (email && email.includes('@')) connectSync(email);
-                  else alert('Please enter a valid email');
+                  else toast.error('Please enter a valid email');
                 }}
               >Connect</button>
             </div>
@@ -246,13 +248,13 @@ export default function SettingsView({
                 setPushLoading(true);
                 registerServiceWorker().then(function(reg) {
                   if (!reg) {
-                    alert('Service Worker not supported');
+                    toast.error('Service Worker not supported');
                     setPushLoading(false);
                     return;
                   }
                   return Notification.requestPermission().then(function(perm) {
                     if (perm !== 'granted') {
-                      alert('Notification permission denied. Please enable it in your browser settings.');
+                      toast.error('Notification permission denied. Please enable it in browser settings.');
                       setPushLoading(false);
                       return;
                     }
@@ -262,14 +264,14 @@ export default function SettingsView({
                           setPushSubscription(sub);
                           setPushEnabled(true);
                         } else {
-                          alert('Failed to save subscription. Please try again.');
+                          toast.error('Failed to save subscription. Please try again.');
                         }
                         setPushLoading(false);
                       });
                     });
                   });
                 }).catch(function(err) {
-                  alert('Failed to enable notifications: ' + err.message);
+                  toast.error('Failed to enable notifications. Please try again.');
                   setPushLoading(false);
                 });
               }}
@@ -345,7 +347,7 @@ export default function SettingsView({
                       setTodayCompleted({learnCount: 0, learnedBatches: [], reviews: {}});
                       setResetStep(0);
                       setResetPass('');
-                      alert('All progress has been reset.');
+                      toast.success('All progress has been reset.');
                     } else {
                       setResetError(data.error || 'Incorrect password');
                       setResetStep(2);
