@@ -1209,14 +1209,19 @@ function App({onHome}) {
                 normalize(stripArticle(userAnswer)) === normalize(stripArticle(fullGerman));
     }
 
+    var correctAnswerText = item.fullAnswer || item.correctAnswer;
+    if (item.type === 'reading_comprehension' && item.options && item.correctIdx >= 0) {
+      correctAnswerText = item.options[item.correctIdx].text;
+    }
+
     setExerciseFeedback({
       correct: correct,
       userAnswer: userAnswer,
-      correctAnswer: item.fullAnswer || item.correctAnswer,
+      correctAnswer: correctAnswerText,
       sentence: item.sentence || null,
       message: correct
         ? ['Great job!', 'Correct!', 'Well done!', 'Exactly right!'][Math.floor(Math.random() * 4)]
-        : 'The correct answer is: ' + (item.fullAnswer || item.correctAnswer)
+        : 'The correct answer is: ' + correctAnswerText
     });
 
     setExerciseResults(function(prev) {
