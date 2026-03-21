@@ -3163,7 +3163,9 @@ function Home() {
     ),
     React.createElement('div', {className: 'content', style: {paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}},
       React.createElement('div', {style: {textAlign:'center',marginBottom:'30px'}},
-        React.createElement('img', {src: 'uniques-logo.png', alt: 'UniqueS', style: {width:'160px',marginBottom:'16px'}}),
+        React.createElement('a', {href: 'https://uniques.vn/', target: '_blank', rel: 'noopener noreferrer'},
+          React.createElement('img', {src: 'uniques-logo.png', alt: 'UniqueS', style: {width:'160px',marginBottom:'16px'}})
+        ),
         React.createElement('h1', {style: {fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}, 'What would you like to study today?'),
         React.createElement('p', {style: {color:'#7E9470',fontSize:'13px'}}, 'Choose a language to get started')
       ),
