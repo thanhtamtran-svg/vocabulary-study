@@ -1,6 +1,6 @@
 import React from 'react';
-import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase.js';
-import { fetchExplanation, fetchCachedExplanation } from '../lib/api.js';
+import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
+import { fetchExplanation, fetchCachedExplanation } from '../lib/api';
 
 // Parse markdown inline: **bold** and *italic*
 function renderInline(text, key) {

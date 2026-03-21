@@ -1,6 +1,6 @@
 import React from 'react';
-import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants.js';
-import { speakGerman } from '../lib/speech.js';
+import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants';
+import { speakGerman } from '../lib/speech';
 
 // Safe inline markdown renderer (no dangerouslySetInnerHTML)
 function renderInline(text, key) {

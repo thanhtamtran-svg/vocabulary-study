@@ -116,6 +116,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (cached?.image_base64) {
+      // Return cached value — works for both legacy base64 data URLs and new storage URLs
       return new Response(JSON.stringify({ image: cached.image_base64, fromCache: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -184,15 +185,42 @@ ${type === "Expression" ? "- Show a character using body language/facial express
 
     const base64 = imagePart.inlineData.data;
     const mimeType = imagePart.inlineData.mimeType || "image/png";
-    const dataUrl = `data:${mimeType};base64,${base64}`;
 
-    // Cache in database
+    // Decode base64 to binary for Storage upload
+    const binaryStr = atob(base64);
+    const bytes = new Uint8Array(binaryStr.length);
+    for (let i = 0; i < binaryStr.length; i++) {
+      bytes[i] = binaryStr.charCodeAt(i);
+    }
+
+    // Upload to Supabase Storage
+    const filePath = `${key}.png`;
+    const { error: uploadError } = await supabase.storage
+      .from("vocab-images")
+      .upload(filePath, bytes, {
+        contentType: mimeType,
+        upsert: true,
+      });
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    let imageValue: string;
+
+    if (uploadError) {
+      // Fallback to base64 data URL if upload fails
+      console.error("Storage upload failed, falling back to base64:", uploadError.message);
+      imageValue = `data:${mimeType};base64,${base64}`;
+    } else {
+      // Use the public URL from Storage
+      imageValue = `${supabaseUrl}/storage/v1/object/public/vocab-images/${encodeURIComponent(filePath)}`;
+    }
+
+    // Cache in database (stores URL for new images, or base64 as fallback)
     await supabase.from("vocab_images").upsert({
       word: key,
-      image_base64: dataUrl,
+      image_base64: imageValue,
     }, { onConflict: "word" });
 
-    return new Response(JSON.stringify({ image: dataUrl, fromCache: false }), {
+    return new Response(JSON.stringify({ image: imageValue, fromCache: false }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (_err) {

@@ -1,7 +1,7 @@
 import React from 'react';
-import Nav from '../components/Nav.jsx';
-import { REVIEW_LABELS, SCIENCE_TIPS } from '../lib/constants.js';
-import { formatDate } from '../lib/dates.js';
+import Nav from '../components/Nav';
+import { REVIEW_LABELS, SCIENCE_TIPS } from '../lib/constants';
+import { formatDate } from '../lib/dates';
 
 export default function Dashboard({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,

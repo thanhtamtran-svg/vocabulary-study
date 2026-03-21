@@ -1,8 +1,8 @@
-import { SUPABASE_URL } from './supabase.js';
-import { PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES } from './constants.js';
-import { getMemoryStage } from './memory-stages.js';
-import { parseDate } from './dates.js';
-import { getConjugation } from './conjugations.js';
+import { SUPABASE_URL } from './supabase';
+import { PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES } from './constants';
+import { getMemoryStage } from './memory-stages';
+import { parseDate } from './dates';
+import { getConjugation } from './conjugations';
 
 // Select words for exercise: prioritize mistakes, then due, then new
 export function selectExerciseWords(progress, exerciseProgress, words, today) {

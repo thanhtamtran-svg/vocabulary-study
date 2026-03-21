@@ -1,9 +1,9 @@
 import React from 'react';
-import Nav from '../components/Nav.jsx';
-import { useToast } from '../components/Toast.jsx';
-import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase.js';
-import { dateKey } from '../lib/dates.js';
-import { VAPID_PUBLIC_KEY } from '../lib/constants.js';
+import Nav from '../components/Nav';
+import { useToast } from '../components/Toast';
+import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
+import { dateKey } from '../lib/dates';
+import { VAPID_PUBLIC_KEY } from '../lib/constants';
 
 function urlBase64ToUint8Array(base64String) {
   var padding = '='.repeat((4 - base64String.length % 4) % 4);

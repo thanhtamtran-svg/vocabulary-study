@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { SUPABASE_URL } from './lib/supabase.js';
-import App from './App.jsx';
+import { SUPABASE_URL } from './lib/supabase';
+import App from './App';
 
 const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 

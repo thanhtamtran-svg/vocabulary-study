@@ -1,10 +1,14 @@
-import { SUPABASE_URL, SUPABASE_KEY } from './supabase.js';
+import { SUPABASE_URL, SUPABASE_KEY } from './supabase';
 
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
 export async function fetchWordImage(germanWord, englishWord, wordType) {
   try {
     // First check cache via REST API (fast, no edge function call needed)
+    // The image_base64 column may contain either:
+    //   - A Storage URL (https://...) for new images
+    //   - A base64 data URL (data:image/png;base64,...) for legacy images
+    // Both work directly as <img src> values.
     var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(germanWord.toLowerCase()) + '&select=image_base64', {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });

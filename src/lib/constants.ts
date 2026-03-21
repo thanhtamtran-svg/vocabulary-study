@@ -1,4 +1,4 @@
-import { VOCAB_DATA } from '../vocab-data.js';
+import { VOCAB_DATA } from '../vocab-data';
 
 export const TYPE_TAGS = ["tag-noun","tag-verb","tag-adj","tag-gram","tag-expr","tag-found"];
 export const TYPE_NAMES = VOCAB_DATA.types;

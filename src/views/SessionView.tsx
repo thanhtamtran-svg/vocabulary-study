@@ -1,10 +1,10 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data.js';
-import { DUAL_CODING_TIPS, REVIEW_LABELS, REVIEW_METHODS } from '../lib/constants.js';
-import { speakGerman } from '../lib/speech.js';
-import Flashcard from '../components/Flashcard.jsx';
-import ConfidenceButtons from '../components/ConfidenceButtons.jsx';
-import AiExplainBox from '../components/AiExplainBox.jsx';
+import { WORD_EMOJIS } from '../emoji-data';
+import { DUAL_CODING_TIPS, REVIEW_LABELS, REVIEW_METHODS } from '../lib/constants';
+import { speakGerman } from '../lib/speech';
+import Flashcard from '../components/Flashcard';
+import ConfidenceButtons from '../components/ConfidenceButtons';
+import AiExplainBox from '../components/AiExplainBox';
 
 export default function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,

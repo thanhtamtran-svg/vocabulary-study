@@ -1,5 +1,5 @@
 import React from 'react';
-import { dateKey } from '../lib/dates.js';
+import { dateKey } from '../lib/dates';
 
 export default function SetupScreen({ startDate, setStartDate, setStarted, importProgress }) {
   return (

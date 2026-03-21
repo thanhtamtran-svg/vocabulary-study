@@ -1,5 +1,5 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data.js';
+import { WORD_EMOJIS } from '../emoji-data';
 
 export default function CompleteView({ sessionWords, sessionType, progress, setView }) {
   var batchWords = sessionWords;

@@ -1,7 +1,7 @@
 import React from 'react';
-import Nav from '../components/Nav.jsx';
-import { WORD_EMOJIS } from '../emoji-data.js';
-import { TYPE_TAGS, TYPE_NAMES } from '../lib/constants.js';
+import Nav from '../components/Nav';
+import { WORD_EMOJIS } from '../emoji-data';
+import { TYPE_TAGS, TYPE_NAMES } from '../lib/constants';
 
 export default function BrowseView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,

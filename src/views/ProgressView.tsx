@@ -1,7 +1,7 @@
 import React from 'react';
-import Nav from '../components/Nav.jsx';
-import { MEMORY_STAGES } from '../lib/constants.js';
-import { getMemoryStage } from '../lib/memory-stages.js';
+import Nav from '../components/Nav';
+import { MEMORY_STAGES } from '../lib/constants';
+import { getMemoryStage } from '../lib/memory-stages';
 
 export default function ProgressView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,

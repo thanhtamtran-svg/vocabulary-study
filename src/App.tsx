@@ -1,33 +1,33 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { VOCAB_DATA } from './vocab-data.js';
-import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase.js';
+import { VOCAB_DATA } from './vocab-data';
+import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase';
 import {
   TYPE_TAGS, TYPE_NAMES, REVIEW_LABELS, REVIEW_METHODS,
   DUAL_CODING_TIPS, SCIENCE_TIPS, MEMORY_STAGES,
   PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES,
   STORAGE_KEY, SYNC_EMAIL_KEY, VAPID_PUBLIC_KEY
-} from './lib/constants.js';
-import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates.js';
-import { speakGerman } from './lib/speech.js';
-import { loadState, saveState } from './lib/storage.js';
-import { mergeProgress, cloudPull, cloudPush } from './lib/sync.js';
-import { fetchWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api.js';
-import { getMemoryStage } from './lib/memory-stages.js';
+} from './lib/constants';
+import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
+import { speakGerman } from './lib/speech';
+import { loadState, saveState } from './lib/storage';
+import { mergeProgress, cloudPull, cloudPush } from './lib/sync';
+import { fetchWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
+import { getMemoryStage } from './lib/memory-stages';
 import {
   selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
   getAiSentence, generateExerciseItems, fetchExerciseSentences
-} from './lib/exercise-engine.js';
+} from './lib/exercise-engine';
 
-import { useToast } from './components/Toast.jsx';
-import SetupScreen from './views/SetupScreen.jsx';
-import Dashboard from './views/Dashboard.jsx';
-import SessionView from './views/SessionView.jsx';
-import CompleteView from './views/CompleteView.jsx';
-import ExerciseView from './views/ExerciseView.jsx';
-import ExerciseComplete from './views/ExerciseComplete.jsx';
-import ProgressView from './views/ProgressView.jsx';
-import BrowseView from './views/BrowseView.jsx';
-import SettingsView from './views/SettingsView.jsx';
+import { useToast } from './components/Toast';
+import SetupScreen from './views/SetupScreen';
+import Dashboard from './views/Dashboard';
+import SessionView from './views/SessionView';
+import CompleteView from './views/CompleteView';
+import ExerciseView from './views/ExerciseView';
+import ExerciseComplete from './views/ExerciseComplete';
+import ProgressView from './views/ProgressView';
+import BrowseView from './views/BrowseView';
+import SettingsView from './views/SettingsView';
 
 // ===== MAIN APP =====
 function App({onHome}) {

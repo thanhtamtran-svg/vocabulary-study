@@ -1,6 +1,6 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data.js';
-import { speakGerman } from '../lib/speech.js';
+import { WORD_EMOJIS } from '../emoji-data';
+import { speakGerman } from '../lib/speech';
 
 export default function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
