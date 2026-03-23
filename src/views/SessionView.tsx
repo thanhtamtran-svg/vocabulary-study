@@ -32,7 +32,7 @@ export default function SessionView({
         </span>
       </div>
 
-      <div className="content">
+      <div className="content session-content">
         <div className="progress-bar">
           <div className="progress-fill"
             style={{width: ((currentIdx)/sessionWords.length*100) + '%', background:'#27AE60'}} />

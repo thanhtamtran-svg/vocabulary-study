@@ -215,3 +215,50 @@ select:focus{border-color:#D67635}
 .stage-pct{color:#94a3b8;font-weight:400}
 .stage-legend{display:grid;grid-template-columns:1fr;gap:6px;margin-top:18px;padding-top:14px;border-top:1px solid #F5EBDC}
 .stage-legend-item{padding:8px 10px;border-radius:8px;border-left:3px solid}
+
+/* ===== DESKTOP LAYOUT (768px+) ===== */
+@media (min-width: 768px) {
+  body{background:#e8e0d3}
+
+  /* Widen the app shell */
+  .app{max-width:720px;border-radius:0;box-shadow:0 0 80px rgba(0,0,0,0.08)}
+
+  /* Bigger content padding */
+  .content{padding:28px 32px}
+
+  /* Wider flashcard */
+  .flashcard{height:280px}
+  .flashcard-word{font-size:36px}
+  .flashcard-english{font-size:28px}
+
+  /* Wider stat grid */
+  .stat .num{font-size:32px}
+
+  /* Better card spacing */
+  .card{padding:22px;margin:12px 0}
+
+  /* Wider buttons */
+  .confidence-btns{gap:10px;margin:18px 0}
+  .conf-btn{padding:16px 8px;font-size:12px}
+}
+
+/* ===== LARGE DESKTOP (1024px+) ===== */
+@media (min-width: 1024px) {
+  .app{max-width:860px}
+  .content{padding:32px 48px}
+
+  /* Two-column stat grid on large screens */
+  .stat-grid{gap:14px}
+
+  /* Bigger flashcard */
+  .flashcard{height:320px}
+  .flashcard-word{font-size:42px}
+
+  /* Session/exercise content centered with max-width */
+  .session-content{max-width:600px;margin:0 auto}
+}
+
+/* ===== EXTRA LARGE (1200px+) ===== */
+@media (min-width: 1200px) {
+  .app{max-width:960px}
+}

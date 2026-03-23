@@ -38,7 +38,7 @@ export default function ExerciseView({
 
   return (
     <div className="app">
-      <div className="content" style={{paddingTop:'max(16px, env(safe-area-inset-top, 16px))'}}>
+      <div className="content session-content" style={{paddingTop:'max(16px, env(safe-area-inset-top, 16px))'}}>
         {/* Header */}
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'12px'}}>
           <button
