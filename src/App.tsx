@@ -357,7 +357,7 @@ function App({onHome}) {
   , [progress]);
 
   const totalMastered = useMemo(() =>
-    Object.keys(progress).filter(k => progress[k].confidence >= 4).length
+    Object.keys(progress).filter(k => getMemoryStage(progress[k]) >= 5).length
   , [progress]);
 
   // ===== EXERCISE GENERATOR =====
@@ -583,7 +583,7 @@ function App({onHome}) {
       if (!learnReview) continue;
       var learnDate = parseDate(learnReview.date);
 
-      for (const interval of [2,3,5,7]) {
+      for (const interval of [1,3,7,14,30]) {
         const reviewDate = addDays(learnDate, interval);
         if (dateKey(reviewDate) === dateKey(today)) {
           const key = 'r' + interval + '_b' + bi;
@@ -613,16 +613,22 @@ function App({onHome}) {
 
   function rateWord(confidence) {
     const wi = sessionWords[currentIdx].idx;
-    setProgress(p => ({
-      ...p,
-      [wi]: {
-        ...p[wi],
-        learned: true,
-        confidence: Math.max(confidence, (p[wi]?.confidence || 0)),
-        lastReview: dateKey(today),
-        reviews: [...(p[wi]?.reviews || []), {date: dateKey(today), conf: confidence, type: sessionType.type}]
-      }
-    }));
+    setProgress(p => {
+      var prev = p[wi] || {};
+      // Confidence reflects CURRENT ability, not peak — allow downgrades
+      // Low ratings (1-2) reset confidence to reflect forgotten state
+      var newConf = confidence;
+      return {
+        ...p,
+        [wi]: {
+          ...prev,
+          learned: true,
+          confidence: newConf,
+          lastReview: dateKey(today),
+          reviews: [...(prev.reviews || []), {date: dateKey(today), conf: confidence, type: sessionType.type}]
+        }
+      };
+    });
 
     if (confidence >= 3) setStreak(s => s + 1);
     else setStreak(0);
@@ -803,6 +809,18 @@ function App({onHome}) {
         }
       });
     });
+
+    // Propagate exercise correct count to main progress (for memory stage calculation)
+    if (correct) {
+      setProgress(function(p) {
+        var prev = p[item.wordIdx] || {};
+        return Object.assign({}, p, {
+          [item.wordIdx]: Object.assign({}, prev, {
+            exerciseCorrect: (prev.exerciseCorrect || 0) + 1
+          })
+        });
+      });
+    }
   }
 
   function explainWrongAnswer() {

@@ -30,11 +30,11 @@ export const SCIENCE_TIPS = [
 ];
 
 export const MEMORY_STAGES = [
-  {level: 1, name: 'New',        desc: 'Just learned, needs frequent review', color: '#E74C3C', bg: '#fef2f2'},
-  {level: 2, name: 'Familiar',   desc: 'Recognized, review every 2 days',     color: '#D67635', bg: '#fff7ed'},
-  {level: 3, name: 'Practicing', desc: 'Getting stronger, review every 5 days', color: '#E9B746', bg: '#fefce8'},
-  {level: 4, name: 'Strong',     desc: 'Solid recall, review every 7 days',   color: '#7E9470', bg: '#f0fdf4'},
-  {level: 5, name: 'Mastered',   desc: 'Fully retained, no review needed',    color: '#324A84', bg: '#eff6ff'}
+  {level: 1, name: 'New',        desc: 'Just learned, review in 1 day',        color: '#E74C3C', bg: '#fef2f2', interval: 1},
+  {level: 2, name: 'Familiar',   desc: 'Recognized, review in 3 days',         color: '#D67635', bg: '#fff7ed', interval: 3},
+  {level: 3, name: 'Practicing', desc: 'Getting stronger, review in 7 days',   color: '#E9B746', bg: '#fefce8', interval: 7},
+  {level: 4, name: 'Strong',     desc: 'Solid recall, review in 14 days',      color: '#7E9470', bg: '#f0fdf4', interval: 14},
+  {level: 5, name: 'Mastered',   desc: 'Fully retained, final review in 30 days', color: '#324A84', bg: '#eff6ff', interval: 30}
 ];
 
 export const PRONOUNS = ['ich', 'du', 'er/sie/es', 'wir', 'ihr', 'sie/Sie'];
