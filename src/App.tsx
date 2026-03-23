@@ -55,58 +55,69 @@ function App({onHome}) {
     try { var d = localStorage.getItem('vocab_study_dates'); return d ? JSON.parse(d) : []; } catch { return []; }
   });
 
-  // Calculate daily streak with 2-day freeze
+  // Calculate daily streak with 2-day freeze (rest days don't count as missed)
   const dailyStreak = useMemo(() => {
-    if (!studyDates.length) return {count: 0, status: 'none', frozenDays: 0};
+    if (!studyDates.length) return {count: 0, status: 'none', frozenDays: 0, studiedToday: false};
     var sorted = studyDates.slice().sort().reverse(); // most recent first
     var todayStr = dateKey(todayDate());
     var studiedToday = sorted[0] === todayStr;
+    var isRestDay = todayDate().getDay() === 0; // Sunday = rest day
 
-    // Build streak counting backwards from today
+    // Count non-rest missed days since last study
+    var lastStudy = parseDate(sorted[0]);
+    var checkDate = new Date();
+    checkDate.setHours(0,0,0,0);
+    var dateSet = new Set(sorted);
+
+    // Count actual missed days (excluding Sundays) between last study and today
+    var realMissed = 0;
+    if (!studiedToday) {
+      var d = new Date(checkDate);
+      d.setDate(d.getDate() - 1); // start from yesterday
+      while (d >= lastStudy) {
+        var dk = dateKey(d);
+        if (!dateSet.has(dk) && d.getDay() !== 0) { // not studied and not Sunday
+          realMissed++;
+        }
+        if (dateSet.has(dk)) break; // found last study day
+        d.setDate(d.getDate() - 1);
+      }
+    }
+
+    // Build streak counting backwards
     var count = 0;
     var frozenDays = 0;
     var consecutiveMissed = 0;
-    var checkDate = new Date();
-    checkDate.setHours(0,0,0,0);
-
-    // If not studied today, start checking from today
-    if (!studiedToday) {
-      consecutiveMissed = 1;
-      // Check how many days missed since last study
-      var lastStudy = parseDate(sorted[0]);
-      var daysSinceLast = Math.round((checkDate - lastStudy) / 86400000);
-      if (daysSinceLast > 3) return {count: 0, status: 'lost', frozenDays: 0};
-      if (daysSinceLast === 1) consecutiveMissed = 0; // studied yesterday, just not today yet
-    }
-
-    // Count streak: go backwards through dates
-    var dateSet = new Set(sorted);
-    var d = new Date(checkDate);
-    if (!studiedToday) d.setDate(d.getDate() - 1); // start from yesterday if not studied today
+    var d2 = new Date(checkDate);
+    if (!studiedToday) d2.setDate(d2.getDate() - 1);
 
     while (true) {
-      var dk = dateKey(d);
-      if (dateSet.has(dk)) {
+      var dk2 = dateKey(d2);
+      var isSunday = d2.getDay() === 0;
+      if (dateSet.has(dk2)) {
         count++;
         consecutiveMissed = 0;
-        d.setDate(d.getDate() - 1);
+        d2.setDate(d2.getDate() - 1);
+      } else if (isSunday) {
+        // Sundays don't count as missed — just skip
+        d2.setDate(d2.getDate() - 1);
       } else {
         consecutiveMissed++;
-        if (consecutiveMissed > 2) break; // 3+ missed = streak broken
+        if (consecutiveMissed > 2) break; // 3+ non-rest missed = streak broken
         frozenDays++;
-        d.setDate(d.getDate() - 1);
+        d2.setDate(d2.getDate() - 1);
       }
-      if (count > 365) break; // safety
+      if (count > 365) break;
     }
 
     var status = 'active';
-    if (!studiedToday) {
-      var lastStudyDate = parseDate(sorted[0]);
-      var missedDays = Math.round((checkDate - lastStudyDate) / 86400000);
-      if (missedDays >= 3) { status = 'lost'; count = 0; frozenDays = 0; }
-      else if (missedDays === 2) status = 'danger';
-      else if (missedDays === 1) status = 'warning';
+    if (!studiedToday && !isRestDay) {
+      if (realMissed >= 3) { status = 'lost'; count = 0; frozenDays = 0; }
+      else if (realMissed === 2) status = 'danger';
+      else if (realMissed === 1) status = 'warning';
     }
+    // On rest day, don't warn — streak is safe
+    if (isRestDay && !studiedToday) status = 'rest';
 
     return {count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday};
   }, [studyDates]);
