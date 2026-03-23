@@ -223,8 +223,8 @@ select:focus{border-color:#D67635}
   /* Widen the app shell — fill most of screen */
   .app{max-width:100%;margin:0;border-radius:0;box-shadow:none}
 
-  /* Bigger content padding + center with max-width */
-  .content{padding:28px 32px;max-width:680px;margin:0 auto}
+  /* Fixed width content centered */
+  .content{padding:28px 32px;width:680px;margin:0 auto}
 
   /* Wider flashcard */
   .flashcard{height:280px}
@@ -245,13 +245,13 @@ select:focus{border-color:#D67635}
   .nav{justify-content:center;gap:8px}
   .nav button{flex:none;min-width:90px;padding:14px 16px 12px}
 
-  /* Session/exercise content centered — wider on desktop */
-  .session-content{max-width:680px;margin:0 auto;width:100%;padding:28px 32px}
+  /* Session/exercise content centered — fixed width on desktop */
+  .session-content{width:680px;margin:0 auto;padding:28px 32px}
 
   /* Exercise options wider */
   .session-content .exercise-options button{padding:16px 20px;font-size:15px}
   .session-content .exercise-card{padding:28px}
-  .session-content .btn-primary{max-width:480px;margin:12px auto}
+  .session-content .btn-primary{width:480px;margin:12px auto}
 
   /* Sync bar centered */
   .sync-bar{justify-content:center}
@@ -259,7 +259,7 @@ select:focus{border-color:#D67635}
 
 /* ===== LARGE DESKTOP (1024px+) ===== */
 @media (min-width: 1024px) {
-  .content{max-width:760px}
+  .content{width:760px}
 
   /* Two-column stat grid on large screens */
   .stat-grid{gap:14px}
@@ -269,7 +269,7 @@ select:focus{border-color:#D67635}
   .flashcard-word{font-size:42px}
 
   /* Session/exercise content wider */
-  .session-content{max-width:800px}
+  .session-content{width:800px}
 
   /* Nav with more spacing */
   .nav button{min-width:110px;font-size:13px}
@@ -282,8 +282,8 @@ select:focus{border-color:#D67635}
 
 /* ===== EXTRA LARGE (1440px+) ===== */
 @media (min-width: 1440px) {
-  .content{max-width:840px}
-  .session-content{max-width:900px}
+  .content{width:840px}
+  .session-content{width:900px}
   .nav button{min-width:130px;font-size:14px;padding:16px 20px 14px}
 
   /* Even bigger exercise content */
