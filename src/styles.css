@@ -245,8 +245,8 @@ select:focus{border-color:#D67635}
   .nav{justify-content:center;gap:8px}
   .nav button{flex:none;min-width:90px;padding:14px 16px 12px}
 
-  /* Session/exercise content centered */
-  .session-content{max-width:600px;margin:0 auto}
+  /* Session/exercise content centered — wider on desktop */
+  .session-content{max-width:680px;margin:0 auto;width:100%}
 
   /* Sync bar centered */
   .sync-bar{justify-content:center}
@@ -264,15 +264,24 @@ select:focus{border-color:#D67635}
   .flashcard-word{font-size:42px}
 
   /* Session/exercise content wider */
-  .session-content{max-width:660px}
+  .session-content{max-width:780px}
 
   /* Nav with more spacing */
   .nav button{min-width:110px;font-size:13px}
+
+  /* Exercise content bigger */
+  .session-content .card{padding:28px;font-size:16px}
+  .session-content input[type="text"]{font-size:18px;padding:14px 16px}
+  .session-content h3{font-size:20px}
 }
 
 /* ===== EXTRA LARGE (1440px+) ===== */
 @media (min-width: 1440px) {
   .content{max-width:840px}
-  .session-content{max-width:720px}
+  .session-content{max-width:900px}
   .nav button{min-width:130px;font-size:14px;padding:16px 20px 14px}
+
+  /* Even bigger exercise content */
+  .session-content .card{padding:32px;font-size:17px}
+  .session-content input[type="text"]{font-size:20px;padding:16px 18px}
 }
