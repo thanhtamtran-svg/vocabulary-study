@@ -573,28 +573,36 @@ function App({onHome}) {
   }
 
   // Reviews due today — based on when each batch was actually learned
+  // Per-word review system: find all words due based on their individual memory stage
   const reviewsDue = useMemo(() => {
-    const due = [];
-    for (let bi = 1; bi <= batchesCompleted; bi++) {
-      var firstWord = batches[bi - 1][0];
-      var wp = progress[firstWord];
-      if (!wp || !wp.reviews || wp.reviews.length === 0) continue;
-      var learnReview = wp.reviews.find(function(r) { return r.type === 'learn'; });
-      if (!learnReview) continue;
-      var learnDate = parseDate(learnReview.date);
-
-      for (const interval of [1,3,7,14,30]) {
-        const reviewDate = addDays(learnDate, interval);
-        if (dateKey(reviewDate) === dateKey(today)) {
-          const key = 'r' + interval + '_b' + bi;
-          if (!todayCompleted.reviews[key]) {
-            due.push({batch: bi, interval, key});
-          }
-        }
+    var todayStr = dateKey(today);
+    var dueWords = [];
+    Object.keys(progress).forEach(function(k) {
+      var wp = progress[k];
+      if (!wp || !wp.learned || !wp.lastReview) return;
+      var stage = getMemoryStage(wp);
+      if (stage === 0) return;
+      // Stage 5 (Mastered) still gets a 30-day final review
+      var intervals = [0, 1, 3, 7, 14, 30]; // stage 0-5
+      var interval = intervals[stage] || 1;
+      var lastDate = parseDate(wp.lastReview);
+      var daysSince = Math.round((today.getTime() - lastDate.getTime()) / 86400000);
+      if (daysSince >= interval) {
+        dueWords.push({
+          idx: parseInt(k),
+          stage: stage,
+          daysSince: daysSince,
+          daysOverdue: daysSince - interval
+        });
       }
-    }
-    return due;
-  }, [batchesCompleted, batches, progress, today, todayCompleted]);
+    });
+    // Sort: most overdue first, then lowest stage first
+    dueWords.sort(function(a, b) {
+      if (b.daysOverdue !== a.daysOverdue) return b.daysOverdue - a.daysOverdue;
+      return a.stage - b.stage;
+    });
+    return dueWords;
+  }, [progress, today]);
 
   function getWord(wi) {
     const w = words[wi];
@@ -602,6 +610,20 @@ function App({onHome}) {
   }
 
   function startSession(type, batchIdx, interval) {
+    if (type === 'review' && !batchIdx) {
+      // Per-word review: pick up to 20 due words
+      var dueWords = reviewsDue.slice(0, 20).map(function(dw) {
+        return {idx: dw.idx, ...getWord(dw.idx), stage: dw.stage};
+      });
+      if (dueWords.length === 0) return;
+      setSessionWords(dueWords);
+      setSessionType({type: 'review', batchIdx: null, interval: null});
+      setCurrentIdx(0);
+      setFlipped(false);
+      setStreak(0);
+      setView("session");
+      return;
+    }
     const batchWords = batches[batchIdx - 1].map(wi => ({idx: wi, ...getWord(wi)}));
     setSessionWords(batchWords);
     setSessionType({type, batchIdx, interval});
@@ -643,9 +665,12 @@ function App({onHome}) {
           learnCount: (tc.learnCount || 0) + 1,
           learnedBatches: [...(tc.learnedBatches || []), sessionType.batchIdx]
         }));
-      } else {
+      } else if (sessionType.batchIdx) {
         const key = 'r' + sessionType.interval + '_b' + sessionType.batchIdx;
         setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, [key]: true}}));
+      } else {
+        // Per-word review — mark as completed with timestamp
+        setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, ['words_' + dateKey(today)]: true}}));
       }
       recordStudyDay();
       setView("complete");

@@ -1,6 +1,6 @@
 import React from 'react';
 import Nav from '../components/Nav';
-import { REVIEW_LABELS, SCIENCE_TIPS } from '../lib/constants';
+import { REVIEW_LABELS, SCIENCE_TIPS, MEMORY_STAGES } from '../lib/constants';
 import { formatDate } from '../lib/dates';
 
 export default function Dashboard({
@@ -221,36 +221,37 @@ export default function Dashboard({
             </span>
           </div>}
 
-          {/* Reviews section */}
+          {/* Reviews section — per-word based */}
           {reviewsDue.length > 0 ? <div>
             <h2 style={{marginTop:'16px'}}>
-              {'\uD83D\uDD04 Reviews Due (' + reviewsDue.length + ')'}
+              {'\uD83D\uDD04 Words Due for Review (' + reviewsDue.length + ')'}
             </h2>
-            {reviewsDue.map(function(r, i) {
-              var badgeColors = {2:'#F39C12',3:'#E74C3C',5:'#8E44AD',7:'#1B4F72'};
-              return <div className="card" key={i} style={{padding:'12px'}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                    <div className="task-badge"
-                      style={{background: badgeColors[r.interval]}}>{'+' + r.interval}</div>
-                    <div>
-                      <div className="review-type-label"
-                        style={{color: badgeColors[r.interval]}}>
-                        {REVIEW_LABELS[r.interval]}
-                      </div>
-                      <span style={{fontSize:'12px',color:'#718096'}}>
-                        {'Batch ' + r.batch + ' \u2022 ' + batches[r.batch-1].length + ' words'}
-                      </span>
-                    </div>
+            <div className="card" style={{padding:'14px'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                <div>
+                  <div style={{fontSize:'14px',fontWeight:600,color:'#2E3033',marginBottom:'4px'}}>
+                    {reviewsDue.length + ' word' + (reviewsDue.length !== 1 ? 's' : '') + ' need review'}
                   </div>
-                  <button
-                    className="btn btn-primary btn-sm"
-                    style={{width:'auto'}}
-                    onClick={function() { startSession("review", r.batch, r.interval); }}
-                  >Review</button>
+                  <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
+                    {/* Group by stage */}
+                    {[1,2,3,4,5].map(function(stage) {
+                      var count = reviewsDue.filter(function(w) { return w.stage === stage; }).length;
+                      if (count === 0) return null;
+                      var stageInfo = MEMORY_STAGES[stage - 1];
+                      return <span key={stage} style={{
+                        fontSize:'11px',padding:'2px 8px',borderRadius:'10px',
+                        background: stageInfo.bg, color: stageInfo.color, fontWeight:600
+                      }}>{count + ' ' + stageInfo.name}</span>;
+                    })}
+                  </div>
                 </div>
-              </div>;
-            })}
+                <button
+                  className="btn btn-primary btn-sm"
+                  style={{width:'auto'}}
+                  onClick={function() { startSession("review", null, null); }}
+                >Review</button>
+              </div>
+            </div>
           </div> : <div
             className="card" style={{background:'#EAFAF1',marginTop:'12px',textAlign:'center'}}>
             <span style={{color:'#27AE60'}}>
