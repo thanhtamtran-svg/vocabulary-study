@@ -468,6 +468,29 @@ function App({onHome}) {
             };
           });
         }
+        // Merge study dates (streak data)
+        if (remote.studyDates && Array.isArray(remote.studyDates)) {
+          setStudyDates(function(local) {
+            var merged = [...new Set([...local, ...remote.studyDates])].sort();
+            localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
+            return merged;
+          });
+        }
+        // Merge exercise progress
+        if (remote.exerciseProgress) {
+          setExerciseProgress(function(local) {
+            var merged = {...local};
+            Object.keys(remote.exerciseProgress).forEach(function(k) {
+              if (!merged[k]) { merged[k] = remote.exerciseProgress[k]; return; }
+              // Keep the one with more attempts
+              var lAttempts = merged[k].attempts || 0;
+              var rAttempts = remote.exerciseProgress[k].attempts || 0;
+              if (rAttempts > lAttempts) merged[k] = remote.exerciseProgress[k];
+            });
+            localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged));
+            return merged;
+          });
+        }
         setSyncStatus('done');
         setSyncMsg('Synced from cloud');
       } else {
@@ -491,11 +514,13 @@ function App({onHome}) {
         started: started,
         progress: progress,
         todayCompleted: todayCompleted,
-        completedDate: dateKey(today)
+        completedDate: dateKey(today),
+        studyDates: studyDates,
+        exerciseProgress: exerciseProgress
       });
     }, 2000);
     return function() { clearTimeout(timer); };
-  }, [syncEmail, startDate, started, progress, todayCompleted, today]);
+  }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
   function connectSync(email) {
     localStorage.setItem(SYNC_EMAIL_KEY, email);
