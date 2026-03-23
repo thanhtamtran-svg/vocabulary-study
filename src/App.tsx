@@ -757,40 +757,6 @@ function App({onHome}) {
     });
   }
 
-  function giveUpExercise() {
-    var item = exerciseSession.items[exerciseIdx];
-    var correctAnswerText = item.fullAnswer || item.correctAnswer || item.germanWord || '';
-    if (item.options) {
-      var correctOpt = item.correctIdx >= 0 && item.options[item.correctIdx]
-        ? item.options[item.correctIdx]
-        : item.options.find(function(o) { return o.isCorrect; });
-      if (correctOpt) correctAnswerText = correctOpt.text;
-    }
-    setExerciseFeedback({
-      correct: false,
-      userAnswer: '(skipped)',
-      correctAnswer: correctAnswerText,
-      sentence: item.sentence || null,
-      message: 'The correct answer is: ' + correctAnswerText
-    });
-    setExerciseResults(function(prev) {
-      return prev.concat([{wordIdx: item.wordIdx, type: item.type, correct: false, answer: ''}]);
-    });
-    // Update exercise progress as wrong
-    setExerciseProgress(function(prev) {
-      var ep = prev[item.wordIdx] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
-      return Object.assign({}, prev, {
-        [item.wordIdx]: {
-          attempts: ep.attempts + 1,
-          correct: ep.correct,
-          streak: 0,
-          lastExercise: dateKey(today),
-          nextReview: dateKey(addDays(today, 1))
-        }
-      });
-    });
-  }
-
   function checkExerciseAnswer() {
     var item = exerciseSession.items[exerciseIdx];
     var correct = false;
@@ -1001,7 +967,6 @@ function App({onHome}) {
       checkExerciseAnswer={checkExerciseAnswer}
       nextExerciseItem={nextExerciseItem}
       explainWrongAnswer={explainWrongAnswer}
-      giveUpExercise={giveUpExercise}
       setView={setView}
       exerciseLoading={exerciseLoading}
     />;

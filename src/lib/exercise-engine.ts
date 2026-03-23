@@ -193,6 +193,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
         prompt: 'What does the missing word mean?\n' + sent.template.replace('___', '______'),
         correctAnswer: w.english.toLowerCase(),
         fullAnswer: w.english,
+        sentence: sent.full,
         germanWord: w.german, wordInfo: w
       });
     } else {

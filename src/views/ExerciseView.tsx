@@ -27,7 +27,7 @@ export default function ExerciseView({
   exerciseSession, exerciseIdx, exerciseAnswer, setExerciseAnswer,
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
-  checkExerciseAnswer, nextExerciseItem, explainWrongAnswer, giveUpExercise,
+  checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
   setView, exerciseLoading
 }) {
   var exItem = exerciseSession.items[exerciseIdx];
