@@ -397,7 +397,7 @@ function App({onHome}) {
     }
   }, [view, exerciseIdx, exerciseSession]);
 
-  // Enter key handler for exercise view
+  // Enter key handler for exercise view (global — for non-input types like multiple choice)
   useEffect(function() {
     if (view !== 'exercise' || !exerciseSession) return;
     function handleKeyDown(e) {

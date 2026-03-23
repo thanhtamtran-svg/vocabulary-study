@@ -145,6 +145,7 @@ export default function ExerciseView({
                   onChange={function(e) { setExerciseAnswer(e.target.value); }}
                   onKeyDown={function(e) {
                     if (e.key !== 'Enter') return;
+                    e.preventDefault();
                     if (exerciseFeedback) { nextExerciseItem(); }
                     else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
                   }}
@@ -204,6 +205,8 @@ export default function ExerciseView({
                 onChange={function(e) { setExerciseAnswer(e.target.value); }}
                 onKeyDown={function(e) {
                   if (e.key !== 'Enter') return;
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (exerciseFeedback) { nextExerciseItem(); }
                   else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
                 }}
