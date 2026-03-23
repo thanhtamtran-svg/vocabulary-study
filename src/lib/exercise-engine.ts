@@ -276,15 +276,19 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
           var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
         }
         var topicOptions = filteredTopics.slice(0, 4);
-        var topicOpts = [{text: passage.translation.split('.')[0].trim().substring(0, 60), isCorrect: true, wi: -10}];
-        topicOptions.forEach(function(t, i) {
-          topicOpts.push({text: t, isCorrect: false, wi: -(11+i)});
+        var correctText = passage.translation.split('.')[0].trim().substring(0, 60);
+        var correctOpt = {text: correctText, isCorrect: true, wi: -10};
+        // Take exactly 3 wrong options
+        var wrongOpts = topicOptions.slice(0, 3).map(function(t, i) {
+          return {text: t, isCorrect: false, wi: -(11+i)};
         });
+        // Combine: 1 correct + 3 wrong = always 4
+        var topicOpts = [correctOpt].concat(wrongOpts);
+        // Shuffle
         for (var i = topicOpts.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1));
           var tmp = topicOpts[i]; topicOpts[i] = topicOpts[j]; topicOpts[j] = tmp;
         }
-        topicOpts = topicOpts.slice(0, 4);
 
         items.push({
           type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
@@ -294,6 +298,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
           passageTranslation: passage.translation || '',
           options: topicOpts,
           correctIdx: topicOpts.findIndex(function(o) { return o.isCorrect; }),
+          correctAnswer: correctText,
           germanWord: firstWord.german,
           wordInfo: firstWord
         });

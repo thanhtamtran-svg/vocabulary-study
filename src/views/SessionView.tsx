@@ -25,6 +25,7 @@ export default function SessionView({
         <span style={{fontSize:'13px',fontWeight:600}}>
           {sessionType.type === 'browse' ? w.german
             : isLearn ? 'Learn Batch ' + sessionType.batchIdx
+            : sessionType.type === 'review' && !sessionType.batchIdx ? 'Review'
             : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'}
         </span>
         <span style={{fontSize:'12px'}}>
