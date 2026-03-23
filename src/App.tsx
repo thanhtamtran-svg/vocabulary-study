@@ -803,20 +803,19 @@ function App({onHome}) {
     } else if (item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
-      // For reading comprehension, use isCorrect flag; for others, match wi
-      if (item.type === 'reading_comprehension') {
-        correct = !!item.options[exerciseSelectedIdx].isCorrect;
-      } else {
-        correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
-      }
+      correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
       correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
     } else if (item.type === 'conjugation') {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
+      // Accept just the conjugated form OR pronoun + conjugated form
+      var fullForm = (item.pronoun || '') + ' ' + item.correctAnswer;
       correct = normalize(userAnswer) === normalize(item.correctAnswer) ||
-                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase();
+                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase() ||
+                normalize(userAnswer) === normalize(fullForm) ||
+                userAnswer.toLowerCase().trim() === fullForm.toLowerCase();
     } else {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };

@@ -8,6 +8,7 @@ export const CONJUGATIONS = {
   'wollen': {ich:'will',du:'willst',er:'will',wir:'wollen',ihr:'wollt',sie:'wollen'},
   'dürfen': {ich:'darf',du:'darfst',er:'darf',wir:'dürfen',ihr:'dürft',sie:'dürfen'},
   'mögen': {ich:'mag',du:'magst',er:'mag',wir:'mögen',ihr:'mögt',sie:'mögen'},
+  'möchten': {ich:'möchte',du:'möchtest',er:'möchte',wir:'möchten',ihr:'möchtet',sie:'möchten'},
   'machen': {ich:'mache',du:'machst',er:'macht',wir:'machen',ihr:'macht',sie:'machen'},
   'gehen': {ich:'gehe',du:'gehst',er:'geht',wir:'gehen',ihr:'geht',sie:'gehen'},
   'kommen': {ich:'komme',du:'kommst',er:'kommt',wir:'kommen',ihr:'kommt',sie:'kommen'},
