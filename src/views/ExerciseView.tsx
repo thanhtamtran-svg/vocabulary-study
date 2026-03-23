@@ -339,7 +339,7 @@ export default function ExerciseView({
         </div> : null}
 
         {/* Action buttons */}
-        <div style={{marginTop:'16px'}}>
+        <div style={{marginTop:'16px', display:'flex', flexDirection:'column', alignItems:'center'}}>
           {!exerciseFeedback ?
             <button
               className="btn btn-primary"
