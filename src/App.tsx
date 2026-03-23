@@ -841,7 +841,7 @@ function App({onHome}) {
 
     setExerciseFeedback({
       correct: correct,
-      userAnswer: userAnswer,
+      userAnswer: userAnswer || '(no answer)',
       correctAnswer: correctAnswerText,
       sentence: item.sentence || null,
       message: correct

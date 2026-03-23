@@ -208,7 +208,7 @@ export default function ExerciseView({
                   e.preventDefault();
                   e.stopPropagation();
                   if (exerciseFeedback) { nextExerciseItem(); }
-                  else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
+                  else { checkExerciseAnswer(); }
                 }}
                 placeholder="Type your answer..."
                 autoFocus={true}
@@ -333,26 +333,16 @@ export default function ExerciseView({
         </div> : null}
 
         {/* Action buttons */}
-        <div style={{marginTop:'16px',display:'flex',gap:'8px',justifyContent:'center'}}>
-          {!exerciseFeedback ? <>
+        <div style={{marginTop:'16px'}}>
+          {!exerciseFeedback ?
             <button
               className="btn btn-primary"
-              style={{flex:1}}
-              disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
-                !exerciseAnswer.trim()}
+              disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 : false}
               onClick={checkExerciseAnswer}
             >Check Answer</button>
-            {(exItem.type !== 'multiple_choice' && exItem.type !== 'reading_comprehension' && exItem.type !== 'reverse_choice' && exItem.type !== 'listening') ?
-              <button
-                className="btn btn-secondary"
-                style={{width:'auto',padding:'10px 16px',fontSize:'13px'}}
-                onClick={giveUpExercise}
-              >Show Answer</button>
-            : null}
-          </> :
+          :
             <button
               className="btn btn-primary"
-              style={{flex:1}}
               onClick={nextExerciseItem}
             >{exerciseIdx + 1 >= exTotal ? 'See Results' : 'Next \u2192'}</button>
           }
