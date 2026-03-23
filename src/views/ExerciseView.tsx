@@ -220,7 +220,7 @@ export default function ExerciseView({
             </div> : null}
 
           {/* Text input feedback */}
-          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
+          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english' || exItem.type === 'conjugation') && exerciseFeedback ?
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
