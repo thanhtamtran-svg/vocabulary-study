@@ -246,7 +246,12 @@ select:focus{border-color:#D67635}
   .nav button{flex:none;min-width:90px;padding:14px 16px 12px}
 
   /* Session/exercise content centered — wider on desktop */
-  .session-content{max-width:680px;margin:0 auto;width:100%}
+  .session-content{max-width:680px;margin:0 auto;width:100%;padding:28px 32px}
+
+  /* Exercise options wider */
+  .session-content .exercise-options button{padding:16px 20px;font-size:15px}
+  .session-content .exercise-card{padding:28px}
+  .session-content .btn-primary{max-width:480px;margin:12px auto}
 
   /* Sync bar centered */
   .sync-bar{justify-content:center}
@@ -264,7 +269,7 @@ select:focus{border-color:#D67635}
   .flashcard-word{font-size:42px}
 
   /* Session/exercise content wider */
-  .session-content{max-width:780px}
+  .session-content{max-width:800px}
 
   /* Nav with more spacing */
   .nav button{min-width:110px;font-size:13px}
