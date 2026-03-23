@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Nav from '../components/Nav';
 import { REVIEW_LABELS, SCIENCE_TIPS, MEMORY_STAGES } from '../lib/constants';
 import { formatDate } from '../lib/dates';
@@ -14,6 +14,8 @@ export default function Dashboard({
   var pendingReviews = reviewsDue.length;
   var hasNextBatch = nextBatch !== null;
   var todayLearnCount = todayCompleted.learnCount || 0;
+  // Random tip — stable per mount (new on each page load/refresh)
+  var [tipIdx] = useState(() => Math.floor(Math.random() * SCIENCE_TIPS.length));
 
   // Schedule status
   var scheduleText = '';
@@ -299,10 +301,10 @@ export default function Dashboard({
             {"You're " + Math.abs(scheduleGap) + ' batch' + (Math.abs(scheduleGap) > 1 ? 'es' : '') + ' behind. Try learning 2-3 batches today to catch up! No pressure though \u2014 go at your own pace.'}
           </div> :
 
-          /* Science tip */
+          /* Science tip — random on each page load */
           <div className="tip-box" style={{marginTop:'16px'}}>
-            <strong>{'\uD83D\uDCA1'} Science Tip: </strong>
-            {SCIENCE_TIPS[studyDay % SCIENCE_TIPS.length]}
+            <strong>{'\uD83D\uDCA1'} </strong>
+            {SCIENCE_TIPS[tipIdx]}
           </div>}
         </>}
       </div>

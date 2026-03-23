@@ -27,7 +27,7 @@ export default function ExerciseView({
   exerciseSession, exerciseIdx, exerciseAnswer, setExerciseAnswer,
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
-  checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
+  checkExerciseAnswer, nextExerciseItem, explainWrongAnswer, giveUpExercise,
   setView, exerciseLoading
 }) {
   var exItem = exerciseSession.items[exerciseIdx];
@@ -330,16 +330,26 @@ export default function ExerciseView({
         </div> : null}
 
         {/* Action buttons */}
-        <div style={{marginTop:'16px'}}>
-          {!exerciseFeedback ?
+        <div style={{marginTop:'16px',display:'flex',gap:'8px',justifyContent:'center'}}>
+          {!exerciseFeedback ? <>
             <button
               className="btn btn-primary"
+              style={{flex:1}}
               disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 :
                 !exerciseAnswer.trim()}
               onClick={checkExerciseAnswer}
-            >Check Answer</button> :
+            >Check Answer</button>
+            {(exItem.type !== 'multiple_choice' && exItem.type !== 'reading_comprehension' && exItem.type !== 'reverse_choice' && exItem.type !== 'listening') ?
+              <button
+                className="btn btn-secondary"
+                style={{width:'auto',padding:'10px 16px',fontSize:'13px'}}
+                onClick={giveUpExercise}
+              >Show Answer</button>
+            : null}
+          </> :
             <button
               className="btn btn-primary"
+              style={{flex:1}}
               onClick={nextExerciseItem}
             >{exerciseIdx + 1 >= exTotal ? 'See Results' : 'Next \u2192'}</button>
           }

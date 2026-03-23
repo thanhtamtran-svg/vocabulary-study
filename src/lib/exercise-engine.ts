@@ -245,39 +245,9 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     try {
       var passage = typeof aiPassage === 'string' ? JSON.parse(aiPassage) : aiPassage;
       if (passage && passage.text && passage.translation) {
-        var sentences = passage.translation.split(/\.\s+/).filter(function(s) { return s.trim().length > 10; });
         var firstWord = selectedWords[0] ? getWord(selectedWords[0].wi) : {german:'', wordInfo:{}};
 
-        if (sentences.length >= 2) {
-          var trueFact = sentences[0].replace(/\.$/, '').trim();
-          var falseOptions = [
-            'The text is about going to work.',
-            'The text mentions only one person.',
-            'Nobody is happy in this story.',
-            'The events happen at night.'
-          ];
-          var trueOpt = {wi: -1, text: trueFact, isCorrect: true};
-          var falseOpt = {wi: -2, text: falseOptions[Math.floor(Math.random() * falseOptions.length)], isCorrect: false};
-          var tf_opts = Math.random() > 0.5 ? [trueOpt, falseOpt] : [falseOpt, trueOpt];
-          var extraFalse = falseOptions.filter(function(f) { return f !== falseOpt.text; }).slice(0, 2);
-          extraFalse.forEach(function(ef, i) {
-            tf_opts.splice(Math.floor(Math.random() * (tf_opts.length + 1)), 0, {wi: -(i+3), text: ef, isCorrect: false});
-          });
-
-          items.push({
-            type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
-            prompt: 'Read the passage. Which statement is TRUE?',
-            passage: passage.text,
-            passageTitle: passage.title || 'Lesetext',
-            passageTranslation: passage.translation || '',
-            options: tf_opts,
-            correctIdx: tf_opts.findIndex(function(o) { return o.isCorrect; }),
-            germanWord: firstWord.german,
-            wordInfo: firstWord
-          });
-        }
-
-        // Generate dynamic false topic options based on the actual passage
+        // Single reading comprehension: "What is this passage mainly about?"
         var allTopicPool = [
           'A day at school', 'Shopping at a store', 'A visit to the doctor',
           'Cooking dinner', 'Traveling by train', 'Playing sports',
