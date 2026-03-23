@@ -1,9 +1,8 @@
 // Service Worker for Push Notifications + Offline Caching
 
-var CACHE_NAME = 'vocab-study-v1';
+var CACHE_NAME = 'vocab-study-v2';
 var STATIC_ASSETS = [
   './',
-  './index.html',
   './manifest.json',
   './favicon.svg',
   './apple-touch-icon.png',
