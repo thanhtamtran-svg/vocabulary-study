@@ -493,10 +493,16 @@ function App({onHome}) {
             var merged = {...local};
             Object.keys(remote.exerciseProgress).forEach(function(k) {
               if (!merged[k]) { merged[k] = remote.exerciseProgress[k]; return; }
-              // Keep the one with more attempts
-              var lAttempts = merged[k].attempts || 0;
-              var rAttempts = remote.exerciseProgress[k].attempts || 0;
-              if (rAttempts > lAttempts) merged[k] = remote.exerciseProgress[k];
+              var l = merged[k];
+              var r = remote.exerciseProgress[k];
+              // Merge: take max of each field to preserve progress from both devices
+              merged[k] = {
+                attempts: Math.max(l.attempts || 0, r.attempts || 0),
+                correct: Math.max(l.correct || 0, r.correct || 0),
+                streak: Math.max(l.streak || 0, r.streak || 0),
+                lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
+                nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
+              };
             });
             localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged));
             return merged;
@@ -529,9 +535,26 @@ function App({onHome}) {
         studyDates: studyDates,
         exerciseProgress: exerciseProgress
       });
-    }, 2000);
+    }, 5000);
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
+
+  // Sync on page unload to prevent data loss
+  useEffect(function() {
+    if (!syncEmail || !started) return;
+    function handleUnload() {
+      cloudPush(syncEmail, {
+        startDate: dateKey(startDate), started: started, progress: progress,
+        todayCompleted: todayCompleted, completedDate: dateKey(today),
+        studyDates: studyDates, exerciseProgress: exerciseProgress
+      });
+    }
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') handleUnload();
+    });
+    return function() { window.removeEventListener('beforeunload', handleUnload); };
+  }, [syncEmail, started, startDate, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
   function connectSync(email) {
     localStorage.setItem(SYNC_EMAIL_KEY, email);
@@ -670,7 +693,7 @@ function App({onHome}) {
         setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, [key]: true}}));
       } else {
         // Per-word review — mark as completed with timestamp
-        setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, ['words_' + dateKey(today)]: true}}));
+        setTodayCompleted(tc => ({...tc, reviews: {...tc.reviews, ['words_' + dateKey(today) + '_' + Date.now()]: true}}));
       }
       recordStudyDay();
       setView("complete");
@@ -901,6 +924,17 @@ function App({onHome}) {
   }
 
   function handleNavigate(viewId) {
+    // Reset exercise state when leaving exercise views
+    if (view === 'exercise' || view === 'exercise-complete') {
+      setExerciseSession(null);
+      setExerciseIdx(0);
+      setExerciseAnswer('');
+      setExerciseFeedback(null);
+      setExerciseSelectedIdx(-1);
+      setExerciseResults([]);
+      setExerciseWhyText('');
+      setExerciseWhyLoading(false);
+    }
     setView(viewId);
   }
 

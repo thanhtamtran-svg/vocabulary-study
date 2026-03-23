@@ -59,7 +59,10 @@ export default function SessionView({
 
         {/* Word image (front side) */}
         {!flipped ? <div className="word-image-container">
-          {imageLoading ? <div style={{textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}>Loading image...</div> : null}
+          {imageLoading ? <div style={{textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}>
+            <div className="spinner" style={{width:'24px',height:'24px',margin:'0 auto 8px'}}></div>
+            Generating image...
+          </div> : null}
           {wordImage ? <div>
             <img src={wordImage.url} alt={w.english} className="word-image"
               style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}} />
