@@ -38,7 +38,7 @@ export default function ProgressView({
           </div>
           <div className="stat">
             <div className="num">{Math.ceil(notLearned / 8)}</div>
-            <div className="label">Days to go</div>
+            <div className="label">Batches left</div>
           </div>
         </div>
 

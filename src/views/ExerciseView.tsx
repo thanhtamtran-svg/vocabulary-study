@@ -108,6 +108,9 @@ export default function ExerciseView({
                     cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                   }}
                   onClick={function() { setExerciseSelectedIdx(oi); }}
+                  aria-label={'Option ' + (oi + 1) + ': ' + opt.text}
+                  role="radio"
+                  aria-checked={isSelected}
                 >{opt.text}</button>;
               })}
             </div> : null}
@@ -169,8 +172,8 @@ export default function ExerciseView({
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                 background:'#7E947018',border:'2px solid #7E9470',marginBottom:'12px'
               }}>{'\u2705 ' + exItem.fullAnswer}</div>
-              {/* Full conjugation table */}
-              <div style={{
+              {/* Full conjugation table — only show when wrong to help learn */}
+              {!exerciseFeedback.correct ? <div style={{
                 padding:'12px',borderRadius:'10px',background:'#f8f6f0',border:'1px solid #e8e2d6'
               }}>
                 <div style={{fontSize:'11px',fontWeight:700,color:'#D67635',
@@ -190,7 +193,7 @@ export default function ExerciseView({
                     <span style={{color:'#2E3033'}}>{exItem.fullTable[pk]}</span>
                   </div>;
                 })}
-              </div>
+              </div> : null}
             </div> : null}
 
           {/* Fill in blank / sentence complete / fill english input */}
@@ -269,6 +272,9 @@ export default function ExerciseView({
                         cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                       }}
                       onClick={function() { setExerciseSelectedIdx(oi); }}
+                      aria-label={'Option ' + (oi + 1) + ': ' + opt.text}
+                      role="radio"
+                      aria-checked={isSelected}
                     >{opt.text}</button>;
                   })}
                 </div> :

@@ -75,7 +75,9 @@ export default function Dashboard({
           </div>
         </div>
 
-        <div className="progress-bar" style={{height:'10px',marginBottom:'16px'}}>
+        <div className="progress-bar" style={{height:'10px',marginBottom:'16px'}}
+          role="progressbar" aria-valuenow={totalLearned} aria-valuemin={0} aria-valuemax={1500}
+          aria-label={totalLearned + ' of 1500 words learned'}>
           <div className="progress-fill"
             style={{width: (totalLearned/1500*100) + '%',
               background:'linear-gradient(90deg,#27AE60,#2ECC71)'}} />
