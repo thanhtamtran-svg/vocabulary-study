@@ -220,11 +220,11 @@ select:focus{border-color:#D67635}
 @media (min-width: 768px) {
   body{background:#e8e0d3}
 
-  /* Widen the app shell */
-  .app{max-width:720px;border-radius:0;box-shadow:0 0 80px rgba(0,0,0,0.08)}
+  /* Widen the app shell — fill most of screen */
+  .app{max-width:100%;margin:0;border-radius:0;box-shadow:none}
 
-  /* Bigger content padding */
-  .content{padding:28px 32px}
+  /* Bigger content padding + center with max-width */
+  .content{padding:28px 32px;max-width:680px;margin:0 auto}
 
   /* Wider flashcard */
   .flashcard{height:280px}
@@ -241,14 +241,20 @@ select:focus{border-color:#D67635}
   .confidence-btns{gap:10px;margin:18px 0}
   .conf-btn{padding:16px 8px;font-size:12px}
 
-  /* Exercise: center and widen */
-  .session-content{max-width:560px;margin:0 auto}
+  /* Nav full width */
+  .nav{justify-content:center;gap:8px}
+  .nav button{flex:none;min-width:90px;padding:14px 16px 12px}
+
+  /* Session/exercise content centered */
+  .session-content{max-width:600px;margin:0 auto}
+
+  /* Sync bar centered */
+  .sync-bar{justify-content:center}
 }
 
 /* ===== LARGE DESKTOP (1024px+) ===== */
 @media (min-width: 1024px) {
-  .app{max-width:860px}
-  .content{padding:32px 48px}
+  .content{max-width:760px}
 
   /* Two-column stat grid on large screens */
   .stat-grid{gap:14px}
@@ -257,12 +263,16 @@ select:focus{border-color:#D67635}
   .flashcard{height:320px}
   .flashcard-word{font-size:42px}
 
-  /* Session/exercise content wider on large screens */
-  .session-content{max-width:640px}
+  /* Session/exercise content wider */
+  .session-content{max-width:660px}
+
+  /* Nav with more spacing */
+  .nav button{min-width:110px;font-size:13px}
 }
 
-/* ===== EXTRA LARGE (1200px+) ===== */
-@media (min-width: 1200px) {
-  .app{max-width:960px}
-  .session-content{max-width:700px}
+/* ===== EXTRA LARGE (1440px+) ===== */
+@media (min-width: 1440px) {
+  .content{max-width:840px}
+  .session-content{max-width:720px}
+  .nav button{min-width:130px;font-size:14px;padding:16px 20px 14px}
 }
