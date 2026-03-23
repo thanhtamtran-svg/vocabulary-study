@@ -216,10 +216,15 @@ function App({onHome}) {
         }
       });
     });
-    // Register service worker
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
+    // Register service worker + auto-reload on update
+    if ('serviceWorker' in navigator) {
       var basePath = new URL('.', window.location.href).pathname;
       navigator.serviceWorker.register(basePath + 'sw.js').catch(function() {});
+      // When a new SW takes control, reload to get fresh assets
+      var refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (!refreshing) { refreshing = true; window.location.reload(); }
+      });
     }
   }, []);
 
