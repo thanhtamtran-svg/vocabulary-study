@@ -219,7 +219,7 @@ function App({onHome}) {
     // Register service worker
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       var basePath = new URL('.', window.location.href).pathname;
-      navigator.serviceWorker.register(basePath + 'sw.js').catch(function() {});
+      navigator.serviceWorker.register(basePath + 'sw.js?v=5').catch(function() {});
     }
   }, []);
 
