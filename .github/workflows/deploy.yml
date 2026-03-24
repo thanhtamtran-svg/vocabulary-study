@@ -31,9 +31,6 @@ jobs:
 
       - run: npm run build
 
-      - name: Copy service worker to dist
-        run: cp sw.js dist/sw.js 2>/dev/null || true
-
       - uses: actions/configure-pages@v4
 
       - uses: actions/upload-pages-artifact@v3
