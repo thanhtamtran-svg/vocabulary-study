@@ -47,6 +47,9 @@ self.addEventListener('fetch', function(event) {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
+  // Skip chrome-extension and other non-http(s) schemes
+  if (!url.protocol.startsWith('http')) return;
+
   // Google Fonts: cache-first
   if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
     event.respondWith(
