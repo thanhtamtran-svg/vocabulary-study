@@ -1,6 +1,6 @@
 // Service Worker for Push Notifications + Offline Caching
 
-var CACHE_NAME = 'vocab-study-v3';
+var CACHE_NAME = 'vocab-study-v4';
 var STATIC_ASSETS = [
   './',
   './manifest.json',
@@ -59,7 +59,7 @@ self.addEventListener('fetch', function(event) {
           if (response.ok) {
             var clone = response.clone();
             caches.open(CACHE_NAME).then(function(cache) {
-              cache.put(event.request, clone);
+              try { cache.put(event.request, clone); } catch(e) {}
             });
           }
           return response;
@@ -96,7 +96,7 @@ self.addEventListener('fetch', function(event) {
           if (response.ok) {
             var clone = response.clone();
             caches.open(CACHE_NAME).then(function(cache) {
-              cache.put(event.request, clone);
+              try { cache.put(event.request, clone); } catch(e) {}
             });
           }
           return response;
