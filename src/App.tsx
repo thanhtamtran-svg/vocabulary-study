@@ -446,10 +446,10 @@ function App({onHome}) {
     }
   }, []);
 
-  // Backfill studyDates from progress review history (one-time migration)
+  // Backfill studyDates from progress review history (runs whenever progress changes)
   useEffect(function() {
-    if (localStorage.getItem('vocab_study_dates_migrated')) return;
     var dates = new Set(studyDates);
+    var before = dates.size;
     Object.keys(progress).forEach(function(k) {
       var wp = progress[k];
       if (!wp) return;
@@ -458,12 +458,11 @@ function App({onHome}) {
       }
       if (wp.lastReview) dates.add(wp.lastReview);
     });
-    var merged = Array.from(dates).sort();
-    if (merged.length > studyDates.length) {
+    if (dates.size > before) {
+      var merged = Array.from(dates).sort();
       localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
       setStudyDates(merged);
     }
-    localStorage.setItem('vocab_study_dates_migrated', '1');
   }, [progress]);
 
   // Auto-save to localStorage
