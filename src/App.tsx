@@ -446,6 +446,26 @@ function App({onHome}) {
     }
   }, []);
 
+  // Backfill studyDates from progress review history (one-time migration)
+  useEffect(function() {
+    if (localStorage.getItem('vocab_study_dates_migrated')) return;
+    var dates = new Set(studyDates);
+    Object.keys(progress).forEach(function(k) {
+      var wp = progress[k];
+      if (!wp) return;
+      if (wp.reviews && Array.isArray(wp.reviews)) {
+        wp.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
+      }
+      if (wp.lastReview) dates.add(wp.lastReview);
+    });
+    var merged = Array.from(dates).sort();
+    if (merged.length > studyDates.length) {
+      localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
+      setStudyDates(merged);
+    }
+    localStorage.setItem('vocab_study_dates_migrated', '1');
+  }, [progress]);
+
   // Auto-save to localStorage
   useEffect(() => {
     saveState({
