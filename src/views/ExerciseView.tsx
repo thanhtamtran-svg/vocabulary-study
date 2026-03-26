@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants';
 import { speakGerman } from '../lib/speech';
+
+var SPECIAL_CHARS = ['\u00e4', '\u00f6', '\u00fc', '\u00df'];
 
 // Safe inline markdown renderer (no dangerouslySetInnerHTML)
 function renderInline(text, key) {
@@ -30,6 +32,25 @@ export default function ExerciseView({
   checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
   setView, exerciseLoading
 }) {
+  var inputRef = useRef(null);
+
+  var insertChar = useCallback(function(ch) {
+    var el = inputRef.current;
+    if (!el) {
+      setExerciseAnswer(function(prev) { return prev + ch; });
+      return;
+    }
+    var start = el.selectionStart || 0;
+    var end = el.selectionEnd || 0;
+    var val = exerciseAnswer;
+    var next = val.slice(0, start) + ch + val.slice(end);
+    setExerciseAnswer(next);
+    requestAnimationFrame(function() {
+      el.focus();
+      el.setSelectionRange(start + ch.length, start + ch.length);
+    });
+  }, [exerciseAnswer, setExerciseAnswer]);
+
   var exItem = exerciseSession.items[exerciseIdx];
   var exTotal = exerciseSession.items.length;
   var exProgressPct = ((exerciseIdx + (exerciseFeedback ? 1 : 0)) / exTotal * 100);
@@ -144,6 +165,7 @@ export default function ExerciseView({
                   {exItem.pronoun}
                 </span>
                 <input
+                  ref={inputRef}
                   type="text" value={exerciseAnswer}
                   onChange={function(e) { setExerciseAnswer(e.target.value); }}
                   onKeyDown={function(e) {
@@ -157,6 +179,17 @@ export default function ExerciseView({
                   style={{flex:1,padding:'10px 14px',fontSize:'16px',borderRadius:'8px',
                     border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}}
                 />
+              </div>
+              <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+                {SPECIAL_CHARS.map(function(ch) {
+                  return <button key={ch} type="button"
+                    onClick={function() { insertChar(ch); }}
+                    style={{padding:'6px 12px',fontSize:'16px',borderRadius:'8px',
+                      border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
+                      fontFamily:'inherit',fontWeight:600,color:'#334155',
+                      minWidth:'36px',lineHeight:'1'}}
+                  >{ch}</button>;
+                })}
               </div>
             </div> : null}
 
@@ -203,6 +236,7 @@ export default function ExerciseView({
                 {'\uD83D\uDCA1 Hint: ' + exItem.hint}
               </p> : null}
               <input
+                ref={inputRef}
                 type="text"
                 value={exerciseAnswer}
                 onChange={function(e) { setExerciseAnswer(e.target.value); }}
@@ -223,6 +257,17 @@ export default function ExerciseView({
                   fontFamily:'inherit'
                 }}
               />
+              <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+                {SPECIAL_CHARS.map(function(ch) {
+                  return <button key={ch} type="button"
+                    onClick={function() { insertChar(ch); }}
+                    style={{padding:'6px 12px',fontSize:'16px',borderRadius:'8px',
+                      border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
+                      fontFamily:'inherit',fontWeight:600,color:'#334155',
+                      minWidth:'36px',lineHeight:'1'}}
+                  >{ch}</button>;
+                })}
+              </div>
             </div> : null}
 
           {/* Text input feedback */}
