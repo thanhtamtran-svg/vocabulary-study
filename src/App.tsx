@@ -965,6 +965,9 @@ function App({onHome}) {
       setStartDate={setStartDate}
       setStarted={setStarted}
       importProgress={importProgress}
+      connectSync={connectSync}
+      syncStatus={syncStatus}
+      syncMsg={syncMsg}
     />;
   }
 
