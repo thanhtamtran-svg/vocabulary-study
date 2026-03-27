@@ -170,7 +170,7 @@ For EACH word above, create exactly 3 simple A1-level sentences in German that u
 
 Also create ONE short reading passage (4-6 sentences, A1 level) that naturally uses ALL of these words: ${allWordList}. The passage should be about a relatable everyday topic. Add an English translation of the full passage at the end.
 
-Then create a reading comprehension question about the passage, in the style of the Goethe-Zertifikat A1 or ÖSD exam. The question should test whether the reader understood a specific detail or the main idea. Provide exactly 4 answer options: 1 correct and 3 wrong. The wrong answers (distractors) MUST be plausible — they should relate to the passage topic and use similar vocabulary, but be contradicted or unsupported by the passage text. Do NOT use obviously unrelated distractors. A good distractor mentions something from the passage but draws the wrong conclusion, or confuses details.
+Then create a reading comprehension question about the passage, in the style of the Goethe-Zertifikat A1 or ÖSD exam. Write the question and all answer options in ENGLISH. The question should test whether the reader understood a specific detail or the main idea. Provide exactly 4 answer options: 1 correct and 3 wrong. The wrong answers (distractors) MUST be plausible — they should relate to the passage topic and use similar vocabulary, but be contradicted or unsupported by the passage text. Do NOT use obviously unrelated distractors. A good distractor mentions something from the passage but draws the wrong conclusion, or confuses details.
 
 Respond in this exact JSON format:
 {
