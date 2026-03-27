@@ -248,43 +248,51 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
       if (passage && passage.text && passage.translation) {
         var firstWord = selectedWords[0] ? getWord(selectedWords[0].wi) : {german:'', wordInfo:{}};
 
-        // Single reading comprehension: "What is this passage mainly about?"
-        var allTopicPool = [
-          'A day at school', 'Shopping at a store', 'A visit to the doctor',
-          'Cooking dinner', 'Traveling by train', 'Playing sports',
-          'Working in an office', 'A birthday party', 'Learning to drive',
-          'Going to the cinema', 'A trip to the zoo', 'Cleaning the house',
-          'Eating at a restaurant', 'Meeting new friends', 'Studying for an exam',
-          'Going on vacation', 'A walk in the park', 'Moving to a new city',
-          'A job interview', 'Shopping for clothes'
-        ];
-        // Derive topic keywords from the passage title and first sentence of translation
-        var passageHint = ((passage.title || '') + ' ' + (passage.translation || '').split('.')[0]).toLowerCase();
-        // Filter out options that are too similar to the real topic
-        var filteredTopics = allTopicPool.filter(function(t) {
-          var tLower = t.toLowerCase();
-          // Remove options that share significant words with the passage
-          var tWords = tLower.split(/\s+/);
-          for (var tw = 0; tw < tWords.length; tw++) {
-            if (tWords[tw].length > 3 && passageHint.indexOf(tWords[tw]) >= 0) return false;
+        var topicOpts;
+        var promptText;
+        var correctText;
+
+        // Use AI-generated question & options (Goethe/ÖSD style) if available
+        if (passage.question && passage.options && Array.isArray(passage.options) && passage.options.length >= 4) {
+          promptText = passage.question;
+          var aiOpts = passage.options.slice(0, 4);
+          var correctOpt = aiOpts.find(function(o) { return o.correct; });
+          correctText = correctOpt ? correctOpt.text : aiOpts[0].text;
+          topicOpts = aiOpts.map(function(o, i) {
+            return {text: o.text, isCorrect: !!o.correct, wi: -(10 + i)};
+          });
+        } else {
+          // Fallback: generic "What is this passage mainly about?"
+          promptText = 'What is this passage mainly about?';
+          correctText = passage.translation.split('.')[0].trim().substring(0, 60);
+          var allTopicPool = [
+            'A day at school', 'Shopping at a store', 'A visit to the doctor',
+            'Cooking dinner', 'Traveling by train', 'Playing sports',
+            'Working in an office', 'A birthday party', 'Learning to drive',
+            'Going to the cinema', 'A trip to the zoo', 'Cleaning the house',
+            'Eating at a restaurant', 'Meeting new friends', 'Studying for an exam',
+            'Going on vacation', 'A walk in the park', 'Moving to a new city',
+            'A job interview', 'Shopping for clothes'
+          ];
+          var passageHint = ((passage.title || '') + ' ' + (passage.translation || '').split('.')[0]).toLowerCase();
+          var filteredTopics = allTopicPool.filter(function(t) {
+            var tWords = t.toLowerCase().split(/\s+/);
+            for (var tw = 0; tw < tWords.length; tw++) {
+              if (tWords[tw].length > 3 && passageHint.indexOf(tWords[tw]) >= 0) return false;
+            }
+            return true;
+          });
+          for (var fi = filteredTopics.length - 1; fi > 0; fi--) {
+            var fj = Math.floor(Math.random() * (fi + 1));
+            var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
           }
-          return true;
-        });
-        // Shuffle filtered topics
-        for (var fi = filteredTopics.length - 1; fi > 0; fi--) {
-          var fj = Math.floor(Math.random() * (fi + 1));
-          var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
+          var wrongOpts = filteredTopics.slice(0, 3).map(function(t, i) {
+            return {text: t, isCorrect: false, wi: -(11+i)};
+          });
+          topicOpts = [{text: correctText, isCorrect: true, wi: -10}].concat(wrongOpts);
         }
-        var topicOptions = filteredTopics.slice(0, 4);
-        var correctText = passage.translation.split('.')[0].trim().substring(0, 60);
-        var correctOpt = {text: correctText, isCorrect: true, wi: -10};
-        // Take exactly 3 wrong options
-        var wrongOpts = topicOptions.slice(0, 3).map(function(t, i) {
-          return {text: t, isCorrect: false, wi: -(11+i)};
-        });
-        // Combine: 1 correct + 3 wrong = always 4
-        var topicOpts = [correctOpt].concat(wrongOpts);
-        // Shuffle
+
+        // Shuffle options
         for (var i = topicOpts.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1));
           var tmp = topicOpts[i]; topicOpts[i] = topicOpts[j]; topicOpts[j] = tmp;
@@ -292,7 +300,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
 
         items.push({
           type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
-          prompt: 'What is this passage mainly about?',
+          prompt: promptText,
           passage: passage.text,
           passageTitle: passage.title || 'Lesetext',
           passageTranslation: passage.translation || '',
