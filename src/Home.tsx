@@ -134,8 +134,8 @@ export default function Home() {
         <div style={{textAlign:'center',marginBottom:'30px'}}>
           <a href="https://uniques.vn/" target="_blank" rel="noopener noreferrer">
             <picture>
-              <source srcSet="uniques-logo.webp" type="image/webp" />
-              <img src="uniques-logo.png" alt="UniqueS" width={1920} height={1080} loading="lazy" style={{width:'160px',marginBottom:'16px'}} />
+              <source srcSet={import.meta.env.BASE_URL + 'uniques-logo.webp'} type="image/webp" />
+              <img src={import.meta.env.BASE_URL + 'uniques-logo.png'} alt="UniqueS" loading="lazy" style={{width:'160px',marginBottom:'16px'}} />
             </picture>
           </a>
           <h1 style={{fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}>What would you like to study today?</h1>
