@@ -3,7 +3,7 @@ import Nav from '../components/Nav';
 import { REVIEW_LABELS, SCIENCE_TIPS, MEMORY_STAGES } from '../lib/constants';
 import { formatDate } from '../lib/dates';
 
-export default function Dashboard({
+export default React.memo(function Dashboard({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,
   today, studyDay, weekNum, phase, phaseNames, phaseColors,
   totalLearned, batchesCompleted, batches, scheduleGap,
@@ -312,4 +312,4 @@ export default function Dashboard({
       </div>
     </div>
   );
-}
+})

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { dateKey } from '../lib/dates';
 
-export default function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg }) {
+export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg }) {
   var [emailInput, setEmailInput] = useState('');
   return (
     <div className="app">
@@ -113,4 +113,4 @@ export default function SetupScreen({ startDate, setStartDate, setStarted, impor
       </div>
     </div>
   );
-}
+})

@@ -3,7 +3,7 @@ import Nav from '../components/Nav';
 import { MEMORY_STAGES } from '../lib/constants';
 import { getMemoryStage } from '../lib/memory-stages';
 
-export default function ProgressView({
+export default React.memo(function ProgressView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,
   progress, totalLearned, words, cats
 }) {
@@ -128,4 +128,4 @@ export default function ProgressView({
       </div>
     </div>
   );
-}
+})

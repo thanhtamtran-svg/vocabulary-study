@@ -2,7 +2,7 @@ import React from 'react';
 import { WORD_EMOJIS } from '../emoji-data';
 import { speakGerman } from '../lib/speech';
 
-export default function Flashcard({
+export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
   wordImage, imageLoading
 }) {
@@ -73,4 +73,4 @@ export default function Flashcard({
       </div>
     </div>
   );
-}
+})

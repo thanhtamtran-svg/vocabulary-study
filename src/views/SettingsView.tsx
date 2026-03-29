@@ -82,7 +82,7 @@ async function deactivatePushSubscription(endpoint) {
   return res.ok;
 }
 
-export default function SettingsView({
+export default React.memo(function SettingsView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,
   startDate, setStartDate, studyDay, weekNum, phase,
   connectSync, disconnectSync,
@@ -394,4 +394,4 @@ export default function SettingsView({
       </div>
     </div>
   );
-}
+})

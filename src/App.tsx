@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { VOCAB_DATA } from './vocab-data';
 import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase';
 import {
@@ -19,15 +19,15 @@ import {
 } from './lib/exercise-engine';
 
 import { useToast } from './components/Toast';
-import SetupScreen from './views/SetupScreen';
-import Dashboard from './views/Dashboard';
-import SessionView from './views/SessionView';
-import CompleteView from './views/CompleteView';
-import ExerciseView from './views/ExerciseView';
-import ExerciseComplete from './views/ExerciseComplete';
-import ProgressView from './views/ProgressView';
-import BrowseView from './views/BrowseView';
-import SettingsView from './views/SettingsView';
+const SetupScreen = lazy(() => import('./views/SetupScreen'));
+const Dashboard = lazy(() => import('./views/Dashboard'));
+const SessionView = lazy(() => import('./views/SessionView'));
+const CompleteView = lazy(() => import('./views/CompleteView'));
+const ExerciseView = lazy(() => import('./views/ExerciseView'));
+const ExerciseComplete = lazy(() => import('./views/ExerciseComplete'));
+const ProgressView = lazy(() => import('./views/ProgressView'));
+const BrowseView = lazy(() => import('./views/BrowseView'));
+const SettingsView = lazy(() => import('./views/SettingsView'));
 
 // ===== MAIN APP =====
 function App({onHome}) {
@@ -957,9 +957,13 @@ function App({onHome}) {
     setView(viewId);
   }
 
+  var loadingFallback = <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
+    <div style={{width:'32px',height:'32px',border:'3px solid #e2e8f0',borderTopColor:'#7E9470',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
+  </div>;
+
   // ===== SETUP SCREEN =====
   if (!started) {
-    return <SetupScreen
+    return <Suspense fallback={loadingFallback}><SetupScreen
       startDate={startDate}
       setStartDate={setStartDate}
       setStarted={setStarted}
@@ -967,12 +971,12 @@ function App({onHome}) {
       connectSync={connectSync}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
-    />;
+    /></Suspense>;
   }
 
   // ===== SESSION VIEW =====
   if (view === "session" && sessionWords.length > 0) {
-    return <SessionView
+    return <Suspense fallback={loadingFallback}><SessionView
       sessionWords={sessionWords}
       sessionType={sessionType}
       currentIdx={currentIdx}
@@ -994,22 +998,22 @@ function App({onHome}) {
       setAiLoading={setAiLoading}
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
-    />;
+    /></Suspense>;
   }
 
   // ===== COMPLETION SCREEN =====
   if (view === "complete") {
-    return <CompleteView
+    return <Suspense fallback={loadingFallback}><CompleteView
       sessionWords={sessionWords}
       sessionType={sessionType}
       progress={progress}
       setView={setView}
-    />;
+    /></Suspense>;
   }
 
   // ===== EXERCISE VIEW =====
   if (view === 'exercise' && exerciseSession) {
-    return <ExerciseView
+    return <Suspense fallback={loadingFallback}><ExerciseView
       exerciseSession={exerciseSession}
       exerciseIdx={exerciseIdx}
       exerciseAnswer={exerciseAnswer}
@@ -1025,24 +1029,24 @@ function App({onHome}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
-    />;
+    /></Suspense>;
   }
 
   // ===== EXERCISE COMPLETE =====
   if (view === 'exercise-complete' && exerciseSession) {
-    return <ExerciseComplete
+    return <Suspense fallback={loadingFallback}><ExerciseComplete
       exerciseSession={exerciseSession}
       exerciseResults={exerciseResults}
       getWord={getWord}
       totalLearned={totalLearned}
       startExercise={startExercise}
       setView={setView}
-    />;
+    /></Suspense>;
   }
 
   // ===== DASHBOARD =====
   if (view === "dashboard") {
-    return <Dashboard
+    return <Suspense fallback={loadingFallback}><Dashboard
       onNavigate={handleNavigate}
       onHome={onHome}
       syncEmail={syncEmail}
@@ -1070,12 +1074,12 @@ function App({onHome}) {
       startExercise={startExercise}
       startDate={startDate}
       isSunday={today.getDay() === 0}
-    />;
+    /></Suspense>;
   }
 
   // ===== PROGRESS VIEW =====
   if (view === "progress") {
-    return <ProgressView
+    return <Suspense fallback={loadingFallback}><ProgressView
       onNavigate={handleNavigate}
       onHome={onHome}
       syncEmail={syncEmail}
@@ -1085,12 +1089,12 @@ function App({onHome}) {
       totalLearned={totalLearned}
       words={words}
       cats={cats}
-    />;
+    /></Suspense>;
   }
 
   // ===== BROWSE VIEW =====
   if (view === "browse") {
-    return <BrowseView
+    return <Suspense fallback={loadingFallback}><BrowseView
       onNavigate={handleNavigate}
       onHome={onHome}
       syncEmail={syncEmail}
@@ -1109,12 +1113,12 @@ function App({onHome}) {
       setFlipped={setFlipped}
       setStreak={setStreak}
       setView={setView}
-    />;
+    /></Suspense>;
   }
 
   // ===== SETTINGS =====
   if (view === "settings") {
-    return <SettingsView
+    return <Suspense fallback={loadingFallback}><SettingsView
       onNavigate={handleNavigate}
       onHome={onHome}
       syncEmail={syncEmail}
@@ -1145,7 +1149,7 @@ function App({onHome}) {
       setTodayCompleted={setTodayCompleted}
       exportProgress={exportProgress}
       importProgress={importProgress}
-    />;
+    /></Suspense>;
   }
 
   return null;

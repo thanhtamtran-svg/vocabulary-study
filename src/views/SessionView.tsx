@@ -6,7 +6,7 @@ import Flashcard from '../components/Flashcard';
 import ConfidenceButtons from '../components/ConfidenceButtons';
 import AiExplainBox from '../components/AiExplainBox';
 
-export default function SessionView({
+export default React.memo(function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,
   streak, rateWord, setView,
   wordImage, imageLoading, wordIPA, wordDefinition, defImage,
@@ -103,4 +103,4 @@ export default function SessionView({
       </div>
     </div>
   );
-}
+})

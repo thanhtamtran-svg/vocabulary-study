@@ -1,7 +1,7 @@
 import React from 'react';
 import { WORD_EMOJIS } from '../emoji-data';
 
-export default function CompleteView({ sessionWords, sessionType, progress, setView }) {
+export default React.memo(function CompleteView({ sessionWords, sessionType, progress, setView }) {
   var batchWords = sessionWords;
   var avgConf = batchWords.reduce(function(s, w) {
     return s + (progress[w.idx]?.confidence || 0);
@@ -59,4 +59,4 @@ export default function CompleteView({ sessionWords, sessionType, progress, setV
       </div>
     </div>
   );
-}
+})

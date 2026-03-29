@@ -6,5 +6,17 @@ export default defineConfig({
   base: '/vocabulary-study/',
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: function(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor';
+          }
+          if (id.includes('node_modules/@supabase')) {
+            return 'supabase';
+          }
+        },
+      },
+    },
   },
 });

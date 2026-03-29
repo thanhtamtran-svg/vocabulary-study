@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ExerciseComplete({
+export default React.memo(function ExerciseComplete({
   exerciseSession, exerciseResults, getWord, totalLearned,
   startExercise, setView
 }) {
@@ -124,4 +124,4 @@ export default function ExerciseComplete({
       </div>
     </div>
   );
-}
+})

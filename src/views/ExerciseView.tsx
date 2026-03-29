@@ -25,7 +25,7 @@ function renderSafeText(text) {
   });
 }
 
-export default function ExerciseView({
+export default React.memo(function ExerciseView({
   exerciseSession, exerciseIdx, exerciseAnswer, setExerciseAnswer,
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
@@ -401,4 +401,4 @@ export default function ExerciseView({
       </div>
     </div>
   );
-}
+})

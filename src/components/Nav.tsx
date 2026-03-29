@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Nav({ active, onNavigate, onHome, syncEmail, syncStatus, syncMsg }) {
+export default React.memo(function Nav({ active, onNavigate, onHome, syncEmail, syncStatus, syncMsg }) {
   var langFlagUrl = 'https://flagcdn.com/w40/de.png'; // German flag default
   var items = [
     {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
@@ -37,4 +37,4 @@ export default function Nav({ active, onNavigate, onHome, syncEmail, syncStatus,
       </span>
     </div> : null}
   </>;
-}
+})

@@ -17,7 +17,7 @@ function renderInline(text, key) {
   return parts.length ? parts : text;
 }
 
-export default function AiExplainBox({
+export default React.memo(function AiExplainBox({
   word, aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus
 }) {
@@ -135,4 +135,4 @@ export default function AiExplainBox({
       </div>
     </div> : null}
   </>;
-}
+})

@@ -133,7 +133,10 @@ export default function Home() {
       <div className="content" style={{paddingTop:'max(32px, env(safe-area-inset-top, 32px))'}}>
         <div style={{textAlign:'center',marginBottom:'30px'}}>
           <a href="https://uniques.vn/" target="_blank" rel="noopener noreferrer">
-            <img src="uniques-logo.png" alt="UniqueS" style={{width:'160px',marginBottom:'16px'}} />
+            <picture>
+              <source srcSet="uniques-logo.webp" type="image/webp" />
+              <img src="uniques-logo.png" alt="UniqueS" width={1920} height={1080} loading="lazy" style={{width:'160px',marginBottom:'16px'}} />
+            </picture>
           </a>
           <h1 style={{fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}>What would you like to study today?</h1>
           <p style={{color:'#7E9470',fontSize:'13px'}}>Choose a language to get started</p>

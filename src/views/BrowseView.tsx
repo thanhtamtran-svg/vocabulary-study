@@ -3,7 +3,7 @@ import Nav from '../components/Nav';
 import { WORD_EMOJIS } from '../emoji-data';
 import { TYPE_TAGS, TYPE_NAMES } from '../lib/constants';
 
-export default function BrowseView({
+export default React.memo(function BrowseView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg,
   words, progress, searchTerm, setSearchTerm, filterType, setFilterType,
   getWord, setSessionWords, setSessionType, setCurrentIdx, setFlipped, setStreak, setView
@@ -81,4 +81,4 @@ export default function BrowseView({
       </div>
     </div>
   );
-}
+})
