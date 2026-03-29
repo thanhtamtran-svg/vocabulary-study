@@ -1,6 +1,7 @@
 import React from 'react';
 import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
 import { fetchExplanation, fetchCachedExplanation } from '../lib/api';
+import { speakGerman } from '../lib/speech';
 
 // Parse markdown inline: **bold** and *italic*
 function renderInline(text, key) {
@@ -127,6 +128,19 @@ export default React.memo(function AiExplainBox({
                 <span style={{color:'#324A84',fontWeight:600}}>{renderInline(cells[1].trim(), i)}</span>
               </div>);
             }
+            return acc;
+          }
+          // Add speaker button to numbered German sentences (e.g. "1. Ich habe elf Freunde.")
+          var numberedMatch = line.match(/^(\d+)\.\s+(.+)/);
+          if (numberedMatch) {
+            var rawSentence = numberedMatch[2].replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1');
+            acc.push(<div key={i} className="ai-line" style={{display:'flex',alignItems:'center',gap:'6px'}}>
+              <span style={{flex:1}}>{renderInline(line, i)}</span>
+              <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px'}}
+                aria-label="Read sentence aloud"
+                onClick={function() { speakGerman(rawSentence); }}
+              >{'\uD83D\uDD0A'}</button>
+            </div>);
             return acc;
           }
           acc.push(<div key={i} className="ai-line">{renderInline(line, i)}</div>);
