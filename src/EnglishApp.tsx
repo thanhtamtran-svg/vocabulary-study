@@ -60,15 +60,12 @@ function EnglishApp({onHome}) {
   const toast = useToast();
   const saved = useMemo(() => {
     var state = loadEnglishState();
-    // Guard: if progress contains indices >= 1340, it's German data that leaked in — discard
-    if (state && state.progress) {
-      var maxIdx = Math.max.apply(null, Object.keys(state.progress).map(Number).concat([0]));
-      if (maxIdx >= ENGLISH_VOCAB_DATA.length) {
-        localStorage.removeItem(ENGLISH_STORAGE_KEY);
-        localStorage.removeItem('english_study_dates');
-        localStorage.removeItem('english_exercise_progress');
-        return null;
-      }
+    // Guard: if saved data doesn't have lang='english' marker, it's leaked German data — discard
+    if (state && state.lang !== 'english') {
+      localStorage.removeItem(ENGLISH_STORAGE_KEY);
+      localStorage.removeItem('english_study_dates');
+      localStorage.removeItem('english_exercise_progress');
+      return null;
     }
     return state;
   }, []);
@@ -465,6 +462,7 @@ function EnglishApp({onHome}) {
   // Auto-save to localStorage
   useEffect(() => {
     saveEnglishState({
+      lang: 'english',
       startDate: dateKey(startDate),
       started,
       progress,
@@ -480,6 +478,10 @@ function EnglishApp({onHome}) {
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
     cloudPull(syncEmail, 'english').then(function(remote) {
+      // Skip cloud data that doesn't have the English marker (leaked German data)
+      if (remote && remote.lang !== 'english' && remote.progress) {
+        remote = null;
+      }
       if (remote && remote.progress) {
         var merged = mergeProgress(progress, remote.progress);
         setProgress(merged);
@@ -543,6 +545,7 @@ function EnglishApp({onHome}) {
     if (!syncEmail || !started) return;
     var timer = setTimeout(function() {
       cloudPush(syncEmail, {
+        lang: 'english',
         startDate: dateKey(startDate),
         started: started,
         progress: progress,
@@ -560,6 +563,7 @@ function EnglishApp({onHome}) {
     if (!syncEmail || !started) return;
     function handleUnload() {
       cloudPush(syncEmail, {
+        lang: 'english',
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         studyDates: studyDates, exerciseProgress: exerciseProgress
@@ -587,6 +591,7 @@ function EnglishApp({onHome}) {
         setSyncMsg('Connected & synced!');
       } else {
         cloudPush(email, {
+          lang: 'english',
           startDate: dateKey(startDate),
           started: started,
           progress: progress,
