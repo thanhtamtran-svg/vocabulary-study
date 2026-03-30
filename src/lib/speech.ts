@@ -1,6 +1,7 @@
 var audioCache = new Map();
 var sharedAudio = typeof window !== 'undefined' ? new Audio() : null;
 var isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+var voicesLoaded = false;
 
 function speakWithGoogleTTS(text, lang) {
   if (!sharedAudio) {
@@ -36,16 +37,39 @@ function speakWithBrowserTTS(text, lang) {
   var utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang === 'en' ? 'en-US' : 'de-DE';
   utterance.rate = 0.85;
+
+  // On iOS, voices may not be loaded yet — try to find one but speak regardless
   var voices = window.speechSynthesis.getVoices();
-  var prefix = lang === 'en' ? 'en' : 'de';
-  var voice = voices.find(function(v) { return v.lang.startsWith(prefix); });
-  if (voice) utterance.voice = voice;
-  window.speechSynthesis.speak(utterance);
+  if (voices.length > 0) {
+    var prefix = lang === 'en' ? 'en' : 'de';
+    var voice = voices.find(function(v) { return v.lang.startsWith(prefix); });
+    if (voice) utterance.voice = voice;
+  }
+
+  // iOS workaround: speechSynthesis can get stuck, cancel and retry
+  try {
+    window.speechSynthesis.speak(utterance);
+    // iOS sometimes pauses after first speak — resume it
+    if (isMobile) {
+      setTimeout(function() {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      }, 100);
+    }
+  } catch(e) {
+    // Silently fail
+  }
 }
 
 export function speakGerman(text) {
   if (isMobile) {
-    speakWithBrowserTTS(text, 'de');
+    // On mobile, try Google TTS first (works on Android), fall back to browser TTS
+    if (/Android/i.test(navigator.userAgent)) {
+      speakWithGoogleTTS(text, 'de');
+    } else {
+      speakWithBrowserTTS(text, 'de');
+    }
   } else {
     speakWithGoogleTTS(text, 'de');
   }
@@ -53,14 +77,29 @@ export function speakGerman(text) {
 
 export function speakEnglish(text) {
   if (isMobile) {
-    speakWithBrowserTTS(text, 'en');
+    if (/Android/i.test(navigator.userAgent)) {
+      speakWithGoogleTTS(text, 'en');
+    } else {
+      speakWithBrowserTTS(text, 'en');
+    }
   } else {
     speakWithGoogleTTS(text, 'en');
   }
 }
 
-// Preload browser voices
+// Preload browser voices — critical for iOS
 if (typeof window !== 'undefined' && window.speechSynthesis) {
+  // Initial load attempt
   window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+  // Listen for async voice loading (required on iOS/Chrome)
+  window.speechSynthesis.onvoiceschanged = function() {
+    voicesLoaded = true;
+    window.speechSynthesis.getVoices();
+  };
+  // iOS workaround: trigger voice loading with a silent utterance
+  if (isMobile) {
+    var silentUtterance = new SpeechSynthesisUtterance('');
+    silentUtterance.volume = 0;
+    try { window.speechSynthesis.speak(silentUtterance); } catch(e) {}
+  }
 }

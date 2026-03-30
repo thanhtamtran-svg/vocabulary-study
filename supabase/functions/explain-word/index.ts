@@ -71,7 +71,7 @@ function validateWord(word: unknown, lang?: string): string | null {
   // Allow letters, hyphens, spaces, apostrophes, slashes, periods only
   if (!/^[\p{L}\s\-'\/\.]+$/u.test(trimmed)) return null;
   // Max 12 words for English phrases, 4 for German
-  const maxWords = lang === 'en' ? 12 : 4;
+  const maxWords = (lang === 'en' || lang === 'vi') ? 12 : 4;
   if (trimmed.split(/\s+/).length > maxWords) return null;
   return trimmed;
 }
@@ -107,6 +107,7 @@ Deno.serve(async (req) => {
     const lang = typeof body?.lang === "string" ? body.lang.trim() : "de";
     const word = validateWord(body?.word, lang);
     const wordType = typeof body?.type === "string" ? body.type.trim() : "";
+    const definition = typeof body?.definition === "string" ? body.definition.trim() : "";
     if (!word) {
       return new Response(
         JSON.stringify({ error: "Invalid word. Please provide a valid word." }),
@@ -121,7 +122,7 @@ Deno.serve(async (req) => {
 
     // Check cache first (prefix with lang for English to avoid collisions)
     const wordLower = word.toLowerCase();
-    const cacheKey = lang === 'en' ? 'en:' + wordLower : wordLower;
+    const cacheKey = lang === 'vi' ? 'vi:' + wordLower : lang === 'en' ? 'en:' + wordLower : wordLower;
     const { data: cached } = await supabase
       .from("vocab_explanations")
       .select("explanation")
@@ -138,7 +139,15 @@ Deno.serve(async (req) => {
     // Not cached — build prompt based on language
     let prompt: string;
 
-    if (lang === 'en') {
+    if (lang === 'vi') {
+      // Vietnamese translation — just translate the definition, return plain text
+      prompt = `Translate this English definition to Vietnamese. Return ONLY the Vietnamese translation, nothing else. No explanation, no English text, no formatting.
+
+English phrase: "${wordLower}"
+English definition: "${definition || wordType}"
+
+Vietnamese translation:`;
+    } else if (lang === 'en') {
       // English IELTS Speaking prompt
       prompt = `You are an IELTS Speaking coach helping a B1 learner master vocabulary for Band 7+. Explain this English phrase/word: "${wordLower}" (${wordType})
 

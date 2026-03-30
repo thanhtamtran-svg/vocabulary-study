@@ -3,7 +3,7 @@ import { speakGerman } from '../lib/speech';
 
 export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
-  wordImage, imageLoading, emojis
+  wordImage, imageLoading, emojis, lang, vietnameseDef
 }) {
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -44,30 +44,49 @@ export default React.memo(function Flashcard({
           </div>
         </div>
         <div className="flashcard-face flashcard-back">
-          {/* AI cartoon image illustrating the definition (small, centered) */}
-          {defImage ? <img
-            src={defImage.url} alt=""
-            style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
-              background:'#fff',margin:'0 auto 10px',display:'block'}}
-          /> : null}
-          {/* German definition */}
-          {wordDefinition ? <div style={{
-            fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
-            padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
-            fontStyle:'italic',textAlign:'center'
-          }}>{wordDefinition}</div> : null}
-          {/* German word + IPA + speaker */}
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}}>
-            <span style={{fontSize:'15px',color:'#718096'}}>{word.german}</span>
-            {wordIPA ? <span style={{fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}}>
-              {'/' + wordIPA + '/'}
-            </span> : null}
-            <button className="speak-btn back"
-              aria-label={'Pronounce ' + word.german}
-              onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
-              {'\uD83D\uDD0A'}
-            </button>
-          </div>
+          {lang === 'en' ? <>
+            {/* English back: AI image + English definition + Vietnamese */}
+            {wordImage ? <img
+              src={wordImage.url} alt=""
+              style={{width:'130px',height:'130px',objectFit:'contain',borderRadius:'12px',
+                background:'#fff',margin:'0 auto 10px',display:'block'}}
+            /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
+              Generating image...
+            </div> : null}
+            <div style={{
+              fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
+              padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
+              textAlign:'center',fontWeight:500
+            }}>{word.english}</div>
+            {vietnameseDef ? <div style={{
+              fontSize:'13px',color:'#718096',lineHeight:'1.4',
+              padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
+              textAlign:'center',fontStyle:'italic'
+            }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
+          </> : <>
+            {/* German back: definition image + German definition + word */}
+            {defImage ? <img
+              src={defImage.url} alt=""
+              style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
+                background:'#fff',margin:'0 auto 10px',display:'block'}}
+            /> : null}
+            {wordDefinition ? <div style={{
+              fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
+              padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
+              fontStyle:'italic',textAlign:'center'
+            }}>{wordDefinition}</div> : null}
+            <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}}>
+              <span style={{fontSize:'15px',color:'#718096'}}>{word.german}</span>
+              {wordIPA ? <span style={{fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}}>
+                {'/' + wordIPA + '/'}
+              </span> : null}
+              <button className="speak-btn back"
+                aria-label={'Pronounce ' + word.german}
+                onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
+                {'\uD83D\uDD0A'}
+              </button>
+            </div>
+          </>}
         </div>
       </div>
     </div>
