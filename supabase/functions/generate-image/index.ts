@@ -60,9 +60,9 @@ async function validateAuthToken(req: Request): Promise<boolean> {
 function validateWord(word: unknown): string | null {
   if (typeof word !== "string") return null;
   const trimmed = word.trim();
-  if (trimmed.length === 0 || trimmed.length > 50) return null;
-  if (!/^[\p{L}\s\-]+$/u.test(trimmed)) return null;
-  if (trimmed.split(/\s+/).length > 4) return null;
+  if (trimmed.length === 0 || trimmed.length > 100) return null;
+  if (!/^[\p{L}\s\-'\/\.\(\),\+~]+$/u.test(trimmed)) return null;
+  if (trimmed.split(/\s+/).length > 12) return null;
   return trimmed;
 }
 
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
 
     let prompt: string;
     if (type === "definition") {
-      prompt = `Generate a simple cartoon illustration that visually depicts this German sentence: "${english}"
+      prompt = `Generate a simple cartoon illustration that visually depicts this sentence: "${english}"
 
 Style requirements:
 - Simple cartoon scene on a clean white background
@@ -141,18 +141,19 @@ Style requirements:
 - Funny, exaggerated, and memorable
 - ABSOLUTELY NO TEXT, no labels, no letters, no words anywhere in the image`;
     } else {
-      prompt = `Generate a simple cartoon illustration for the German word "${word}" (meaning: ${english}).
+      prompt = `Generate a simple cartoon illustration for the phrase "${word}" (meaning: ${english}).
 
 Style requirements:
-- Single cartoon character or object, centered on a clean white background
-- Colorful comic style similar to educational German vocabulary flashcard illustrations
-- Exaggerated, funny, and memorable features that clearly hint at the word's meaning
-- Simple and clean — no clutter, no background scene
-- The illustration should help a language learner guess what the word means
+- Simple cartoon scene on a clean white background
+- Colorful comic style, like an educational vocabulary flashcard
+- Exaggerated, funny, and memorable — the image should clearly convey the meaning of "${english}"
+- The illustration should help a language learner understand and remember the phrase
 - ABSOLUTELY NO TEXT, no labels, no letters, no words anywhere in the image
-${type === "Verb" ? "- Show a character performing the action" : ""}
-${type === "Adjective" ? "- Show a character or object clearly demonstrating the quality" : ""}
-${type === "Expression" ? "- Show a character using body language/facial expression to convey the meaning" : ""}`;
+${type === "Verb" || type === "Verb Phrase" || type === "Phrasal Verb" ? "- Show a character performing the action" : ""}
+${type === "Adjective" || type === "Adjective Phrase" ? "- Show a character or object clearly demonstrating the quality" : ""}
+${type === "Idiom" ? "- Create a visual metaphor that captures the figurative meaning, not the literal words" : ""}
+${type === "Noun Phrase" ? "- Show the thing or concept being described" : ""}
+${type === "Prepositional Phrase" ? "- Show a scene that illustrates the spatial or conceptual relationship" : ""}`;
     }
 
     const geminiResponse = await fetch(

@@ -276,9 +276,14 @@ function EnglishApp({onHome}) {
     if (!w) return;
     var cancelled = false;
     setWordImage(null);
-    // Skip image loading for English phrases (not useful for multi-word phrases)
-    setImageLoading(false);
+    // Generate cartoon illustration for the phrase
+    setImageLoading(true);
     setWordImage(null);
+    fetchWordImage(w.german, w.english, w.type).then(function(img) {
+      if (cancelled) return;
+      setWordImage(img);
+      setImageLoading(false);
+    }).catch(function() { if (!cancelled) setImageLoading(false); });
     // Reset explanation state (will load on demand via AI Explain button)
     setAiExplanation('');
     setAiError('');
