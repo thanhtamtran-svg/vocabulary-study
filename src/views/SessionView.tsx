@@ -11,7 +11,8 @@ export default React.memo(function SessionView({
   streak, rateWord, setView,
   wordImage, imageLoading, wordIPA, wordDefinition, defImage,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
-  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus
+  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
+  hideAiExplain
 }) {
   var w = sessionWords[currentIdx];
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
@@ -88,7 +89,7 @@ export default React.memo(function SessionView({
           </p>
           <ConfidenceButtons onRate={rateWord} />
 
-          <AiExplainBox
+          {!hideAiExplain ? <AiExplainBox
             word={w}
             aiExplanation={aiExplanation}
             aiLoading={aiLoading}
@@ -98,7 +99,7 @@ export default React.memo(function SessionView({
             setAiLoading={setAiLoading}
             setAiError={setAiError}
             setAiSaveStatus={setAiSaveStatus}
-          />
+          /> : null}
         </> : null}
       </div>
     </div>

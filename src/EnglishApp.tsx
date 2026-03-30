@@ -999,6 +999,7 @@ function EnglishApp({onHome}) {
       setAiLoading={setAiLoading}
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
+      hideAiExplain={true}
     /></Suspense>;
   }
 
