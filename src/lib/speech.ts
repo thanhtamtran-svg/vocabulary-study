@@ -1,27 +1,29 @@
 var audioCache = new Map();
-var currentAudio = null;
+var sharedAudio = typeof window !== 'undefined' ? new Audio() : null;
 
 function speakWithGoogleTTS(text) {
-  // Stop any currently playing audio
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio = null;
+  if (!sharedAudio) {
+    speakWithBrowserTTS(text);
+    return;
   }
+
+  // Stop any currently playing audio
+  sharedAudio.pause();
 
   var cacheKey = text.toLowerCase().trim();
   if (audioCache.has(cacheKey)) {
     var cached = audioCache.get(cacheKey);
-    cached.currentTime = 0;
-    currentAudio = cached;
-    cached.play().catch(function() { speakWithBrowserTTS(text); });
+    sharedAudio.src = cached;
+    sharedAudio.currentTime = 0;
+    sharedAudio.play().catch(function() { speakWithBrowserTTS(text); });
     return;
   }
 
   var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=de&q=' + encodeURIComponent(text);
-  var audio = new Audio(url);
-  currentAudio = audio;
-  audio.play().then(function() {
-    audioCache.set(cacheKey, audio);
+  sharedAudio.src = url;
+  sharedAudio.currentTime = 0;
+  sharedAudio.play().then(function() {
+    audioCache.set(cacheKey, url);
   }).catch(function() {
     // Google TTS blocked or failed — fall back to browser TTS
     speakWithBrowserTTS(text);
