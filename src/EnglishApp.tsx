@@ -967,6 +967,9 @@ function EnglishApp({onHome}) {
       connectSync={connectSync}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      courseFlag={'\uD83C\uDDEC\uD83C\uDDE7'}
+      courseTitle="IELTS Speaking 1340"
+      courseDesc="Master 1340 phrases for IELTS Speaking with spaced repetition"
     /></Suspense>;
   }
 

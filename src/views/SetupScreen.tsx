@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { dateKey } from '../lib/dates';
 
-export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg }) {
+export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg, courseFlag, courseTitle, courseDesc }) {
   var [emailInput, setEmailInput] = useState('');
   return (
     <div className="app">
       <div style={{padding:'24px',textAlign:'center'}}>
-        <div style={{fontSize:'48px',marginBottom:'16px'}}>{'\uD83C\uDDE9\uD83C\uDDEA'}</div>
-        <h1 style={{fontSize:'22px',marginBottom:'4px'}}>German 1500</h1>
+        <div style={{fontSize:'48px',marginBottom:'16px'}}>{courseFlag || '\uD83C\uDDE9\uD83C\uDDEA'}</div>
+        <h1 style={{fontSize:'22px',marginBottom:'4px'}}>{courseTitle || 'German 1500'}</h1>
         <p style={{color:'#718096',fontSize:'13px',marginBottom:'24px'}}>
-          Master 1500 words with science-based spaced repetition
+          {courseDesc || 'Master 1500 words with science-based spaced repetition'}
         </p>
 
         <div className="card" style={{
