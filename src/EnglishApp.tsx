@@ -58,7 +58,20 @@ function makeBatches(wordCount, batchSize) {
 // ===== MAIN APP =====
 function EnglishApp({onHome}) {
   const toast = useToast();
-  const saved = useMemo(() => loadEnglishState(), []);
+  const saved = useMemo(() => {
+    var state = loadEnglishState();
+    // Guard: if progress contains indices >= 1340, it's German data that leaked in — discard
+    if (state && state.progress) {
+      var maxIdx = Math.max.apply(null, Object.keys(state.progress).map(Number).concat([0]));
+      if (maxIdx >= ENGLISH_VOCAB_DATA.length) {
+        localStorage.removeItem(ENGLISH_STORAGE_KEY);
+        localStorage.removeItem('english_study_dates');
+        localStorage.removeItem('english_exercise_progress');
+        return null;
+      }
+    }
+    return state;
+  }, []);
 
   const [view, setView] = useState("dashboard");
   const [startDate, setStartDate] = useState(() => {
