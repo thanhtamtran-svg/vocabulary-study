@@ -508,7 +508,7 @@ function EnglishApp({onHome}) {
     syncRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    cloudPull(syncEmail).then(function(remote) {
+    cloudPull(syncEmail, 'english').then(function(remote) {
       if (remote && remote.progress) {
         var merged = mergeProgress(progress, remote.progress);
         setProgress(merged);
@@ -579,7 +579,7 @@ function EnglishApp({onHome}) {
         completedDate: dateKey(today),
         studyDates: studyDates,
         exerciseProgress: exerciseProgress
-      });
+      }, 'english');
     }, 5000);
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
@@ -592,7 +592,7 @@ function EnglishApp({onHome}) {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         studyDates: studyDates, exerciseProgress: exerciseProgress
-      });
+      }, 'english');
     }
     window.addEventListener('beforeunload', handleUnload);
     window.addEventListener('visibilitychange', function() {
@@ -606,7 +606,7 @@ function EnglishApp({onHome}) {
     setSyncEmail(email);
     setSyncStatus('syncing');
     setSyncMsg('Connecting...');
-    cloudPull(email).then(function(remote) {
+    cloudPull(email, 'english').then(function(remote) {
       if (remote && remote.progress) {
         var merged = mergeProgress(progress, remote.progress);
         setProgress(merged);
@@ -621,7 +621,7 @@ function EnglishApp({onHome}) {
           progress: progress,
           todayCompleted: todayCompleted,
           completedDate: dateKey(today)
-        });
+        }, 'english');
         setSyncStatus('done');
         setSyncMsg('Connected! Progress uploaded.');
       }

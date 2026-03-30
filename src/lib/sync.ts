@@ -21,17 +21,19 @@ export function mergeProgress(local, remote) {
   return merged;
 }
 
-export async function cloudPull(email) {
+export async function cloudPull(email, lang) {
   if (!supabase || !email) return null;
-  var res = await supabase.from('vocab_progress').select('data').eq('user_email', email).single();
+  var key = lang ? email + ':' + lang : email;
+  var res = await supabase.from('vocab_progress').select('data').eq('user_email', key).single();
   if (res.error || !res.data) return null;
   return res.data.data;
 }
 
-export async function cloudPush(email, state) {
+export async function cloudPush(email, state, lang) {
   if (!supabase || !email) return false;
+  var key = lang ? email + ':' + lang : email;
   var res = await supabase.from('vocab_progress').upsert({
-    user_email: email,
+    user_email: key,
     data: state,
     updated_at: new Date().toISOString()
   }, {onConflict: 'user_email'});
