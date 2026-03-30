@@ -190,7 +190,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     } else if (isStrong && Math.random() > 0.6 && sent.ai) {
       items.push({
         type: 'fill_english', level: 'Understand', wordIdx: wi,
-        prompt: 'What does the missing word mean?\n' + sent.template.replace('___', '______'),
+        prompt: 'What does "' + w.german + '" mean in this sentence?\n' + sent.full,
         correctAnswer: w.english.toLowerCase(),
         fullAnswer: w.english,
         sentence: sent.full,
