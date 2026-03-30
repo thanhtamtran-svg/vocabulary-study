@@ -34,6 +34,9 @@ export default class ErrorBoundary extends React.Component {
           React.createElement('p', {
             style: { fontSize: '13px', color: '#718096', marginBottom: '20px', lineHeight: '1.5' }
           }, 'An unexpected error occurred. Please try again.'),
+          this.state.error ? React.createElement('pre', {
+            style: { fontSize: '10px', color: '#E74C3C', background: '#fef2f2', padding: '8px', borderRadius: '8px', marginBottom: '12px', textAlign: 'left', overflow: 'auto', maxHeight: '120px', wordBreak: 'break-all' }
+          }, String(this.state.error)) : null,
           React.createElement('button', {
             className: 'btn btn-primary',
             style: { maxWidth: '200px', margin: '0 auto' },
