@@ -60,11 +60,13 @@ function EnglishApp({onHome}) {
   const toast = useToast();
   const saved = useMemo(() => {
     var state = loadEnglishState();
-    // Guard: if saved data doesn't have lang='english' marker, it's leaked German data — discard
+    // Guard: if saved data doesn't have lang='english' marker, it's leaked German data — discard and go home
     if (state && state.lang !== 'english') {
       localStorage.removeItem(ENGLISH_STORAGE_KEY);
       localStorage.removeItem('english_study_dates');
       localStorage.removeItem('english_exercise_progress');
+      localStorage.removeItem('vocab_language');
+      window.location.reload();
       return null;
     }
     return state;
