@@ -83,7 +83,7 @@ async function deactivatePushSubscription(endpoint) {
 }
 
 export default React.memo(function SettingsView({
-  onNavigate, onHome, syncEmail, syncStatus, syncMsg,
+  onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   startDate, setStartDate, studyDay, weekNum, phase,
   connectSync, disconnectSync,
   pushEnabled, setPushEnabled, pushLoading, setPushLoading,

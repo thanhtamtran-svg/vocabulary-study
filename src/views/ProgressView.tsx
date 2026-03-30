@@ -4,7 +4,7 @@ import { MEMORY_STAGES } from '../lib/constants';
 import { getMemoryStage } from '../lib/memory-stages';
 
 export default React.memo(function ProgressView({
-  onNavigate, onHome, syncEmail, syncStatus, syncMsg,
+  onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   progress, totalLearned, words, cats
 }) {
   // Compute memory stages for all words

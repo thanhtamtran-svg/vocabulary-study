@@ -4,7 +4,7 @@ import { WORD_EMOJIS } from '../emoji-data';
 import { TYPE_TAGS, TYPE_NAMES } from '../lib/constants';
 
 export default React.memo(function BrowseView({
-  onNavigate, onHome, syncEmail, syncStatus, syncMsg,
+  onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   words, progress, searchTerm, setSearchTerm, filterType, setFilterType,
   getWord, setSessionWords, setSessionType, setCurrentIdx, setFlipped, setStreak, setView
 }) {
