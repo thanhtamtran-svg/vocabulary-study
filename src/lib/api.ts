@@ -92,8 +92,9 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
   }
 }
 
-export async function fetchCachedExplanation(word) {
-  var cacheKey = word.toLowerCase().trim();
+export async function fetchCachedExplanation(word, lang?) {
+  var prefix = lang === 'en' ? 'en:' : '';
+  var cacheKey = prefix + word.toLowerCase().trim();
   if (cachedExplanationCache.has(cacheKey)) return cachedExplanationCache.get(cacheKey);
   var url = SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(cacheKey) + '&select=explanation';
   var res = await fetch(url, {
@@ -112,8 +113,9 @@ export async function fetchCachedExplanation(word) {
   return null;
 }
 
-export async function fetchExplanation(word, wordType) {
-  var cacheKey = word.toLowerCase().trim();
+export async function fetchExplanation(word, wordType, lang?) {
+  var prefix = lang === 'en' ? 'en:' : '';
+  var cacheKey = prefix + word.toLowerCase().trim();
   if (explanationCache.has(cacheKey)) return explanationCache.get(cacheKey);
   const res = await fetch(EXPLAIN_URL, {
     method: 'POST',
@@ -121,7 +123,7 @@ export async function fetchExplanation(word, wordType) {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + SUPABASE_KEY
     },
-    body: JSON.stringify({ word: word, type: wordType || '' })
+    body: JSON.stringify({ word: word, type: wordType || '', lang: lang || 'de' })
   });
   if (!res.ok) throw new Error('Failed to fetch explanation');
   const data = await res.json();

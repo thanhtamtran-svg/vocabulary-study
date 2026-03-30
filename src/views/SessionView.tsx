@@ -12,7 +12,7 @@ export default React.memo(function SessionView({
   wordImage, imageLoading, wordIPA, wordDefinition, defImage,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
-  hideAiExplain
+  hideAiExplain, lang
 }) {
   var w = sessionWords[currentIdx];
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
@@ -99,6 +99,7 @@ export default React.memo(function SessionView({
             setAiLoading={setAiLoading}
             setAiError={setAiError}
             setAiSaveStatus={setAiSaveStatus}
+            lang={lang}
           /> : null}
         </> : null}
       </div>

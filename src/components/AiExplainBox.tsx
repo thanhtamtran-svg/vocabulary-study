@@ -20,18 +20,18 @@ function renderInline(text, key) {
 
 export default React.memo(function AiExplainBox({
   word, aiExplanation, aiLoading, aiError, aiSaveStatus,
-  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus
+  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus, lang
 }) {
   function handleExplain() {
     setAiLoading(true);
     setAiError('');
     setAiSaveStatus('');
-    fetchExplanation(word.german, word.type).then(function(text) {
+    fetchExplanation(word.german, word.type, lang).then(function(text) {
       setAiExplanation(text);
       setAiLoading(false);
       setAiSaveStatus('saving');
       setTimeout(function() {
-        fetchCachedExplanation(word.german).then(function(cached) {
+        fetchCachedExplanation(word.german, lang).then(function(cached) {
           setAiSaveStatus(cached ? 'saved' : '');
         });
       }, 2000);
