@@ -1,5 +1,4 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data';
 import { DUAL_CODING_TIPS, REVIEW_LABELS, REVIEW_METHODS } from '../lib/constants';
 import { speakGerman } from '../lib/speech';
 import Flashcard from '../components/Flashcard';
@@ -12,7 +11,7 @@ export default React.memo(function SessionView({
   wordImage, imageLoading, wordIPA, wordDefinition, defImage,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
-  hideAiExplain, lang
+  hideAiExplain, lang, emojis
 }) {
   var w = sessionWords[currentIdx];
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
@@ -53,6 +52,7 @@ export default React.memo(function SessionView({
           defImage={defImage}
           wordImage={wordImage}
           imageLoading={imageLoading}
+          emojis={emojis}
         />
 
         {isLearn && !flipped ? <div className="dual-coding-prompt">

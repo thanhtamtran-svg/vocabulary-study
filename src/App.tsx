@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
 import { VOCAB_DATA } from './vocab-data';
+import { WORD_EMOJIS } from './emoji-data';
 import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase';
 import {
   TYPE_TAGS, TYPE_NAMES, REVIEW_LABELS, REVIEW_METHODS,
@@ -216,10 +217,26 @@ function App({onHome}) {
         }
       });
     });
-    // Register service worker
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
+    // Register service worker + pre-cache all JS/CSS chunks
+    if ('serviceWorker' in navigator) {
       var basePath = new URL('.', window.location.href).pathname;
-      navigator.serviceWorker.register(basePath + 'sw.js?v=5').catch(function() {});
+      navigator.serviceWorker.register(basePath + 'sw.js?v=8').then(function(reg) {
+        reg.active && precacheAssets(reg.active);
+        reg.addEventListener('updatefound', function() {
+          var nw = reg.installing;
+          if (nw) nw.addEventListener('statechange', function() {
+            if (nw.state === 'activated') precacheAssets(nw);
+          });
+        });
+      }).catch(function() {});
+    }
+    function precacheAssets(sw) {
+      var urls = [];
+      document.querySelectorAll('script[src],link[rel="stylesheet"][href],link[rel="modulepreload"][href]').forEach(function(el) {
+        var u = el.getAttribute('src') || el.getAttribute('href');
+        if (u) urls.push(new URL(u, window.location.href).href);
+      });
+      if (urls.length > 0) sw.postMessage({type: 'PRECACHE_ASSETS', urls: urls});
     }
   }, []);
 
@@ -998,6 +1015,7 @@ function App({onHome}) {
       setAiLoading={setAiLoading}
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
+      emojis={WORD_EMOJIS}
     /></Suspense>;
   }
 
@@ -1008,6 +1026,7 @@ function App({onHome}) {
       sessionType={sessionType}
       progress={progress}
       setView={setView}
+      emojis={WORD_EMOJIS}
     /></Suspense>;
   }
 
@@ -1113,6 +1132,7 @@ function App({onHome}) {
       setFlipped={setFlipped}
       setStreak={setStreak}
       setView={setView}
+      emojis={WORD_EMOJIS}
     /></Suspense>;
   }
 

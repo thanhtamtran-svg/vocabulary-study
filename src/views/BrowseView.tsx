@@ -1,12 +1,12 @@
 import React from 'react';
 import Nav from '../components/Nav';
-import { WORD_EMOJIS } from '../emoji-data';
 import { TYPE_TAGS, TYPE_NAMES } from '../lib/constants';
 
 export default React.memo(function BrowseView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   words, progress, searchTerm, setSearchTerm, filterType, setFilterType,
-  getWord, setSessionWords, setSessionType, setCurrentIdx, setFlipped, setStreak, setView
+  getWord, setSessionWords, setSessionType, setCurrentIdx, setFlipped, setStreak, setView,
+  emojis
 }) {
   var filtered = words.map(function(w, i) {
     return {idx: i, german: w[0], english: w[1], catIdx: w[2], typeIdx: w[3]};
@@ -66,7 +66,7 @@ export default React.memo(function BrowseView({
                 setView('session');
               }}>
               <div style={{flex:1}}>
-                {typeof WORD_EMOJIS !== 'undefined' ? <span style={{marginRight:'4px'}}>{WORD_EMOJIS[w.idx]}</span> : null}
+                {emojis ? <span style={{marginRight:'4px'}}>{emojis[w.idx]}</span> : null}
                 <strong>{w.german}</strong>
                 <span className={'tag ' + TYPE_TAGS[w.typeIdx]}
                   style={{marginLeft:'6px'}}>{TYPE_NAMES[w.typeIdx]}</span>

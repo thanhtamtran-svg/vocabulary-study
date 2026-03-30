@@ -1,6 +1,6 @@
 // Service Worker for Push Notifications + Offline Caching
 
-var CACHE_NAME = 'vocab-study-v7';
+var CACHE_NAME = 'vocab-study-v8';
 var STATIC_ASSETS = [
   './',
   './manifest.json',
@@ -10,17 +10,33 @@ var STATIC_ASSETS = [
   './icon-512.svg'
 ];
 
-// Install: cache static assets
+// Install: cache static assets + pre-cache all JS/CSS from the page
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(STATIC_ASSETS).catch(function() {
-        // Some assets may not exist, continue anyway
-      });
+      return cache.addAll(STATIC_ASSETS).catch(function() {});
     }).then(function() {
       return self.skipWaiting();
     })
   );
+});
+
+// On first activation, pre-cache all JS/CSS chunks from the current page
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'PRECACHE_ASSETS') {
+    var urls = event.data.urls || [];
+    caches.open(CACHE_NAME).then(function(cache) {
+      urls.forEach(function(url) {
+        cache.match(url).then(function(cached) {
+          if (!cached) {
+            fetch(url).then(function(response) {
+              if (response.ok) cache.put(url, response);
+            }).catch(function() {});
+          }
+        });
+      });
+    });
+  }
 });
 
 // Activate: clean old caches and claim clients

@@ -1,7 +1,5 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data';
-
-export default React.memo(function CompleteView({ sessionWords, sessionType, progress, setView }) {
+export default React.memo(function CompleteView({ sessionWords, sessionType, progress, setView, emojis }) {
   var batchWords = sessionWords;
   var avgConf = batchWords.reduce(function(s, w) {
     return s + (progress[w.idx]?.confidence || 0);
@@ -36,7 +34,7 @@ export default React.memo(function CompleteView({ sessionWords, sessionType, pro
               var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
               return <div className="word-row" key={i}>
                 <span>
-                  {typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] + ' ' : ''}
+                  {emojis ? emojis[w.idx] + ' ' : ''}
                   <strong>{w.german}</strong>
                 </span>
                 <span>{w.english}</span>

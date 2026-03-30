@@ -1,10 +1,9 @@
 import React from 'react';
-import { WORD_EMOJIS } from '../emoji-data';
 import { speakGerman } from '../lib/speech';
 
 export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
-  wordImage, imageLoading
+  wordImage, imageLoading, emojis
 }) {
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -24,7 +23,7 @@ export default React.memo(function Flashcard({
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
           <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
-            {typeof WORD_EMOJIS !== 'undefined' ? <span style={{fontSize:'28px'}}>{WORD_EMOJIS[word.idx]}</span> : null}
+            {emojis ? <span style={{fontSize:'28px'}}>{emojis[word.idx]}</span> : null}
             <span className={'tag ' + word.typeClass}>{word.type}</span>
           </div>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
