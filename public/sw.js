@@ -1,6 +1,6 @@
 // Service Worker for Push Notifications + Offline Caching
 
-var CACHE_NAME = 'vocab-study-v6';
+var CACHE_NAME = 'vocab-study-v7';
 var STATIC_ASSETS = [
   './',
   './manifest.json',
