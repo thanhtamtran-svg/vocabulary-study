@@ -158,17 +158,19 @@ Deno.serve(async (req) => {
 
     const allWordList = validatedWords.map((w: any) => `"${w.german}" (${w.english})`).join(", ");
 
-    const prompt = `You are a German A1 language teacher. Generate practice content for these German words:
+    const prompt = `You are a modern German A1 language teacher. Generate practice content for these German words:
 
 ${wordList}
 
 For EACH word above, create exactly 3 simple A1-level sentences in German that use the word naturally. Each sentence should:
 - Be 5-10 words long
 - Use only A1 vocabulary
-- Show the word in different everyday contexts (daily life, school, travel, shopping, family)
+- Reflect MODERN daily life German as spoken today (texting friends, ordering coffee, chatting with colleagues, posting on social media, grocery shopping, using public transport, WhatsApp messages, etc.)
+- Mix informal (du) and formal (Sie) registers naturally — use "du" for friends/family situations and "Sie" for work/service situations
+- Avoid textbook-sounding or old-fashioned phrases — write how real Germans speak and write in 2025
 - Include the English translation in parentheses after each sentence
 
-Also create ONE short reading passage (4-6 sentences, A1 level) that naturally uses ALL of these words: ${allWordList}. The passage should be about a relatable everyday topic. Add an English translation of the full passage at the end.
+Also create ONE short reading passage (4-6 sentences, A1 level) that naturally uses ALL of these words: ${allWordList}. The passage should feel like something a real person might write — a WhatsApp message, a social media post, an email to a friend, a note to a flatmate, or a short blog entry. Make it relatable to modern life (not a textbook scenario). Add an English translation of the full passage at the end.
 
 Then create a reading comprehension question about the passage, in the style of the Goethe-Zertifikat A1 or ÖSD exam. Write the question and all answer options in ENGLISH. The question should test whether the reader understood a specific detail or the main idea. Provide exactly 4 answer options: 1 correct and 3 wrong. The wrong answers (distractors) MUST be plausible — they should relate to the passage topic and use similar vocabulary, but be contradicted or unsupported by the passage text. Do NOT use obviously unrelated distractors. A good distractor mentions something from the passage but draws the wrong conclusion, or confuses details.
 
