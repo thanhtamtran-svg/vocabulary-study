@@ -20,7 +20,7 @@ export default React.memo(function BrowseView({
   return (
     <div className="app">
       <Nav active="browse" onNavigate={onNavigate} onHome={onHome}
-        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} />
+        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} langFlag={langFlag} />
       <div className="content">
         <h1>Browse All Words</h1>
         <input

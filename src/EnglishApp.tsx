@@ -1072,6 +1072,7 @@ function EnglishApp({onHome}) {
       syncEmail={syncEmail}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      langFlag="https://flagcdn.com/w40/gb.png"
       today={today}
       studyDay={studyDay}
       weekNum={weekNum}
@@ -1105,6 +1106,7 @@ function EnglishApp({onHome}) {
       syncEmail={syncEmail}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      langFlag="https://flagcdn.com/w40/gb.png"
       progress={progress}
       totalLearned={totalLearned}
       words={words}
@@ -1120,6 +1122,7 @@ function EnglishApp({onHome}) {
       syncEmail={syncEmail}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      langFlag="https://flagcdn.com/w40/gb.png"
       words={words}
       progress={progress}
       searchTerm={searchTerm}
@@ -1144,6 +1147,7 @@ function EnglishApp({onHome}) {
       syncEmail={syncEmail}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      langFlag="https://flagcdn.com/w40/gb.png"
       startDate={startDate}
       setStartDate={setStartDate}
       studyDay={studyDay}

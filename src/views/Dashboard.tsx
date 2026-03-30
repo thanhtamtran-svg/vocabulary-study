@@ -35,7 +35,7 @@ export default React.memo(function Dashboard({
   return (
     <div className="app">
       <Nav active="dashboard" onNavigate={onNavigate} onHome={onHome}
-        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} />
+        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} langFlag={langFlag} />
       <div className="content">
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
           <div>

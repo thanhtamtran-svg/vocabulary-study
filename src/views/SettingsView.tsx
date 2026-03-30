@@ -99,7 +99,7 @@ export default React.memo(function SettingsView({
   return (
     <div className="app">
       <Nav active="settings" onNavigate={onNavigate} onHome={onHome}
-        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} />
+        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} langFlag={langFlag} />
       <div className="content">
         <h1>Settings</h1>
 

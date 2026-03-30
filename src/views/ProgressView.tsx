@@ -19,7 +19,7 @@ export default React.memo(function ProgressView({
   return (
     <div className="app">
       <Nav active="progress" onNavigate={onNavigate} onHome={onHome}
-        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} />
+        syncEmail={syncEmail} syncStatus={syncStatus} syncMsg={syncMsg} langFlag={langFlag} />
       <div className="content">
         <h1>Your Progress</h1>
 

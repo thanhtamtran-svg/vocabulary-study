@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default React.memo(function Nav({ active, onNavigate, onHome, syncEmail, syncStatus, syncMsg }) {
-  var langFlagUrl = 'https://flagcdn.com/w40/de.png'; // German flag default
+export default React.memo(function Nav({ active, onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag }) {
+  var langFlagUrl = langFlag || 'https://flagcdn.com/w40/de.png';
   var items = [
     {id: 'dashboard', icon: '\uD83C\uDFE0', label: 'Home'},
     {id: 'progress', icon: '\uD83D\uDCC8', label: 'Progress'},
