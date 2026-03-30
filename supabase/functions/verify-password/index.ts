@@ -55,11 +55,11 @@ async function timingSafeEqual(a: string, b: string): Promise<boolean> {
   return result === 0;
 }
 
-// Generate a session token (HMAC-signed, expires in 30 days)
+// Generate a session token (HMAC-signed, expires in 7 days)
 async function generateSessionToken(): Promise<string> {
   const secret = Deno.env.get("APP_PASSWORD") || "default";
   const encoder = new TextEncoder();
-  const expires = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 days
+  const expires = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
   const payload = `vocab_auth:${expires}`;
   const key = await crypto.subtle.importKey(
     "raw", encoder.encode(secret + "_session_key"),

@@ -197,8 +197,13 @@ Deno.serve(async (req) => {
   try {
     // Verify cron secret — only allow calls from Supabase cron or authorized callers
     const cronSecret = Deno.env.get("CRON_SECRET");
-    const providedSecret = req.headers.get("x-cron-secret") || req.headers.get("authorization")?.replace("Bearer ", "");
-    if (cronSecret && providedSecret !== cronSecret) {
+    if (!cronSecret) {
+      return new Response(JSON.stringify({ error: "CRON secret not configured" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const providedSecret = req.headers.get("x-cron-secret");
+    if (providedSecret !== cronSecret) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

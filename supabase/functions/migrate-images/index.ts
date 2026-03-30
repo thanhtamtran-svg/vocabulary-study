@@ -1,14 +1,92 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+const ALLOWED_ORIGINS = [
+  "https://thanhtamtran-svg.github.io",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("origin") || "";
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
+
+// Simple rate limiter: max 5 attempts per minute per IP
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW = 60_000;
+const RATE_LIMIT_MAX = 5;
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
+  if (recent.length >= RATE_LIMIT_MAX) return true;
+  recent.push(now);
+  rateLimitMap.set(ip, recent);
+  return false;
+}
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 Deno.serve(async (req: Request) => {
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  };
+  const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // Rate limit
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (isRateLimited(clientIp)) {
+    return new Response(
+      JSON.stringify({ error: "Too many attempts. Please wait a minute." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  // Authentication: require CRON_SECRET or valid session token
+  const authHeader = req.headers.get("authorization") || "";
+  const cronSecret = Deno.env.get("CRON_SECRET");
+  const appPassword = Deno.env.get("APP_PASSWORD");
+
+  let authenticated = false;
+
+  // Check CRON_SECRET via Bearer token
+  if (cronSecret && authHeader === `Bearer ${cronSecret}`) {
+    authenticated = true;
+  }
+
+  // Check valid session token via Bearer token
+  if (!authenticated && appPassword && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.slice(7);
+    const parts = token.split(":");
+    if (parts.length === 3 && parts[0] === "vocab_auth") {
+      const expires = parseInt(parts[1], 10);
+      if (Date.now() < expires) {
+        const payload = `${parts[0]}:${parts[1]}`;
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+          "raw", encoder.encode(appPassword + "_session_key"),
+          { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+        );
+        const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
+        const sigHex = Array.from(sig).map(b => b.toString(16).padStart(2, '0')).join('');
+        if (sigHex === parts[2]) {
+          authenticated = true;
+        }
+      }
+    }
+  }
+
+  if (!authenticated) {
+    return new Response(
+      JSON.stringify({ error: "Unauthorized" }),
+      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
 
   try {
     const supabase = createClient(supabaseUrl, serviceKey);
