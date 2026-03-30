@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { SUPABASE_URL } from './lib/supabase';
 import App from './App';
+const EnglishApp = lazy(() => import('./EnglishApp'));
 
 const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 
@@ -73,21 +74,9 @@ export default function Home() {
   }
 
   if (language === 'english' && authenticated) {
-    return (
-      <div className="app">
-        <div className="home-header">
-          <button onClick={goHome} style={{background:'none',border:'none',color:'#fff',fontSize:'14px',cursor:'pointer'}}>{'\u2190'} Back</button>
-          <span style={{fontSize:'15px',fontWeight:600}}>English Vocabulary</span>
-          <span></span>
-        </div>
-        <div className="content" style={{textAlign:'center',paddingTop:'60px'}}>
-          <div style={{fontSize:'64px',marginBottom:'16px'}}>{'\uD83C\uDDEC\uD83C\uDDE7'}</div>
-          <h1>Coming Soon!</h1>
-          <p style={{color:'#718096',margin:'12px 0'}}>English vocabulary course is under development.</p>
-          <button className="btn btn-primary" style={{marginTop:'20px',maxWidth:'200px',margin:'20px auto'}} onClick={goHome}>Back to Home</button>
-        </div>
-      </div>
-    );
+    return <Suspense fallback={<div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
+      <div style={{width:'32px',height:'32px',border:'3px solid #e2e8f0',borderTopColor:'#324A84',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
+    </div>}><EnglishApp onHome={goHome} /></Suspense>;
   }
 
   // Password prompt
@@ -155,8 +144,8 @@ export default function Home() {
               <img src="https://flagcdn.com/w80/gb.png" alt="English flag" />
             </div>
             <div className="language-name">English</div>
-            <div className="language-desc">Coming soon</div>
-            <div className="language-tag soon-tag">Soon</div>
+            <div className="language-desc">{'1340 phrases \u2022 IELTS Speaking'}</div>
+            <div className="language-tag active-tag">Active</div>
           </button>
         </div>
 
