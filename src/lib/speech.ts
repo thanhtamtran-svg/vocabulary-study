@@ -1,52 +1,65 @@
 var audioCache = new Map();
 var sharedAudio = typeof window !== 'undefined' ? new Audio() : null;
+var isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-function speakWithGoogleTTS(text) {
+function speakWithGoogleTTS(text, lang) {
   if (!sharedAudio) {
-    speakWithBrowserTTS(text);
+    speakWithBrowserTTS(text, lang);
     return;
   }
 
-  // Stop any currently playing audio
   sharedAudio.pause();
 
-  var cacheKey = text.toLowerCase().trim();
+  var cacheKey = lang + ':' + text.toLowerCase().trim();
   if (audioCache.has(cacheKey)) {
     var cached = audioCache.get(cacheKey);
     sharedAudio.src = cached;
     sharedAudio.currentTime = 0;
-    sharedAudio.play().catch(function() { speakWithBrowserTTS(text); });
+    sharedAudio.play().catch(function() { speakWithBrowserTTS(text, lang); });
     return;
   }
 
-  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=de&q=' + encodeURIComponent(text);
+  var tl = lang === 'en' ? 'en' : 'de';
+  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + tl + '&q=' + encodeURIComponent(text);
   sharedAudio.src = url;
   sharedAudio.currentTime = 0;
   sharedAudio.play().then(function() {
     audioCache.set(cacheKey, url);
   }).catch(function() {
-    // Google TTS blocked or failed — fall back to browser TTS
-    speakWithBrowserTTS(text);
+    speakWithBrowserTTS(text, lang);
   });
 }
 
-function speakWithBrowserTTS(text) {
+function speakWithBrowserTTS(text, lang) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   var utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'de-DE';
+  utterance.lang = lang === 'en' ? 'en-US' : 'de-DE';
   utterance.rate = 0.85;
   var voices = window.speechSynthesis.getVoices();
-  var deVoice = voices.find(function(v) { return v.lang.startsWith('de'); });
-  if (deVoice) utterance.voice = deVoice;
+  var prefix = lang === 'en' ? 'en' : 'de';
+  var voice = voices.find(function(v) { return v.lang.startsWith(prefix); });
+  if (voice) utterance.voice = voice;
   window.speechSynthesis.speak(utterance);
 }
 
 export function speakGerman(text) {
-  speakWithGoogleTTS(text);
+  if (isMobile) {
+    speakWithBrowserTTS(text, 'de');
+  } else {
+    speakWithGoogleTTS(text, 'de');
+  }
 }
 
-// Preload browser voices as fallback
+export function speakEnglish(text) {
+  if (isMobile) {
+    speakWithBrowserTTS(text, 'en');
+  } else {
+    speakWithGoogleTTS(text, 'en');
+  }
+}
+
+// Preload browser voices
 if (typeof window !== 'undefined' && window.speechSynthesis) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
