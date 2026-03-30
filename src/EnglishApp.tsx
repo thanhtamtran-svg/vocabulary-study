@@ -277,60 +277,18 @@ function EnglishApp({onHome}) {
     if (!w) return;
     var cancelled = false;
     setWordImage(null);
-    setImageLoading(true);
-    fetchWordImage(w.german, w.english, w.type).then(function(img) {
-      if (cancelled) return;
-      setWordImage(img);
-      setImageLoading(false);
-    }).catch(function() { if (!cancelled) setImageLoading(false); });
-    // Auto-load cached explanation (no API cost)
+    // Skip image loading for English phrases (not useful for multi-word phrases)
+    setImageLoading(false);
+    setWordImage(null);
+    // Reset explanation state (will load on demand via AI Explain button)
     setAiExplanation('');
     setAiError('');
     setAiLoading(false);
     setAiSaveStatus('');
-    fetchCachedExplanation(w.german).then(function(text) {
-      if (cancelled) return;
-      if (text) {
-        setAiExplanation(text);
-        setAiSaveStatus('saved');
-      }
-    });
-    // Fetch IPA + definition (single call, cached)
+    // Skip IPA/definition fetch for English (definition is already in the data)
     setWordIPA('');
     setWordDefinition('');
     setDefImage(null);
-    fetchIPAAndDefinition(w.german, w.english).then(function(result) {
-      if (cancelled) return;
-      if (result.ipa) setWordIPA(result.ipa);
-      if (result.definition) {
-        setWordDefinition(result.definition);
-        // Generate image based on definition sentence (use definition as key for caching)
-        var defKey = 'def ' + w.german.toLowerCase();
-        // Check cache first
-        fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-        }).then(function(r) { return r.ok ? r.json() : []; }).then(function(cached) {
-          if (cancelled) return;
-          if (cached && cached.length > 0 && cached[0].image_base64) {
-            setDefImage({ url: cached[0].image_base64 });
-          } else {
-            // Generate via edge function with definition as prompt
-            fetch(SUPABASE_URL + '/functions/v1/generate-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                word: defKey,
-                english: result.definition,
-                type: 'definition'
-              })
-            }).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
-              if (cancelled) return;
-              if (data && data.image) setDefImage({ url: data.image });
-            }).catch(function() {});
-          }
-        });
-      }
-    });
     // Autoplay pronunciation
     speakEnglish(w.german);
     return function() { cancelled = true; };
