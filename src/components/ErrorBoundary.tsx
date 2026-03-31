@@ -12,6 +12,13 @@ export default class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('ErrorBoundary caught:', error, errorInfo);
+    // Auto-reload on stale chunk errors (dynamic import fails after deploy)
+    if (error && error.message && error.message.includes('dynamically imported module')) {
+      if (!sessionStorage.getItem('chunk_reload')) {
+        sessionStorage.setItem('chunk_reload', '1');
+        window.location.reload();
+      }
+    }
   }
 
   render() {
