@@ -270,8 +270,8 @@ export default React.memo(function ExerciseView({
               </div>
             </div> : null}
 
-          {/* Text input feedback */}
-          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english' || exItem.type === 'conjugation') && exerciseFeedback ?
+          {/* Text input feedback (not conjugation — that has its own section above) */}
+          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
