@@ -68,8 +68,8 @@ function validateWord(word: unknown, lang?: string): string | null {
   if (typeof word !== "string") return null;
   const trimmed = word.trim();
   if (trimmed.length === 0 || trimmed.length > 100) return null;
-  // Allow letters, hyphens, spaces, apostrophes, slashes, periods only
-  if (!/^[\p{L}\s\-'\/\.]+$/u.test(trimmed)) return null;
+  // Allow letters, hyphens, spaces, apostrophes, slashes, periods, plus, parens, commas, tilde
+  if (!/^[\p{L}\s\-'\/\.\+\(\),~]+$/u.test(trimmed)) return null;
   // Max 12 words for English phrases, 4 for German
   const maxWords = (lang === 'en' || lang === 'vi') ? 12 : 4;
   if (trimmed.split(/\s+/).length > maxWords) return null;
