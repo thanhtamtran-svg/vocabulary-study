@@ -61,7 +61,7 @@ export default React.memo(function Flashcard({
         </div>
         <div className="flashcard-face flashcard-back">
           {lang === 'en' ? <>
-            {/* English back: definition + Vietnamese */}
+            {/* English back: definition + Vietnamese + cached image */}
             <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
               padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
@@ -72,8 +72,12 @@ export default React.memo(function Flashcard({
               padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
               textAlign:'center',fontStyle:'italic'
             }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
+            {wordImage ? <img src={wordImage.url} alt=""
+              style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
+                background:'#fff',margin:'8px auto 0',display:'block'}}
+            /> : null}
           </> : <>
-            {/* German back: German definition + word */}
+            {/* German back: German definition + word + cached image */}
             {wordDefinition ? <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
               padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
@@ -90,6 +94,10 @@ export default React.memo(function Flashcard({
                 {'\uD83D\uDD0A'}
               </button>
             </div>
+            {defImage ? <img src={defImage.url} alt=""
+              style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
+                background:'#fff',margin:'8px auto 0',display:'block'}}
+            /> : null}
           </>}
         </div>
       </div>
