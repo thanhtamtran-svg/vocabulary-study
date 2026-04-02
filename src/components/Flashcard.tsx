@@ -22,8 +22,24 @@ export default React.memo(function Flashcard({
       onKeyDown={handleKeyDown}>
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
-          <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px'}}>
-            {emojis ? <span style={{fontSize:'28px'}}>{emojis[word.idx]}</span> : null}
+          {/* Image on front side */}
+          {wordImage ? <img
+            src={wordImage.url} alt=""
+            style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
+              background:'#fff',margin:'0 auto 6px',display:'block'}}
+          /> : defImage ? <img
+            src={defImage.url} alt=""
+            style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
+              background:'#fff',margin:'0 auto 6px',display:'block'}}
+          /> : imageLoading ? <div style={{textAlign:'center',fontSize:'11px',color:'#94a3b8',margin:'4px 0'}}>
+            Loading...
+          </div> : onGenerateImage ? <button
+            onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
+            style={{display:'block',margin:'0 auto 6px',padding:'6px 14px',fontSize:'11px',
+              borderRadius:'8px',border:'1px solid rgba(255,255,255,0.3)',background:'rgba(255,255,255,0.15)',
+              cursor:'pointer',color:'#fff'}}
+          >{'\uD83C\uDFA8 Generate Image'}</button> : emojis ? <span style={{fontSize:'28px',display:'block',textAlign:'center',margin:'4px 0'}}>{emojis[word.idx]}</span> : null}
+          <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px',justifyContent:'center'}}>
             <span className={'tag ' + word.typeClass}>{word.type}</span>
           </div>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
@@ -45,19 +61,7 @@ export default React.memo(function Flashcard({
         </div>
         <div className="flashcard-face flashcard-back">
           {lang === 'en' ? <>
-            {/* English back: AI image + English definition + Vietnamese */}
-            {wordImage ? <img
-              src={wordImage.url} alt=""
-              style={{width:'130px',height:'130px',objectFit:'contain',borderRadius:'12px',
-                background:'#fff',margin:'0 auto 10px',display:'block'}}
-            /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
-              Generating image...
-            </div> : onGenerateImage ? <button
-              onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
-              style={{display:'block',margin:'0 auto 10px',padding:'8px 16px',fontSize:'12px',
-                borderRadius:'8px',border:'1px solid #cbd5e1',background:'#f8fafc',
-                cursor:'pointer',color:'#64748b'}}
-            >{'\uD83C\uDFA8 Generate Image'}</button> : null}
+            {/* English back: definition + Vietnamese */}
             <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
               padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
@@ -69,23 +73,7 @@ export default React.memo(function Flashcard({
               textAlign:'center',fontStyle:'italic'
             }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
           </> : <>
-            {/* German back: definition image + German definition + word */}
-            {defImage ? <img
-              src={defImage.url} alt=""
-              style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
-                background:'#fff',margin:'0 auto 10px',display:'block'}}
-            /> : wordImage ? <img
-              src={wordImage.url} alt=""
-              style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
-                background:'#fff',margin:'0 auto 10px',display:'block'}}
-            /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
-              Generating image...
-            </div> : onGenerateImage ? <button
-              onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
-              style={{display:'block',margin:'0 auto 10px',padding:'8px 16px',fontSize:'12px',
-                borderRadius:'8px',border:'1px solid #cbd5e1',background:'#f8fafc',
-                cursor:'pointer',color:'#64748b'}}
-            >{'\uD83C\uDFA8 Generate Image'}</button> : null}
+            {/* German back: German definition + word */}
             {wordDefinition ? <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
               padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
