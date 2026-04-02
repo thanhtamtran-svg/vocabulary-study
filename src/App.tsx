@@ -291,20 +291,6 @@ function App({onHome}) {
           if (cancelled) return;
           if (cached && cached.length > 0 && cached[0].image_base64) {
             setDefImage({ url: cached[0].image_base64 });
-          } else {
-            // Generate via edge function with definition as prompt
-            fetch(SUPABASE_URL + '/functions/v1/generate-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                word: defKey,
-                english: result.definition,
-                type: 'definition'
-              })
-            }).then(function(r) { return r.ok ? r.json() : null; }).then(function(data) {
-              if (cancelled) return;
-              if (data && data.image) setDefImage({ url: data.image });
-            }).catch(function() {});
           }
         });
       }
