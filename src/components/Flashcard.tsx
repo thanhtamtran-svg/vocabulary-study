@@ -78,7 +78,7 @@ export default React.memo(function Flashcard({
                 {'\uD83D\uDD0A'}
               </button>
             </div>
-            {wordImage ? <img src={wordImage.url} alt=""
+            {defImage ? <img src={defImage.url} alt=""
               style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
                 background:'#fff',margin:'8px auto 0',display:'block'}}
             /> : null}

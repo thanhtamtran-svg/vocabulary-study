@@ -282,6 +282,17 @@ function App({onHome}) {
       if (result.ipa) setWordIPA(result.ipa);
       if (result.definition) {
         setWordDefinition(result.definition);
+        // Generate image based on definition sentence (use definition as key for caching)
+        var defKey = 'def ' + w.german.toLowerCase();
+        // Check cache first
+        fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        }).then(function(r) { return r.ok ? r.json() : []; }).then(function(cached) {
+          if (cancelled) return;
+          if (cached && cached.length > 0 && cached[0].image_base64) {
+            setDefImage({ url: cached[0].image_base64 });
+          }
+        });
       }
     });
     // Autoplay pronunciation
