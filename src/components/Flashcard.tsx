@@ -22,23 +22,7 @@ export default React.memo(function Flashcard({
       onKeyDown={handleKeyDown}>
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
-          {/* Image on front side */}
-          {wordImage ? <img
-            src={wordImage.url} alt=""
-            style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
-              background:'#fff',margin:'0 auto 6px',display:'block'}}
-          /> : defImage ? <img
-            src={defImage.url} alt=""
-            style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
-              background:'#fff',margin:'0 auto 6px',display:'block'}}
-          /> : imageLoading ? <div style={{textAlign:'center',fontSize:'11px',color:'#94a3b8',margin:'4px 0'}}>
-            Loading...
-          </div> : onGenerateImage ? <button
-            onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
-            style={{display:'block',margin:'0 auto 6px',padding:'6px 14px',fontSize:'11px',
-              borderRadius:'8px',border:'1px solid rgba(255,255,255,0.3)',background:'rgba(255,255,255,0.15)',
-              cursor:'pointer',color:'#fff'}}
-          >{'\uD83C\uDFA8 Generate Image'}</button> : emojis ? <span style={{fontSize:'28px',display:'block',textAlign:'center',margin:'4px 0'}}>{emojis[word.idx]}</span> : null}
+          {emojis ? <span style={{fontSize:'28px',display:'block',textAlign:'center',margin:'4px 0'}}>{emojis[word.idx]}</span> : null}
           <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px',justifyContent:'center'}}>
             <span className={'tag ' + word.typeClass}>{word.type}</span>
           </div>
