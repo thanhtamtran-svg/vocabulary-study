@@ -8,15 +8,11 @@ const ipaDefCache = new Map<string, { ipa: string | null; definition: string | n
 const cachedExplanationCache = new Map<string, string | null>();
 const explanationCache = new Map<string, string>();
 
+// Check cache only — no API generation (fast, free)
 export async function fetchWordImage(germanWord, englishWord, wordType) {
   var cacheKey = germanWord.toLowerCase().trim();
   if (imageCache.has(cacheKey)) return imageCache.get(cacheKey);
   try {
-    // First check cache via REST API (fast, no edge function call needed)
-    // The image_base64 column may contain either:
-    //   - A Storage URL (https://...) for new images
-    //   - A base64 data URL (data:image/png;base64,...) for legacy images
-    // Both work directly as <img src> values.
     var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(germanWord.toLowerCase()) + '&select=image_base64', {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
@@ -28,24 +24,32 @@ export async function fetchWordImage(germanWord, englishWord, wordType) {
         return cachedResult;
       }
     }
+    return null;
+  } catch(e) {
+    console.warn('Image cache check failed:', e);
+    return null;
+  }
+}
 
-    // Generate via edge function
+// Generate image via API — only called when user taps "Generate Image" button
+export async function generateWordImage(germanWord, englishWord, wordType) {
+  var cacheKey = germanWord.toLowerCase().trim();
+  try {
     var res = await fetch(SUPABASE_URL + '/functions/v1/generate-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ word: germanWord, english: englishWord, type: wordType || '' })
     });
-    if (!res.ok) { imageCache.set(cacheKey, null); return null; }
+    if (!res.ok) return null;
     var data = await res.json();
     if (data.image) {
       var genResult = { url: data.image, credit: 'AI Generated', link: null };
       imageCache.set(cacheKey, genResult);
       return genResult;
     }
-    imageCache.set(cacheKey, null);
     return null;
   } catch(e) {
-    console.warn('Image fetch failed:', e);
+    console.warn('Image generation failed:', e);
     return null;
   }
 }

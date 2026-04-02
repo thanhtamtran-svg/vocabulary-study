@@ -12,7 +12,7 @@ import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from 
 import { speakGerman } from './lib/speech';
 import { loadState, saveState } from './lib/storage';
 import { mergeProgress, cloudPull, cloudPush } from './lib/sync';
-import { fetchWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
+import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
 import {
   selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
@@ -1016,6 +1016,15 @@ function App({onHome}) {
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
       emojis={WORD_EMOJIS}
+      onGenerateImage={function() {
+        var w = sessionWords[currentIdx];
+        if (!w) return;
+        setImageLoading(true);
+        generateWordImage(w.german, w.english, w.type).then(function(img) {
+          setWordImage(img);
+          setImageLoading(false);
+        }).catch(function() { setImageLoading(false); });
+      }}
     /></Suspense>;
   }
 

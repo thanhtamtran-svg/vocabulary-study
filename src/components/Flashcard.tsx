@@ -3,7 +3,7 @@ import { speakGerman } from '../lib/speech';
 
 export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
-  wordImage, imageLoading, emojis, lang, vietnameseDef
+  wordImage, imageLoading, emojis, lang, vietnameseDef, onGenerateImage
 }) {
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -52,7 +52,12 @@ export default React.memo(function Flashcard({
                 background:'#fff',margin:'0 auto 10px',display:'block'}}
             /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
               Generating image...
-            </div> : null}
+            </div> : onGenerateImage ? <button
+              onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
+              style={{display:'block',margin:'0 auto 10px',padding:'8px 16px',fontSize:'12px',
+                borderRadius:'8px',border:'1px solid #cbd5e1',background:'#f8fafc',
+                cursor:'pointer',color:'#64748b'}}
+            >{'\uD83C\uDFA8 Generate Image'}</button> : null}
             <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
               padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
@@ -69,7 +74,18 @@ export default React.memo(function Flashcard({
               src={defImage.url} alt=""
               style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
                 background:'#fff',margin:'0 auto 10px',display:'block'}}
-            /> : null}
+            /> : wordImage ? <img
+              src={wordImage.url} alt=""
+              style={{width:'110px',height:'110px',objectFit:'contain',borderRadius:'10px',
+                background:'#fff',margin:'0 auto 10px',display:'block'}}
+            /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
+              Generating image...
+            </div> : onGenerateImage ? <button
+              onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
+              style={{display:'block',margin:'0 auto 10px',padding:'8px 16px',fontSize:'12px',
+                borderRadius:'8px',border:'1px solid #cbd5e1',background:'#f8fafc',
+                cursor:'pointer',color:'#64748b'}}
+            >{'\uD83C\uDFA8 Generate Image'}</button> : null}
             {wordDefinition ? <div style={{
               fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
               padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',

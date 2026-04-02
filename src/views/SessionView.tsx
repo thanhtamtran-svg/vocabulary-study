@@ -11,7 +11,7 @@ export default React.memo(function SessionView({
   wordImage, imageLoading, wordIPA, wordDefinition, defImage,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
-  hideAiExplain, lang, emojis, vietnameseDef
+  hideAiExplain, lang, emojis, vietnameseDef, onGenerateImage
 }) {
   var w = sessionWords[currentIdx];
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
@@ -55,6 +55,7 @@ export default React.memo(function SessionView({
           emojis={emojis}
           lang={lang}
           vietnameseDef={vietnameseDef}
+          onGenerateImage={onGenerateImage}
         />
 
         {isLearn && !flipped ? <div className="dual-coding-prompt">

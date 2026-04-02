@@ -9,7 +9,7 @@ import {
 import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
 import { speakEnglish } from './lib/english-speech';
 import { mergeProgress, cloudPull, cloudPush } from './lib/sync';
-import { fetchWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
+import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
 import {
   selectExerciseWords, getDistractors, makeDefinitionOptions, makePhraseOptions,
@@ -1030,6 +1030,15 @@ function EnglishApp({onHome}) {
       setAiSaveStatus={setAiSaveStatus}
       lang="en"
       vietnameseDef={vietnameseDef}
+      onGenerateImage={function() {
+        var w = sessionWords[currentIdx];
+        if (!w) return;
+        setImageLoading(true);
+        generateWordImage(w.german, w.english, w.type).then(function(img) {
+          setWordImage(img);
+          setImageLoading(false);
+        }).catch(function() { setImageLoading(false); });
+      }}
     /></Suspense>;
   }
 
