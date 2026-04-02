@@ -91,8 +91,7 @@ export default React.memo(function AiExplainBox({
           {'\uD83E\uDD16'} AI Teacher
           {aiSaveStatus === 'saving' ? <span style={{fontSize:'10px',color:'#F39C12',background:'#FEF9E7',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
             {'\u23F3'} Saving...
-          </span> : null}
-          {aiSaveStatus === 'saved' ? <span style={{fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
+          </span> : aiExplanation && !aiLoading ? <span style={{fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
             {'\u2705'} Saved
           </span> : null}
         </span>
