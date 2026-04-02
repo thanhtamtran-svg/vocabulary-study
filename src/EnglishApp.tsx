@@ -141,7 +141,7 @@ function EnglishApp({onHome}) {
         d2.setDate(d2.getDate() - 1);
       } else {
         consecutiveMissed++;
-        if (consecutiveMissed > 2) break; // 3+ non-rest missed = streak broken
+        if (consecutiveMissed > 3) break; // 4+ non-rest missed = streak broken
         frozenDays++;
         d2.setDate(d2.getDate() - 1);
       }
@@ -150,9 +150,9 @@ function EnglishApp({onHome}) {
 
     var status = 'active';
     if (!studiedToday && !isRestDay) {
-      if (realMissed >= 3) { status = 'lost'; count = 0; frozenDays = 0; }
-      else if (realMissed === 2) status = 'danger';
-      else if (realMissed === 1) status = 'warning';
+      if (realMissed > 3) { status = 'lost'; count = 0; frozenDays = 0; }
+      else if (realMissed === 3) status = 'danger';
+      else if (realMissed >= 1) status = 'warning';
     }
     // On rest day, don't warn — streak is safe
     if (isRestDay && !studiedToday) status = 'rest';
