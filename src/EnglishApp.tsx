@@ -573,7 +573,7 @@ function EnglishApp({onHome}) {
 
   // Cloud sync: push after state changes (debounced)
   useEffect(function() {
-    if (!syncEmail || !started) return;
+    if (!syncEmail || !started || Object.keys(progress).length === 0) return;
     var timer = setTimeout(function() {
       cloudPush(syncEmail, {
         lang: 'english',
@@ -591,7 +591,7 @@ function EnglishApp({onHome}) {
 
   // Sync on page unload to prevent data loss
   useEffect(function() {
-    if (!syncEmail || !started) return;
+    if (!syncEmail || !started || Object.keys(progress).length === 0) return;
     function handleUnload() {
       cloudPush(syncEmail, {
         lang: 'english',

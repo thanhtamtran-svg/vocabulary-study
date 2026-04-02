@@ -561,6 +561,8 @@ function App({onHome}) {
   // Cloud sync: push after state changes (debounced)
   useEffect(function() {
     if (!syncEmail || !started) return;
+    // Don't push empty progress — prevents overwriting cloud data during initial sync
+    if (Object.keys(progress).length === 0) return;
     var timer = setTimeout(function() {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate),
@@ -577,7 +579,7 @@ function App({onHome}) {
 
   // Sync on page unload to prevent data loss
   useEffect(function() {
-    if (!syncEmail || !started) return;
+    if (!syncEmail || !started || Object.keys(progress).length === 0) return;
     function handleUnload() {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
