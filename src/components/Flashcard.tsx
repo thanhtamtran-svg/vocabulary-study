@@ -81,14 +81,7 @@ export default React.memo(function Flashcard({
             {wordImage ? <img src={wordImage.url} alt=""
               style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
                 background:'#fff',margin:'8px auto 0',display:'block'}}
-            /> : imageLoading ? <div style={{textAlign:'center',fontSize:'12px',color:'#94a3b8',margin:'8px 0'}}>
-              Generating image...
-            </div> : onGenerateImage ? <button
-              onClick={function(e) { e.stopPropagation(); onGenerateImage(); }}
-              style={{display:'block',margin:'8px auto 0',padding:'8px 16px',fontSize:'12px',
-                borderRadius:'8px',border:'1px solid #cbd5e1',background:'#f8fafc',
-                cursor:'pointer',color:'#64748b'}}
-            >{'\uD83C\uDFA8 Generate Image'}</button> : null}
+            /> : null}
           </>}
         </div>
       </div>

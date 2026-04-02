@@ -62,20 +62,21 @@ export default React.memo(function SessionView({
           <strong>{'\uD83C\uDFA8'} Dual Coding: </strong>{tip}
         </div> : null}
 
-        {/* Word image (front side) */}
-        {!flipped ? <div className="word-image-container">
-          {imageLoading ? <div style={{textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}>
+        {/* Word image or Generate button (outside flashcard) */}
+        <div style={{textAlign:'center',margin:'8px 0'}}>
+          {wordImage ? <img src={wordImage.url} alt={w.english}
+            style={{borderRadius:'12px',maxHeight:'160px',objectFit:'contain',background:'#fff'}} />
+          : imageLoading ? <div style={{color:'#a0aec0',padding:'12px',fontSize:'12px'}}>
             <div className="spinner" style={{width:'24px',height:'24px',margin:'0 auto 8px'}}></div>
             Generating image...
-          </div> : null}
-          {wordImage ? <div>
-            <img src={wordImage.url} alt={w.english} className="word-image"
-              style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}} />
-          </div> : null}
-          {!imageLoading && !wordImage ? <div style={{textAlign:'center',fontSize:'48px',padding:'20px'}}>
-            {typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'}
-          </div> : null}
-        </div> : null}
+          </div>
+          : onGenerateImage ? <button
+            onClick={onGenerateImage}
+            style={{padding:'8px 20px',fontSize:'13px',borderRadius:'8px',
+              border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',color:'#64748b'}}
+          >{'\uD83C\uDFA8 Generate Image'}</button>
+          : null}
+        </div>
 
         {!isLearn && !flipped && reviewInterval ? <div className="tip-box">
           <strong>{'\uD83C\uDFAF'} Method: </strong>{REVIEW_METHODS[reviewInterval]}
