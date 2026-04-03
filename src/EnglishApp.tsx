@@ -287,11 +287,18 @@ function EnglishApp({onHome}) {
       setWordImage(img);
       setImageLoading(false);
     }).catch(function() { if (!cancelled) setImageLoading(false); });
-    // Reset explanation state (will load on demand via AI Explain button)
+    // Auto-load cached explanation (no API cost)
     setAiExplanation('');
     setAiError('');
     setAiLoading(false);
     setAiSaveStatus('');
+    fetchCachedExplanation(w.german, 'en').then(function(text) {
+      if (cancelled) return;
+      if (text) {
+        setAiExplanation(text);
+        setAiSaveStatus('saved');
+      }
+    });
     // Skip IPA/definition fetch for English (definition is already in the data)
     setWordIPA('');
     setWordDefinition('');
