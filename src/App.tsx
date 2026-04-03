@@ -20,6 +20,7 @@ import {
 } from './lib/exercise-engine';
 
 import { useToast } from './components/Toast';
+var defImageCache = new Map();
 const SetupScreen = lazy(() => import('./views/SetupScreen'));
 const Dashboard = lazy(() => import('./views/Dashboard'));
 const SessionView = lazy(() => import('./views/SessionView'));
@@ -282,17 +283,24 @@ function App({onHome}) {
       if (result.ipa) setWordIPA(result.ipa);
       if (result.definition) {
         setWordDefinition(result.definition);
-        // Generate image based on definition sentence (use definition as key for caching)
         var defKey = 'def ' + w.german.toLowerCase();
-        // Check cache first
-        fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-        }).then(function(r) { return r.ok ? r.json() : []; }).then(function(cached) {
-          if (cancelled) return;
-          if (cached && cached.length > 0 && cached[0].image_base64) {
-            setDefImage({ url: cached[0].image_base64 });
-          }
-        });
+        if (defImageCache.has(defKey)) {
+          var cached = defImageCache.get(defKey);
+          if (cached) setDefImage(cached);
+        } else {
+          fetch(SUPABASE_URL + '/rest/v1/vocab_images?word=eq.' + encodeURIComponent(defKey) + '&select=image_base64', {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+          }).then(function(r) { return r.ok ? r.json() : []; }).then(function(data) {
+            if (cancelled) return;
+            if (data && data.length > 0 && data[0].image_base64) {
+              var img = { url: data[0].image_base64 };
+              defImageCache.set(defKey, img);
+              setDefImage(img);
+            } else {
+              defImageCache.set(defKey, null);
+            }
+          });
+        }
       }
     });
     // Autoplay pronunciation
