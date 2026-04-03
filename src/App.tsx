@@ -1045,6 +1045,7 @@ function App({onHome}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
+      lang="de"
     /></Suspense>;
   }
 

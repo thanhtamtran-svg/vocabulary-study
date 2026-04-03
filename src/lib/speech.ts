@@ -36,7 +36,7 @@ function speakWithBrowserTTS(text, lang) {
   window.speechSynthesis.cancel();
   var utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang === 'en' ? 'en-US' : 'de-DE';
-  utterance.rate = 0.85;
+  utterance.rate = lang === 'en' ? 1.0 : 0.85;
 
   // On iOS, voices may not be loaded yet — try to find one but speak regardless
   var voices = window.speechSynthesis.getVoices();

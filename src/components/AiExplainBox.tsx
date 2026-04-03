@@ -2,6 +2,7 @@ import React from 'react';
 import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
 import { fetchExplanation, fetchCachedExplanation } from '../lib/api';
 import { speakGerman } from '../lib/speech';
+import { speakEnglish } from '../lib/english-speech';
 
 // Parse markdown inline: **bold** and *italic*
 function renderInline(text, key) {
@@ -22,6 +23,7 @@ export default React.memo(function AiExplainBox({
   word, aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus, lang
 }) {
+  var speak = lang === 'en' ? speakEnglish : speakGerman;
   function handleExplain() {
     setAiLoading(true);
     setAiError('');
@@ -137,7 +139,7 @@ export default React.memo(function AiExplainBox({
               <span style={{flex:1}}>{renderInline(line, i)}</span>
               <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px'}}
                 aria-label="Read sentence aloud"
-                onClick={function() { speakGerman(rawSentence); }}
+                onClick={function() { speak(rawSentence); }}
               >{'\uD83D\uDD0A'}</button>
             </div>);
             return acc;

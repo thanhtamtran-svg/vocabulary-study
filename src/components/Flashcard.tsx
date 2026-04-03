@@ -1,15 +1,18 @@
 import React from 'react';
 import { speakGerman } from '../lib/speech';
+import { speakEnglish } from '../lib/english-speech';
 
 export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
   wordImage, imageLoading, emojis, lang, vietnameseDef, onGenerateImage
 }) {
+  var speak = lang === 'en' ? speakEnglish : speakGerman;
+
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onFlip();
-      speakGerman(word.german);
+      speak(word.german);
     }
   }
 
@@ -18,7 +21,7 @@ export default React.memo(function Flashcard({
       tabIndex={0}
       role="button"
       aria-label={'Flashcard for ' + word.german + '. ' + (flipped ? 'Showing answer: ' + word.english : 'Press Enter or Space to flip.')}
-      onClick={function() { onFlip(); speakGerman(word.german); }}
+      onClick={function() { onFlip(); speak(word.german); }}
       onKeyDown={handleKeyDown}>
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
@@ -30,7 +33,7 @@ export default React.memo(function Flashcard({
             <div className="flashcard-word">{word.german}</div>
             <button className="speak-btn"
               aria-label={'Pronounce ' + word.german}
-              onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
+              onClick={function(e) { e.stopPropagation(); speak(word.german); }}>
               {'\uD83D\uDD0A'}
             </button>
           </div>
@@ -74,7 +77,7 @@ export default React.memo(function Flashcard({
               </span> : null}
               <button className="speak-btn back"
                 aria-label={'Pronounce ' + word.german}
-                onClick={function(e) { e.stopPropagation(); speakGerman(word.german); }}>
+                onClick={function(e) { e.stopPropagation(); speak(word.german); }}>
                 {'\uD83D\uDD0A'}
               </button>
             </div>

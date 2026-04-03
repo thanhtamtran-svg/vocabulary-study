@@ -1070,6 +1070,7 @@ function EnglishApp({onHome}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
+      lang="en"
     /></Suspense>;
   }
 

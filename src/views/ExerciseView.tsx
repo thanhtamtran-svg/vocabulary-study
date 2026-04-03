@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react';
 import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants';
 import { speakGerman } from '../lib/speech';
+import { speakEnglish } from '../lib/english-speech';
 
 var SPECIAL_CHARS = ['\u00e4', '\u00f6', '\u00fc', '\u00df'];
 
@@ -30,8 +31,9 @@ export default React.memo(function ExerciseView({
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
   checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
-  setView, exerciseLoading
+  setView, exerciseLoading, lang
 }) {
+  var speak = lang === 'en' ? speakEnglish : speakGerman;
   var inputRef = useRef(null);
 
   var insertChar = useCallback(function(ch) {
@@ -112,7 +114,7 @@ export default React.memo(function ExerciseView({
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
                 padding:'14px',borderRadius:'12px',background:'#324A8410',border:'2px solid #324A84',
                 cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'#324A84',fontWeight:600}}
-              onClick={function() { speakGerman(exItem.germanWord); }}
+              onClick={function() { speak(exItem.germanWord); }}
             >{'\uD83D\uDD0A'} Play again</button> : null}
 
           {/* All choice-based types (multiple_choice, reverse_choice, listening) */}

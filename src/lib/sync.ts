@@ -1,4 +1,6 @@
-import { supabase } from './supabase';
+import { SUPABASE_URL } from './supabase';
+
+var SYNC_URL = SUPABASE_URL + '/functions/v1/sync-progress';
 
 export function mergeProgress(local, remote) {
   var merged = {...local};
@@ -22,20 +24,31 @@ export function mergeProgress(local, remote) {
 }
 
 export async function cloudPull(email, lang) {
-  if (!supabase || !email) return null;
-  var key = lang ? email + ':' + lang : email;
-  var res = await supabase.from('vocab_progress').select('data').eq('user_email', key).single();
-  if (res.error || !res.data) return null;
-  return res.data.data;
+  if (!email) return null;
+  try {
+    var res = await fetch(SYNC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'pull', email: email, lang: lang })
+    });
+    if (!res.ok) return null;
+    var json = await res.json();
+    return json.data || null;
+  } catch (e) {
+    return null;
+  }
 }
 
 export async function cloudPush(email, state, lang) {
-  if (!supabase || !email) return false;
-  var key = lang ? email + ':' + lang : email;
-  var res = await supabase.from('vocab_progress').upsert({
-    user_email: key,
-    data: state,
-    updated_at: new Date().toISOString()
-  }, {onConflict: 'user_email'});
-  return !res.error;
+  if (!email) return false;
+  try {
+    var res = await fetch(SYNC_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'push', email: email, lang: lang, data: state })
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
 }

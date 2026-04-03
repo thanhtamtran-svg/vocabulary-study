@@ -1,6 +1,5 @@
 import React from 'react';
 import { DUAL_CODING_TIPS, REVIEW_LABELS, REVIEW_METHODS } from '../lib/constants';
-import { speakGerman } from '../lib/speech';
 import Flashcard from '../components/Flashcard';
 import ConfidenceButtons from '../components/ConfidenceButtons';
 import AiExplainBox from '../components/AiExplainBox';
