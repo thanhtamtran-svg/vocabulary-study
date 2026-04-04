@@ -17,7 +17,7 @@ import {
 } from './lib/english-exercise-engine';
 
 import { useToast } from './components/Toast';
-var viCache = new Map();
+
 const SetupScreen = lazy(() => import('./views/SetupScreen'));
 const Dashboard = lazy(() => import('./views/Dashboard'));
 const SessionView = lazy(() => import('./views/SessionView'));
@@ -218,8 +218,6 @@ function EnglishApp({onHome}) {
   // IPA pronunciation state
   const [wordIPA, setWordIPA] = useState('');
 
-  // Vietnamese translation state
-  const [vietnameseDef, setVietnameseDef] = useState('');
 
   // Definition state
   const [wordDefinition, setWordDefinition] = useState('');
@@ -304,35 +302,6 @@ function EnglishApp({onHome}) {
     setWordIPA('');
     setWordDefinition('');
     setDefImage(null);
-    // Fetch Vietnamese translation
-    setVietnameseDef('');
-    var viCacheKey = 'vi:' + w.german.toLowerCase().trim();
-    if (viCache.has(viCacheKey)) {
-      setVietnameseDef(viCache.get(viCacheKey) || '');
-    } else {
-      fetch(SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(viCacheKey) + '&select=explanation', {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-      }).then(function(r) { return r.ok ? r.json() : []; }).then(function(data) {
-        if (cancelled) return;
-        if (data && data.length > 0 && data[0].explanation) {
-          viCache.set(viCacheKey, data[0].explanation);
-          setVietnameseDef(data[0].explanation);
-        } else {
-          // Generate Vietnamese translation via explain-word with lang=vi
-          fetch(SUPABASE_URL + '/functions/v1/explain-word', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ word: w.german, type: w.type, lang: 'vi', definition: w.english })
-          }).then(function(r) { return r.ok ? r.json() : null; }).then(function(result) {
-            if (cancelled || !result) return;
-            if (result.explanation) {
-              viCache.set(viCacheKey, result.explanation);
-              setVietnameseDef(result.explanation);
-            }
-          }).catch(function() {});
-        }
-      }).catch(function() {});
-    }
     // Autoplay pronunciation
     speakEnglish(w.german);
     return function() { cancelled = true; };
@@ -1045,7 +1014,6 @@ function EnglishApp({onHome}) {
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
       lang="en"
-      vietnameseDef={vietnameseDef}
       onGenerateImage={function() {
         var w = sessionWords[currentIdx];
         if (!w) return;
