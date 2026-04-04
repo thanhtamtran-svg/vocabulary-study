@@ -75,15 +75,28 @@ export function speakGerman(text) {
   }
 }
 
+function cleanEnglishForSpeech(text) {
+  return text
+    .replace(/\s*\+\s*.*/g, '')
+    .replace(/\s*\(.*?\)\s*/g, ' ')
+    .replace(/\s*=\s*\w.*$/, '')
+    .replace(/\bsth\b/gi, 'something')
+    .replace(/\bsb\b/gi, 'somebody')
+    .replace(/\s*\/\s*/g, ' or ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export function speakEnglish(text) {
+  var clean = cleanEnglishForSpeech(text);
   if (isMobile) {
     if (/Android/i.test(navigator.userAgent)) {
-      speakWithGoogleTTS(text, 'en');
+      speakWithGoogleTTS(clean, 'en');
     } else {
-      speakWithBrowserTTS(text, 'en');
+      speakWithBrowserTTS(clean, 'en');
     }
   } else {
-    speakWithGoogleTTS(text, 'en');
+    speakWithGoogleTTS(clean, 'en');
   }
 }
 
