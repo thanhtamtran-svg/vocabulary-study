@@ -113,12 +113,26 @@ export default React.memo(function AiExplainBox({
             return acc;
           }
           if (line.match(/^[-\u2022]\s/)) {
-            acc.push(<div key={i} className="ai-bullet">{renderInline(line.replace(/^[-\u2022]\s/, ''), i)}</div>);
+            var bulletText = line.replace(/^[-\u2022]\s/, '');
+            // Extract German phrase from conjugation bullets like "ich **werde** (I become)"
+            var germanPhrase = bulletText.replace(/\s*\(.*\)\s*$/, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').trim();
+            if (lang !== 'en' && germanPhrase && germanPhrase.length > 1) {
+              acc.push(<div key={i} className="ai-bullet" style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                <span style={{flex:1}}>{renderInline(bulletText, i)}</span>
+                <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px'}}
+                  aria-label={'Read ' + germanPhrase + ' aloud'}
+                  onClick={function() { speak(germanPhrase); }}
+                >{'\uD83D\uDD0A'}</button>
+              </div>);
+            } else {
+              acc.push(<div key={i} className="ai-bullet">{renderInline(bulletText, i)}</div>);
+            }
             return acc;
           }
           if (line.match(/^\|.*\|$/)) {
             var cells = line.split('|').filter(function(c) { return c.trim(); });
             if (cells.length >= 2) {
+              var tableGerman = (cells[0].trim() + ' ' + cells[1].trim()).replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').replace(/\s*\(.*\)\s*$/, '').trim();
               acc.push(<div key={i} style={{
                 display:'flex', justifyContent:'space-between', alignItems:'center',
                 padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
@@ -126,7 +140,11 @@ export default React.memo(function AiExplainBox({
                 fontSize:'13px', border:'1px solid #F5EBDC'
               }}>
                 <span style={{color:'#7E9470',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>
-                <span style={{color:'#324A84',fontWeight:600}}>{renderInline(cells[1].trim(), i)}</span>
+                <span style={{color:'#324A84',fontWeight:600,flex:1}}>{renderInline(cells[1].trim(), i)}</span>
+                {lang !== 'en' && tableGerman.length > 1 ? <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px',marginLeft:'4px'}}
+                  aria-label={'Read ' + tableGerman + ' aloud'}
+                  onClick={function() { speak(tableGerman); }}
+                >{'\uD83D\uDD0A'}</button> : null}
               </div>);
             }
             return acc;
