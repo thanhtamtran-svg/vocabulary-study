@@ -182,7 +182,7 @@ export default React.memo(function ExerciseView({
                     border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}}
                 />
               </div>
-              <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
                 {SPECIAL_CHARS.map(function(ch) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
@@ -192,7 +192,7 @@ export default React.memo(function ExerciseView({
                       minWidth:'36px',lineHeight:'1'}}
                   >{ch}</button>;
                 })}
-              </div>
+              </div> : null}
             </div> : null}
 
           {/* Conjugation feedback: show answer + full conjugation table */}
@@ -259,7 +259,7 @@ export default React.memo(function ExerciseView({
                   fontFamily:'inherit'
                 }}
               />
-              <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
                 {SPECIAL_CHARS.map(function(ch) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
@@ -269,7 +269,7 @@ export default React.memo(function ExerciseView({
                       minWidth:'36px',lineHeight:'1'}}
                   >{ch}</button>;
                 })}
-              </div>
+              </div> : null}
             </div> : null}
 
           {/* Text input feedback (not conjugation — that has its own section above) */}
