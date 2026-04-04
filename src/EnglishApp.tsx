@@ -824,6 +824,15 @@ function EnglishApp({onHome}) {
     });
   }
 
+  function corePhrase(text) {
+    return text
+      .replace(/\s*\+\s*.*/g, '')
+      .replace(/\s*\(.*?\)\s*/g, ' ')
+      .replace(/\s*=\s*\w.*$/, '')
+      .replace(/\s+/g, ' ')
+      .trim().toLowerCase();
+  }
+
   function checkExerciseAnswer() {
     var item = exerciseSession.items[exerciseIdx];
     var correct = false;
@@ -839,15 +848,19 @@ function EnglishApp({onHome}) {
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
-      correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
+      var na = userAnswer.toLowerCase();
+      var nc = item.correctAnswer.toLowerCase();
+      correct = na === nc || na === corePhrase(nc) || corePhrase(na) === corePhrase(nc);
     } else {
-      // Generic text input comparison (no German-specific normalization needed)
+      // Generic text input comparison
       userAnswer = exerciseAnswer.trim();
       var na = userAnswer.toLowerCase().trim();
       var nc = item.correctAnswer.toLowerCase().trim();
       var fullAnswer = item.fullAnswer || item.germanWord || '';
       correct = na === nc ||
-                na === fullAnswer.toLowerCase().trim();
+                na === fullAnswer.toLowerCase().trim() ||
+                na === corePhrase(nc) ||
+                corePhrase(na) === corePhrase(nc);
     }
 
     var correctAnswerText = item.fullAnswer || item.correctAnswer || '';
