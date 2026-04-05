@@ -495,66 +495,59 @@ function App({onHome}) {
     setSyncMsg('Syncing...');
     cloudPull(syncEmail, 'german').then(function(remote) {
       if (remote && remote.progress) {
-        var merged = mergeProgress(progress, remote.progress);
-        setProgress(merged);
+        var mergedProgress = mergeProgress(progress, remote.progress);
+        setProgress(mergedProgress);
+        var mergedStartDate = remote.startDate && !saved?.startDate ? remote.startDate : dateKey(startDate);
         if (remote.startDate && !saved?.startDate) setStartDate(parseDate(remote.startDate));
         if (remote.started) setStarted(true);
+        var mergedTodayCompleted = todayCompleted;
         if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
-          setTodayCompleted(function(tc) {
-            var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
-            return {
-              learnCount: Math.max(tc.learnCount || 0, rLearnCount),
-              learnedBatches: [...new Set([...(tc.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
-              reviews: {...(remote.todayCompleted.reviews || {}), ...(tc.reviews || {})}
-            };
-          });
+          var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
+          mergedTodayCompleted = {
+            learnCount: Math.max(todayCompleted.learnCount || 0, rLearnCount),
+            learnedBatches: [...new Set([...(todayCompleted.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
+            reviews: {...(remote.todayCompleted.reviews || {}), ...(todayCompleted.reviews || {})}
+          };
+          setTodayCompleted(mergedTodayCompleted);
         }
         // Merge study dates (streak data)
+        var mergedDates = studyDates;
         if (remote.studyDates && Array.isArray(remote.studyDates)) {
-          setStudyDates(function(local) {
-            var merged = [...new Set([...local, ...remote.studyDates])].sort();
-            localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
-            return merged;
-          });
+          mergedDates = [...new Set([...studyDates, ...remote.studyDates])].sort();
+          localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
+          setStudyDates(mergedDates);
         }
         // Merge exercise progress
+        var mergedExProgress = exerciseProgress;
         if (remote.exerciseProgress) {
-          setExerciseProgress(function(local) {
-            var merged = {...local};
-            Object.keys(remote.exerciseProgress).forEach(function(k) {
-              if (!merged[k]) { merged[k] = remote.exerciseProgress[k]; return; }
-              var l = merged[k];
-              var r = remote.exerciseProgress[k];
-              // Merge: take max of each field to preserve progress from both devices
-              merged[k] = {
-                attempts: Math.max(l.attempts || 0, r.attempts || 0),
-                correct: Math.max(l.correct || 0, r.correct || 0),
-                streak: Math.max(l.streak || 0, r.streak || 0),
-                lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
-                nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
-              };
-            });
-            localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged));
-            return merged;
+          mergedExProgress = {...exerciseProgress};
+          Object.keys(remote.exerciseProgress).forEach(function(k) {
+            if (!mergedExProgress[k]) { mergedExProgress[k] = remote.exerciseProgress[k]; return; }
+            var l = mergedExProgress[k];
+            var r = remote.exerciseProgress[k];
+            mergedExProgress[k] = {
+              attempts: Math.max(l.attempts || 0, r.attempts || 0),
+              correct: Math.max(l.correct || 0, r.correct || 0),
+              streak: Math.max(l.streak || 0, r.streak || 0),
+              lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
+              nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
+            };
           });
+          localStorage.setItem('vocab_exercise_progress', JSON.stringify(mergedExProgress));
+          setExerciseProgress(mergedExProgress);
         }
         setSyncStatus('done');
         setSyncMsg('Synced from cloud');
         // Push merged data back immediately so both devices converge
-        setTimeout(function() {
-          var localDates = JSON.parse(localStorage.getItem('vocab_study_dates') || '[]');
-          var localProgress = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-          var localExProgress = JSON.parse(localStorage.getItem('vocab_exercise_progress') || '{}');
-          cloudPush(syncEmail, {
-            startDate: localProgress.startDate || dateKey(startDate),
-            started: true,
-            progress: localProgress.progress || progress,
-            todayCompleted: localProgress.todayCompleted || todayCompleted,
-            completedDate: dateKey(today),
-            studyDates: localDates,
-            exerciseProgress: localExProgress
-          }, 'german');
-        }, 2000);
+        cloudPush(syncEmail, {
+          startDate: mergedStartDate,
+          started: true,
+          progress: mergedProgress,
+          todayCompleted: mergedTodayCompleted,
+          completedDate: dateKey(today),
+          studyDates: mergedDates,
+          exerciseProgress: mergedExProgress
+        }, 'german');
       } else {
         setSyncStatus('done');
         setSyncMsg('No cloud data yet');
@@ -586,21 +579,41 @@ function App({onHome}) {
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
-  // Sync on page unload to prevent data loss
+  // Sync on page unload and visibility change
   useEffect(function() {
     if (!syncEmail || !started || Object.keys(progress).length === 0) return;
-    function handleUnload() {
+    function pushCurrent() {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         studyDates: studyDates, exerciseProgress: exerciseProgress
       }, 'german');
     }
-    window.addEventListener('beforeunload', handleUnload);
-    window.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'hidden') handleUnload();
-    });
-    return function() { window.removeEventListener('beforeunload', handleUnload); };
+    function handleVisibility() {
+      if (document.visibilityState === 'hidden') {
+        pushCurrent();
+      } else if (document.visibilityState === 'visible') {
+        // Pull fresh data when user returns to the app
+        cloudPull(syncEmail, 'german').then(function(remote) {
+          if (remote && remote.studyDates && Array.isArray(remote.studyDates)) {
+            setStudyDates(function(local) {
+              var merged = [...new Set([...local, ...remote.studyDates])].sort();
+              localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
+              return merged;
+            });
+          }
+          if (remote && remote.progress) {
+            setProgress(function(local) { return mergeProgress(local, remote.progress); });
+          }
+        }).catch(function() {});
+      }
+    }
+    window.addEventListener('beforeunload', pushCurrent);
+    window.addEventListener('visibilitychange', handleVisibility);
+    return function() {
+      window.removeEventListener('beforeunload', pushCurrent);
+      window.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [syncEmail, started, startDate, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
   function connectSync(email) {
