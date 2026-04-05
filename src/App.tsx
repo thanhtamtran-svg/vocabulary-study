@@ -488,8 +488,9 @@ function App({onHome}) {
   }, [startDate, started, progress, todayCompleted, today]);
 
   // Cloud sync: pull on mount if email is set
+  const syncDoneRef = useRef(false);
   useEffect(function() {
-    if (!syncEmail || syncRef.current) return;
+    if (!syncEmail || syncRef.current) { syncDoneRef.current = true; return; }
     syncRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
@@ -547,23 +548,24 @@ function App({onHome}) {
           completedDate: dateKey(today),
           studyDates: mergedDates,
           exerciseProgress: mergedExProgress
-        }, 'german');
+        }, 'german').then(function() { syncDoneRef.current = true; });
       } else {
         setSyncStatus('done');
         setSyncMsg('No cloud data yet');
+        syncDoneRef.current = true;
       }
       setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
     }).catch(function() {
       setSyncStatus('error');
       setSyncMsg('Sync failed');
+      syncDoneRef.current = true;
       setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
     });
   }, []);
 
-  // Cloud sync: push after state changes (debounced)
+  // Cloud sync: push after state changes (debounced, only after initial sync completes)
   useEffect(function() {
-    if (!syncEmail || !started) return;
-    // Don't push empty progress — prevents overwriting cloud data during initial sync
+    if (!syncEmail || !started || !syncDoneRef.current) return;
     if (Object.keys(progress).length === 0) return;
     var timer = setTimeout(function() {
       cloudPush(syncEmail, {
