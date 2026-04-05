@@ -490,63 +490,67 @@ function EnglishApp({onHome}) {
     });
   }, [startDate, started, progress, todayCompleted, today]);
 
-  // Cloud sync: pull on mount if email is set
+  // Cloud sync: push local first, pull merged, update local, push final
   const syncDoneRef = useRef(false);
   useEffect(function() {
     if (!syncEmail || syncRef.current) { syncDoneRef.current = true; return; }
     syncRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    cloudPull(syncEmail, 'english').then(function(remote) {
-      // Skip cloud data that doesn't have the English marker (leaked German data)
-      if (remote && remote.lang !== 'english' && remote.progress) {
-        remote = null;
-      }
+    var pushFirst = Object.keys(progress).length > 0
+      ? cloudPush(syncEmail, {
+          lang: 'english', startDate: dateKey(startDate), started: started,
+          progress: progress, todayCompleted: todayCompleted,
+          completedDate: dateKey(today), studyDates: studyDates,
+          exerciseProgress: exerciseProgress
+        }, 'english')
+      : Promise.resolve(true);
+    pushFirst.then(function() {
+      return cloudPull(syncEmail, 'english');
+    }).then(function(remote) {
+      if (remote && remote.lang !== 'english' && remote.progress) remote = null;
       if (remote && remote.progress) {
-        var merged = mergeProgress(progress, remote.progress);
-        setProgress(merged);
+        var mp = mergeProgress(progress, remote.progress);
+        setProgress(mp);
         if (remote.startDate && !saved?.startDate) setStartDate(parseDate(remote.startDate));
         if (remote.started) setStarted(true);
         if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
-          setTodayCompleted(function(tc) {
-            var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
-            return {
-              learnCount: Math.max(tc.learnCount || 0, rLearnCount),
-              learnedBatches: [...new Set([...(tc.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
-              reviews: {...(remote.todayCompleted.reviews || {}), ...(tc.reviews || {})}
+          var rLC = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
+          setTodayCompleted({
+            learnCount: Math.max(todayCompleted.learnCount || 0, rLC),
+            learnedBatches: [...new Set([...(todayCompleted.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
+            reviews: {...(remote.todayCompleted.reviews || {}), ...(todayCompleted.reviews || {})}
+          });
+        }
+        var mex = {...exerciseProgress};
+        if (remote.exerciseProgress) {
+          Object.keys(remote.exerciseProgress).forEach(function(k) {
+            if (!mex[k]) { mex[k] = remote.exerciseProgress[k]; return; }
+            var l = mex[k], r = remote.exerciseProgress[k];
+            mex[k] = {
+              attempts: Math.max(l.attempts || 0, r.attempts || 0),
+              correct: Math.max(l.correct || 0, r.correct || 0),
+              streak: Math.max(l.streak || 0, r.streak || 0),
+              lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
+              nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
             };
           });
+          localStorage.setItem('english_exercise_progress', JSON.stringify(mex));
+          setExerciseProgress(mex);
         }
-        // studyDates are derived from progress + exerciseProgress, no need to merge separately
-        // Merge exercise progress
-        if (remote.exerciseProgress) {
-          setExerciseProgress(function(local) {
-            var merged = {...local};
-            Object.keys(remote.exerciseProgress).forEach(function(k) {
-              if (!merged[k]) { merged[k] = remote.exerciseProgress[k]; return; }
-              var l = merged[k];
-              var r = remote.exerciseProgress[k];
-              // Merge: take max of each field to preserve progress from both devices
-              merged[k] = {
-                attempts: Math.max(l.attempts || 0, r.attempts || 0),
-                correct: Math.max(l.correct || 0, r.correct || 0),
-                streak: Math.max(l.streak || 0, r.streak || 0),
-                lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
-                nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
-              };
-            });
-            localStorage.setItem('english_exercise_progress', JSON.stringify(merged));
-            return merged;
-          });
-        }
+        cloudPush(syncEmail, {
+          lang: 'english', startDate: remote.startDate || dateKey(startDate),
+          started: true, progress: mp, todayCompleted: todayCompleted,
+          completedDate: dateKey(today), studyDates: [],
+          exerciseProgress: mex
+        }, 'english');
         setSyncStatus('done');
-        setSyncMsg('Synced from cloud');
-        syncDoneRef.current = true;
+        setSyncMsg('Synced');
       } else {
         setSyncStatus('done');
         setSyncMsg('No cloud data yet');
-        syncDoneRef.current = true;
       }
+      syncDoneRef.current = true;
       setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
     }).catch(function() {
       setSyncStatus('error');
