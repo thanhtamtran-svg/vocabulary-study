@@ -457,10 +457,11 @@ function App({onHome}) {
     }
   }, []);
 
-  // Backfill studyDates from progress review history (runs whenever progress changes)
+  // Rebuild studyDates from actual activity (progress reviews + exercises)
+  // This is the source of truth — prevents drift between devices
   useEffect(function() {
-    var dates = new Set(studyDates);
-    var before = dates.size;
+    var dates = new Set();
+    // From word reviews
     Object.keys(progress).forEach(function(k) {
       var wp = progress[k];
       if (!wp) return;
@@ -469,12 +470,17 @@ function App({onHome}) {
       }
       if (wp.lastReview) dates.add(wp.lastReview);
     });
-    if (dates.size > before) {
-      var merged = Array.from(dates).sort();
-      localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
-      setStudyDates(merged);
+    // From exercise activity
+    Object.keys(exerciseProgress).forEach(function(k) {
+      var ep = exerciseProgress[k];
+      if (ep && ep.lastExercise) dates.add(ep.lastExercise);
+    });
+    if (dates.size > 0) {
+      var rebuilt = Array.from(dates).sort();
+      localStorage.setItem('vocab_study_dates', JSON.stringify(rebuilt));
+      setStudyDates(rebuilt);
     }
-  }, [progress]);
+  }, [progress, exerciseProgress]);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -488,67 +494,52 @@ function App({onHome}) {
   }, [startDate, started, progress, todayCompleted, today]);
 
   // Cloud sync: pull on mount if email is set
-  const syncDoneRef = useRef(false);
   useEffect(function() {
-    if (!syncEmail || syncRef.current) { syncDoneRef.current = true; return; }
+    if (!syncEmail || syncRef.current) return;
     syncRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
     cloudPull(syncEmail, 'german').then(function(remote) {
       if (remote && remote.progress) {
-        var mergedProgress = mergeProgress(progress, remote.progress);
-        setProgress(mergedProgress);
-        var mergedStartDate = remote.startDate && !saved?.startDate ? remote.startDate : dateKey(startDate);
+        var merged = mergeProgress(progress, remote.progress);
+        setProgress(merged);
         if (remote.startDate && !saved?.startDate) setStartDate(parseDate(remote.startDate));
         if (remote.started) setStarted(true);
-        var mergedTodayCompleted = todayCompleted;
         if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
-          var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
-          mergedTodayCompleted = {
-            learnCount: Math.max(todayCompleted.learnCount || 0, rLearnCount),
-            learnedBatches: [...new Set([...(todayCompleted.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
-            reviews: {...(remote.todayCompleted.reviews || {}), ...(todayCompleted.reviews || {})}
-          };
-          setTodayCompleted(mergedTodayCompleted);
-        }
-        // Merge study dates (streak data)
-        var mergedDates = studyDates;
-        if (remote.studyDates && Array.isArray(remote.studyDates)) {
-          mergedDates = [...new Set([...studyDates, ...remote.studyDates])].sort();
-          localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
-          setStudyDates(mergedDates);
-        }
-        // Merge exercise progress
-        var mergedExProgress = exerciseProgress;
-        if (remote.exerciseProgress) {
-          mergedExProgress = {...exerciseProgress};
-          Object.keys(remote.exerciseProgress).forEach(function(k) {
-            if (!mergedExProgress[k]) { mergedExProgress[k] = remote.exerciseProgress[k]; return; }
-            var l = mergedExProgress[k];
-            var r = remote.exerciseProgress[k];
-            mergedExProgress[k] = {
-              attempts: Math.max(l.attempts || 0, r.attempts || 0),
-              correct: Math.max(l.correct || 0, r.correct || 0),
-              streak: Math.max(l.streak || 0, r.streak || 0),
-              lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
-              nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
+          setTodayCompleted(function(tc) {
+            var rLearnCount = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
+            return {
+              learnCount: Math.max(tc.learnCount || 0, rLearnCount),
+              learnedBatches: [...new Set([...(tc.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
+              reviews: {...(remote.todayCompleted.reviews || {}), ...(tc.reviews || {})}
             };
           });
-          localStorage.setItem('vocab_exercise_progress', JSON.stringify(mergedExProgress));
-          setExerciseProgress(mergedExProgress);
+        }
+        // studyDates are derived from progress + exerciseProgress, no need to merge separately
+        // Merge exercise progress
+        if (remote.exerciseProgress) {
+          setExerciseProgress(function(local) {
+            var merged = {...local};
+            Object.keys(remote.exerciseProgress).forEach(function(k) {
+              if (!merged[k]) { merged[k] = remote.exerciseProgress[k]; return; }
+              var l = merged[k];
+              var r = remote.exerciseProgress[k];
+              // Merge: take max of each field to preserve progress from both devices
+              merged[k] = {
+                attempts: Math.max(l.attempts || 0, r.attempts || 0),
+                correct: Math.max(l.correct || 0, r.correct || 0),
+                streak: Math.max(l.streak || 0, r.streak || 0),
+                lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
+                nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
+              };
+            });
+            localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged));
+            return merged;
+          });
         }
         setSyncStatus('done');
         setSyncMsg('Synced from cloud');
-        // Push merged data back immediately so both devices converge
-        cloudPush(syncEmail, {
-          startDate: mergedStartDate,
-          started: true,
-          progress: mergedProgress,
-          todayCompleted: mergedTodayCompleted,
-          completedDate: dateKey(today),
-          studyDates: mergedDates,
-          exerciseProgress: mergedExProgress
-        }, 'german').then(function() { syncDoneRef.current = true; });
+        syncDoneRef.current = true;
       } else {
         setSyncStatus('done');
         setSyncMsg('No cloud data yet');
@@ -563,9 +554,10 @@ function App({onHome}) {
     });
   }, []);
 
-  // Cloud sync: push after state changes (debounced, only after initial sync completes)
+  // Cloud sync: push after state changes (debounced)
   useEffect(function() {
-    if (!syncEmail || !started || !syncDoneRef.current) return;
+    if (!syncEmail || !started) return;
+    // Don't push empty progress — prevents overwriting cloud data during initial sync
     if (Object.keys(progress).length === 0) return;
     var timer = setTimeout(function() {
       cloudPush(syncEmail, {
@@ -581,41 +573,21 @@ function App({onHome}) {
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
-  // Sync on page unload and visibility change
+  // Sync on page unload to prevent data loss
   useEffect(function() {
     if (!syncEmail || !started || Object.keys(progress).length === 0) return;
-    function pushCurrent() {
+    function handleUnload() {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         studyDates: studyDates, exerciseProgress: exerciseProgress
       }, 'german');
     }
-    function handleVisibility() {
-      if (document.visibilityState === 'hidden') {
-        pushCurrent();
-      } else if (document.visibilityState === 'visible') {
-        // Pull fresh data when user returns to the app
-        cloudPull(syncEmail, 'german').then(function(remote) {
-          if (remote && remote.studyDates && Array.isArray(remote.studyDates)) {
-            setStudyDates(function(local) {
-              var merged = [...new Set([...local, ...remote.studyDates])].sort();
-              localStorage.setItem('vocab_study_dates', JSON.stringify(merged));
-              return merged;
-            });
-          }
-          if (remote && remote.progress) {
-            setProgress(function(local) { return mergeProgress(local, remote.progress); });
-          }
-        }).catch(function() {});
-      }
-    }
-    window.addEventListener('beforeunload', pushCurrent);
-    window.addEventListener('visibilitychange', handleVisibility);
-    return function() {
-      window.removeEventListener('beforeunload', pushCurrent);
-      window.removeEventListener('visibilitychange', handleVisibility);
-    };
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') handleUnload();
+    });
+    return function() { window.removeEventListener('beforeunload', handleUnload); };
   }, [syncEmail, started, startDate, progress, todayCompleted, today, studyDates, exerciseProgress]);
 
   function connectSync(email) {
