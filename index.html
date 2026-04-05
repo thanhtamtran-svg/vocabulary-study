@@ -16,6 +16,22 @@
 </head>
 <body>
 <div id="root"></div>
+<script>
+// Force clear stale service workers and caches
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) {
+      reg.update();
+    });
+  });
+  caches.keys().then(function(names) {
+    var current = 'vocab-study-v12';
+    names.forEach(function(name) {
+      if (name !== current) caches.delete(name);
+    });
+  });
+}
+</script>
 <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
