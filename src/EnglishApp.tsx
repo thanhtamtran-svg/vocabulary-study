@@ -544,6 +544,22 @@ function EnglishApp({onHome}) {
         }
         setSyncStatus('done');
         setSyncMsg('Synced from cloud');
+        // Push merged data back immediately so both devices converge
+        setTimeout(function() {
+          var localDates = JSON.parse(localStorage.getItem('english_study_dates') || '[]');
+          var localProgress = JSON.parse(localStorage.getItem(ENGLISH_STORAGE_KEY) || '{}');
+          var localExProgress = JSON.parse(localStorage.getItem('english_exercise_progress') || '{}');
+          cloudPush(syncEmail, {
+            lang: 'english',
+            startDate: localProgress.startDate || dateKey(startDate),
+            started: true,
+            progress: localProgress.progress || progress,
+            todayCompleted: localProgress.todayCompleted || todayCompleted,
+            completedDate: dateKey(today),
+            studyDates: localDates,
+            exerciseProgress: localExProgress
+          }, 'english');
+        }, 2000);
       } else {
         setSyncStatus('done');
         setSyncMsg('No cloud data yet');
