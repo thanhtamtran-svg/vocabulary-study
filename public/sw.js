@@ -102,8 +102,29 @@ self.addEventListener('fetch', function(event) {
     return;
   }
 
-  // Static assets (JS, CSS, images): cache-first
-  var isStaticAsset = /\.(js|css|png|jpg|jpeg|svg|ico|woff2?|ttf|eot)(\?|$)/.test(url.pathname);
+  // JS/CSS: network-first (gets fresh chunks after deploy, falls back to cache offline)
+  var isJSorCSS = /\.(js|css)(\?|$)/.test(url.pathname);
+  if (isJSorCSS) {
+    event.respondWith(
+      fetch(event.request).then(function(response) {
+        if (response.ok) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, clone).catch(function() {});
+          });
+        }
+        return response;
+      }).catch(function() {
+        return caches.match(event.request).then(function(cached) {
+          return cached || new Response('', { status: 408 });
+        });
+      })
+    );
+    return;
+  }
+
+  // Images/fonts: cache-first (content-addressed, never change)
+  var isStaticAsset = /\.(png|jpg|jpeg|svg|ico|woff2?|ttf|eot)(\?|$)/.test(url.pathname);
   if (isStaticAsset) {
     event.respondWith(
       caches.match(event.request).then(function(cached) {

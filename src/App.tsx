@@ -11,7 +11,7 @@ import {
 import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
 import { speakGerman } from './lib/speech';
 import { loadState, saveState } from './lib/storage';
-import { mergeProgress, cloudPull, cloudPush } from './lib/sync';
+import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
 import {
@@ -493,113 +493,94 @@ function App({onHome}) {
     });
   }, [startDate, started, progress, todayCompleted, today]);
 
-  // Cloud sync: push local first, pull merged, update local, push final
-  const syncDoneRef = useRef(false);
+  // Cloud sync: pull on mount, merge with local, push merged result
+  const isSyncingRef = useRef(false);
   useEffect(function() {
-    if (!syncEmail || syncRef.current) { syncDoneRef.current = true; return; }
+    if (!syncEmail || syncRef.current) return;
     syncRef.current = true;
+    isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    // Push local data first so cloud has everything
-    var pushFirst = Object.keys(progress).length > 0
-      ? cloudPush(syncEmail, {
+    cloudPull(syncEmail, 'german').then(function(remote) {
+      if (remote && remote.progress) {
+        var localSnapshot = {
+          progress: progress, exerciseProgress: exerciseProgress,
+          todayCompleted: todayCompleted, completedDate: dateKey(today),
+          startDate: dateKey(startDate), started: started,
+        };
+        var merged = mergeFullState(localSnapshot, remote, dateKey(today));
+        // Apply to React state
+        setProgress(merged.progress);
+        setExerciseProgress(merged.exerciseProgress);
+        setTodayCompleted(merged.todayCompleted);
+        if (merged.startDate && !saved?.startDate) setStartDate(parseDate(merged.startDate));
+        if (merged.started) setStarted(true);
+        // Persist exercise progress immediately
+        localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
+        // Push merged result using local variables (not stale closure state)
+        return cloudPush(syncEmail, {
+          startDate: merged.startDate || dateKey(startDate),
+          started: merged.started,
+          progress: merged.progress,
+          todayCompleted: merged.todayCompleted,
+          completedDate: dateKey(today),
+          exerciseProgress: merged.exerciseProgress,
+        }, 'german');
+      } else if (Object.keys(progress).length > 0) {
+        // No cloud data — push local
+        return cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          studyDates: studyDates, exerciseProgress: exerciseProgress
-        }, 'german')
-      : Promise.resolve(true);
-    pushFirst.then(function() {
-      return cloudPull(syncEmail, 'german');
-    }).then(function(remote) {
-      if (remote && remote.progress) {
-        // Merge progress (union of reviews)
-        var mp = mergeProgress(progress, remote.progress);
-        setProgress(mp);
-        if (remote.startDate && !saved?.startDate) setStartDate(parseDate(remote.startDate));
-        if (remote.started) setStarted(true);
-        if (remote.todayCompleted && remote.completedDate === dateKey(today)) {
-          var rLC = remote.todayCompleted.learnCount || (remote.todayCompleted.learn ? 1 : 0);
-          setTodayCompleted({
-            learnCount: Math.max(todayCompleted.learnCount || 0, rLC),
-            learnedBatches: [...new Set([...(todayCompleted.learnedBatches || []), ...(remote.todayCompleted.learnedBatches || [])])],
-            reviews: {...(remote.todayCompleted.reviews || {}), ...(todayCompleted.reviews || {})}
-          });
-        }
-        // Merge exercise progress
-        var mex = {...exerciseProgress};
-        if (remote.exerciseProgress) {
-          Object.keys(remote.exerciseProgress).forEach(function(k) {
-            if (!mex[k]) { mex[k] = remote.exerciseProgress[k]; return; }
-            var l = mex[k], r = remote.exerciseProgress[k];
-            mex[k] = {
-              attempts: Math.max(l.attempts || 0, r.attempts || 0),
-              correct: Math.max(l.correct || 0, r.correct || 0),
-              streak: Math.max(l.streak || 0, r.streak || 0),
-              lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
-              nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
-            };
-          });
-          localStorage.setItem('vocab_exercise_progress', JSON.stringify(mex));
-          setExerciseProgress(mex);
-        }
-        // Push final merged result back
-        cloudPush(syncEmail, {
-          startDate: remote.startDate || dateKey(startDate), started: true,
-          progress: mp, todayCompleted: todayCompleted,
-          completedDate: dateKey(today), studyDates: [],
-          exerciseProgress: mex
+          exerciseProgress: exerciseProgress,
         }, 'german');
-        setSyncStatus('done');
-        setSyncMsg('Synced');
-      } else {
-        setSyncStatus('done');
-        setSyncMsg('No cloud data yet');
       }
-      syncDoneRef.current = true;
+    }).then(function() {
+      setSyncStatus('done');
+      setSyncMsg('Synced');
       setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
     }).catch(function() {
       setSyncStatus('error');
       setSyncMsg('Sync failed');
-      syncDoneRef.current = true;
       setTimeout(function() { setSyncStatus('idle'); setSyncMsg(''); }, 3000);
+    }).finally(function() {
+      isSyncingRef.current = false;
     });
   }, []);
 
-  // Cloud sync: push after state changes (debounced)
+  // Cloud sync: push after state changes (debounced, blocked during initial sync)
   useEffect(function() {
-    if (!syncEmail || !started) return;
-    // Don't push empty progress — prevents overwriting cloud data during initial sync
+    if (!syncEmail || !started || isSyncingRef.current) return;
     if (Object.keys(progress).length === 0) return;
     var timer = setTimeout(function() {
-      cloudPush(syncEmail, {
-        startDate: dateKey(startDate),
-        started: started,
-        progress: progress,
-        todayCompleted: todayCompleted,
-        completedDate: dateKey(today),
-        studyDates: studyDates,
-        exerciseProgress: exerciseProgress
-      }, 'german');
-    }, 5000);
-    return function() { clearTimeout(timer); };
-  }, [syncEmail, startDate, started, progress, todayCompleted, today, studyDates, exerciseProgress]);
-
-  // Sync on page unload to prevent data loss
-  useEffect(function() {
-    if (!syncEmail || !started || Object.keys(progress).length === 0) return;
-    function handleUnload() {
+      if (isSyncingRef.current) return;
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
-        studyDates: studyDates, exerciseProgress: exerciseProgress
+        exerciseProgress: exerciseProgress,
       }, 'german');
-    }
-    window.addEventListener('beforeunload', handleUnload);
-    window.addEventListener('visibilitychange', function() {
-      if (document.visibilityState === 'hidden') handleUnload();
-    });
-    return function() { window.removeEventListener('beforeunload', handleUnload); };
-  }, [syncEmail, started, startDate, progress, todayCompleted, today, studyDates, exerciseProgress]);
+    }, 5000);
+    return function() { clearTimeout(timer); };
+  }, [syncEmail, startDate, started, progress, todayCompleted, today, exerciseProgress]);
+
+  // Push on page hide/unload
+  useEffect(function() {
+    if (!syncEmail || !started || Object.keys(progress).length === 0) return;
+    var handler = function(e) {
+      if (e.type === 'visibilitychange' && document.visibilityState !== 'hidden') return;
+      if (isSyncingRef.current) return;
+      cloudPush(syncEmail, {
+        startDate: dateKey(startDate), started: started, progress: progress,
+        todayCompleted: todayCompleted, completedDate: dateKey(today),
+        exerciseProgress: exerciseProgress,
+      }, 'german');
+    };
+    window.addEventListener('beforeunload', handler);
+    window.addEventListener('visibilitychange', handler);
+    return function() {
+      window.removeEventListener('beforeunload', handler);
+      window.removeEventListener('visibilitychange', handler);
+    };
+  }, [syncEmail, started, startDate, progress, todayCompleted, today, exerciseProgress]);
 
   function connectSync(email) {
     localStorage.setItem(SYNC_EMAIL_KEY, email);
@@ -608,19 +589,30 @@ function App({onHome}) {
     setSyncMsg('Connecting...');
     cloudPull(email, 'german').then(function(remote) {
       if (remote && remote.progress) {
-        var merged = mergeProgress(progress, remote.progress);
-        setProgress(merged);
+        var localSnapshot = {
+          progress: progress, exerciseProgress: exerciseProgress,
+          todayCompleted: todayCompleted, completedDate: dateKey(today),
+          startDate: dateKey(startDate), started: started,
+        };
+        var merged = mergeFullState(localSnapshot, remote, dateKey(today));
+        setProgress(merged.progress);
+        setExerciseProgress(merged.exerciseProgress);
+        setTodayCompleted(merged.todayCompleted);
         if (remote.startDate) setStartDate(parseDate(remote.startDate));
-        if (remote.started) setStarted(true);
+        if (merged.started) setStarted(true);
+        localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
+        cloudPush(email, {
+          startDate: merged.startDate || dateKey(startDate), started: merged.started,
+          progress: merged.progress, todayCompleted: merged.todayCompleted,
+          completedDate: dateKey(today), exerciseProgress: merged.exerciseProgress,
+        }, 'german');
         setSyncStatus('done');
         setSyncMsg('Connected & synced!');
       } else {
         cloudPush(email, {
-          startDate: dateKey(startDate),
-          started: started,
-          progress: progress,
-          todayCompleted: todayCompleted,
-          completedDate: dateKey(today)
+          startDate: dateKey(startDate), started: started, progress: progress,
+          todayCompleted: todayCompleted, completedDate: dateKey(today),
+          exerciseProgress: exerciseProgress,
         }, 'german');
         setSyncStatus('done');
         setSyncMsg('Connected! Progress uploaded.');
