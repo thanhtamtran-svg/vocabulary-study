@@ -829,7 +829,11 @@ function App({onHome}) {
     } else if (item.type === 'multiple_choice' || item.type === 'reading' || item.type === 'reverse_choice' || item.type === 'listening') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
-      correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
+      var normalizeOpt = function(s) { return s.toLowerCase().replace(/[-\s]+/g, ' ').trim(); };
+      var selectedOpt = item.options[exerciseSelectedIdx];
+      var correctOpts = item.options.filter(function(o) { return o.wi === item.wordIdx; });
+      correct = selectedOpt.wi === item.wordIdx ||
+        correctOpts.some(function(co) { return normalizeOpt(selectedOpt.text) === normalizeOpt(co.text); });
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
       correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
