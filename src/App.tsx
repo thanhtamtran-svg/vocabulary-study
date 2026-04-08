@@ -457,28 +457,26 @@ function App({onHome}) {
     }
   }, []);
 
-  // Rebuild studyDates from actual activity (progress reviews + exercises)
-  // This is the source of truth — prevents drift between devices
+  // Augment studyDates with any dates found in progress reviews + exercises
   useEffect(function() {
-    var dates = new Set(studyDates); // start with existing dates (from cloud sync)
-    // Add dates from word reviews
+    var dates = new Set();
     Object.keys(progress).forEach(function(k) {
       var wp = progress[k];
       if (!wp) return;
-      if (wp.reviews && Array.isArray(wp.reviews)) {
-        wp.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
-      }
+      if (wp.reviews) wp.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
       if (wp.lastReview) dates.add(wp.lastReview);
     });
-    // Add dates from exercise activity
     Object.keys(exerciseProgress).forEach(function(k) {
       var ep = exerciseProgress[k];
       if (ep && ep.lastExercise) dates.add(ep.lastExercise);
     });
     if (dates.size > 0) {
-      var rebuilt = Array.from(dates).sort();
-      localStorage.setItem('vocab_study_dates', JSON.stringify(rebuilt));
-      setStudyDates(rebuilt);
+      setStudyDates(function(prev) {
+        var union = [...new Set([...prev, ...dates])].sort();
+        if (union.length === prev.length) return prev; // no change, avoid re-render
+        localStorage.setItem('vocab_study_dates', JSON.stringify(union));
+        return union;
+      });
     }
   }, [progress, exerciseProgress]);
 
@@ -501,12 +499,12 @@ function App({onHome}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    // Always push local data first — ensures phone's latest study is in cloud before merge
+    // Push local data first — captures phone's study before cloud merge
     var pushFirst = Object.keys(progress).length > 0
       ? cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress,
+          exerciseProgress: exerciseProgress, studyDates: studyDates,
         }, 'german')
       : Promise.resolve(true);
     pushFirst.then(function() { return cloudPull(syncEmail, 'german'); }).then(function(remote) {
@@ -517,23 +515,24 @@ function App({onHome}) {
           startDate: dateKey(startDate), started: started,
         };
         var merged = mergeFullState(localSnapshot, remote, dateKey(today));
+        // Merge studyDates: union of local, cloud, and any in remote's studyDates field
+        var mergedDates = [...new Set([
+          ...studyDates,
+          ...(remote.studyDates || []),
+        ])].sort();
         // Apply to React state
         setProgress(merged.progress);
         setExerciseProgress(merged.exerciseProgress);
         setTodayCompleted(merged.todayCompleted);
         if (merged.startDate && !saved?.startDate) setStartDate(parseDate(merged.startDate));
         if (merged.started) setStarted(true);
-        // Merge cloud studyDates into local (union — cloud may have dates from other device)
-        if (remote.studyDates && Array.isArray(remote.studyDates) && remote.studyDates.length > 0) {
-          setStudyDates(function(local) {
-            var union = [...new Set([...local, ...remote.studyDates])].sort();
-            localStorage.setItem('vocab_study_dates', JSON.stringify(union));
-            return union;
-          });
+        if (mergedDates.length > studyDates.length) {
+          localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
+          setStudyDates(mergedDates);
         }
         // Persist exercise progress immediately
         localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
-        // Push merged result using local variables (not stale closure state)
+        // Push merged result — use local variables, not stale closure values
         return cloudPush(syncEmail, {
           startDate: merged.startDate || dateKey(startDate),
           started: merged.started,
@@ -541,14 +540,14 @@ function App({onHome}) {
           todayCompleted: merged.todayCompleted,
           completedDate: dateKey(today),
           exerciseProgress: merged.exerciseProgress,
-          studyDates: studyDates,
+          studyDates: mergedDates,
         }, 'german');
       } else if (Object.keys(progress).length > 0) {
         // No cloud data — push local
         return cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress,
+          exerciseProgress: exerciseProgress, studyDates: studyDates,
         }, 'german');
       }
     }).then(function() {

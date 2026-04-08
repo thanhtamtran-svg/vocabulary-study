@@ -456,15 +456,13 @@ function EnglishApp({onHome}) {
     }
   }, []);
 
-  // Rebuild studyDates from actual activity (progress reviews + exercises)
+  // Augment studyDates with any dates found in progress reviews + exercises
   useEffect(function() {
     var dates = new Set();
     Object.keys(progress).forEach(function(k) {
       var wp = progress[k];
       if (!wp) return;
-      if (wp.reviews && Array.isArray(wp.reviews)) {
-        wp.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
-      }
+      if (wp.reviews) wp.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
       if (wp.lastReview) dates.add(wp.lastReview);
     });
     Object.keys(exerciseProgress).forEach(function(k) {
@@ -472,9 +470,12 @@ function EnglishApp({onHome}) {
       if (ep && ep.lastExercise) dates.add(ep.lastExercise);
     });
     if (dates.size > 0) {
-      var rebuilt = Array.from(dates).sort();
-      localStorage.setItem('english_study_dates', JSON.stringify(rebuilt));
-      setStudyDates(rebuilt);
+      setStudyDates(function(prev) {
+        var union = [...new Set([...prev, ...dates])].sort();
+        if (union.length === prev.length) return prev;
+        localStorage.setItem('english_study_dates', JSON.stringify(union));
+        return union;
+      });
     }
   }, [progress, exerciseProgress]);
 
