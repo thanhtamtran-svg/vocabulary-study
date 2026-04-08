@@ -502,7 +502,7 @@ function App({onHome}) {
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
     // Always push local data first — ensures phone's latest study is in cloud before merge
-    var pushFirst = started && Object.keys(progress).length > 0
+    var pushFirst = Object.keys(progress).length > 0
       ? cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),

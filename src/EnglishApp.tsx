@@ -498,7 +498,7 @@ function EnglishApp({onHome}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    var pushFirst = started && Object.keys(progress).length > 0
+    var pushFirst = Object.keys(progress).length > 0
       ? cloudPush(syncEmail, {
           lang: 'english', startDate: dateKey(startDate), started: started,
           progress: progress, todayCompleted: todayCompleted,
