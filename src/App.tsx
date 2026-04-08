@@ -501,7 +501,15 @@ function App({onHome}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    cloudPull(syncEmail, 'german').then(function(remote) {
+    // Always push local data first — ensures phone's latest study is in cloud before merge
+    var pushFirst = started && Object.keys(progress).length > 0
+      ? cloudPush(syncEmail, {
+          startDate: dateKey(startDate), started: started, progress: progress,
+          todayCompleted: todayCompleted, completedDate: dateKey(today),
+          exerciseProgress: exerciseProgress,
+        }, 'german')
+      : Promise.resolve(true);
+    pushFirst.then(function() { return cloudPull(syncEmail, 'german'); }).then(function(remote) {
       if (remote && remote.progress) {
         var localSnapshot = {
           progress: progress, exerciseProgress: exerciseProgress,
