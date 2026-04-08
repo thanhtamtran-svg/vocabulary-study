@@ -500,11 +500,13 @@ function App({onHome}) {
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
     // Push local data first — captures phone's study before cloud merge
+    // NOTE: do NOT include studyDates here — it may be stale on other device
+    // studyDates will be computed from the merged progress+exercises after pull
     var pushFirst = Object.keys(progress).length > 0
       ? cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress, studyDates: studyDates,
+          exerciseProgress: exerciseProgress,
         }, 'german')
       : Promise.resolve(true);
     pushFirst.then(function() { return cloudPull(syncEmail, 'german'); }).then(function(remote) {
@@ -515,11 +517,17 @@ function App({onHome}) {
           startDate: dateKey(startDate), started: started,
         };
         var merged = mergeFullState(localSnapshot, remote, dateKey(today));
-        // Merge studyDates: union of local, cloud, and any in remote's studyDates field
-        var mergedDates = [...new Set([
-          ...studyDates,
-          ...(remote.studyDates || []),
-        ])].sort();
+        // Compute studyDates from merged progress + exercises (source of truth)
+        // Also union with remote.studyDates in case it has dates not in reviews
+        var computedDates = new Set(remote.studyDates || []);
+        Object.values(merged.progress).forEach(function(w) {
+          if (w.reviews) w.reviews.forEach(function(r) { if (r.date) computedDates.add(r.date); });
+          if (w.lastReview) computedDates.add(w.lastReview);
+        });
+        Object.values(merged.exerciseProgress).forEach(function(e) {
+          if (e.lastExercise) computedDates.add(e.lastExercise);
+        });
+        var mergedDates = [...computedDates].sort();
         // Apply to React state
         setProgress(merged.progress);
         setExerciseProgress(merged.exerciseProgress);
