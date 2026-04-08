@@ -499,14 +499,7 @@ function EnglishApp({onHome}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    var pushFirst = Object.keys(progress).length > 0
-      ? cloudPush(syncEmail, {
-          lang: 'english', startDate: dateKey(startDate), started: started,
-          progress: progress, todayCompleted: todayCompleted,
-          completedDate: dateKey(today), exerciseProgress: exerciseProgress,
-        }, 'english')
-      : Promise.resolve(true);
-    pushFirst.then(function() { return cloudPull(syncEmail, 'english'); }).then(function(remote) {
+    cloudPull(syncEmail, 'english').then(function(remote) {
       if (remote && remote.lang !== 'english' && remote.progress) remote = null;
       if (remote && remote.progress) {
         var localSnapshot = {

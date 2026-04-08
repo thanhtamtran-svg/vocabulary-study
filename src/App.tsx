@@ -499,17 +499,8 @@ function App({onHome}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    // Push local data first — captures phone's study before cloud merge
-    // NOTE: do NOT include studyDates here — it may be stale on other device
-    // studyDates will be computed from the merged progress+exercises after pull
-    var pushFirst = Object.keys(progress).length > 0
-      ? cloudPush(syncEmail, {
-          startDate: dateKey(startDate), started: started, progress: progress,
-          todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress,
-        }, 'german')
-      : Promise.resolve(true);
-    pushFirst.then(function() { return cloudPull(syncEmail, 'german'); }).then(function(remote) {
+    // Pull first — cloud is the convergence point
+    cloudPull(syncEmail, 'german').then(function(remote) {
       if (remote && remote.progress) {
         var localSnapshot = {
           progress: progress, exerciseProgress: exerciseProgress,
