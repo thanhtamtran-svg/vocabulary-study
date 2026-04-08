@@ -528,16 +528,17 @@ function App({onHome}) {
           if (e.lastExercise) computedDates.add(e.lastExercise);
         });
         var mergedDates = [...computedDates].sort();
+        console.log('[sync] mergedDates:', mergedDates.length, mergedDates.join(','));
+        console.log('[sync] local studyDates:', studyDates.length, studyDates.join(','));
+        // Always apply mergedDates — write to localStorage first so rebuild effect sees it
+        localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
+        setStudyDates(mergedDates);
         // Apply to React state
         setProgress(merged.progress);
         setExerciseProgress(merged.exerciseProgress);
         setTodayCompleted(merged.todayCompleted);
         if (merged.startDate && !saved?.startDate) setStartDate(parseDate(merged.startDate));
         if (merged.started) setStarted(true);
-        if (mergedDates.length > studyDates.length) {
-          localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
-          setStudyDates(mergedDates);
-        }
         // Persist exercise progress immediately
         localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
         // Push merged result — use local variables, not stale closure values
