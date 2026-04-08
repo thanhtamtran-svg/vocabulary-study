@@ -572,11 +572,11 @@ function App({onHome}) {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
-        exerciseProgress: exerciseProgress, studyDates: studyDates,
+        exerciseProgress: exerciseProgress,
       }, 'german');
     }, 5000);
     return function() { clearTimeout(timer); };
-  }, [syncEmail, startDate, started, progress, todayCompleted, today, exerciseProgress, studyDates]);
+  }, [syncEmail, startDate, started, progress, todayCompleted, today, exerciseProgress]);
 
   // Push on page hide/unload
   useEffect(function() {
@@ -587,7 +587,7 @@ function App({onHome}) {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
-        exerciseProgress: exerciseProgress, studyDates: studyDates,
+        exerciseProgress: exerciseProgress,
       }, 'german');
     };
     window.addEventListener('beforeunload', handler);
