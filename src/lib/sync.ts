@@ -84,18 +84,6 @@ export async function cloudPull(email, lang) {
 export async function cloudPush(email, state, lang) {
   if (!email) return false;
   try {
-    // Debug logging
-    var dates = new Set();
-    if (state.studyDates) state.studyDates.forEach(function(d) { dates.add(d); });
-    Object.values(state.progress || {}).forEach(function(w: any) {
-      if (w.reviews) w.reviews.forEach(function(r) { if (r.date) dates.add(r.date); });
-      if (w.lastReview) dates.add(w.lastReview);
-    });
-    var sortedDates = [...dates].sort();
-    console.log('[push] words:', Object.keys(state.progress || {}).length,
-      '| studyDates field:', state.studyDates?.length || 0,
-      '| derived dates:', sortedDates.length,
-      '| last 3:', sortedDates.slice(-3).join(','));
     var res = await fetch(SYNC_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -519,8 +519,6 @@ function App({onHome}) {
           if (e.lastExercise) computedDates.add(e.lastExercise);
         });
         var mergedDates = [...computedDates].sort();
-        console.log('[sync] mergedDates:', mergedDates.length, mergedDates.join(','));
-        console.log('[sync] local studyDates:', studyDates.length, studyDates.join(','));
         // Always apply mergedDates — write to localStorage first so rebuild effect sees it
         localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
         setStudyDates(mergedDates);
