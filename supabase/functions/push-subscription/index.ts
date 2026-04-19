@@ -16,6 +16,38 @@ function getCorsHeaders(req: Request) {
   };
 }
 
+// Verify a session token minted by verify-password.
+// Format: vocab_auth:{expires}:{hex-hmac}
+async function verifySessionToken(token: string): Promise<boolean> {
+  if (!token || typeof token !== "string") return false;
+  const parts = token.split(":");
+  if (parts.length !== 3 || parts[0] !== "vocab_auth") return false;
+  const expires = parseInt(parts[1], 10);
+  if (isNaN(expires) || Date.now() > expires) return false;
+
+  const secret = Deno.env.get("APP_PASSWORD") || "default";
+  const encoder = new TextEncoder();
+  const payload = `vocab_auth:${expires}`;
+  const key = await crypto.subtle.importKey(
+    "raw", encoder.encode(secret + "_session_key"),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const expectedSig = new Uint8Array(
+    await crypto.subtle.sign("HMAC", key, encoder.encode(payload))
+  );
+  const expectedHex = Array.from(expectedSig)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  // Constant-time compare
+  if (expectedHex.length !== parts[2].length) return false;
+  let diff = 0;
+  for (let i = 0; i < expectedHex.length; i++) {
+    diff |= expectedHex.charCodeAt(i) ^ parts[2].charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
@@ -23,6 +55,15 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get("authorization") || "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const ok = await verifySessionToken(token);
+    if (!ok) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!

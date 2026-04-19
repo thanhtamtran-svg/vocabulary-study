@@ -229,9 +229,11 @@ function App({onHome, vocabData, variant}) {
           setPushSubscription(sub);
           setPushEnabled(true);
           // Fetch reminder hour via edge function
+          var token = '';
+          try { token = localStorage.getItem('vocab_auth_token') || ''; } catch (e) {}
           fetch(SUPABASE_URL + '/functions/v1/push-subscription', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({ action: 'get-hour', endpoint: sub.endpoint })
           }).then(function(r) { return r.json(); }).then(function(data) {
             if (data && data.reminderHour != null) {

@@ -34,11 +34,17 @@ async function subscribeToPush(reg) {
 
 const PUSH_SUB_URL = SUPABASE_URL + '/functions/v1/push-subscription';
 
+function authHeaders() {
+  var token = '';
+  try { token = localStorage.getItem('vocab_auth_token') || ''; } catch (e) {}
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+}
+
 async function savePushSubscription(sub, email, reminderHour) {
   var keys = sub.toJSON().keys;
   var res = await fetch(PUSH_SUB_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({
       action: 'save',
       endpoint: sub.endpoint,
@@ -54,7 +60,7 @@ async function savePushSubscription(sub, email, reminderHour) {
 async function updateReminderHour(endpoint, hour) {
   var res = await fetch(PUSH_SUB_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ action: 'update-hour', endpoint, reminderHour: hour })
   });
   return res.ok;
@@ -63,7 +69,7 @@ async function updateReminderHour(endpoint, hour) {
 async function deactivatePushSubscription(endpoint) {
   var res = await fetch(PUSH_SUB_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ action: 'deactivate', endpoint })
   });
   return res.ok;
