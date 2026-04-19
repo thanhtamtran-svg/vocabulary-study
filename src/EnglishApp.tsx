@@ -244,13 +244,15 @@ function EnglishApp({onHome}) {
         if (sub) {
           setPushSubscription(sub);
           setPushEnabled(true);
-          // Fetch reminder hour from DB
-          fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(sub.endpoint) + '&select=reminder_hour&active=eq.true', {
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-          }).then(function(r) { return r.json(); }).then(function(rows) {
-            if (rows && rows.length > 0 && rows[0].reminder_hour != null) {
-              setReminderHour(rows[0].reminder_hour);
-              localStorage.setItem('english_reminder_hour', rows[0].reminder_hour);
+          // Fetch reminder hour via edge function
+          fetch(SUPABASE_URL + '/functions/v1/push-subscription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'get-hour', endpoint: sub.endpoint })
+          }).then(function(r) { return r.json(); }).then(function(data) {
+            if (data && data.reminderHour != null) {
+              setReminderHour(data.reminderHour);
+              localStorage.setItem('english_reminder_hour', data.reminderHour);
             }
           }).catch(function() {});
         }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Nav from '../components/Nav';
 import { useToast } from '../components/Toast';
-import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
+import { SUPABASE_URL } from '../lib/supabase';
 import { dateKey } from '../lib/dates';
 import { VAPID_PUBLIC_KEY } from '../lib/constants';
 
@@ -32,52 +32,39 @@ async function subscribeToPush(reg) {
   return sub;
 }
 
+const PUSH_SUB_URL = SUPABASE_URL + '/functions/v1/push-subscription';
+
 async function savePushSubscription(sub, email, reminderHour) {
   var keys = sub.toJSON().keys;
-  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions', {
+  var res = await fetch(PUSH_SUB_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Prefer': 'resolution=merge-duplicates'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      user_email: email || null,
+      action: 'save',
       endpoint: sub.endpoint,
-      keys_p256dh: keys.p256dh,
-      keys_auth: keys.auth,
-      reminder_hour: reminderHour || 8,
+      email: email || null,
+      keys: { p256dh: keys.p256dh, auth: keys.auth },
+      reminderHour: reminderHour || 8,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh',
-      active: true,
-      updated_at: new Date().toISOString()
     })
   });
   return res.ok;
 }
 
 async function updateReminderHour(endpoint, hour) {
-  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(endpoint), {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    },
-    body: JSON.stringify({ reminder_hour: hour, updated_at: new Date().toISOString() })
+  var res = await fetch(PUSH_SUB_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'update-hour', endpoint, reminderHour: hour })
   });
   return res.ok;
 }
 
 async function deactivatePushSubscription(endpoint) {
-  var res = await fetch(SUPABASE_URL + '/rest/v1/push_subscriptions?endpoint=eq.' + encodeURIComponent(endpoint), {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY
-    },
-    body: JSON.stringify({ active: false, updated_at: new Date().toISOString() })
+  var res = await fetch(PUSH_SUB_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'deactivate', endpoint })
   });
   return res.ok;
 }
