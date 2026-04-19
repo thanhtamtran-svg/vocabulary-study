@@ -14,6 +14,7 @@ import { loadState, saveState } from './lib/storage';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
+import { wordKey, migrateProgressToStringKeys, migrateExerciseProgressToStringKeys, isIndexKeyedProgress } from './lib/progress';
 import {
   selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
   getAiSentence, generateExerciseItems, fetchExerciseSentences
@@ -44,7 +45,21 @@ function App({onHome}) {
     return d;
   });
   const [started, setStarted] = useState(() => saved?.started || false);
-  const [progress, setProgress] = useState(() => saved?.progress || {});
+  const [progress, setProgress] = useState(() => {
+    var p = saved?.progress || {};
+    // One-time migration: numeric keys → lowercase word keys
+    if (isIndexKeyedProgress(p)) p = migrateProgressToStringKeys(p, VOCAB_DATA);
+    return p;
+  });
+
+  // Helper: get progress key for a word index (uses current vocab data)
+  const pk = useCallback(function(wi) { return wordKey(VOCAB_DATA, wi); }, []);
+  // Reverse map: word-key → index (for UI operations that need word indices)
+  const keyToIdx = useMemo(function() {
+    var map = {};
+    VOCAB_DATA.words.forEach(function(w, i) { map[String(w[0]).toLowerCase().trim()] = i; });
+    return map;
+  }, []);
   const [todayCompleted, setTodayCompleted] = useState(() => {
     if (saved?.todayCompleted && saved?.completedDate === dateKey(todayDate())) {
       return saved.todayCompleted;
@@ -317,8 +332,13 @@ function App({onHome}) {
   const [exerciseWhyText, setExerciseWhyText] = useState('');
   const [exerciseResults, setExerciseResults] = useState([]); // [{wordIdx, type, correct, answer}]
   const [exerciseProgress, setExerciseProgress] = useState(() => {
-    try { var d = localStorage.getItem('vocab_exercise_progress'); return d ? JSON.parse(d) : {}; } catch { return {}; }
-  }); // {wordIdx: {attempts, correct, lastExercise, nextReview, streak}}
+    try {
+      var d = localStorage.getItem('vocab_exercise_progress');
+      var ep = d ? JSON.parse(d) : {};
+      if (isIndexKeyedProgress(ep)) ep = migrateExerciseProgressToStringKeys(ep, VOCAB_DATA);
+      return ep;
+    } catch { return {}; }
+  }); // {wordKey: {attempts, correct, lastExercise, nextReview, streak}}
   const [exerciseSelectedIdx, setExerciseSelectedIdx] = useState(-1); // for multiple choice
 
   // Save exercise progress
@@ -339,20 +359,20 @@ function App({onHome}) {
   // Next batch = first batch where not all words are learned
   const nextBatch = useMemo(() => {
     for (var i = 0; i < batches.length; i++) {
-      var allLearned = batches[i].every(function(wi) { return progress[wi]?.learned; });
+      var allLearned = batches[i].every(function(wi) { return progress[pk(wi)]?.learned; });
       if (!allLearned) return i + 1; // 1-indexed
     }
     return null; // all done
-  }, [progress, batches]);
+  }, [progress, batches, pk]);
 
   const batchesCompleted = useMemo(() => {
     var count = 0;
     for (var i = 0; i < batches.length; i++) {
-      if (batches[i].every(function(wi) { return progress[wi]?.learned; })) count++;
+      if (batches[i].every(function(wi) { return progress[pk(wi)]?.learned; })) count++;
       else break;
     }
     return count;
-  }, [progress, batches]);
+  }, [progress, batches, pk]);
 
   // Schedule tracking: expected batch by studyDay vs actual
   const expectedBatch = Math.min(studyDay, batches.length);
@@ -363,22 +383,25 @@ function App({onHome}) {
   const phaseNames = ["","Foundation","Acceleration","Peak Input","Consolidation"];
   const phaseColors = ["","#27AE60","#2E86C1","#8E44AD","#F39C12"];
 
+  // Count only progress entries for words in the current variant
   const totalLearned = useMemo(() =>
-    Object.keys(progress).filter(k => progress[k].learned).length
-  , [progress]);
+    Object.keys(progress).filter(k => keyToIdx[k] !== undefined && progress[k].learned).length
+  , [progress, keyToIdx]);
 
   const totalMastered = useMemo(() =>
-    Object.keys(progress).filter(k => getMemoryStage(progress[k]) >= 5).length
-  , [progress]);
+    Object.keys(progress).filter(k => keyToIdx[k] !== undefined && getMemoryStage(progress[k]) >= 5).length
+  , [progress, keyToIdx]);
 
   // ===== EXERCISE GENERATOR =====
   // Compute exercise stats for dashboard
   var exerciseStats = useMemo(function() {
     var weak = [], due = [], strong = [], neverPracticed = [];
-    Object.keys(progress).forEach(function(k) {
-      if (!progress[k] || !progress[k].learned) return;
-      var wi = parseInt(k);
-      var ep = exerciseProgress[wi] || {};
+    // Iterate over all words; check progress and exerciseProgress by word-key
+    for (var wi = 0; wi < words.length; wi++) {
+      var key = pk(wi);
+      var wp = progress[key];
+      if (!wp || !wp.learned) continue;
+      var ep = exerciseProgress[key] || {};
       var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
       var isDue = today >= nextReview;
       var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
@@ -392,10 +415,10 @@ function App({onHome}) {
       } else if (ep.streak >= 5) {
         strong.push(wi);
       }
-    });
+    }
     return {weak: weak, due: due, strong: strong, neverPracticed: neverPracticed,
       totalPracticed: totalLearned - neverPracticed.length};
-  }, [progress, exerciseProgress, totalLearned, today]);
+  }, [progress, exerciseProgress, totalLearned, today, words, pk]);
 
   const [exerciseLoading, setExerciseLoading] = useState(false);
 
@@ -507,7 +530,7 @@ function App({onHome}) {
           todayCompleted: todayCompleted, completedDate: dateKey(today),
           startDate: dateKey(startDate), started: started,
         };
-        var merged = mergeFullState(localSnapshot, remote, dateKey(today));
+        var merged = mergeFullState(localSnapshot, remote, dateKey(today), VOCAB_DATA);
         // Compute studyDates from merged progress + exercises (source of truth)
         // Also union with remote.studyDates in case it has dates not in reviews
         var computedDates = new Set(remote.studyDates || []);
@@ -608,7 +631,7 @@ function App({onHome}) {
           todayCompleted: todayCompleted, completedDate: dateKey(today),
           startDate: dateKey(startDate), started: started,
         };
-        var merged = mergeFullState(localSnapshot, remote, dateKey(today));
+        var merged = mergeFullState(localSnapshot, remote, dateKey(today), VOCAB_DATA);
         setProgress(merged.progress);
         setExerciseProgress(merged.exerciseProgress);
         setTodayCompleted(merged.todayCompleted);
@@ -654,6 +677,9 @@ function App({onHome}) {
     Object.keys(progress).forEach(function(k) {
       var wp = progress[k];
       if (!wp || !wp.learned || !wp.lastReview) return;
+      // Resolve word index from key (word string)
+      var idx = keyToIdx[k];
+      if (idx === undefined) return; // key not in current vocab (legacy from different variant)
       var stage = getMemoryStage(wp);
       if (stage === 0) return;
       // Stage 5 (Mastered) still gets a 30-day final review
@@ -663,7 +689,7 @@ function App({onHome}) {
       var daysSince = Math.round((today.getTime() - lastDate.getTime()) / 86400000);
       if (daysSince >= interval) {
         dueWords.push({
-          idx: parseInt(k),
+          idx: idx,
           stage: stage,
           daysSince: daysSince,
           daysOverdue: daysSince - interval
@@ -676,7 +702,7 @@ function App({onHome}) {
       return a.stage - b.stage;
     });
     return dueWords;
-  }, [progress, today]);
+  }, [progress, today, keyToIdx]);
 
   function getWord(wi) {
     const w = words[wi];
@@ -709,14 +735,15 @@ function App({onHome}) {
 
   function rateWord(confidence) {
     const wi = sessionWords[currentIdx].idx;
+    const key = pk(wi);
     setProgress(p => {
-      var prev = p[wi] || {};
+      var prev = p[key] || {};
       // Confidence reflects CURRENT ability, not peak — allow downgrades
       // Low ratings (1-2) reset confidence to reflect forgotten state
       var newConf = confidence;
       return {
         ...p,
-        [wi]: {
+        [key]: {
           ...prev,
           learned: true,
           confidence: newConf,
@@ -903,15 +930,16 @@ function App({onHome}) {
       }]);
     });
 
-    // Update exercise progress for this word
+    // Update exercise progress for this word (keyed by word string)
+    var exKey = pk(item.wordIdx);
     setExerciseProgress(function(prev) {
-      var ep = prev[item.wordIdx] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
+      var ep = prev[exKey] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
       var newStreak = correct ? ep.streak + 1 : 0;
       var intervals = [1, 2, 3, 5, 7, 14, 30];
       var nextInterval = intervals[Math.min(newStreak, intervals.length - 1)];
       var nextDate = addDays(today, nextInterval);
       return Object.assign({}, prev, {
-        [item.wordIdx]: {
+        [exKey]: {
           attempts: ep.attempts + 1,
           correct: ep.correct + (correct ? 1 : 0),
           streak: newStreak,
@@ -923,10 +951,11 @@ function App({onHome}) {
 
     // Propagate exercise correct count to main progress (for memory stage calculation)
     if (correct) {
+      var key = pk(item.wordIdx);
       setProgress(function(p) {
-        var prev = p[item.wordIdx] || {};
+        var prev = p[key] || {};
         return Object.assign({}, p, {
-          [item.wordIdx]: Object.assign({}, prev, {
+          [key]: Object.assign({}, prev, {
             exerciseCorrect: (prev.exerciseCorrect || 0) + 1
           })
         });

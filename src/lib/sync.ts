@@ -1,14 +1,28 @@
 import { SUPABASE_URL } from './supabase';
+import { isIndexKeyedProgress, migrateProgressToStringKeys, migrateExerciseProgressToStringKeys } from './progress';
 
 var SYNC_URL = SUPABASE_URL + '/functions/v1/sync-progress';
 
-export function mergeFullState(local, remote, todayDateStr) {
-  var mp = mergeProgress(local.progress || {}, remote.progress || {});
+// mergeFullState accepts optional vocabData to migrate index-keyed remote data
+// during the transition period (old devices may still push old format)
+export function mergeFullState(local, remote, todayDateStr, vocabData) {
+  var remoteProgress = remote.progress || {};
+  var remoteExerciseProgress = remote.exerciseProgress || {};
+
+  // If remote is still in old format, migrate before merging
+  if (vocabData && isIndexKeyedProgress(remoteProgress)) {
+    remoteProgress = migrateProgressToStringKeys(remoteProgress, vocabData);
+  }
+  if (vocabData && isIndexKeyedProgress(remoteExerciseProgress)) {
+    remoteExerciseProgress = migrateExerciseProgressToStringKeys(remoteExerciseProgress, vocabData);
+  }
+
+  var mp = mergeProgress(local.progress || {}, remoteProgress);
 
   var mex = {...(local.exerciseProgress || {})};
-  Object.keys(remote.exerciseProgress || {}).forEach(function(k) {
-    if (!mex[k]) { mex[k] = remote.exerciseProgress[k]; return; }
-    var l = mex[k], r = remote.exerciseProgress[k];
+  Object.keys(remoteExerciseProgress).forEach(function(k) {
+    if (!mex[k]) { mex[k] = remoteExerciseProgress[k]; return; }
+    var l = mex[k], r = remoteExerciseProgress[k];
     mex[k] = {
       attempts: Math.max(l.attempts || 0, r.attempts || 0),
       correct: Math.max(l.correct || 0, r.correct || 0),

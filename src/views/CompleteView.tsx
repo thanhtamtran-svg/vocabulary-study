@@ -1,8 +1,9 @@
 import React from 'react';
 export default React.memo(function CompleteView({ sessionWords, sessionType, progress, setView, emojis }) {
   var batchWords = sessionWords;
+  var keyOf = function(w) { return String(w.german).toLowerCase().trim(); };
   var avgConf = batchWords.reduce(function(s, w) {
-    return s + (progress[w.idx]?.confidence || 0);
+    return s + (progress[keyOf(w)]?.confidence || 0);
   }, 0) / batchWords.length;
 
   return (
@@ -30,7 +31,7 @@ export default React.memo(function CompleteView({ sessionWords, sessionType, pro
           <h2>Words in this session:</h2>
           <div className="word-list">
             {batchWords.map(function(w, i) {
-              var conf = progress[w.idx]?.confidence || 0;
+              var conf = progress[keyOf(w)]?.confidence || 0;
               var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
               return <div className="word-row" key={i}>
                 <span>

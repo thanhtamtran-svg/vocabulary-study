@@ -7,13 +7,15 @@ export default React.memo(function ProgressView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   progress, totalLearned, words, cats
 }) {
-  // Compute memory stages for all words
+  // Compute memory stages for words in the current variant (progress is keyed by word string)
   var stageCounts = [0, 0, 0, 0, 0, 0]; // index 0 = not learned, 1-5 = stages
-  Object.keys(progress).forEach(function(k) {
-    var stage = getMemoryStage(progress[k]);
-    stageCounts[stage]++;
+  words.forEach(function(w) {
+    var key = String(w[0]).toLowerCase().trim();
+    var wp = progress[key];
+    if (!wp) return;
+    stageCounts[getMemoryStage(wp)]++;
   });
-  var notLearned = 1500 - totalLearned;
+  var notLearned = words.length - totalLearned;
   var maxStageCount = Math.max.apply(null, stageCounts.slice(1).concat([1])); // for bar scaling
 
   return (
@@ -111,7 +113,10 @@ export default React.memo(function ProgressView({
           {cats.map(function(cat, ci) {
             var catWords = [];
             words.forEach(function(w, wi) { if (w[2] === ci) catWords.push(wi); });
-            var learned = catWords.filter(function(wi) { return progress[wi]?.learned; }).length;
+            var learned = catWords.filter(function(wi) {
+              var key = String(words[wi][0]).toLowerCase().trim();
+              return progress[key]?.learned;
+            }).length;
             return <div key={ci} style={{margin:'6px 0'}}>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px'}}>
                 <span>{cat}</span>

@@ -4,37 +4,40 @@ import { getMemoryStage } from './memory-stages';
 import { parseDate } from './dates';
 import { getConjugation } from './conjugations';
 
+function wordKeyOf(w) { return String(w[0]).toLowerCase().trim(); }
+
 // Select words for exercise: prioritize mistakes, then due, then new
+// progress and exerciseProgress are keyed by lowercase word string
 export function selectExerciseWords(progress, exerciseProgress, words, today) {
   var learned = [];
-  Object.keys(progress).forEach(function(k) {
-    if (progress[k] && progress[k].learned) {
-      var wi = parseInt(k);
-      var w = words[wi];
-      var ep = exerciseProgress[wi] || {};
-      var stage = getMemoryStage(progress[k]);
-      var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
-      var isDue = today >= nextReview;
-      var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
-      var isWeak = accuracy !== null && accuracy < 0.6;
-      var neverPracticed = !ep.attempts;
+  for (var wi = 0; wi < words.length; wi++) {
+    var w = words[wi];
+    var key = wordKeyOf(w);
+    var wp = progress[key];
+    if (!wp || !wp.learned) continue;
+    var ep = exerciseProgress[key] || {};
+    var stage = getMemoryStage(wp);
+    var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
+    var isDue = today >= nextReview;
+    var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
+    var isWeak = accuracy !== null && accuracy < 0.6;
+    var neverPracticed = !ep.attempts;
 
-      // Priority scoring: weak > due > never practiced > strong
-      var priority = 0;
-      if (isWeak) priority = 200 + (1 - (accuracy || 0)) * 100; // 200-300
-      else if (isDue) priority = 100 + (5 - stage) * 15; // 100-175
-      else if (neverPracticed) priority = 50 + (5 - stage) * 5; // 50-75
-      else priority = Math.max(0, 20 - (ep.streak || 0) * 3); // 0-20
+    // Priority scoring: weak > due > never practiced > strong
+    var priority = 0;
+    if (isWeak) priority = 200 + (1 - (accuracy || 0)) * 100; // 200-300
+    else if (isDue) priority = 100 + (5 - stage) * 15; // 100-175
+    else if (neverPracticed) priority = 50 + (5 - stage) * 5; // 50-75
+    else priority = Math.max(0, 20 - (ep.streak || 0) * 3); // 0-20
 
-      learned.push({
-        wi: wi, stage: stage, type: w[3], cat: w[2],
-        confidence: progress[k].confidence || 0,
-        streak: ep.streak || 0, isDue: isDue,
-        isWeak: isWeak, neverPracticed: neverPracticed,
-        accuracy: accuracy, priority: priority
-      });
-    }
-  });
+    learned.push({
+      wi: wi, stage: stage, type: w[3], cat: w[2],
+      confidence: wp.confidence || 0,
+      streak: ep.streak || 0, isDue: isDue,
+      isWeak: isWeak, neverPracticed: neverPracticed,
+      accuracy: accuracy, priority: priority
+    });
+  }
   if (learned.length < 5) return null;
 
   // Sort by priority (highest first)
@@ -65,16 +68,19 @@ export function selectExerciseWords(progress, exerciseProgress, words, today) {
 }
 
 // Generate distractors for multiple choice (same type preferred)
+// progress is keyed by lowercase word string
 export function getDistractors(targetWi, count, progress, words) {
   var targetWord = words[targetWi];
   var targetType = targetWord[3];
   var all = [];
-  Object.keys(progress).forEach(function(k) {
-    var wi = parseInt(k);
-    if (wi !== targetWi && progress[k] && progress[k].learned) {
+  for (var wi = 0; wi < words.length; wi++) {
+    if (wi === targetWi) continue;
+    var key = wordKeyOf(words[wi]);
+    var wp = progress[key];
+    if (wp && wp.learned) {
       all.push({wi: wi, sameType: words[wi][3] === targetType});
     }
-  });
+  }
   // Prefer same type
   all.sort(function(a, b) { return (b.sameType ? 1 : 0) - (a.sameType ? 1 : 0); });
   var result = [];
@@ -138,7 +144,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     var wi = sw.wi;
     var w = getWord(wi);
     var wordType = words[wi][3];
-    var ep = exerciseProgress[wi] || {};
+    var ep = exerciseProgress[wordKeyOf(words[wi])] || {};
     var isWeak = sw.isWeak;
     var isStrong = ep.streak >= 4;
     var sent = getAiSentence(w, wordType, aiSentences);

@@ -51,8 +51,9 @@ export default React.memo(function BrowseView({
 
         <div style={{maxHeight:'500px',overflowY:'auto'}}>
           {filtered.map(function(w, i) {
-            var conf = progress[w.idx]?.confidence || 0;
-            var isLearned = progress[w.idx]?.learned;
+            var key = String(words[w.idx][0]).toLowerCase().trim();
+            var conf = progress[key]?.confidence || 0;
+            var isLearned = progress[key]?.learned;
             var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
             return <div className="word-row" key={i}
               style={{cursor:'pointer'}}
