@@ -40,8 +40,8 @@ function App({onHome, vocabData, variant}) {
   const storageKey = isA11 ? 'schritte_a11' : 'german1500';
   const syncLang = isA11 ? 'german_a11' : 'german';
   const syncEmailKey = isA11 ? 'schritte_a11_sync_email' : SYNC_EMAIL_KEY;
-  const studyDatesKey = isA11 ? 'schritte_a11_study_dates' : studyDatesKey;
-  const exerciseProgressKey = isA11 ? 'schritte_a11_exercise_progress' : exerciseProgressKey;
+  const studyDatesKey = isA11 ? 'schritte_a11_study_dates' : 'vocab_study_dates';
+  const exerciseProgressKey = isA11 ? 'schritte_a11_exercise_progress' : 'vocab_exercise_progress';
   const saved = useMemo(() => loadState(storageKey), [storageKey]);
 
   const [view, setView] = useState("dashboard");
