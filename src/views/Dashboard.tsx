@@ -9,10 +9,26 @@ export default React.memo(function Dashboard({
   totalLearned, batchesCompleted, batches, scheduleGap,
   todayCompleted, nextBatch, reviewsDue, startSession, getWord,
   dailyStreak, weekDays, exerciseStats, exerciseLoading, startExercise,
-  startDate, isSunday, formatDateFn
+  startDate, isSunday, formatDateFn, totalWords, cats, variant, words
 }) {
   var pendingReviews = reviewsDue.length;
   var hasNextBatch = nextBatch !== null;
+  var totalW = totalWords || 1500;
+  // For A1.1 variant: show "Lektion X" label instead of "Batch X"
+  function batchLabel(batchIdx) {
+    if (variant !== 'a11' || !batches || !words || !cats || !batchIdx) return 'Batch ' + batchIdx;
+    var firstWi = batches[batchIdx - 1] && batches[batchIdx - 1][0];
+    if (firstWi === undefined) return 'Batch ' + batchIdx;
+    var catIdx = words[firstWi] && words[firstWi][2];
+    if (catIdx === undefined) return 'Batch ' + batchIdx;
+    var catLabel = cats[catIdx] || '';
+    // Count which batch this is within the Lektion
+    var idxInLektion = 0;
+    for (var i = 0; i < batchIdx; i++) {
+      if (batches[i] && words[batches[i][0]] && words[batches[i][0]][2] === catIdx) idxInLektion++;
+    }
+    return catLabel + ' (' + idxInLektion + ')';
+  }
   var todayLearnCount = todayCompleted.learnCount || 0;
   // Random tip — stable per mount (new on each page load/refresh)
   var [tipIdx] = useState(() => Math.floor(Math.random() * SCIENCE_TIPS.length));
@@ -70,16 +86,16 @@ export default React.memo(function Dashboard({
             <div className="label">Words learned</div>
           </div>
           <div className="stat">
-            <div className="num">{Math.round(totalLearned/1500*100) + '%'}</div>
+            <div className="num">{Math.round(totalLearned/totalW*100) + '%'}</div>
             <div className="label">Overall progress</div>
           </div>
         </div>
 
         <div className="progress-bar" style={{height:'10px',marginBottom:'16px'}}
-          role="progressbar" aria-valuenow={totalLearned} aria-valuemin={0} aria-valuemax={1500}
-          aria-label={totalLearned + ' of 1500 words learned'}>
+          role="progressbar" aria-valuenow={totalLearned} aria-valuemin={0} aria-valuemax={totalW}
+          aria-label={totalLearned + ' of ' + totalW + ' words learned'}>
           <div className="progress-fill"
-            style={{width: (totalLearned/1500*100) + '%',
+            style={{width: (totalLearned/totalW*100) + '%',
               background:'linear-gradient(90deg,#27AE60,#2ECC71)'}} />
         </div>
 
@@ -196,7 +212,7 @@ export default React.memo(function Dashboard({
                   style={{color:'#27AE60'}}>
                   {todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'}
                 </div>
-                <strong>{'Batch ' + nextBatch}</strong>
+                <strong>{batchLabel(nextBatch)}</strong>
                 <span style={{fontSize:'12px',color:'#718096',marginLeft:'8px'}}>
                   {batches[nextBatch-1].length + ' words'}
                 </span>
@@ -221,7 +237,7 @@ export default React.memo(function Dashboard({
 
           <div className="card" style={{background:'#FEF9E7'}}>
             <span style={{color:'#B7950B',fontWeight:600}}>
-              {'\uD83C\uDFC6 All 1500 words introduced! Focus on reviews.'}
+              {'\uD83C\uDFC6 All ' + totalW + ' words introduced! Focus on reviews.'}
             </span>
           </div>}
 

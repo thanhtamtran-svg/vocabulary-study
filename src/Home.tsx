@@ -1,6 +1,8 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { SUPABASE_URL } from './lib/supabase';
 import App from './App';
+import { VOCAB_DATA } from './vocab-data';
+import { VOCAB_A11_DATA } from './vocab-a11-data';
 const EnglishApp = lazy(() => import('./EnglishApp'));
 
 const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
@@ -70,7 +72,11 @@ export default function Home() {
   }
 
   if (language === 'german' && authenticated) {
-    return <App onHome={goHome} />;
+    return <App onHome={goHome} vocabData={VOCAB_DATA} variant="full" />;
+  }
+
+  if (language === 'german_a11' && authenticated) {
+    return <App onHome={goHome} vocabData={VOCAB_A11_DATA} variant="a11" />;
   }
 
   if (language === 'english' && authenticated) {
@@ -137,6 +143,14 @@ export default function Home() {
             </div>
             <div className="language-name">German</div>
             <div className="language-desc">{'1500 words \u2022 A1-B1'}</div>
+            <div className="language-tag active-tag">Active</div>
+          </button>
+          <button className="language-card" onClick={function() { trySelectLanguage('german_a11'); }}>
+            <div className="language-flag">
+              <img src="https://flagcdn.com/w80/de.png" alt="German flag" />
+            </div>
+            <div className="language-name">Schritte A1.1</div>
+            <div className="language-desc">{'Textbook \u2022 7 Lektionen'}</div>
             <div className="language-tag active-tag">Active</div>
           </button>
           <button className="language-card" onClick={function() { trySelectLanguage('english'); }}>

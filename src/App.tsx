@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react';
-import { VOCAB_DATA } from './vocab-data';
+import { VOCAB_DATA as DEFAULT_VOCAB_DATA } from './vocab-data';
 import { WORD_EMOJIS } from './emoji-data';
 import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase';
 import {
@@ -33,9 +33,16 @@ const BrowseView = lazy(() => import('./views/BrowseView'));
 const SettingsView = lazy(() => import('./views/SettingsView'));
 
 // ===== MAIN APP =====
-function App({onHome}) {
+function App({onHome, vocabData, variant}) {
   const toast = useToast();
-  const saved = useMemo(() => loadState(), []);
+  const VOCAB_DATA = vocabData || DEFAULT_VOCAB_DATA;
+  const isA11 = variant === 'a11';
+  const storageKey = isA11 ? 'schritte_a11' : 'german1500';
+  const syncLang = isA11 ? 'german_a11' : 'german';
+  const syncEmailKey = isA11 ? 'schritte_a11_sync_email' : SYNC_EMAIL_KEY;
+  const studyDatesKey = isA11 ? 'schritte_a11_study_dates' : studyDatesKey;
+  const exerciseProgressKey = isA11 ? 'schritte_a11_exercise_progress' : exerciseProgressKey;
+  const saved = useMemo(() => loadState(storageKey), [storageKey]);
 
   const [view, setView] = useState("dashboard");
   const [startDate, setStartDate] = useState(() => {
@@ -69,7 +76,7 @@ function App({onHome}) {
 
   // Daily streak state
   const [studyDates, setStudyDates] = useState(() => {
-    try { var d = localStorage.getItem('vocab_study_dates'); return d ? JSON.parse(d) : []; } catch { return []; }
+    try { var d = localStorage.getItem(studyDatesKey); return d ? JSON.parse(d) : []; } catch { return []; }
   });
 
   // Calculate daily streak with 2-day freeze (rest days don't count as missed)
@@ -145,7 +152,7 @@ function App({onHome}) {
     setStudyDates(function(prev) {
       if (prev.includes(todayStr)) return prev;
       var updated = prev.concat([todayStr]);
-      localStorage.setItem('vocab_study_dates', JSON.stringify(updated));
+      localStorage.setItem(studyDatesKey, JSON.stringify(updated));
       return updated;
     });
   }
@@ -258,7 +265,7 @@ function App({onHome}) {
 
   // Cloud sync state
   const [syncEmail, setSyncEmail] = useState(() => {
-    try { return localStorage.getItem(SYNC_EMAIL_KEY) || ''; } catch { return ''; }
+    try { return localStorage.getItem(syncEmailKey) || ''; } catch { return ''; }
   });
   const [syncStatus, setSyncStatus] = useState('idle'); // idle, syncing, done, error
   const [syncMsg, setSyncMsg] = useState('');
@@ -333,7 +340,7 @@ function App({onHome}) {
   const [exerciseResults, setExerciseResults] = useState([]); // [{wordIdx, type, correct, answer}]
   const [exerciseProgress, setExerciseProgress] = useState(() => {
     try {
-      var d = localStorage.getItem('vocab_exercise_progress');
+      var d = localStorage.getItem(exerciseProgressKey);
       var ep = d ? JSON.parse(d) : {};
       if (isIndexKeyedProgress(ep)) ep = migrateExerciseProgressToStringKeys(ep, VOCAB_DATA);
       return ep;
@@ -343,7 +350,7 @@ function App({onHome}) {
 
   // Save exercise progress
   useEffect(function() {
-    try { localStorage.setItem('vocab_exercise_progress', JSON.stringify(exerciseProgress)); } catch(e) {}
+    try { localStorage.setItem(exerciseProgressKey, JSON.stringify(exerciseProgress)); } catch(e) {}
   }, [exerciseProgress]);
 
   // Browse state (hoisted to avoid hooks-in-conditional bug)
@@ -497,7 +504,7 @@ function App({onHome}) {
       setStudyDates(function(prev) {
         var union = [...new Set([...prev, ...dates])].sort();
         if (union.length === prev.length) return prev; // no change, avoid re-render
-        localStorage.setItem('vocab_study_dates', JSON.stringify(union));
+        localStorage.setItem(studyDatesKey, JSON.stringify(union));
         return union;
       });
     }
@@ -511,8 +518,8 @@ function App({onHome}) {
       progress,
       todayCompleted,
       completedDate: dateKey(today)
-    });
-  }, [startDate, started, progress, todayCompleted, today]);
+    }, storageKey);
+  }, [startDate, started, progress, todayCompleted, today, storageKey]);
 
   // Cloud sync: pull on mount, merge with local, push merged result
   const isSyncingRef = useRef(false);
@@ -523,7 +530,7 @@ function App({onHome}) {
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
     // Pull first — cloud is the convergence point
-    cloudPull(syncEmail, 'german').then(function(remote) {
+    cloudPull(syncEmail, syncLang).then(function(remote) {
       if (remote && remote.progress) {
         var localSnapshot = {
           progress: progress, exerciseProgress: exerciseProgress,
@@ -543,7 +550,7 @@ function App({onHome}) {
         });
         var mergedDates = [...computedDates].sort();
         // Always apply mergedDates — write to localStorage first so rebuild effect sees it
-        localStorage.setItem('vocab_study_dates', JSON.stringify(mergedDates));
+        localStorage.setItem(studyDatesKey, JSON.stringify(mergedDates));
         setStudyDates(mergedDates);
         // Apply to React state
         setProgress(merged.progress);
@@ -552,7 +559,7 @@ function App({onHome}) {
         if (merged.startDate && !saved?.startDate) setStartDate(parseDate(merged.startDate));
         if (merged.started) setStarted(true);
         // Persist exercise progress immediately
-        localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
+        localStorage.setItem(exerciseProgressKey, JSON.stringify(merged.exerciseProgress));
         // Push merged result — use local variables, not stale closure values
         return cloudPush(syncEmail, {
           startDate: merged.startDate || dateKey(startDate),
@@ -562,14 +569,14 @@ function App({onHome}) {
           completedDate: dateKey(today),
           exerciseProgress: merged.exerciseProgress,
           studyDates: mergedDates,
-        }, 'german');
+        }, syncLang);
       } else if (Object.keys(progress).length > 0) {
         // No cloud data — push local
         return cloudPush(syncEmail, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
           exerciseProgress: exerciseProgress, studyDates: studyDates,
-        }, 'german');
+        }, syncLang);
       }
     }).then(function() {
       setSyncStatus('done');
@@ -594,7 +601,7 @@ function App({onHome}) {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         exerciseProgress: exerciseProgress,
-      }, 'german');
+      }, syncLang);
     }, 5000);
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, exerciseProgress]);
@@ -609,7 +616,7 @@ function App({onHome}) {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
         exerciseProgress: exerciseProgress,
-      }, 'german');
+      }, syncLang);
     };
     window.addEventListener('beforeunload', handler);
     window.addEventListener('visibilitychange', handler);
@@ -620,11 +627,11 @@ function App({onHome}) {
   }, [syncEmail, started, startDate, progress, todayCompleted, today, exerciseProgress]);
 
   function connectSync(email) {
-    localStorage.setItem(SYNC_EMAIL_KEY, email);
+    localStorage.setItem(syncEmailKey, email);
     setSyncEmail(email);
     setSyncStatus('syncing');
     setSyncMsg('Connecting...');
-    cloudPull(email, 'german').then(function(remote) {
+    cloudPull(email, syncLang).then(function(remote) {
       if (remote && remote.progress) {
         var localSnapshot = {
           progress: progress, exerciseProgress: exerciseProgress,
@@ -637,12 +644,12 @@ function App({onHome}) {
         setTodayCompleted(merged.todayCompleted);
         if (remote.startDate) setStartDate(parseDate(remote.startDate));
         if (merged.started) setStarted(true);
-        localStorage.setItem('vocab_exercise_progress', JSON.stringify(merged.exerciseProgress));
+        localStorage.setItem(exerciseProgressKey, JSON.stringify(merged.exerciseProgress));
         cloudPush(email, {
           startDate: merged.startDate || dateKey(startDate), started: merged.started,
           progress: merged.progress, todayCompleted: merged.todayCompleted,
           completedDate: dateKey(today), exerciseProgress: merged.exerciseProgress,
-        }, 'german');
+        }, syncLang);
         setSyncStatus('done');
         setSyncMsg('Connected & synced!');
       } else {
@@ -650,7 +657,7 @@ function App({onHome}) {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
           exerciseProgress: exerciseProgress,
-        }, 'german');
+        }, syncLang);
         setSyncStatus('done');
         setSyncMsg('Connected! Progress uploaded.');
       }
@@ -663,7 +670,7 @@ function App({onHome}) {
   }
 
   function disconnectSync() {
-    localStorage.removeItem(SYNC_EMAIL_KEY);
+    localStorage.removeItem(syncEmailKey);
     setSyncEmail('');
     setSyncStatus('idle');
     setSyncMsg('');
@@ -1151,6 +1158,10 @@ function App({onHome}) {
       startExercise={startExercise}
       startDate={startDate}
       isSunday={today.getDay() === 0}
+      totalWords={words.length}
+      cats={cats}
+      variant={variant}
+      words={words}
     /></Suspense>;
   }
 
