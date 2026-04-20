@@ -31,7 +31,8 @@ export default function Home() {
   const [passLoading, setPassLoading] = useState(false);
 
   function trySelectLanguage(lang) {
-    if (authenticated) {
+    // Schritte A1.1 is publicly open — no password required
+    if (authenticated || lang === 'german_a11') {
       localStorage.setItem('vocab_language', lang);
       setLanguage(lang);
     } else {
@@ -75,7 +76,7 @@ export default function Home() {
     return <App onHome={goHome} vocabData={VOCAB_DATA} variant="full" />;
   }
 
-  if (language === 'german_a11' && authenticated) {
+  if (language === 'german_a11') {
     return <App onHome={goHome} vocabData={VOCAB_A11_DATA} variant="a11" />;
   }
 
