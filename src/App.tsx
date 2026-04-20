@@ -41,6 +41,8 @@ function App({onHome, vocabData, variant}) {
   const syncLang = isA11 ? 'german_a11' : 'german';
   const syncEmailKey = isA11 ? 'schritte_a11_sync_email' : SYNC_EMAIL_KEY;
   const studyDatesKey = isA11 ? 'schritte_a11_study_dates' : 'vocab_study_dates';
+  const siblingStudyDatesKey = isA11 ? 'vocab_study_dates' : 'schritte_a11_study_dates';
+  const siblingSyncLang = isA11 ? 'german' : 'german_a11';
   const exerciseProgressKey = isA11 ? 'schritte_a11_exercise_progress' : 'vocab_exercise_progress';
   const saved = useMemo(() => loadState(storageKey), [storageKey]);
 
@@ -78,11 +80,19 @@ function App({onHome, vocabData, variant}) {
   const [studyDates, setStudyDates] = useState(() => {
     try { var d = localStorage.getItem(studyDatesKey); return d ? JSON.parse(d) : []; } catch { return []; }
   });
+  // Sibling variant's study dates — German and Schritte A1.1 share streaks
+  const [siblingStudyDates, setSiblingStudyDates] = useState(() => {
+    try { var d = localStorage.getItem(siblingStudyDatesKey); return d ? JSON.parse(d) : []; } catch { return []; }
+  });
+  // Combined dates drive the streak/week calendar
+  const combinedStudyDates = useMemo(() => {
+    return [...new Set([...(studyDates || []), ...(siblingStudyDates || [])])];
+  }, [studyDates, siblingStudyDates]);
 
   // Calculate daily streak with 2-day freeze (rest days don't count as missed)
   const dailyStreak = useMemo(() => {
-    if (!studyDates.length) return {count: 0, status: 'none', frozenDays: 0, studiedToday: false};
-    var sorted = studyDates.slice().sort().reverse(); // most recent first
+    if (!combinedStudyDates.length) return {count: 0, status: 'none', frozenDays: 0, studiedToday: false};
+    var sorted = combinedStudyDates.slice().sort().reverse(); // most recent first
     var todayStr = dateKey(todayDate());
     var studiedToday = sorted[0] === todayStr;
     var isRestDay = todayDate().getDay() === 0; // Sunday = rest day
@@ -144,7 +154,7 @@ function App({onHome, vocabData, variant}) {
     if (isRestDay && !studiedToday) status = 'rest';
 
     return {count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday};
-  }, [studyDates]);
+  }, [combinedStudyDates]);
 
   // Record today as a study day when user completes a batch or exercise
   function recordStudyDay() {
@@ -165,7 +175,7 @@ function App({onHome, vocabData, variant}) {
     var dayOfWeek = d.getDay(); // 0=Sun
     var monday = new Date(d);
     monday.setDate(d.getDate() - ((dayOfWeek + 6) % 7));
-    var dateSet = new Set(studyDates);
+    var dateSet = new Set(combinedStudyDates);
     for (var i = 0; i < 7; i++) {
       var wd = new Date(monday);
       wd.setDate(monday.getDate() + i);
@@ -181,7 +191,7 @@ function App({onHome, vocabData, variant}) {
       });
     }
     return result;
-  }, [studyDates]);
+  }, [combinedStudyDates]);
 
   // Session state (not persisted)
   const [sessionWords, setSessionWords] = useState([]);
@@ -533,6 +543,13 @@ function App({onHome, vocabData, variant}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
+    // Side pull: sibling variant's studyDates so the streak unions both courses
+    cloudPull(syncEmail, siblingSyncLang).then(function(siblingRemote) {
+      if (!siblingRemote || !siblingRemote.studyDates) return;
+      var union = [...new Set([...(siblingStudyDates || []), ...siblingRemote.studyDates])].sort();
+      localStorage.setItem(siblingStudyDatesKey, JSON.stringify(union));
+      setSiblingStudyDates(union);
+    }).catch(function() {});
     // Pull first — cloud is the convergence point
     cloudPull(syncEmail, syncLang).then(function(remote) {
       if (remote && remote.progress) {
