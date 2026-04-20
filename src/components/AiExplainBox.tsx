@@ -114,8 +114,14 @@ export default React.memo(function AiExplainBox({
           }
           if (line.match(/^[-\u2022]\s/)) {
             var bulletText = line.replace(/^[-\u2022]\s/, '');
-            // Extract German phrase from conjugation bullets like "ich **werde** (I become)"
-            var germanPhrase = bulletText.replace(/\s*\(.*\)\s*$/, '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1').trim();
+            // Extract German phrase: drop English translation after dash/en-dash/em-dash,
+            // drop trailing parens (e.g. "ich **werde** (I become)"), strip markdown.
+            var germanPhrase = bulletText
+              .split(/\s+[\u2013\u2014\-]\s+/)[0]
+              .replace(/\s*\(.*\)\s*$/, '')
+              .replace(/\*\*(.+?)\*\*/g, '$1')
+              .replace(/\*(.+?)\*/g, '$1')
+              .trim();
             if (lang !== 'en' && germanPhrase && germanPhrase.length > 1) {
               acc.push(<div key={i} className="ai-bullet" style={{display:'flex',alignItems:'center',gap:'6px'}}>
                 <span style={{flex:1}}>{renderInline(bulletText, i)}</span>
