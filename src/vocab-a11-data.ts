@@ -900,12 +900,16 @@ export const VOCAB_A11_DATA = {
   batches: [] as number[][],
 };
 
-// Build batches: groups of 8 word indices, partitioned by category (Lektion)
-// so batches don't span across Lektionen
+// Build batches: 8 Lektion words per batch, partitioned by Lektion (no cross-Lektion
+// batches). The 33 Anweisungen im Kurs (cat 0) are distributed one per batch across
+// the first 33 Lektion batches so they're absorbed gradually instead of hit as a
+// demotivating wall up front.
 (function buildBatches() {
+  var anweisungen: number[] = [];
   var byCat: {[k: number]: number[]} = {};
   VOCAB_A11_DATA.words.forEach(function(w, i) {
     var ci = w[2] as number;
+    if (ci === 0) { anweisungen.push(i); return; }
     if (!byCat[ci]) byCat[ci] = [];
     byCat[ci].push(i);
   });
@@ -915,6 +919,10 @@ export const VOCAB_A11_DATA = {
     for (var i = 0; i < indices.length; i += 8) {
       batches.push(indices.slice(i, i + 8));
     }
+  });
+  // Append one Anweisung to each of the first N batches
+  anweisungen.forEach(function(wi, k) {
+    if (batches[k]) batches[k].push(wi);
   });
   VOCAB_A11_DATA.batches = batches;
 })();
