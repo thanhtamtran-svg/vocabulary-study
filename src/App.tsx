@@ -847,7 +847,10 @@ function App({onHome, vocabData, variant}) {
   }
 
   function startExercise() {
-    var selected = selectExerciseWords(progress, exerciseProgress, words, today);
+    // A1.1: exclude Cat 0 (Anweisungen im Kurs) — classroom instructions
+    // are learned as background reinforcement, not tested in exercises
+    var excludeCats = isA11 ? [0] : null;
+    var selected = selectExerciseWords(progress, exerciseProgress, words, today, excludeCats);
     if (!selected || selected.length < 3) {
       toast.info('You need at least 5 learned words to start exercises. Keep learning!');
       return;
@@ -863,7 +866,7 @@ function App({onHome, vocabData, variant}) {
           if (aiData[k] && aiData[k].passage && !aiPassage) aiPassage = aiData[k].passage;
         });
       }
-      var items = generateExerciseItems(selected, aiData, aiPassage, getWord, words, exerciseProgress, progress);
+      var items = generateExerciseItems(selected, aiData, aiPassage, getWord, words, exerciseProgress, progress, excludeCats);
       setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
       setExerciseIdx(0);
       setExerciseAnswer('');
@@ -874,7 +877,7 @@ function App({onHome, vocabData, variant}) {
       setView('exercise');
     }).catch(function() {
       // Fall back to exercises without AI
-      var items = generateExerciseItems(selected, null, null, getWord, words, exerciseProgress, progress);
+      var items = generateExerciseItems(selected, null, null, getWord, words, exerciseProgress, progress, excludeCats);
       setExerciseSession({items: items, targetWords: selected, startTime: Date.now()});
       setExerciseIdx(0);
       setExerciseAnswer('');

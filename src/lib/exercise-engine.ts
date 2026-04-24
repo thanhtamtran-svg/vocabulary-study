@@ -8,13 +8,14 @@ function wordKeyOf(w) { return String(w[0]).toLowerCase().trim(); }
 
 // Select words for exercise: prioritize mistakes, then due, then new
 // progress and exerciseProgress are keyed by lowercase word string
-export function selectExerciseWords(progress, exerciseProgress, words, today) {
+export function selectExerciseWords(progress, exerciseProgress, words, today, excludeCats) {
   var learned = [];
   for (var wi = 0; wi < words.length; wi++) {
     var w = words[wi];
     var key = wordKeyOf(w);
     var wp = progress[key];
     if (!wp || !wp.learned) continue;
+    if (excludeCats && excludeCats.indexOf(w[2]) !== -1) continue;
     var ep = exerciseProgress[key] || {};
     var stage = getMemoryStage(wp);
     var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
@@ -69,7 +70,7 @@ export function selectExerciseWords(progress, exerciseProgress, words, today) {
 
 // Generate distractors for multiple choice (same type preferred)
 // progress is keyed by lowercase word string
-export function getDistractors(targetWi, count, progress, words) {
+export function getDistractors(targetWi, count, progress, words, excludeCats) {
   var targetWord = words[targetWi];
   var targetType = targetWord[3];
   var all = [];
@@ -78,6 +79,7 @@ export function getDistractors(targetWi, count, progress, words) {
     var key = wordKeyOf(words[wi]);
     var wp = progress[key];
     if (wp && wp.learned) {
+      if (excludeCats && excludeCats.indexOf(words[wi][2]) !== -1) continue;
       all.push({wi: wi, sameType: words[wi][3] === targetType});
     }
   }
@@ -96,8 +98,8 @@ export function getDistractors(targetWi, count, progress, words) {
 }
 
 // Helper: make shuffled multiple choice options
-export function makeOptions(targetWi, targetText, distractorCount, progress, words) {
-  var dists = getDistractors(targetWi, distractorCount, progress, words);
+export function makeOptions(targetWi, targetText, distractorCount, progress, words, excludeCats) {
+  var dists = getDistractors(targetWi, distractorCount, progress, words, excludeCats);
   var opts = dists.map(function(di) { return {wi: di, text: words[di][1]}; });
   opts.push({wi: targetWi, text: targetText});
   for (var i = opts.length - 1; i > 0; i--) {
@@ -108,8 +110,8 @@ export function makeOptions(targetWi, targetText, distractorCount, progress, wor
 }
 
 // Helper: make reverse options (show English, pick German)
-export function makeReverseOptions(targetWi, targetText, progress, words) {
-  var dists = getDistractors(targetWi, 3, progress, words);
+export function makeReverseOptions(targetWi, targetText, progress, words, excludeCats) {
+  var dists = getDistractors(targetWi, 3, progress, words, excludeCats);
   var opts = dists.map(function(di) { return {wi: di, text: words[di][0]}; });
   opts.push({wi: targetWi, text: targetText});
   for (var i = opts.length - 1; i > 0; i--) {
@@ -137,7 +139,7 @@ export function getAiSentence(w, wordType, aiSentences) {
 }
 
 // Generate exercise items — varied by word strength
-export function generateExerciseItems(selectedWords, aiSentences, aiPassage, getWord, words, exerciseProgress, progress) {
+export function generateExerciseItems(selectedWords, aiSentences, aiPassage, getWord, words, exerciseProgress, progress, excludeCats) {
   var items = [];
 
   selectedWords.forEach(function(sw) {
@@ -151,7 +153,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
 
     // === ROUND 1 (Remember) ===
     if (isStrong && Math.random() > 0.5) {
-      var revOpts = makeReverseOptions(wi, w.german, progress, words);
+      var revOpts = makeReverseOptions(wi, w.german, progress, words, excludeCats);
       items.push({
         type: 'reverse_choice', level: 'Remember', wordIdx: wi,
         prompt: 'Which German word means "' + w.english + '"?',
@@ -162,14 +164,14 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
       items.push({
         type: 'listening', level: 'Remember', wordIdx: wi,
         prompt: 'Listen and choose the correct meaning:',
-        options: makeOptions(wi, w.english, 3, progress, words), correctAnswer: w.english,
+        options: makeOptions(wi, w.english, 3, progress, words, excludeCats), correctAnswer: w.english,
         germanWord: w.german, wordInfo: w
       });
     } else {
       items.push({
         type: 'multiple_choice', level: 'Remember', wordIdx: wi,
         prompt: 'What does "' + w.german + '" mean?',
-        options: makeOptions(wi, w.english, 3, progress, words), correctAnswer: w.english,
+        options: makeOptions(wi, w.english, 3, progress, words, excludeCats), correctAnswer: w.english,
         germanWord: w.german, wordInfo: w
       });
     }
