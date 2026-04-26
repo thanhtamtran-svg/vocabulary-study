@@ -36,6 +36,14 @@ export default React.memo(function ExerciseView({
   var speak = lang === 'en' ? speakEnglish : speakGerman;
   var inputRef = useRef(null);
 
+  // Refs mirror props so keydown handlers always see current state, not the
+  // closure captured at render time (prevents Enter race when feedback is
+  // cleared and the next item mounts before the handler closure updates).
+  var feedbackRef = useRef(exerciseFeedback);
+  feedbackRef.current = exerciseFeedback;
+  var idxRef = useRef(exerciseIdx);
+  idxRef.current = exerciseIdx;
+
   var insertChar = useCallback(function(ch) {
     var el = inputRef.current;
     if (!el) {
@@ -172,8 +180,9 @@ export default React.memo(function ExerciseView({
                   onChange={function(e) { setExerciseAnswer(e.target.value); }}
                   onKeyDown={function(e) {
                     if (e.key !== 'Enter') return;
+                    if (e.repeat) return;
                     e.preventDefault();
-                    if (exerciseFeedback) { nextExerciseItem(); }
+                    if (feedbackRef.current) { nextExerciseItem(); }
                     else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
                   }}
                   placeholder={exItem.pronoun + ' ...'}
@@ -244,9 +253,10 @@ export default React.memo(function ExerciseView({
                 onChange={function(e) { setExerciseAnswer(e.target.value); }}
                 onKeyDown={function(e) {
                   if (e.key !== 'Enter') return;
+                  if (e.repeat) return;
                   e.preventDefault();
                   e.stopPropagation();
-                  if (exerciseFeedback) { nextExerciseItem(); }
+                  if (feedbackRef.current) { nextExerciseItem(); }
                   else { checkExerciseAnswer(); }
                 }}
                 placeholder="Type your answer..."
