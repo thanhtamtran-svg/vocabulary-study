@@ -1,5 +1,5 @@
 import { SUPABASE_URL } from './supabase';
-import { PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES } from './constants';
+import { PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES, TEMPLATE_INCOMPATIBLE_VERBS } from './constants';
 import { getMemoryStage } from './memory-stages';
 import { parseDate } from './dates';
 import { getConjugation } from './conjugations';
@@ -214,39 +214,54 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     }
 
     // === ROUND 3 (Apply) ===
-    var sentCorrectAnswer = w.german.replace(/^(der|die|das)\s+/i, '');
-    var sentFullAnswer = w.german;
-    var sentPrompt = sent.template.replace('___', '______');
-    var sentFull = sent.full;
-    if (isVerb && !sent.ai) {
-      var verbConj = getConjugation(w.german);
-      var templateLower = sent.template.toLowerCase();
-      if (templateLower.startsWith('ich ') || templateLower.includes(' ich ')) {
-        sentCorrectAnswer = verbConj.ich;
-        sentFullAnswer = verbConj.ich;
-        sentFull = sent.template.replace('___', verbConj.ich);
-      } else if (templateLower.startsWith('wir ') || templateLower.includes(' wir ')) {
-        sentCorrectAnswer = verbConj.wir;
-        sentFullAnswer = verbConj.wir;
-        sentFull = sent.template.replace('___', verbConj.wir);
-      } else if (templateLower.startsWith('er') || templateLower.startsWith('sie')) {
-        sentCorrectAnswer = verbConj.er;
-        sentFullAnswer = verbConj.er;
-        sentFull = sent.template.replace('___', verbConj.er);
-      } else {
-        sentCorrectAnswer = verbConj.ich;
-        sentFullAnswer = verbConj.ich;
-        sentFull = sent.template.replace('___', verbConj.ich);
+    // Skip sentence_complete for verbs that strictly require a complement
+    // (e.g. "heißen", "haben") when no AI sentence is available — the
+    // generic templates produce nonsense like "Sie heißt oft". Fall back to
+    // a reverse_choice so there's still an Apply-level exercise.
+    var verbNeedsComplement = isVerb && TEMPLATE_INCOMPATIBLE_VERBS.has(w.german.toLowerCase());
+    if (verbNeedsComplement && !sent.ai) {
+      items.push({
+        type: 'reverse_choice', level: 'Apply', wordIdx: wi,
+        prompt: 'Which German word means "' + w.english + '"?',
+        options: makeReverseOptions(wi, w.german, progress, words, excludeCats),
+        correctAnswer: w.german,
+        germanWord: w.german, wordInfo: w
+      });
+    } else {
+      var sentCorrectAnswer = w.german.replace(/^(der|die|das)\s+/i, '');
+      var sentFullAnswer = w.german;
+      var sentPrompt = sent.template.replace('___', '______');
+      var sentFull = sent.full;
+      if (isVerb && !sent.ai) {
+        var verbConj = getConjugation(w.german);
+        var templateLower = sent.template.toLowerCase();
+        if (templateLower.startsWith('ich ') || templateLower.includes(' ich ')) {
+          sentCorrectAnswer = verbConj.ich;
+          sentFullAnswer = verbConj.ich;
+          sentFull = sent.template.replace('___', verbConj.ich);
+        } else if (templateLower.startsWith('wir ') || templateLower.includes(' wir ')) {
+          sentCorrectAnswer = verbConj.wir;
+          sentFullAnswer = verbConj.wir;
+          sentFull = sent.template.replace('___', verbConj.wir);
+        } else if (templateLower.startsWith('er') || templateLower.startsWith('sie')) {
+          sentCorrectAnswer = verbConj.er;
+          sentFullAnswer = verbConj.er;
+          sentFull = sent.template.replace('___', verbConj.er);
+        } else {
+          sentCorrectAnswer = verbConj.ich;
+          sentFullAnswer = verbConj.ich;
+          sentFull = sent.template.replace('___', verbConj.ich);
+        }
       }
+      items.push({
+        type: 'sentence_complete', level: 'Apply', wordIdx: wi,
+        prompt: sentPrompt,
+        hint: w.english + (isVerb && !sent.ai ? ' (conjugate!)' : ''),
+        correctAnswer: sentCorrectAnswer,
+        fullAnswer: sentFullAnswer, sentence: sentFull,
+        germanWord: w.german, wordInfo: w
+      });
     }
-    items.push({
-      type: 'sentence_complete', level: 'Apply', wordIdx: wi,
-      prompt: sentPrompt,
-      hint: w.english + (isVerb && !sent.ai ? ' (conjugate!)' : ''),
-      correctAnswer: sentCorrectAnswer,
-      fullAnswer: sentFullAnswer, sentence: sentFull,
-      germanWord: w.german, wordInfo: w
-    });
   });
 
   // Round 4 (Analyze): Reading comprehension

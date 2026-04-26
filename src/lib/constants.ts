@@ -80,6 +80,38 @@ export const SENTENCE_TEMPLATES = {
   5: ["___ ist wichtig.", "Das ist ___ .", "Ich kenne ___ ."]
 };
 
+// Verbs that strictly require a complement (object, name, predicate) and so
+// produce ungrammatical or meaningless German when plugged into the generic
+// templates ("Sie heißt oft", "Ich habe jeden Tag"). For these, the engine
+// only emits a sentence_complete exercise when an AI-cached sentence is
+// available; otherwise it falls back to a different exercise type.
+export const TEMPLATE_INCOMPATIBLE_VERBS = new Set([
+  'heißen',     // needs a name: "Sie heißt Anna"
+  'haben',      // needs an object: "Ich habe ein Buch"
+  'geben',      // needs an object (or "es gibt"): "Ich gebe ihm das Buch"
+  'nehmen',     // needs an object: "Ich nehme den Bus"
+  'brauchen',   // needs an object: "Ich brauche Hilfe"
+  'mögen',      // needs an object: "Ich mag Pizza"
+  'kennen',     // needs an object: "Ich kenne ihn"
+  'wissen',     // needs a clause/object: "Ich weiß das"
+  'bekommen',   // needs an object: "Ich bekomme ein Geschenk"
+  'kosten',     // needs price/subject: "Es kostet 5 Euro"
+  'gefallen',   // dative + subject: "Das gefällt mir"
+  'gehören',    // dative: "Das gehört mir"
+  'passen',     // dative: "Das passt mir"
+  'schmecken',  // dative: "Das schmeckt mir"
+  'fehlen',     // dative: "Mir fehlt etwas"
+  'helfen',     // dative: "Ich helfe dir"
+  'antworten',  // dative: "Ich antworte dir"
+  'gehen',      // typically needs direction: "Ich gehe nach Hause"
+  'fahren',     // needs direction/vehicle: "Ich fahre nach Berlin"
+  'kommen',     // needs origin/direction: "Ich komme aus Vietnam"
+  'wohnen',     // needs location: "Ich wohne in Berlin"
+  'sein',       // copula: "Ich bin müde"
+  'werden',     // copula/future: "Ich werde Lehrer"
+  'bleiben',    // needs predicate/duration: "Ich bleibe hier"
+]);
+
 export const STORAGE_KEY = 'german1500';
 export const SYNC_EMAIL_KEY = 'german1500_sync_email';
 export const VAPID_PUBLIC_KEY = 'BK4ScZTP21q8ppg_bEmkoGzZyH2X9IKDuenJ2p9MPm84tOrX0_EAEmrBwMbbNyuBctwWeZPojMJzptw25mHBNAU';
