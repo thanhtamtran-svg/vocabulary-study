@@ -922,14 +922,15 @@ function App({onHome, vocabData, variant}) {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
       var stripArticle = function(s) { return s.replace(/^(der|die|das)\s+/i, ''); };
-      var na = normalize(userAnswer);
-      var nc = normalize(item.correctAnswer);
-      var fullGerman = item.fullAnswer || item.germanWord || '';
+      var stripParen = function(s) { return s.replace(/\s*\([^)]*\)\s*/g, '').trim(); };
+      var na = normalize(stripParen(userAnswer));
+      var nc = normalize(stripParen(item.correctAnswer));
+      var fullGerman = stripParen(item.fullAnswer || item.germanWord || '');
       correct = na === nc ||
-                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase() ||
-                normalize(stripArticle(userAnswer)) === nc ||
+                stripParen(userAnswer).toLowerCase() === stripParen(item.correctAnswer).toLowerCase() ||
+                normalize(stripArticle(stripParen(userAnswer))) === nc ||
                 na === normalize(fullGerman) ||
-                normalize(stripArticle(userAnswer)) === normalize(stripArticle(fullGerman));
+                normalize(stripArticle(stripParen(userAnswer))) === normalize(stripArticle(fullGerman));
     }
 
     var correctAnswerText = item.fullAnswer || item.correctAnswer || '';

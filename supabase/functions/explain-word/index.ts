@@ -63,15 +63,18 @@ async function validateAuthToken(req: Request): Promise<boolean> {
   }
 }
 
-// Validate word input: must be a short string of letters/hyphens/spaces/punctuation
+// Validate word input: must be a short string of letters/digits/spaces/punctuation
 function validateWord(word: unknown, lang?: string): string | null {
   if (typeof word !== "string") return null;
   const trimmed = word.trim();
   if (trimmed.length === 0 || trimmed.length > 100) return null;
-  // Allow letters, hyphens, spaces, apostrophes, slashes, periods, plus, parens, commas, tilde
-  if (!/^[\p{L}\s\-'\/\.\+\(\),~]+$/u.test(trimmed)) return null;
-  // Max 12 words for English phrases, 4 for German
-  const maxWords = (lang === 'en' || lang === 'vi') ? 12 : 4;
+  // Allow letters, digits, hyphens, spaces, apostrophes, slashes, periods,
+  // plus, parens, commas, tilde, and end-of-sentence punctuation (?!:;)
+  // since many German A1 vocab entries are full questions/sentences.
+  if (!/^[\p{L}\d\s\-'\/\.\+\(\),~?!:;]+$/u.test(trimmed)) return null;
+  // Max 12 words for English phrases, 10 for German (A1.1 vocab includes
+  // full sentence-length entries like "Wie viel kostet ein Kilo ...?")
+  const maxWords = (lang === 'en' || lang === 'vi') ? 12 : 10;
   if (trimmed.split(/\s+/).length > maxWords) return null;
   return trimmed;
 }

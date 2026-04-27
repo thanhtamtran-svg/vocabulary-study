@@ -6,6 +6,11 @@ import { getConjugation } from './conjugations';
 
 function wordKeyOf(w) { return String(w[0]).toLowerCase().trim(); }
 
+// Strip annotation parentheticals like "Sie (formal)" → "Sie", used when
+// the word is plugged into a sentence template (the parenthetical is a
+// disambiguator for the learner, not part of the German word itself).
+function stripAnnotation(s) { return String(s).replace(/\s*\([^)]*\)\s*/g, '').trim(); }
+
 // Select words for exercise: prioritize mistakes, then due, then new
 // progress and exerciseProgress are keyed by lowercase word string
 export function selectExerciseWords(progress, exerciseProgress, words, today, excludeCats) {
@@ -135,7 +140,7 @@ export function getAiSentence(w, wordType, aiSentences) {
   }
   var templates = SENTENCE_TEMPLATES[wordType] || SENTENCE_TEMPLATES[5];
   var t = templates[Math.floor(Math.random() * templates.length)];
-  return {template: t, full: t.replace('___', w.german), ai: false};
+  return {template: t, full: t.replace('___', stripAnnotation(w.german)), ai: false};
 }
 
 // Generate exercise items — varied by word strength
@@ -228,12 +233,16 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
         germanWord: w.german, wordInfo: w
       });
     } else {
-      var sentCorrectAnswer = w.german.replace(/^(der|die|das)\s+/i, '');
-      var sentFullAnswer = w.german;
+      // For template plug-in, strip "(formal)"-style annotations so the
+      // generated sentence and correct answer use the bare German word
+      // ("Sie ist richtig", not "Sie (formal) ist richtig").
+      var germanClean = stripAnnotation(w.german);
+      var sentCorrectAnswer = germanClean.replace(/^(der|die|das)\s+/i, '');
+      var sentFullAnswer = germanClean;
       var sentPrompt = sent.template.replace('___', '______');
       var sentFull = sent.full;
       if (isVerb && !sent.ai) {
-        var verbConj = getConjugation(w.german);
+        var verbConj = getConjugation(germanClean);
         var templateLower = sent.template.toLowerCase();
         if (templateLower.startsWith('ich ') || templateLower.includes(' ich ')) {
           sentCorrectAnswer = verbConj.ich;

@@ -61,7 +61,9 @@ function validateWord(word: unknown): string | null {
   if (typeof word !== "string") return null;
   const trimmed = word.trim();
   if (trimmed.length === 0 || trimmed.length > 100) return null;
-  if (!/^[\p{L}\s\-'\/\.\+\(\),~]+$/u.test(trimmed)) return null;
+  // Allow letters, digits, hyphens, spaces, apostrophes, slashes, periods,
+  // plus, parens, commas, tilde, and end-of-sentence punctuation (?!:;)
+  if (!/^[\p{L}\d\s\-'\/\.\+\(\),~?!:;]+$/u.test(trimmed)) return null;
   if (trimmed.split(/\s+/).length > 12) return null;
   return trimmed;
 }
