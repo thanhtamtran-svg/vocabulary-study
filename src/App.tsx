@@ -708,6 +708,9 @@ function App({onHome, vocabData, variant}) {
       // Resolve word index from key (word string)
       var idx = keyToIdx[k];
       if (idx === undefined) return; // key not in current vocab (legacy from different variant)
+      // A1.1: skip Cat 0 (Anweisungen im Kurs) — classroom instructions are
+      // background reinforcement only, not reviewed or tested
+      if (isA11 && VOCAB_DATA.words[idx] && VOCAB_DATA.words[idx][2] === 0) return;
       var stage = getMemoryStage(wp);
       if (stage === 0) return;
       // Stage 5 (Mastered) still gets a 30-day final review
