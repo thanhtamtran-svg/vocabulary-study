@@ -80,11 +80,12 @@ export const SENTENCE_TEMPLATES = {
   5: ["___ ist wichtig.", "Das ist ___ .", "Ich kenne ___ ."]
 };
 
-// Verbs that strictly require a complement (object, name, predicate) and so
-// produce ungrammatical or meaningless German when plugged into the generic
-// templates ("Sie heißt oft", "Ich habe jeden Tag"). For these, the engine
-// only emits a sentence_complete exercise when an AI-cached sentence is
-// available; otherwise it falls back to a different exercise type.
+// Words that produce ungrammatical or meaningless German when plugged into
+// the generic sentence templates ("Sie heißt oft", "Ich sage Sie"). For
+// these, the engine only emits a sentence_complete exercise when an
+// AI-cached sentence is available; otherwise it falls back to a different
+// exercise type. Pronouns, possessives, and question words are handled
+// separately via wordType (see GRAMMAR_TYPE_INCOMPATIBLE in exercise-engine).
 export const TEMPLATE_INCOMPATIBLE_VERBS = new Set([
   'heißen',     // needs a name: "Sie heißt Anna"
   'haben',      // needs an object: "Ich habe ein Buch"

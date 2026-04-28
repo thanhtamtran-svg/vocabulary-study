@@ -219,12 +219,15 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     }
 
     // === ROUND 3 (Apply) ===
-    // Skip sentence_complete for verbs that strictly require a complement
-    // (e.g. "heißen", "haben") when no AI sentence is available — the
-    // generic templates produce nonsense like "Sie heißt oft". Fall back to
-    // a reverse_choice so there's still an Apply-level exercise.
+    // Skip sentence_complete when templates would produce broken German:
+    //   - Verbs that strictly require a complement ("heißen", "haben")
+    //   - Grammar-type words (typeIdx 3): pronouns, possessives, question
+    //     words. "Ich sage Sie." or "Mein ist richtig." are nonsense.
+    // For these, fall back to reverse_choice so there's still an Apply
+    // exercise. Skipped only when no AI sentence is cached.
     var verbNeedsComplement = isVerb && TEMPLATE_INCOMPATIBLE_VERBS.has(w.german.toLowerCase());
-    if (verbNeedsComplement && !sent.ai) {
+    var isGrammarType = wordType === 3;
+    if ((verbNeedsComplement || isGrammarType) && !sent.ai) {
       items.push({
         type: 'reverse_choice', level: 'Apply', wordIdx: wi,
         prompt: 'Which German word means "' + w.english + '"?',
