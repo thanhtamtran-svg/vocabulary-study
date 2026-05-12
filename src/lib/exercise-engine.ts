@@ -117,8 +117,8 @@ export function makeOptions(targetWi, targetText, distractorCount, progress, wor
 // Helper: make reverse options (show English, pick German)
 export function makeReverseOptions(targetWi, targetText, progress, words, excludeCats) {
   var dists = getDistractors(targetWi, 3, progress, words, excludeCats);
-  var opts = dists.map(function(di) { return {wi: di, text: words[di][0]}; });
-  opts.push({wi: targetWi, text: targetText});
+  var opts = dists.map(function(di) { return {wi: di, text: stripAnnotation(words[di][0])}; });
+  opts.push({wi: targetWi, text: stripAnnotation(targetText)});
   for (var i = opts.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
@@ -175,7 +175,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     } else {
       items.push({
         type: 'multiple_choice', level: 'Remember', wordIdx: wi,
-        prompt: 'What does "' + w.german + '" mean?',
+        prompt: 'What does "' + stripAnnotation(w.german) + '" mean?',
         options: makeOptions(wi, w.english, 3, progress, words, excludeCats), correctAnswer: w.english,
         germanWord: w.german, wordInfo: w
       });
@@ -203,7 +203,7 @@ export function generateExerciseItems(selectedWords, aiSentences, aiPassage, get
     } else if (isStrong && Math.random() > 0.6 && sent.ai) {
       items.push({
         type: 'fill_english', level: 'Understand', wordIdx: wi,
-        prompt: 'What does "' + w.german + '" mean in this sentence?\n' + sent.full,
+        prompt: 'What does "' + stripAnnotation(w.german) + '" mean in this sentence?\n' + sent.full,
         correctAnswer: w.english.toLowerCase(),
         fullAnswer: w.english,
         sentence: sent.full,

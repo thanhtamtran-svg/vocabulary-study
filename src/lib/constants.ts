@@ -85,7 +85,7 @@ export const SENTENCE_TEMPLATES = {
 // these, the engine only emits a sentence_complete exercise when an
 // AI-cached sentence is available; otherwise it falls back to a different
 // exercise type. Pronouns, possessives, and question words are handled
-// separately via wordType (see GRAMMAR_TYPE_INCOMPATIBLE in exercise-engine).
+// separately via wordType === 3 in exercise-engine.
 export const TEMPLATE_INCOMPATIBLE_VERBS = new Set([
   'heißen',     // needs a name: "Sie heißt Anna"
   'haben',      // needs an object: "Ich habe ein Buch"

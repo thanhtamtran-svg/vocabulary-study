@@ -62,16 +62,21 @@ function speakWithBrowserTTS(text, lang) {
   }
 }
 
+function cleanGermanForSpeech(text) {
+  return text.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function speakGerman(text) {
+  var clean = cleanGermanForSpeech(text);
   if (isMobile) {
     // On mobile, try Google TTS first (works on Android), fall back to browser TTS
     if (/Android/i.test(navigator.userAgent)) {
-      speakWithGoogleTTS(text, 'de');
+      speakWithGoogleTTS(clean, 'de');
     } else {
-      speakWithBrowserTTS(text, 'de');
+      speakWithBrowserTTS(clean, 'de');
     }
   } else {
-    speakWithGoogleTTS(text, 'de');
+    speakWithGoogleTTS(clean, 'de');
   }
 }
 
