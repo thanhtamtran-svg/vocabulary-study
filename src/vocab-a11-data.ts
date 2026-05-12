@@ -369,6 +369,18 @@ export const VOCAB_A11_DATA = {
     ["die Packung","package",3,0],
     ["der Becher","cup (container)",3,0],
     ["der Tee","tea",3,0],
+    // Additional food & shopping vocabulary
+    ["das Obst","fruit",3,0],
+    ["das Mineralwasser","mineral water",3,0],
+    ["das Fleisch","meat",3,0],
+    ["das Brot","bread",3,0],
+    ["der Kuchen","cake",3,0],
+    ["der Wein","wine",3,0],
+    ["die Flasche","bottle",3,0],
+    ["die Bäckerei","bakery",3,0],
+    ["das Sonderangebot","special offer",3,0],
+    ["der Apfel","apple",3,0],
+    ["die Tomate","tomato",3,0],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -520,6 +532,13 @@ export const VOCAB_A11_DATA = {
     ["Schauen Sie mal!","Look! (formal)",4,4],
     ["dunkelbraun","dark brown",4,2],
     ["zu Hause","at home",4,4],
+    // Additional rooms & housing adjectives
+    ["das Schlafzimmer","bedroom",4,0],
+    ["das Arbeitszimmer","study, home office",4,0],
+    ["ruhig","quiet",4,2],
+    ["laut","loud, noisy",4,2],
+    ["altmodisch","old-fashioned",4,2],
+    ["tief","deep",4,2],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -647,6 +666,36 @@ export const VOCAB_A11_DATA = {
     ["Ich glaube, ...","I think ...",5,4],
     ["ins Bett gehen","to go to bed",5,1],
     ["passen","to fit, suit",5,1],
+    // Additional separable verbs
+    ["anmachen","to turn on",5,1],
+    ["ausschalten","to switch off",5,1],
+    ["anmelden","to sign up, register",5,1],
+    ["abschließen","to lock, close",5,1],
+    ["ausfüllen","to fill out (a form)",5,1],
+    ["abschreiben","to copy down",5,1],
+    ["aussehen","to look (like)",5,1],
+    ["ankommen","to arrive",5,1],
+    ["ausmachen","to turn off, agree on",5,1],
+    ["umziehen","to move (house), change clothes",5,1],
+    ["aufmachen","to open",5,1],
+    // Additional regular verbs
+    ["erklären","to explain",5,1],
+    ["übersetzen","to translate",5,1],
+    ["bearbeiten","to edit, process",5,1],
+    ["wiederholen","to repeat, review",5,1],
+    // Computer course nouns
+    ["der Computerkurs","computer course",5,0],
+    ["die Kursleiterin","course instructor (f.)",5,0],
+    ["der Teilnehmer","participant (m.)",5,0],
+    ["das Programm","program",5,0],
+    ["das Netz","network, internet",5,0],
+    ["der Computerraum","computer room",5,0],
+    // Time expressions
+    ["sonntags","on Sundays",5,5],
+    ["manchmal","sometimes",5,5],
+    ["abends","in the evening",5,5],
+    ["jede Woche","every week",5,4],
+    ["heute Abend","tonight, this evening",5,4],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -792,6 +841,10 @@ export const VOCAB_A11_DATA = {
     ["mögen","to like",6,1],
     ["das Lieblingsbuch","favorite book",6,0],
     ["das Lieblingswetter","favorite weather",6,0],
+    // Additional leisure & travel nouns
+    ["der Urlaub","vacation, holiday",6,0],
+    ["der Zug","train",6,0],
+    ["der Kiosk","kiosk, newsstand",6,0],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
