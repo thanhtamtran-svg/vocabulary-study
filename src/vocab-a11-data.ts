@@ -79,7 +79,7 @@ export const VOCAB_A11_DATA = {
     ["die Musik","music",1,0],
     ["international","international",1,2],
     ["Guten Morgen","Good morning",1,4],
-    ["die Frau","Mrs., woman",1,0],
+    ["die Frau","Mrs., woman, wife",1,0],
     ["danke","thank you",1,4],
     ["Gute Nacht","Good night",1,4],
     ["der Papa","dad",1,0],
@@ -381,6 +381,19 @@ export const VOCAB_A11_DATA = {
     ["das Sonderangebot","special offer",3,0],
     ["der Apfel","apple",3,0],
     ["die Tomate","tomato",3,0],
+    // Additional shopping vocab & phrases
+    ["die Fleischtheke","meat counter",3,0],
+    ["der Flohmarkt","flea market",3,0],
+    ["das Schnäppchen","bargain",3,0],
+    ["der Kaffee","coffee",3,0],
+    ["günstig","reasonable, affordable",3,2],
+    ["Ich hätte gern...","I would like...",3,4],
+    ["Sonst noch etwas?","Anything else?",3,4],
+    ["Das ist alles.","That's all.",3,4],
+    ["Das macht... Euro.","That comes to... Euro.",3,4],
+    ["Das wär's.","That's it.",3,4],
+    ["Gern!","Gladly!",3,4],
+    ["Tut mir leid.","I'm sorry.",3,4],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -539,6 +552,10 @@ export const VOCAB_A11_DATA = {
     ["laut","loud, noisy",4,2],
     ["altmodisch","old-fashioned",4,2],
     ["tief","deep",4,2],
+    // Additional furniture & appliances
+    ["der Spiegel","mirror",4,0],
+    ["die Waschmaschine","washing machine",4,0],
+    ["die Spülmaschine","dishwasher",4,0],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -696,6 +713,19 @@ export const VOCAB_A11_DATA = {
     ["abends","in the evening",5,5],
     ["jede Woche","every week",5,4],
     ["heute Abend","tonight, this evening",5,4],
+    // More daily-routine verbs & time vocabulary
+    ["aufhängen","to hang up",5,1],
+    ["ausleeren","to empty out",5,1],
+    ["anziehen","to put on, dress",5,1],
+    ["zumachen","to close",5,1],
+    ["ausgehen","to go out",5,1],
+    ["putzen","to clean",5,1],
+    ["Viertel","quarter (15 min)",5,5],
+    ["kurz vor","shortly before",5,4],
+    ["kurz nach","shortly after",5,4],
+    ["von...bis","from...to",5,4],
+    ["seit","since, for",5,5],
+    ["im","in (month/season)",5,5],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -845,6 +875,23 @@ export const VOCAB_A11_DATA = {
     ["der Urlaub","vacation, holiday",6,0],
     ["der Zug","train",6,0],
     ["der Kiosk","kiosk, newsstand",6,0],
+    // Months
+    ["Januar","January",6,5],
+    ["Februar","February",6,5],
+    ["März","March",6,5],
+    ["April","April",6,5],
+    ["Mai","May",6,5],
+    ["Juni","June",6,5],
+    ["Juli","July",6,5],
+    ["August","August",6,5],
+    ["September","September",6,5],
+    ["Oktober","October",6,5],
+    ["November","November",6,5],
+    ["Dezember","December",6,5],
+    // Leisure phrases
+    ["Hast du Zeit?","Do you have time?",6,4],
+    ["Ich habe keine Zeit.","I have no time.",6,4],
+    ["Wie gefällt dir...?","How do you like...?",6,4],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
@@ -948,6 +995,14 @@ export const VOCAB_A11_DATA = {
     ["der Lehrer","teacher (m.)",7,0],
     ["der Deutschkurs","German class",7,0],
     ["jonglieren","to juggle",7,1],
+    // Additional job titles
+    ["der Trainer","coach (m.)",7,0],
+    ["die Trainerin","coach (f.)",7,0],
+    ["der Projektmanager","project manager (m.)",7,0],
+    ["die Projektmanagerin","project manager (f.)",7,0],
+    ["die Verkäuferin","shop assistant (f.)",7,0],
+    ["der Koch","cook (m.)",7,0],
+    ["die Köchin","cook (f.)",7,0],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],
