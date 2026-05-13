@@ -32,7 +32,7 @@ These are pre-approved by the user. Apply them automatically.
 | **Translation source language** | Assume Vietnamese; convert to English in the file. |
 | **Target file** | `src/vocab-a11-data.ts` (Schritte Plus Neu A1.1 variant). |
 | **Duplicate handling (within A1.1 file)** | Silently skip words already in `src/vocab-a11-data.ts`. List skipped words in the summary, no need to ask per-word. |
-| **Duplicate handling (cross-file)** | If a word already exists in `src/vocab-data.ts` (the main 1500-word file), silently skip it from the A1.1 addition. Only pause and ask if the existing translation in `vocab-data.ts` looks like it might mean something different from what you'd write for A1.1 — e.g. different sense ("Bank" = bench vs. financial bank), different gender, or a translation that would confuse the A1.1 learner. |
+| **Duplicate handling (cross-file)** | Cross-file matches don't block adding to A1.1. If a word is in `src/vocab-data.ts` but NOT in `src/vocab-a11-data.ts`, **add it to A1.1 anyway** so the A1.1 variant stays self-contained. Only pause and ask if the existing translation in `vocab-data.ts` looks like it might mean something different from what you'd write for A1.1 — e.g. different sense ("Bank" = bench vs. financial bank), different gender, or a translation that would confuse the A1.1 learner. |
 | **Lektion classification** | Trust textbook themes (rooms → L4, shopping → L3, daily routine → L5, leisure → L6, school → L7, etc.). Do not override to "current Lektion". The app naturally pulls back to any Lektion with unlearned words, so urgent additions surface in the next session anyway. |
 | **Word type (typeIdx)** | Classify based on the word: 0=Noun, 1=Verb, 2=Adjective, 3=Grammar, 4=Expression (multi-word phrases / sentences), 5=Foundational (single-word adverbs, connectors, time words). |
 | **Insertion location** | Append at the end of each Lektion's section in the file, preceded by a `// Additional <theme>` comment. |
@@ -56,12 +56,13 @@ file. After the user says "yes" (or equivalent), proceed through edit
    - Which Lektion does it thematically belong to? (1–7)
    - What word type? (0–5, see table above)
 4. **Dedupe** — grep `src/vocab-a11-data.ts` for each German word.
-   Words already present go into the "skipped duplicates" list.
-   Then grep `src/vocab-data.ts` (main 1500-word file) for the same
-   words. Cross-file matches are **also silently skipped** by default.
-   Only pause to ask if the existing translation in `vocab-data.ts`
-   appears to mean something different from what you'd write for A1.1
-   (different sense, gender, or A1.1-inappropriate phrasing).
+   Words already present in A1.1 go into the "skipped duplicates" list.
+   Then grep `src/vocab-data.ts` (main 1500-word file). A cross-file
+   match does NOT skip the word — **still add it to A1.1** so the
+   variant is self-contained. Only pause to ask if the existing
+   translation in `vocab-data.ts` appears to mean something different
+   from what you'd write for A1.1 (different sense, gender, or
+   A1.1-inappropriate phrasing).
 5. **Show preview table** — one row per new word, grouped by Lektion.
    Include a "skipped duplicates" section so the user can spot
    misclassifications.
@@ -89,8 +90,10 @@ Pause and ask the user if:
   already exists in `vocab-data.ts` (main course) AND the existing
   translation appears to mean something different from what you'd
   write for A1.1 (different sense, gender, A1.1-inappropriate
-  phrasing). Flag the divergence; let the user decide. Cross-file
-  duplicates with matching meanings are skipped silently.
+  phrasing). Flag the divergence; let the user decide which
+  translation to use in A1.1. Cross-file duplicates with matching
+  meanings are added to A1.1 without pausing (so the variant stays
+  self-contained for any learner who only uses A1.1).
 - **The input contains non-vocab content** — sentences for grammar
   examples, exercise instructions, etc. Confirm intent before adding.
 - **An entry would break exercise generation** — e.g. multi-word
