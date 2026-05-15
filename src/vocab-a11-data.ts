@@ -275,6 +275,14 @@ export const VOCAB_A11_DATA = {
     // Strategien
     ["Ja, genau.","Yes, exactly.",2,4],
     ["Nein, falsch.","No, wrong.",2,4],
+    // Location & directions phrases
+    ["Wo liegt...?","Where is... located?",2,4],
+    ["Es liegt im Norden.","It is in the north.",2,4],
+    ["Es liegt im Süden.","It is in the south.",2,4],
+    ["im Norden","in the north",2,4],
+    ["im Süden","in the south",2,4],
+    ["im Westen","in the west",2,4],
+    ["im Osten","in the east",2,4],
 
     // ===== Cat 3: Lektion 3 — Einkaufen =====
     // D — Preise und Mengenangaben
@@ -394,6 +402,7 @@ export const VOCAB_A11_DATA = {
     ["Das wär's.","That's it.",3,4],
     ["Gern!","Gladly!",3,4],
     ["Tut mir leid.","I'm sorry.",3,4],
+    ["Was kostet...?","How much is...?",3,4],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -556,6 +565,10 @@ export const VOCAB_A11_DATA = {
     ["der Spiegel","mirror",4,0],
     ["die Waschmaschine","washing machine",4,0],
     ["die Spülmaschine","dishwasher",4,0],
+    // Negation grammar
+    ["kein","no, not a (m./n.)",4,3],
+    ["keine","no, not a (f./pl.)",4,3],
+    ["Es gibt kein...","There is no...",4,4],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -726,6 +739,19 @@ export const VOCAB_A11_DATA = {
     ["von...bis","from...to",5,4],
     ["seit","since, for",5,5],
     ["im","in (month/season)",5,5],
+    // Time of day & time-telling
+    ["am Morgen","in the morning",5,4],
+    ["am Vormittag","in the late morning",5,4],
+    ["am Mittag","at noon",5,4],
+    ["am Nachmittag","in the afternoon",5,4],
+    ["am Abend","in the evening",5,4],
+    ["in der Nacht","at night",5,4],
+    ["der ganze Tag","the whole day",5,4],
+    ["Wie spät ist es?","What time is it?",5,4],
+    ["Es ist... Uhr","It is... o'clock",5,4],
+    ["Viertel nach","quarter past",5,4],
+    ["Viertel vor","quarter to",5,4],
+    ["Von wann bis wann...?","From when to when...?",5,4],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -892,6 +918,19 @@ export const VOCAB_A11_DATA = {
     ["Hast du Zeit?","Do you have time?",6,4],
     ["Ich habe keine Zeit.","I have no time.",6,4],
     ["Wie gefällt dir...?","How do you like...?",6,4],
+    // Additional weather vocabulary
+    ["der Nebel","fog",6,0],
+    ["das Gewitter","thunderstorm",6,0],
+    ["es regnet","it is raining",6,4],
+    ["es schneit","it is snowing",6,4],
+    ["es ist bewölkt","it is cloudy",6,4],
+    ["es ist kalt","it is cold",6,4],
+    ["es ist warm","it is warm",6,4],
+    ["es ist windig","it is windy",6,4],
+    ["die Sonne scheint","the sun shines",6,4],
+    ["es sind ... Grad","it is ... degrees",6,4],
+    ["unter Null","below zero",6,4],
+    ["über Null","above zero",6,4],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
@@ -1003,6 +1042,12 @@ export const VOCAB_A11_DATA = {
     ["die Verkäuferin","shop assistant (f.)",7,0],
     ["der Koch","cook (m.)",7,0],
     ["die Köchin","cook (f.)",7,0],
+    // Childcare vocabulary
+    ["die Gruppe","group",7,0],
+    ["der Betreuungsplatz","childcare place",7,0],
+    ["die Tagesgruppe","full-day group",7,0],
+    ["das Mittagessen","lunch",7,0],
+    ["Haben Sie noch Fragen?","Do you have any more questions?",7,4],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],
