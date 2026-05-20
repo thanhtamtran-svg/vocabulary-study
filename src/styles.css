@@ -57,6 +57,11 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:#7E9
 .flashcard-english{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:700;color:#324A84;margin-bottom:4px;letter-spacing:-0.01em}
 .flashcard-category{font-size:12px;color:#94a3b8}
 
+/* Back-of-card layout: stacked on phone, side-by-side on desktop */
+.flashcard-back-layout{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%}
+.flashcard-back-text{width:100%;display:flex;flex-direction:column;justify-content:center}
+.flashcard-back-image{width:140px;height:140px;object-fit:contain;border-radius:10px;background:#fff;display:block}
+
 /* ===== CONFIDENCE BUTTONS ===== */
 .confidence-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:14px 0}
 .conf-btn{padding:14px 6px;border-radius:10px;border:2px solid;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s ease;background:#fff}
@@ -231,6 +236,11 @@ select:focus{border-color:#D67635}
   .flashcard-word{font-size:36px}
   .flashcard-english{font-size:28px}
 
+  /* Back of card goes side-by-side on desktop, text left, image right */
+  .flashcard-back-layout.has-image{flex-direction:row;align-items:center;gap:24px}
+  .flashcard-back-layout.has-image .flashcard-back-text{flex:1;min-width:0}
+  .flashcard-back-image{width:200px;height:200px}
+
   /* Wider stat grid */
   .stat .num{font-size:32px}
 
@@ -267,6 +277,9 @@ select:focus{border-color:#D67635}
   /* Bigger flashcard */
   .flashcard{height:320px}
   .flashcard-word{font-size:42px}
+
+  /* Larger image on big screens */
+  .flashcard-back-image{width:240px;height:240px}
 
   /* Session/exercise content wider */
   .session-content{width:800px}

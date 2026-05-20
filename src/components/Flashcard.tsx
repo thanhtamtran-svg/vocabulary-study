@@ -49,42 +49,44 @@ export default React.memo(function Flashcard({
         <div className="flashcard-face flashcard-back">
           {lang === 'en' ? <>
             {/* English back: definition + Vietnamese + cached image */}
-            <div style={{
-              fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
-              padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
-              textAlign:'center',fontWeight:500
-            }}>{word.english}</div>
-            {vietnameseDef ? <div style={{
-              fontSize:'13px',color:'#718096',lineHeight:'1.4',
-              padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
-              textAlign:'center',fontStyle:'italic'
-            }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
-            {wordImage ? <img src={wordImage.url} alt=""
-              style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
-                background:'#fff',margin:'8px auto 0',display:'block'}}
-            /> : null}
+            <div className={'flashcard-back-layout' + (wordImage ? ' has-image' : '')}>
+              <div className="flashcard-back-text">
+                <div style={{
+                  fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
+                  padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
+                  textAlign:'center',fontWeight:500
+                }}>{word.english}</div>
+                {vietnameseDef ? <div style={{
+                  fontSize:'13px',color:'#718096',lineHeight:'1.4',
+                  padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
+                  textAlign:'center',fontStyle:'italic'
+                }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
+              </div>
+              {wordImage ? <img src={wordImage.url} alt="" className="flashcard-back-image" /> : null}
+            </div>
           </> : <>
             {/* German back: German definition + word + cached image */}
-            {wordDefinition ? <div style={{
-              fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
-              padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
-              fontStyle:'italic',textAlign:'center'
-            }}>{wordDefinition}</div> : null}
-            <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px'}}>
-              <span style={{fontSize:'15px',color:'#718096'}}>{word.german}</span>
-              {wordIPA ? <span style={{fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}}>
-                {'/' + wordIPA + '/'}
-              </span> : null}
-              <button className="speak-btn back"
-                aria-label={'Pronounce ' + word.german}
-                onClick={function(e) { e.stopPropagation(); speak(word.german); }}>
-                {'\uD83D\uDD0A'}
-              </button>
+            <div className={'flashcard-back-layout' + (defImage ? ' has-image' : '')}>
+              <div className="flashcard-back-text">
+                {wordDefinition ? <div style={{
+                  fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
+                  padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
+                  fontStyle:'italic',textAlign:'center'
+                }}>{wordDefinition}</div> : null}
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginTop:'0',gap:'6px',flexWrap:'wrap'}}>
+                  <span style={{fontSize:'15px',color:'#718096'}}>{word.german}</span>
+                  {wordIPA ? <span style={{fontSize:'12px',color:'#b0b8c4',fontFamily:'serif',fontStyle:'italic'}}>
+                    {'/' + wordIPA + '/'}
+                  </span> : null}
+                  <button className="speak-btn back"
+                    aria-label={'Pronounce ' + word.german}
+                    onClick={function(e) { e.stopPropagation(); speak(word.german); }}>
+                    {'\uD83D\uDD0A'}
+                  </button>
+                </div>
+              </div>
+              {defImage ? <img src={defImage.url} alt="" className="flashcard-back-image" /> : null}
             </div>
-            {defImage ? <img src={defImage.url} alt=""
-              style={{width:'100px',height:'100px',objectFit:'contain',borderRadius:'10px',
-                background:'#fff',margin:'8px auto 0',display:'block'}}
-            /> : null}
           </>}
         </div>
       </div>
