@@ -275,14 +275,14 @@ select:focus{border-color:#D67635}
   .stat-grid{gap:14px}
 
   /* Bigger flashcard */
-  .flashcard{height:380px}
+  .flashcard{height:440px}
   .flashcard-word{font-size:42px}
 
   /* Larger image on big screens — fills card height */
-  .flashcard-back-image{width:320px;height:320px}
+  .flashcard-back-image{width:380px;height:380px}
 
   /* Session/exercise content wider */
-  .session-content{width:800px}
+  .session-content{width:960px}
 
   /* Nav with more spacing */
   .nav button{min-width:110px;font-size:13px}
@@ -296,8 +296,12 @@ select:focus{border-color:#D67635}
 /* ===== EXTRA LARGE (1440px+) ===== */
 @media (min-width: 1440px) {
   .content{width:840px}
-  .session-content{width:900px}
+  .session-content{width:1120px}
   .nav button{min-width:130px;font-size:14px;padding:16px 20px 14px}
+
+  /* Largest flashcard + image on big monitors */
+  .flashcard{height:500px}
+  .flashcard-back-image{width:440px;height:440px}
 
   /* Even bigger exercise content */
   .session-content .card{padding:32px;font-size:17px}
