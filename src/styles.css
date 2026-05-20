@@ -239,7 +239,7 @@ select:focus{border-color:#D67635}
   /* Back of card goes side-by-side on desktop, text left, image right */
   .flashcard-back-layout.has-image{flex-direction:row;align-items:center;gap:24px}
   .flashcard-back-layout.has-image .flashcard-back-text{flex:1;min-width:0}
-  .flashcard-back-image{width:200px;height:200px}
+  .flashcard-back-image{width:240px;height:240px}
 
   /* Wider stat grid */
   .stat .num{font-size:32px}
@@ -275,11 +275,11 @@ select:focus{border-color:#D67635}
   .stat-grid{gap:14px}
 
   /* Bigger flashcard */
-  .flashcard{height:320px}
+  .flashcard{height:380px}
   .flashcard-word{font-size:42px}
 
-  /* Larger image on big screens */
-  .flashcard-back-image{width:240px;height:240px}
+  /* Larger image on big screens — fills card height */
+  .flashcard-back-image{width:320px;height:320px}
 
   /* Session/exercise content wider */
   .session-content{width:800px}
