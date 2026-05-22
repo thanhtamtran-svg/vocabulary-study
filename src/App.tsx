@@ -911,26 +911,24 @@ function App({onHome, vocabData, variant}) {
         correctOpts.some(function(co) { return normalizeOpt(selectedOpt.text) === normalizeOpt(co.text); });
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
-      correct = userAnswer.toLowerCase() === item.correctAnswer.toLowerCase();
+      var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
+      correct = stripTrailingPunct(userAnswer).toLowerCase() === stripTrailingPunct(item.correctAnswer).toLowerCase();
     } else if (item.type === 'conjugation') {
       userAnswer = exerciseAnswer.trim();
-      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
+      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').replace(/[.,!?;:]+$/, '').trim(); };
       // Accept just the conjugated form OR pronoun + conjugated form
       var fullForm = (item.pronoun || '') + ' ' + item.correctAnswer;
       correct = normalize(userAnswer) === normalize(item.correctAnswer) ||
-                userAnswer.toLowerCase().trim() === item.correctAnswer.toLowerCase() ||
-                normalize(userAnswer) === normalize(fullForm) ||
-                userAnswer.toLowerCase().trim() === fullForm.toLowerCase();
+                normalize(userAnswer) === normalize(fullForm);
     } else {
       userAnswer = exerciseAnswer.trim();
-      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').trim(); };
+      var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').replace(/[.,!?;:]+$/, '').trim(); };
       var stripArticle = function(s) { return s.replace(/^(der|die|das)\s+/i, ''); };
       var stripParen = function(s) { return s.replace(/\s*\([^)]*\)\s*/g, '').trim(); };
       var na = normalize(stripParen(userAnswer));
       var nc = normalize(stripParen(item.correctAnswer));
       var fullGerman = stripParen(item.fullAnswer || item.germanWord || '');
       correct = na === nc ||
-                stripParen(userAnswer).toLowerCase() === stripParen(item.correctAnswer).toLowerCase() ||
                 normalize(stripArticle(stripParen(userAnswer))) === nc ||
                 na === normalize(fullGerman) ||
                 normalize(stripArticle(stripParen(userAnswer))) === normalize(stripArticle(fullGerman));

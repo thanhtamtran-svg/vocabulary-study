@@ -850,17 +850,19 @@ function EnglishApp({onHome}) {
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
-      var na = userAnswer.toLowerCase();
-      var nc = item.correctAnswer.toLowerCase();
+      var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
+      var na = stripTrailingPunct(userAnswer.toLowerCase());
+      var nc = stripTrailingPunct(item.correctAnswer.toLowerCase());
       correct = na === nc || na === corePhrase(nc) || corePhrase(na) === corePhrase(nc);
     } else {
       // Generic text input comparison
       userAnswer = exerciseAnswer.trim();
-      var na = userAnswer.toLowerCase().trim();
-      var nc = item.correctAnswer.toLowerCase().trim();
-      var fullAnswer = item.fullAnswer || item.germanWord || '';
+      var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
+      var na = stripTrailingPunct(userAnswer.toLowerCase());
+      var nc = stripTrailingPunct(item.correctAnswer.toLowerCase());
+      var fullAnswer = stripTrailingPunct((item.fullAnswer || item.germanWord || '').toLowerCase());
       correct = na === nc ||
-                na === fullAnswer.toLowerCase().trim() ||
+                na === fullAnswer ||
                 na === corePhrase(nc) ||
                 corePhrase(na) === corePhrase(nc);
     }
