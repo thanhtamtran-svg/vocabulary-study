@@ -4,6 +4,7 @@ import { speakGerman } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 
 var SPECIAL_CHARS = ['\u00e4', '\u00f6', '\u00fc', '\u00df'];
+var SPECIAL_CHAR_KEYS = {'1': '\u00e4', '2': '\u00f6', '3': '\u00fc', '4': '\u00df'};
 
 // Safe inline markdown renderer (no dangerouslySetInnerHTML)
 function renderInline(text, key) {
@@ -60,6 +61,19 @@ export default React.memo(function ExerciseView({
       el.setSelectionRange(start + ch.length, start + ch.length);
     });
   }, [exerciseAnswer, setExerciseAnswer]);
+
+  // Returns true if the key was consumed as a special-char shortcut.
+  // Only active in German exercises and when the answer expects German
+  // (so fill_english — "type the English meaning" — keeps 1-4 as digits).
+  var handleSpecialKeyShortcut = useCallback(function(e, exType) {
+    if (lang === 'en') return false;
+    if (exType === 'fill_english') return false;
+    var ch = SPECIAL_CHAR_KEYS[e.key];
+    if (!ch) return false;
+    e.preventDefault();
+    insertChar(ch);
+    return true;
+  }, [lang, insertChar]);
 
   var exItem = exerciseSession.items[exerciseIdx];
   var exTotal = exerciseSession.items.length;
@@ -179,6 +193,7 @@ export default React.memo(function ExerciseView({
                   type="text" value={exerciseAnswer}
                   onChange={function(e) { setExerciseAnswer(e.target.value); }}
                   onKeyDown={function(e) {
+                    if (handleSpecialKeyShortcut(e, exItem.type)) return;
                     if (e.key !== 'Enter') return;
                     if (e.repeat) return;
                     e.preventDefault();
@@ -192,17 +207,22 @@ export default React.memo(function ExerciseView({
                 />
               </div>
               {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
-                {SPECIAL_CHARS.map(function(ch) {
+                {SPECIAL_CHARS.map(function(ch, i) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
-                    style={{padding:'6px 12px',fontSize:'16px',borderRadius:'8px',
+                    title={'Shortcut: press ' + (i + 1)}
+                    style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
                       border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
                       fontFamily:'inherit',fontWeight:600,color:'#334155',
-                      minWidth:'36px',lineHeight:'1'}}
-                  >{ch}</button>;
+                      minWidth:'44px',lineHeight:'1',display:'inline-flex',
+                      alignItems:'baseline',gap:'4px'}}
+                  >
+                    <span>{ch}</span>
+                    <span style={{fontSize:'10px',color:'#94a3b8',fontWeight:500}}>{i + 1}</span>
+                  </button>;
                 })}
                 <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
-                  or type: ae=ä, oe=ö, ue=ü, ss=ß
+                  Press 1–4 for ä ö ü ß  ·  or type ae/oe/ue/ss
                 </span>
               </div> : null}
             </div> : null}
@@ -255,6 +275,7 @@ export default React.memo(function ExerciseView({
                 value={exerciseAnswer}
                 onChange={function(e) { setExerciseAnswer(e.target.value); }}
                 onKeyDown={function(e) {
+                  if (handleSpecialKeyShortcut(e, exItem.type)) return;
                   if (e.key !== 'Enter') return;
                   if (e.repeat) return;
                   e.preventDefault();
@@ -272,18 +293,23 @@ export default React.memo(function ExerciseView({
                   fontFamily:'inherit'
                 }}
               />
-              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
-                {SPECIAL_CHARS.map(function(ch) {
+              {lang !== 'en' && exItem.type !== 'fill_english' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
+                {SPECIAL_CHARS.map(function(ch, i) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
-                    style={{padding:'6px 12px',fontSize:'16px',borderRadius:'8px',
+                    title={'Shortcut: press ' + (i + 1)}
+                    style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
                       border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
                       fontFamily:'inherit',fontWeight:600,color:'#334155',
-                      minWidth:'36px',lineHeight:'1'}}
-                  >{ch}</button>;
+                      minWidth:'44px',lineHeight:'1',display:'inline-flex',
+                      alignItems:'baseline',gap:'4px'}}
+                  >
+                    <span>{ch}</span>
+                    <span style={{fontSize:'10px',color:'#94a3b8',fontWeight:500}}>{i + 1}</span>
+                  </button>;
                 })}
                 <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
-                  or type: ae=ä, oe=ö, ue=ü, ss=ß
+                  Press 1–4 for ä ö ü ß  ·  or type ae/oe/ue/ss
                 </span>
               </div> : null}
             </div> : null}
