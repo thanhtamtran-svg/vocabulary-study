@@ -191,7 +191,7 @@ export default React.memo(function ExerciseView({
                     border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}}
                 />
               </div>
-              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
                 {SPECIAL_CHARS.map(function(ch) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
@@ -201,6 +201,9 @@ export default React.memo(function ExerciseView({
                       minWidth:'36px',lineHeight:'1'}}
                   >{ch}</button>;
                 })}
+                <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
+                  or type: ae=ä, oe=ö, ue=ü, ss=ß
+                </span>
               </div> : null}
             </div> : null}
 
@@ -269,7 +272,7 @@ export default React.memo(function ExerciseView({
                   fontFamily:'inherit'
                 }}
               />
-              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px'}}>
+              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
                 {SPECIAL_CHARS.map(function(ch) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
@@ -279,6 +282,9 @@ export default React.memo(function ExerciseView({
                       minWidth:'36px',lineHeight:'1'}}
                   >{ch}</button>;
                 })}
+                <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
+                  or type: ae=ä, oe=ö, ue=ü, ss=ß
+                </span>
               </div> : null}
             </div> : null}
 
