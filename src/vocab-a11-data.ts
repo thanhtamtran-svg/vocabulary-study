@@ -403,6 +403,20 @@ export const VOCAB_A11_DATA = {
     ["Gern!","Gladly!",3,4],
     ["Tut mir leid.","I'm sorry.",3,4],
     ["Was kostet...?","How much is...?",3,4],
+    // Additional drinks, food & restaurant phrases
+    ["der Orangensaft","orange juice",3,0],
+    ["das Bier","beer",3,0],
+    ["die Fanta","Fanta (soft drink)",3,0],
+    ["das Würstchen","small sausage",3,0],
+    ["ein Paar Würstchen","a pair of sausages",3,4],
+    ["der Gemischte Salat","mixed salad",3,0],
+    ["die Gulaschsuppe","goulash soup",3,0],
+    ["die Portion Gemischtes Eis","portion of mixed ice cream",3,0],
+    ["das Salz","salt",3,0],
+    ["Was möchten Sie?","What would you like? (formal)",3,4],
+    ["Zum Frühstück","for breakfast",3,4],
+    ["Ich bringe ... sofort.","I'll bring ... right away.",3,4],
+    ["Natürlich.","Of course.",3,4],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -931,6 +945,13 @@ export const VOCAB_A11_DATA = {
     ["es sind ... Grad","it is ... degrees",6,4],
     ["unter Null","below zero",6,4],
     ["über Null","above zero",6,4],
+    // Additional weather & geography
+    ["leicht bewölkt","partly cloudy",6,4],
+    ["die Küste","coast",6,0],
+    ["das Landesinnere","inland, interior",6,0],
+    ["bis zu 20 Grad","up to 20 degrees",6,4],
+    ["minus zwei Grad","minus two degrees",6,4],
+    ["um die 25 Grad","around 25 degrees",6,4],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
