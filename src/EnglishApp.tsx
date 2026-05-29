@@ -142,7 +142,7 @@ function EnglishApp({onHome}) {
         d2.setDate(d2.getDate() - 1);
       } else {
         consecutiveMissed++;
-        if (consecutiveMissed > 3) break; // 4+ non-rest missed = streak broken
+        if (consecutiveMissed > 6) break; // 7+ non-rest missed = streak broken
         frozenDays++;
         d2.setDate(d2.getDate() - 1);
       }
@@ -151,9 +151,9 @@ function EnglishApp({onHome}) {
 
     var status = 'active';
     if (!studiedToday && !isRestDay) {
-      if (realMissed > 3) { status = 'lost'; count = 0; frozenDays = 0; }
-      else if (realMissed === 3) status = 'danger';
-      else if (realMissed >= 1) status = 'warning';
+      if (realMissed > 6) { status = 'lost'; count = 0; frozenDays = 0; }
+      else if (realMissed >= 5) status = 'danger';
+      else if (realMissed >= 2) status = 'warning';
     }
     // On rest day, don't warn — streak is safe
     if (isRestDay && !studiedToday) status = 'rest';
@@ -352,7 +352,6 @@ function EnglishApp({onHome}) {
     var count = 0;
     for (var i = 0; i < batches.length; i++) {
       if (batches[i].every(function(wi) { return progress[wi]?.learned; })) count++;
-      else break;
     }
     return count;
   }, [progress, batches]);
