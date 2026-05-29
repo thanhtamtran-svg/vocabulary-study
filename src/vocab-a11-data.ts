@@ -283,6 +283,8 @@ export const VOCAB_A11_DATA = {
     ["im Süden","in the south",2,4],
     ["im Westen","in the west",2,4],
     ["im Osten","in the east",2,4],
+    // Additional family-context noun
+    ["die Einladung","invitation",2,0],
 
     // ===== Cat 3: Lektion 3 — Einkaufen =====
     // D — Preise und Mengenangaben
@@ -417,6 +419,12 @@ export const VOCAB_A11_DATA = {
     ["Zum Frühstück","for breakfast",3,4],
     ["Ich bringe ... sofort.","I'll bring ... right away.",3,4],
     ["Natürlich.","Of course.",3,4],
+    // Additional baked goods & breads
+    ["der Apfelkuchen","apple cake",3,0],
+    ["der Pfannkuchen","pancake",3,0],
+    ["das Mehl","flour",3,0],
+    ["das Weißbrot","white bread",3,0],
+    ["das Schwarzbrot","dark rye bread",3,0],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -583,6 +591,8 @@ export const VOCAB_A11_DATA = {
     ["kein","no, not a (m./n.)",4,3],
     ["keine","no, not a (f./pl.)",4,3],
     ["Es gibt kein...","There is no...",4,4],
+    // Additional furniture
+    ["der Gartenstuhl","garden chair",4,0],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -766,6 +776,9 @@ export const VOCAB_A11_DATA = {
     ["Viertel nach","quarter past",5,4],
     ["Viertel vor","quarter to",5,4],
     ["Von wann bis wann...?","From when to when...?",5,4],
+    // Additional adverbs of liking (intensifiers for gern)
+    ["sehr gern","very much (like to)",5,5],
+    ["total gern","really love to (colloquial)",5,5],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -952,6 +965,19 @@ export const VOCAB_A11_DATA = {
     ["bis zu 20 Grad","up to 20 degrees",6,4],
     ["minus zwei Grad","minus two degrees",6,4],
     ["um die 25 Grad","around 25 degrees",6,4],
+    // Additional hobby & leisure vocabulary
+    ["das Computerspiel","computer game",6,0],
+    ["der Satz","sentence",6,0],
+    ["die Lieblingsfarbe","favorite color",6,0],
+    ["das Lieblingsessen","favorite food",6,0],
+    ["die Lieblingsmusik","favorite music",6,0],
+    ["surfen","to surf (internet)",6,1],
+    ["feiern","to celebrate",6,1],
+    ["informieren","to inform",6,1],
+    ["leider nicht","unfortunately not",6,4],
+    ["Kommt sofort.","Coming right up.",6,4],
+    ["Ja, gern.","Yes, gladly.",6,4],
+    ["oder?","...right? (tag question)",6,4],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
@@ -1069,6 +1095,11 @@ export const VOCAB_A11_DATA = {
     ["die Tagesgruppe","full-day group",7,0],
     ["das Mittagessen","lunch",7,0],
     ["Haben Sie noch Fragen?","Do you have any more questions?",7,4],
+    // Additional work-context vocabulary
+    ["der Kollege","colleague (m.)",7,0],
+    ["der Chef","boss",7,0],
+    ["der Lohn","wages, salary",7,0],
+    ["die Krankmeldung","sick note",7,0],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],
