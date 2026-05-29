@@ -621,7 +621,7 @@ function App({onHome, vocabData, variant}) {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
-        exerciseProgress: exerciseProgress,
+        exerciseProgress: exerciseProgress, studyDates: studyDates,
       }, syncLang);
     }, 5000);
     return function() { clearTimeout(timer); };
@@ -636,7 +636,7 @@ function App({onHome, vocabData, variant}) {
       cloudPush(syncEmail, {
         startDate: dateKey(startDate), started: started, progress: progress,
         todayCompleted: todayCompleted, completedDate: dateKey(today),
-        exerciseProgress: exerciseProgress,
+        exerciseProgress: exerciseProgress, studyDates: studyDates,
       }, syncLang);
     };
     window.addEventListener('beforeunload', handler);
@@ -670,6 +670,7 @@ function App({onHome, vocabData, variant}) {
           startDate: merged.startDate || dateKey(startDate), started: merged.started,
           progress: merged.progress, todayCompleted: merged.todayCompleted,
           completedDate: dateKey(today), exerciseProgress: merged.exerciseProgress,
+          studyDates: studyDates,
         }, syncLang);
         setSyncStatus('done');
         setSyncMsg('Connected & synced!');
@@ -677,7 +678,7 @@ function App({onHome, vocabData, variant}) {
         cloudPush(email, {
           startDate: dateKey(startDate), started: started, progress: progress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress,
+          exerciseProgress: exerciseProgress, studyDates: studyDates,
         }, syncLang);
         setSyncStatus('done');
         setSyncMsg('Connected! Progress uploaded.');

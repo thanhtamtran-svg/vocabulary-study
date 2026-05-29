@@ -526,12 +526,14 @@ function EnglishApp({onHome}) {
           todayCompleted: merged.todayCompleted,
           completedDate: dateKey(today),
           exerciseProgress: merged.exerciseProgress,
+          studyDates: studyDates,
         }, 'english');
       } else if (Object.keys(progress).length > 0) {
         return cloudPush(syncEmail, {
           lang: 'english', startDate: dateKey(startDate), started: started,
           progress: progress, todayCompleted: todayCompleted,
           completedDate: dateKey(today), exerciseProgress: exerciseProgress,
+          studyDates: studyDates,
         }, 'english');
       }
     }).then(function() {
@@ -557,6 +559,7 @@ function EnglishApp({onHome}) {
         lang: 'english', startDate: dateKey(startDate), started: started,
         progress: progress, todayCompleted: todayCompleted,
         completedDate: dateKey(today), exerciseProgress: exerciseProgress,
+        studyDates: studyDates,
       }, 'english');
     }, 5000);
     return function() { clearTimeout(timer); };
@@ -572,6 +575,7 @@ function EnglishApp({onHome}) {
         lang: 'english', startDate: dateKey(startDate), started: started,
         progress: progress, todayCompleted: todayCompleted,
         completedDate: dateKey(today), exerciseProgress: exerciseProgress,
+        studyDates: studyDates,
       }, 'english');
     };
     window.addEventListener('beforeunload', handler);
@@ -606,7 +610,7 @@ function EnglishApp({onHome}) {
           lang: 'english', startDate: merged.startDate || dateKey(startDate),
           started: merged.started, progress: merged.progress,
           todayCompleted: merged.todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: merged.exerciseProgress,
+          exerciseProgress: merged.exerciseProgress, studyDates: studyDates,
         }, 'english');
         setSyncStatus('done');
         setSyncMsg('Connected & synced!');
@@ -615,6 +619,7 @@ function EnglishApp({onHome}) {
           lang: 'english', startDate: dateKey(startDate), started: started,
           progress: progress, todayCompleted: todayCompleted,
           completedDate: dateKey(today), exerciseProgress: exerciseProgress,
+          studyDates: studyDates,
         }, 'english');
         setSyncStatus('done');
         setSyncMsg('Connected! Progress uploaded.');
