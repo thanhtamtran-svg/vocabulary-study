@@ -3,3 +3,6 @@ dist/
 .env
 .env.local
 *.log
+# Generated audit artifacts (re-derived by scripts/audit-a11-images.mjs)
+scripts/a11-missing-words.json
+cloud-a11.json
