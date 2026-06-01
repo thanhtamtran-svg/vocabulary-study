@@ -2,11 +2,22 @@ import React from 'react';
 import { speakGerman } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 
+// Gender-coded dot for German nouns — der=blue, die=red, das=green.
+// Falls back to null for non-nouns and article-less nouns (country names).
+function genderDot(germanWord) {
+  if (typeof germanWord !== 'string') return null;
+  if (germanWord.startsWith('der ')) return { color: '#3B82F6', label: 'der (masculine)' };
+  if (germanWord.startsWith('die ')) return { color: '#EF4444', label: 'die (feminine/plural)' };
+  if (germanWord.startsWith('das ')) return { color: '#22C55E', label: 'das (neuter)' };
+  return null;
+}
+
 export default React.memo(function Flashcard({
   word, flipped, onFlip, wordIPA, wordDefinition, defImage,
   wordImage, imageLoading, emojis, lang, vietnameseDef, onGenerateImage
 }) {
   var speak = lang === 'en' ? speakEnglish : speakGerman;
+  var gender = lang === 'en' ? null : genderDot(word.german);
 
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -25,7 +36,14 @@ export default React.memo(function Flashcard({
       onKeyDown={handleKeyDown}>
       <div className={'flashcard' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
-          {emojis ? <span style={{fontSize:'28px',display:'block',textAlign:'center',margin:'4px 0'}}>{emojis[word.idx]}</span> : null}
+          {gender ? <span
+            aria-label={gender.label}
+            title={gender.label}
+            style={{
+              display:'block',width:'28px',height:'28px',borderRadius:'50%',
+              background: gender.color,margin:'4px auto',
+              boxShadow:'0 1px 3px rgba(0,0,0,0.15)'
+            }} /> : (emojis ? <span style={{fontSize:'28px',display:'block',textAlign:'center',margin:'4px 0'}}>{emojis[word.idx]}</span> : null)}
           <div style={{display:'flex',alignItems:'center',gap:'6px',marginBottom:'4px',justifyContent:'center'}}>
             <span className={'tag ' + word.typeClass}>{word.type}</span>
           </div>
