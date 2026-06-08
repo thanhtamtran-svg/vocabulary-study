@@ -25,7 +25,7 @@ async function verifySessionToken(token: string): Promise<boolean> {
   const expires = parseInt(parts[1], 10);
   if (isNaN(expires) || Date.now() > expires) return false;
 
-  const secret = Deno.env.get("APP_PASSWORD") || "default";
+  const secret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD") || "default";
   const encoder = new TextEncoder();
   const payload = `vocab_auth:${expires}`;
   const key = await crypto.subtle.importKey(

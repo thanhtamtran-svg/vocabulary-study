@@ -16,6 +16,38 @@ function getCorsHeaders(req: Request) {
   };
 }
 
+// Validate the HMAC-signed session token from Authorization header.
+// Token shape: vocab_auth:{expires}:{hex-hmac}. Signed with SESSION_SECRET.
+async function validateAuthToken(req: Request): Promise<boolean> {
+  try {
+    const authHeader = req.headers.get("authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) return false;
+    const token = authHeader.slice(7);
+    const parts = token.split(":");
+    if (parts.length < 3 || parts[0] !== "vocab_auth") return false;
+    const expires = parseInt(parts[1], 10);
+    if (isNaN(expires) || Date.now() > expires) return false;
+    const payload = parts[0] + ":" + parts[1];
+    const sigHex = parts.slice(2).join(":");
+    const secret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD") || "default";
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw", encoder.encode(secret + "_session_key"),
+      { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+    );
+    const expectedSig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
+    const expectedHex = Array.from(expectedSig).map(b => b.toString(16).padStart(2, "0")).join("");
+    if (expectedHex.length !== sigHex.length) return false;
+    let diff = 0;
+    for (let i = 0; i < expectedHex.length; i++) {
+      diff |= expectedHex.charCodeAt(i) ^ sigHex.charCodeAt(i);
+    }
+    return diff === 0;
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
@@ -23,6 +55,13 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const authenticated = await validateAuthToken(req);
+    if (!authenticated) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!

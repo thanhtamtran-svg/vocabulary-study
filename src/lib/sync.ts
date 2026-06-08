@@ -79,12 +79,20 @@ export function mergeProgress(local, remote) {
   return merged;
 }
 
+function authHeaders() {
+  var token = '';
+  try { token = localStorage.getItem('vocab_auth_token') || ''; } catch (e) {}
+  var h: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  return h;
+}
+
 export async function cloudPull(email, lang) {
   if (!email) return null;
   try {
     var res = await fetch(SYNC_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ action: 'pull', email: email, lang: lang })
     });
     if (!res.ok) return null;
@@ -100,7 +108,7 @@ export async function cloudPush(email, state, lang) {
   try {
     var res = await fetch(SYNC_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders(),
       body: JSON.stringify({ action: 'push', email: email, lang: lang, data: state })
     });
     return res.ok;

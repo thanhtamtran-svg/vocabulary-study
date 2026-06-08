@@ -50,7 +50,7 @@ Deno.serve(async (req: Request) => {
   // Authentication: require CRON_SECRET or valid session token
   const authHeader = req.headers.get("authorization") || "";
   const cronSecret = Deno.env.get("CRON_SECRET");
-  const appPassword = Deno.env.get("APP_PASSWORD");
+  const sessionSecret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD");
 
   let authenticated = false;
 
@@ -60,7 +60,7 @@ Deno.serve(async (req: Request) => {
   }
 
   // Check valid session token via Bearer token
-  if (!authenticated && appPassword && authHeader.startsWith("Bearer ")) {
+  if (!authenticated && sessionSecret && authHeader.startsWith("Bearer ")) {
     const token = authHeader.slice(7);
     const parts = token.split(":");
     if (parts.length === 3 && parts[0] === "vocab_auth") {
@@ -69,7 +69,7 @@ Deno.serve(async (req: Request) => {
         const payload = `${parts[0]}:${parts[1]}`;
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey(
-          "raw", encoder.encode(appPassword + "_session_key"),
+          "raw", encoder.encode(sessionSecret + "_session_key"),
           { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
         );
         const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));

@@ -42,7 +42,7 @@ async function validateAuthToken(req: Request): Promise<boolean> {
     if (isNaN(expires) || Date.now() > expires) return false;
     const payload = parts[0] + ":" + parts[1];
     const sigHex = parts.slice(2).join(":");
-    const secret = Deno.env.get("APP_PASSWORD") || "default";
+    const secret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD") || "default";
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
       "raw", encoder.encode(secret + "_session_key"),
