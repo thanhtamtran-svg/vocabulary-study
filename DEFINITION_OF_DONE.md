@@ -38,6 +38,13 @@ doubt, pick the higher tier.
 - [ ] Claude has verified the change actually matches what the user
       asked for — not just "code compiles" but "code does what the
       user wanted."
+- [ ] **[CHANGELOG.md](CHANGELOG.md) updated** with a user-friendly
+      entry under today's date (skip for trivial typo / comment /
+      format-only commits). Use plain language, not commit message
+      jargon.
+- [ ] **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) updated** if the
+      commit completed a backlog item (move to "Completed" section)
+      or revealed a new one (add to the right priority bucket).
 
 ## Tier 2 — User-facing UI or behavior change
 
