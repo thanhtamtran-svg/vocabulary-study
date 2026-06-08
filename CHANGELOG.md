@@ -11,6 +11,31 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-08 — Edge function manual deploy + sync-progress secured (B-001 closed)
+
+- **Bảo mật:** Phát hiện edge function trên Supabase không tự
+  auto-deploy từ GitHub. Tất cả thay đổi edge function trong ~7 tuần
+  qua chưa thực sự active. Deploy thủ công 10 functions qua Supabase
+  CLI. Code `sync-progress` yêu cầu session token giờ mới thực sự
+  chạy.
+- **Verify:** Curl-probe `sync-progress` không có token → HTTP 401.
+  Với token sai → HTTP 401. Lỗ hổng đã đóng hoàn toàn.
+- **Process:** Từ giờ mỗi lần sửa edge function phải chạy
+  `npx supabase functions deploy`. Sẽ tự động hoá bằng GitHub Actions
+  trong sprint sau.
+
+## 2026-06-08 — A1.1 images coverage 100%
+
+- Upload nốt 161 ảnh A1.1 cuối cùng (Lektion 6 & 7). Toàn bộ 958 từ
+  A1.1 giờ đều có ảnh trên Supabase. 0 failure trong batch cuối.
+
+## 2026-06-08 — Scrum process documents
+
+- Thêm 3 file ở repo root: PRODUCT_BACKLOG.md (việc cần làm),
+  CHANGELOG.md (lịch sử thay đổi — chính là file này), RETROSPECTIVE.md
+  (rút kinh nghiệm 2 tuần). DoD Tier 1 giờ yêu cầu cập nhật
+  CHANGELOG + BACKLOG sau mỗi commit không-tầm-thường.
+
 ## 2026-06-08 — Security hardening + Definition of Done
 
 - **Bảo mật:** Bật Row-Level Security trên tất cả 7 bảng database.

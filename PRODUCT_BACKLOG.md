@@ -19,30 +19,28 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## 🔥 Urgent
 
-### B-001: Verify SESSION_SECRET deploy đã thực sự bảo vệ sync-progress
-
-**Effort:** XS · **Tier:** 3-Security
-
-Hôm nay (2026-06-08) mình ship code yêu cầu auth token trên `sync-progress`,
-nhưng curl probe vẫn pull được data không cần token. Có 2 khả năng:
-
-1. Auto-deploy edge function chưa hoàn tất sau commit `f31f2a7`.
-2. `SESSION_SECRET` chưa được bạn cấu hình trong Supabase dashboard
-   → code đang fallback về `APP_PASSWORD` cũ.
-
-**Việc cần làm:**
-- Bạn cấu hình env var `SESSION_SECRET` trong Supabase (hướng dẫn ở
-  chat 2026-06-08, value: `dBgXJuPcdED9CW2Wr9j3cJbOsgWIGN-pghf0HK5fdHurUedDb-lGUFMYycQobZjS`).
-- Đợi vài phút.
-- Mình curl-probe lại và confirm trả về 401.
-- Cả PC + phone re-login với password.
-
-**Tại sao Urgent:** Vẫn còn lỗ hổng — strangers có thể pull/push data
-của bạn. Phải đóng trước khi làm việc khác.
+*Không có item urgent nào hiện tại.*
 
 ---
 
 ## ⭐ High
+
+### B-013: Tự động hoá deploy edge function
+
+**Effort:** S · **Tier:** 2
+
+Hôm nay phát hiện edge function không tự deploy từ GitHub — phải
+chạy `npx supabase functions deploy` thủ công. Risk: lần sau sửa
+code edge function rồi quên deploy → bug âm thầm, không ai biết.
+
+**Đề xuất:** Tạo `.github/workflows/deploy-functions.yml` để mỗi
+push to main tự động deploy edge functions. Cần `SUPABASE_ACCESS_TOKEN`
+làm GitHub secret (bạn tạo + paste 1 lần).
+
+**Trade-off:** Nhỏ chi phí setup, lợi lâu dài. Khi setup xong, mọi
+sửa edge function lại "ship to push" như trước.
+
+
 
 ### B-002: Hoàn tất A1.1 images (161 từ thiếu)
 
@@ -176,8 +174,10 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-06-08 — B-001 closed: sync-progress yêu cầu session token, đã verify HTTP 401 không token
+- 2026-06-08 — A1.1 image coverage 100% (161 ảnh cuối)
+- 2026-06-08 — Backlog + Changelog + Retrospective + DoD update
 - 2026-06-08 — Bảo mật RLS + Definition of Done + Vitest setup
-- 2026-06-08 — sync-progress yêu cầu session token (đang verify — B-001)
 - 2026-06-02 — A1.1 upload skip-existing
 - 2026-06-01 — Gender color dot trên Flashcard
 - 2026-05-30 — A1.1 image pipeline (audit + prompt + upload)
