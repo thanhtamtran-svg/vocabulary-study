@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "deploy": "vite build && npx gh-pages -d dist"
   },
   "repository": {
@@ -19,7 +21,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "gh-pages": "^6.3.0",
     "typescript": "^5.9.3",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
