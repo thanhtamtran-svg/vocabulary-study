@@ -11,6 +11,15 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-08 — English image upload script: skip-existing default
+
+- Script `upload-english-images.mjs` giờ mặc định bỏ qua những phrase
+  đã có ảnh trên Supabase (giống script A1.1 tuần trước). Lệnh
+  "english images" sẽ chỉ upload phần mới, không re-upload toàn bộ.
+  Pass `--force` nếu cần refresh hết.
+- Audit hôm nay: 440/440 phrase English đã có ảnh → không có gì để
+  upload.
+
 ## 2026-06-08 — Edge function manual deploy + sync-progress secured (B-001 closed)
 
 - **Bảo mật:** Phát hiện edge function trên Supabase không tự
