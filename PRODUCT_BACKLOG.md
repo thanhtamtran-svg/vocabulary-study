@@ -25,6 +25,22 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## ⭐ High
 
+### B-014: Retry trên lỗi network thay vì exit cả batch upload
+
+**Effort:** S · **Tier:** 1
+
+Hôm nay (2026-06-12) đang upload 166 ảnh English thì lỗi `ECONNRESET`
+ở ảnh 148 → script exit luôn, mất công retry. Đã workaround bằng
+skip-existing logic (chạy lại tự bỏ 147 ảnh xong) nhưng kém UX.
+
+**Đề xuất:** Thêm retry-on-network-error trong `uploadOne()` cho cả
+3 script (upload-a11, upload-english, upload-def). Hiện chỉ có retry
+cho 429 rate-limit. Bao gồm `fetch failed`, `ECONNRESET`, `ETIMEDOUT`.
+Retry 2 lần, mỗi lần sleep 10s.
+
+**Trade-off:** Code mỗi script dài thêm ~15 dòng. Lợi: không phải re-run
+khi mạng chập chờn.
+
 ### B-013: Tự động hoá deploy edge function
 
 **Effort:** S · **Tier:** 2

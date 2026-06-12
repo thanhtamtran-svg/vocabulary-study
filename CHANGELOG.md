@@ -11,6 +11,14 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-12 — English images batch 56-77 uploaded (172 ảnh)
+
+- Upload thêm 172 ảnh English cho batch 56-77 (Cowork tạo trong tuần
+  trước). Đợt đầu fail ở ảnh 148/166 do lỗi network ECONNRESET, đã
+  retry và 25 ảnh còn lại upload thành công nhờ skip-existing logic
+  tự nhận diện 147 ảnh đã xong từ đợt trước.
+- Supabase giờ có 613 ảnh English (46% của 1340 phrase).
+
 ## 2026-06-08 — English image upload script: skip-existing default
 
 - Script `upload-english-images.mjs` giờ mặc định bỏ qua những phrase
