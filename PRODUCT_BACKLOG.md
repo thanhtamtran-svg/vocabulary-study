@@ -19,49 +19,7 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## 🔥 Urgent
 
-### B-015: Sync không hoạt động trên máy mới / incognito (regression)
-
-**Effort:** XS để workaround, L để fix đúng (B-016 Magic Link) · **Tier:** 3-Security
-
-Phát hiện 2026-06-12 khi user mở incognito để xem progress. App
-hiện trang Setup mà sync không pull được dữ liệu — vì `sync-progress`
-yêu cầu token (security fix B-001 ngày 2026-06-08), nhưng máy mới
-chưa có token trong localStorage.
-
-**Hiện trạng:** User không thể xem progress trên máy / browser mới
-mà không có code thay đổi.
-
-**Workaround tạm:** User dùng browser chính (đã có token) — chấp
-nhận cho đến khi B-016 (Magic Link) xong.
-
-**Fix đúng:** B-016 dưới đây.
-
-### B-016: Magic Link login (Tier 3-Security)
-
-**Effort:** L · **Tier:** 3-Security
-
-Thiết kế: nhập email → server gửi link 1-lần qua email → user click
-link → có session token gắn với email đó → sync OK trên máy đó.
-
-**Việc cần làm:**
-- Edge function mới `request-magic-link` (gửi email).
-- Edge function mới `verify-magic-link` (đổi link → session token).
-- Cập nhật `sync-progress` để khớp email trong token với email trong
-  request body (tránh dùng token người này sync data người kia).
-- Sửa Setup screen: nhập email → "Send Login Link" → user check
-  email → click link → app tự verify + login.
-- Threat model: phải cover được "ai cũng có thể spam email người
-  khác bằng request" (rate-limit theo email + IP).
-- Setup email service: dùng Supabase Auth (sẵn có) hoặc Resend
-  free tier.
-
-**Trade-off:**
-- Pro: an toàn (cần access email mới login), không cần nhớ password.
-- Con: setup phức tạp, mỗi máy mới chờ ~30s nhận email.
-
-**Phải có:** test cho cả happy path lẫn các edge case (link expired,
-link đã dùng, email rate-limit, token email mismatch). DoD Tier 3-Security
-yêu cầu curl probe sau deploy.
+*Không có item urgent hiện tại.*
 
 ---
 
@@ -231,6 +189,10 @@ auth (Supabase Auth) thay vì password chung.
 ## ✅ Completed (gần đây)
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
+
+- 2026-06-12 — B-015 closed: sync hoạt động trên máy mới (email-only flow)
+- 2026-06-12 — B-016 scrapped: user chọn UX > security, không làm Magic Link
+- 2026-06-12 — English images batch 56-77 (172 ảnh)
 
 - 2026-06-08 — B-001 closed: sync-progress yêu cầu session token, đã verify HTTP 401 không token
 - 2026-06-08 — A1.1 image coverage 100% (161 ảnh cuối)

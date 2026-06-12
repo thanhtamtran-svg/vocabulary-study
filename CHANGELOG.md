@@ -11,6 +11,20 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-12 — Sync: email-only (rollback security check)
+
+- **Quyết định:** User chọn UX đơn giản hơn bảo mật chặt. Sync giờ
+  chỉ cần email, không cần token. Bất kỳ ai biết email đều có thể
+  pull/push progress. Trade-off này được user xác nhận sau khi
+  hiểu rủi ro. Magic Link (B-016) bị scrap.
+- **Code:** Bỏ `validateAuthToken` check trong `sync-progress`. Thay
+  vào đó: rate-limit 30 req/min theo IP + validate email format.
+- **Config:** Phát hiện `sync-progress`, `push-subscription`,
+  `migrate-images` chưa có trong `config.toml` → Supabase gateway
+  block 401 cho incognito. Thêm `verify_jwt = false` cho 3 function
+  này.
+- **Verify:** Curl pull không token → HTTP 200 (sync OK).
+
 ## 2026-06-12 — English images batch 56-77 uploaded (172 ảnh)
 
 - Upload thêm 172 ảnh English cho batch 56-77 (Cowork tạo trong tuần

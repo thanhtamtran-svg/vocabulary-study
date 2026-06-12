@@ -433,3 +433,18 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/upload-image/deno.json"
 entrypoint = "./functions/upload-image/index.ts"
+
+[functions.sync-progress]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/sync-progress/index.ts"
+
+[functions.push-subscription]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/push-subscription/index.ts"
+
+[functions.migrate-images]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/migrate-images/index.ts"

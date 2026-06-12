@@ -16,36 +16,30 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Validate the HMAC-signed session token from Authorization header.
-// Token shape: vocab_auth:{expires}:{hex-hmac}. Signed with SESSION_SECRET.
-async function validateAuthToken(req: Request): Promise<boolean> {
-  try {
-    const authHeader = req.headers.get("authorization") || "";
-    if (!authHeader.startsWith("Bearer ")) return false;
-    const token = authHeader.slice(7);
-    const parts = token.split(":");
-    if (parts.length < 3 || parts[0] !== "vocab_auth") return false;
-    const expires = parseInt(parts[1], 10);
-    if (isNaN(expires) || Date.now() > expires) return false;
-    const payload = parts[0] + ":" + parts[1];
-    const sigHex = parts.slice(2).join(":");
-    const secret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD") || "default";
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      "raw", encoder.encode(secret + "_session_key"),
-      { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-    );
-    const expectedSig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
-    const expectedHex = Array.from(expectedSig).map(b => b.toString(16).padStart(2, "0")).join("");
-    if (expectedHex.length !== sigHex.length) return false;
-    let diff = 0;
-    for (let i = 0; i < expectedHex.length; i++) {
-      diff |= expectedHex.charCodeAt(i) ^ sigHex.charCodeAt(i);
-    }
-    return diff === 0;
-  } catch {
-    return false;
-  }
+// Per-IP rate limit: max 30 requests/min. Protects against bulk
+// scraping or write-spam from any single source. Real users sync
+// at most ~6 times/min in practice (push debounce 5s + occasional
+// pull on focus), so 30/min has plenty of headroom.
+const rateLimitMap = new Map<string, number[]>();
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+  const recent = timestamps.filter((t) => now - t < 60_000);
+  if (recent.length >= 30) return true;
+  recent.push(now);
+  rateLimitMap.set(ip, recent);
+  return false;
+}
+
+// Validate email shape — rejects empty / non-string / absurdly long /
+// no-@-sign inputs. Not strict RFC 5322; just enough to block obvious
+// junk from creating rows in vocab_progress.
+function validEmail(s: unknown): s is string {
+  if (typeof s !== "string") return false;
+  const t = s.trim();
+  if (t.length === 0 || t.length > 254) return false;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return false;
+  return true;
 }
 
 Deno.serve(async (req) => {
@@ -55,10 +49,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const authenticated = await validateAuthToken(req);
-    if (!authenticated) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (isRateLimited(clientIp)) {
+      return new Response(JSON.stringify({ error: "Rate limited" }), {
+        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -70,7 +64,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action, email, lang, data } = body;
 
-    if (!email || typeof email !== "string") {
+    if (!validEmail(email)) {
       return new Response(JSON.stringify({ error: "email required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
