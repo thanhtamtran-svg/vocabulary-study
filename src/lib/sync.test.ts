@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mergeProgress } from './sync';
+import { mergeProgress, mergeFullState } from './sync';
 import { migrateProgressToStringKeys, isIndexKeyedProgress } from './progress';
 
 // Regression tests for the data-merge logic that runs on every cloud sync.
@@ -69,6 +69,58 @@ describe('isIndexKeyedProgress', () => {
   it('returns false for null/undefined', () => {
     expect(isIndexKeyedProgress(null)).toBe(false);
     expect(isIndexKeyedProgress(undefined)).toBe(false);
+  });
+});
+
+describe('mergeFullState.startDate', () => {
+  // Regression for the 2026-06-12 incognito bug: a fresh device with
+  // local.startDate = today must not overwrite the user's real cloud
+  // startDate from months ago. Earlier date must win.
+  const baseLocal = {
+    progress: {}, exerciseProgress: {},
+    todayCompleted: { learnCount: 0, learnedBatches: [], reviews: {} },
+    completedDate: '2026-06-12', started: false,
+  };
+  const baseRemote = {
+    progress: {}, exerciseProgress: {},
+    todayCompleted: { learnCount: 0, learnedBatches: [], reviews: {} },
+    completedDate: '2026-05-15', started: true,
+  };
+
+  it('picks earlier startDate when remote is older (the incognito bug)', () => {
+    const merged = mergeFullState(
+      { ...baseLocal, startDate: '2026-06-12' },
+      { ...baseRemote, startDate: '2026-04-19' },
+      '2026-06-12', undefined
+    );
+    expect(merged.startDate).toBe('2026-04-19');
+  });
+
+  it('picks earlier startDate when local is older', () => {
+    const merged = mergeFullState(
+      { ...baseLocal, startDate: '2026-03-01' },
+      { ...baseRemote, startDate: '2026-04-19' },
+      '2026-06-12', undefined
+    );
+    expect(merged.startDate).toBe('2026-03-01');
+  });
+
+  it('falls back to remote when local has no startDate', () => {
+    const merged = mergeFullState(
+      { ...baseLocal, startDate: null },
+      { ...baseRemote, startDate: '2026-04-19' },
+      '2026-06-12', undefined
+    );
+    expect(merged.startDate).toBe('2026-04-19');
+  });
+
+  it('falls back to local when remote has no startDate', () => {
+    const merged = mergeFullState(
+      { ...baseLocal, startDate: '2026-04-19' },
+      { ...baseRemote, startDate: null },
+      '2026-06-12', undefined
+    );
+    expect(merged.startDate).toBe('2026-04-19');
   });
 });
 

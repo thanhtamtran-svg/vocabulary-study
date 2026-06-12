@@ -11,6 +11,21 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-12 — Bug fix: incognito Sync ghi đè startDate (B-017)
+
+- **Bug:** User mở tab incognito, bấm Sync, sync chạy thành công nhưng
+  dashboard hiển thị "Day 1 Week 1" + "34 batches ahead" sai. Nguyên
+  nhân: `mergeFullState` ưu tiên `local.startDate` (= hôm nay trong
+  incognito) hơn `remote.startDate` (= 2026-04-19 thực tế). Cloud A1.1
+  bị ghi đè startDate về 2026-06-12.
+- **Khôi phục:** Restore startDate trên cloud về 2026-04-19 (script
+  `scripts/restore-startdate.mjs` để tham khảo nếu tái diễn trong
+  tương lai).
+- **Code fix:** `mergeFullState` giờ pick `earlier` của local/remote
+  startDate. ISO date string so sánh đúng vì format `YYYY-MM-DD`.
+- **Test:** Thêm 4 test trong `sync.test.ts` cover các edge case
+  (local older / remote older / one missing). 15/15 tests pass.
+
 ## 2026-06-12 — Sync: email-only (rollback security check)
 
 - **Quyết định:** User chọn UX đơn giản hơn bảo mật chặt. Sync giờ

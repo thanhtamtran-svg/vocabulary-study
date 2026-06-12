@@ -49,11 +49,23 @@ export function mergeFullState(local, remote, todayDateStr, vocabData) {
     };
   }
 
+  // Prefer the EARLIER of local vs remote startDate. A fresh device
+  // (e.g. incognito tab) will have local.startDate = today, but the
+  // user has been studying since their real start date stored in the
+  // cloud. Picking the earlier date prevents the dashboard's Day /
+  // Week / "X batches ahead" calculation from resetting to Day 1.
+  // ISO date strings (YYYY-MM-DD) compare correctly via < / >.
+  var pickEarlier = function(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    return a < b ? a : b;
+  };
+
   return {
     progress: mp,
     exerciseProgress: mex,
     todayCompleted: mtc,
-    startDate: local.startDate || remote.startDate,
+    startDate: pickEarlier(local.startDate, remote.startDate),
     started: local.started || remote.started,
   };
 }

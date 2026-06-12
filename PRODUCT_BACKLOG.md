@@ -190,6 +190,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-06-12 — B-017 closed: fix mergeFullState ghi đè startDate trong incognito + 4 regression test
 - 2026-06-12 — B-015 closed: sync hoạt động trên máy mới (email-only flow)
 - 2026-06-12 — B-016 scrapped: user chọn UX > security, không làm Magic Link
 - 2026-06-12 — English images batch 56-77 (172 ảnh)
