@@ -97,6 +97,26 @@ Deno.serve(async (req) => {
         });
       }
 
+      // Server-side guard: never let a push move startDate LATER.
+      // A fresh device (empty localStorage, e.g. incognito) initializes
+      // startDate = today and old cached clients push that, wiping the
+      // real start date months earlier. The earlier date always wins.
+      // Doing this on the server makes the guard immune to stale
+      // client bundles cached by service workers.
+      const existing = await supabase
+        .from("vocab_progress")
+        .select("data")
+        .eq("user_email", key)
+        .maybeSingle();
+      const existingStart = existing.data?.data?.startDate;
+      const incomingStart = data.startDate;
+      if (
+        typeof existingStart === "string" && existingStart &&
+        (typeof incomingStart !== "string" || !incomingStart || existingStart < incomingStart)
+      ) {
+        data.startDate = existingStart;
+      }
+
       const res = await supabase.from("vocab_progress").upsert(
         {
           user_email: key,

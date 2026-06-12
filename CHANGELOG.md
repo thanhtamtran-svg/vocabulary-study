@@ -11,6 +11,19 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-12 — B-017 phần 2: chặn ghi đè startDate ở SERVER
+
+- **Phát hiện:** Fix client (pickEarlier) chưa đủ — browser còn cache
+  bundle cũ qua service worker, tiếp tục push startDate=today và ghi
+  đè cloud ngay sau khi restore. Vicious cycle.
+- **Fix:** `sync-progress` edge function giờ tự giữ startDate sớm hơn
+  giữa bản đang có và bản được push. Server không bị cache nên guard
+  này miễn nhiễm với client cũ.
+- **Verify:** Push giả lập startDate=2026-06-12 đè lên 2026-04-19 →
+  cloud giữ nguyên 2026-04-19 ✅
+- **Service worker bump v12→v13** để browser tự lấy bundle mới có
+  client-side fix.
+
 ## 2026-06-12 — Bug fix: incognito Sync ghi đè startDate (B-017)
 
 - **Bug:** User mở tab incognito, bấm Sync, sync chạy thành công nhưng
