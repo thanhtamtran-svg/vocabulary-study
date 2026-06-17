@@ -425,6 +425,12 @@ export const VOCAB_A11_DATA = {
     ["das Mehl","flour",3,0],
     ["das Weißbrot","white bread",3,0],
     ["das Schwarzbrot","dark rye bread",3,0],
+    // Additional shopping verbs
+    ["helfen","to help",3,1],
+    ["kaufen","to buy",3,1],
+    ["geben","to give",3,1],
+    // Additional gift / shopping noun
+    ["das Geschenk","gift, present",3,0],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -593,6 +599,18 @@ export const VOCAB_A11_DATA = {
     ["Es gibt kein...","There is no...",4,4],
     // Additional furniture
     ["der Gartenstuhl","garden chair",4,0],
+    // Additional conjunctions
+    ["denn","because, for (coord.)",4,5],
+    ["weil","because (subord.)",4,5],
+    // Additional housing verbs
+    ["mieten","to rent",4,1],
+    ["tragen","to carry, wear",4,1],
+    // Question words
+    ["Wo?","Where?",4,3],
+    ["Was?","What?",4,3],
+    ["Wie?","How?",4,3],
+    // Answer word
+    ["Doch","Yes! (contradicting a negative)",4,5],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -779,6 +797,30 @@ export const VOCAB_A11_DATA = {
     // Additional adverbs of liking (intensifiers for gern)
     ["sehr gern","very much (like to)",5,5],
     ["total gern","really love to (colloquial)",5,5],
+    // Additional time words & connectors
+    ["dann","then",5,5],
+    ["danach","after that",5,5],
+    ["schon einmal","once before, already",5,5],
+    ["Wann?","When?",5,3],
+    ["Warum?","Why?",5,3],
+    // Time expressions with prepositions
+    ["um 6 Uhr","at 6 o'clock",5,4],
+    ["um 12 Uhr / 13 Uhr","at 12 / 1 o'clock",5,4],
+    ["bis 17 Uhr","until 5 pm",5,4],
+    ["im Mai","in May",5,4],
+    ["für zwei Wochen","for two weeks",5,4],
+    ["fast drei Jahre","almost three years",5,4],
+    // Daily routine verbs
+    ["duschen","to shower",5,1],
+    ["schicken","to send",5,1],
+    ["hinbringen","to take (s.o./s.th.) there",5,1],
+    ["hinfahren","to drive / go there",5,1],
+    ["checken","to check",5,1],
+    // Daily-life nouns
+    ["die Tomatensoße","tomato sauce",5,0],
+    ["der Lkw-Fahrer","truck driver",5,0],
+    ["der Krieg","war",5,0],
+    ["die Blumenstraße","Blumen Street (street name)",5,0],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -1100,6 +1142,8 @@ export const VOCAB_A11_DATA = {
     ["der Chef","boss",7,0],
     ["der Lohn","wages, salary",7,0],
     ["die Krankmeldung","sick note",7,0],
+    // School vocabulary
+    ["die Hausaufgaben","homework (pl.)",7,0],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],
