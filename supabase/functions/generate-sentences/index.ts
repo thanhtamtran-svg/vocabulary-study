@@ -263,7 +263,7 @@ Respond in this exact JSON format:
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-5",
           max_tokens: 8192,
           system: systemMsg,
           messages: [{ role: "user", content: prompt }],
