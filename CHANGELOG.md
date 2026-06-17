@@ -11,6 +11,19 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-17 — Fix "Could not load explanation" (model ID hết hạn)
+
+- **Bug:** Bấm "No idea" trong phiên luyện A1.1 → hiện "Could not load
+  explanation. Try again." Nguyên nhân: Anthropic đã retire model
+  `claude-sonnet-4-20250514` (beta cũ), API trả về 404.
+- **Fix:** Cập nhật model ID sang `claude-sonnet-4-5` (stable hiện tại)
+  trong 3 edge function: `explain-word`, `generate-ipa-def`,
+  `generate-sentences`. Deploy + verify live: giải thích trả về thành
+  công.
+- **Note:** `generate-ipa-def` và `generate-sentences` đã update code
+  nhưng chưa re-deploy do network block JSR registry ở thời điểm commit.
+  Sẽ deploy lần sau.
+
 ## 2026-06-12 — B-017 phần 2: chặn ghi đè startDate ở SERVER
 
 - **Phát hiện:** Fix client (pickEarlier) chưa đủ — browser còn cache
