@@ -115,8 +115,17 @@ export async function fetchCachedExplanation(word, lang?) {
   if (!res.ok) return null;
   var data = await res.json();
   if (data && data.length > 0) {
-    cachedExplanationCache.set(cacheKey, data[0].explanation);
-    return data[0].explanation;
+    var exp = data[0].explanation;
+    // German: ignore stale OLD-format explanations (headings "Key Grammar Point"
+    // / "Word Family") so the app shows the Explain button and regenerates the
+    // new ÖSD format on next click, instead of auto-displaying the outdated one.
+    if (lang !== 'en' && lang !== 'vi' && typeof exp === 'string' &&
+        (exp.indexOf('Key Grammar Point') !== -1 || exp.indexOf('Word Family') !== -1)) {
+      cachedExplanationCache.set(cacheKey, null);
+      return null;
+    }
+    cachedExplanationCache.set(cacheKey, exp);
+    return exp;
   }
   cachedExplanationCache.set(cacheKey, null);
   return null;

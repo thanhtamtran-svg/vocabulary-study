@@ -11,6 +11,20 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-23 — AI Teacher: vá nốt đường tự-hiện bản giải thích cũ
+
+- **Bug:** Từ đã học (vd "der kuchen") khi mở thẻ vẫn hiện **format cũ**
+  ("Key Grammar Point / Word Family"). Lý do: app **tự đọc thẳng bản đã
+  lưu** rồi hiện luôn (badge "Saved"), không gọi server — nên cơ chế
+  tự-nâng-cấp ở server (chỉ chạy khi bấm "Explain") không với tới. Còn
+  **278 từ** dính tình trạng này.
+- **Fix:** Khi đọc cache, nếu bản giải thích tiếng Đức là **format cũ**
+  thì coi như chưa có → app hiện nút "🤖 Explain this word". Bấm một
+  cái là sinh lại **format mới** và ghi đè vĩnh viễn (lần sau tự hiện).
+- **Vì sao chọn cách này:** không tự gọi AI hàng loạt khi lướt thẻ
+  (tiết kiệm chi phí) — chỉ sinh lại đúng từ bạn chủ động mở. Tiếng
+  Anh/Việt không bị ảnh hưởng.
+
 ## 2026-06-23 — Flashcard mặt sau: chữ chính to/đậm/dễ đọc hơn
 
 - **Trước → Sau:** Trên mặt sau, từ "das Obst" trước đây nhỏ (15px) và
