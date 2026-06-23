@@ -11,6 +11,22 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-23 — Flashcard mặt sau: ảnh to hơn, không còn trống
+
+- **Trước → Sau:** Mặt sau thẻ tiếng Đức trước đây chỉ hiện "def image"
+  (ảnh minh hoạ câu định nghĩa) — loại gần như không có (chỉ ~128/3.100
+  ảnh), nên hầu hết thẻ bị trống một mảng lớn. Giờ:
+  - **Fallback ảnh:** ưu tiên def image, nếu không có thì **dùng word
+    image** (gần như mọi từ đều có) → mặt sau gần như luôn có ảnh.
+  - **Ảnh to hơn + lên trên ở điện thoại:** màn hình hẹp xếp ảnh lên
+    trên cùng (to hơn, 168px), chữ ở dưới; màn hình rộng giữ ảnh bên
+    cạnh chữ. Thẻ cao hơn (240→300px) để chứa.
+  - **Từ chưa có ảnh nào:** hiện khung placeholder gọn gàng + nút
+    **"Tạo ảnh"** (gọi Gemini sinh ảnh ngay tại thẻ, lưu cache).
+- **Kỹ thuật:** ảnh gốc 716×716 nên phóng tới 440px vẫn nét.
+- **Cần kiểm tra:** đây là thay đổi giao diện (Tier 2) — nên xem lại
+  trên cả PC và điện thoại sau khi deploy.
+
 ## 2026-06-23 — Phiên âm: bỏ ký hiệu glottal stop (ʔ) cho dễ đọc
 
 - **Trước → Sau:** Phiên âm trên flashcard hiện ký hiệu ʔ trước nguyên

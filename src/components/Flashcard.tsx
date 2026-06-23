@@ -18,6 +18,9 @@ export default React.memo(function Flashcard({
 }) {
   var speak = lang === 'en' ? speakEnglish : speakGerman;
   var gender = lang === 'en' ? null : genderDot(word.german);
+  // German back image: prefer the definition illustration, fall back to the
+  // word image (def images exist for only ~128 words; word images for ~all).
+  var backImage = defImage || wordImage;
 
   function handleKeyDown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -83,8 +86,9 @@ export default React.memo(function Flashcard({
               {wordImage ? <img src={wordImage.url} alt="" className="flashcard-back-image" /> : null}
             </div>
           </> : <>
-            {/* German back: German definition + word + cached image */}
-            <div className={'flashcard-back-layout' + (defImage ? ' has-image' : '')}>
+            {/* German back: German definition + word + image (def \u2192 word fallback).
+                Always has-image: the slot holds an image OR the generate-placeholder. */}
+            <div className="flashcard-back-layout has-image">
               <div className="flashcard-back-text">
                 {wordDefinition ? <div style={{
                   fontSize:'14px',color:'#2E3033',lineHeight:'1.4',marginBottom:'8px',
@@ -103,7 +107,25 @@ export default React.memo(function Flashcard({
                   </button>
                 </div>
               </div>
-              {defImage ? <img src={defImage.url} alt="" className="flashcard-back-image" /> : null}
+              {backImage
+                ? <img src={backImage.url} alt="" className="flashcard-back-image" />
+                : <div className="flashcard-back-image flashcard-img-placeholder"
+                    onClick={function(e) { e.stopPropagation(); }}>
+                    {imageLoading
+                      ? <>
+                          <div className="spinner" style={{width:'24px',height:'24px'}}></div>
+                          <span style={{fontSize:'11px',color:'#a09583'}}>\u0110ang t\u1EA1o \u1EA3nh\u2026</span>
+                        </>
+                      : <>
+                          <span style={{fontSize:'34px',opacity:0.45}}>{'\uD83D\uDDBC\uFE0F'}</span>
+                          <button className="btn btn-sm btn-secondary"
+                            style={{width:'auto',padding:'6px 12px',fontSize:'12px'}}
+                            aria-label={'Generate image for ' + word.german}
+                            onClick={function(e) { e.stopPropagation(); if (onGenerateImage) onGenerateImage(); }}>
+                            {'\u2728'} T\u1EA1o \u1EA3nh
+                          </button>
+                        </>}
+                  </div>}
             </div>
           </>}
         </div>
