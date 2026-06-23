@@ -176,6 +176,23 @@ Khi học xong khoá, có thể export ra Anki deck để duy trì spaced
 repetition lâu dài. Hoặc PDF certificate "đã hoàn thành A1.1" cho
 vui.
 
+### B-019: Nút "X" (clear) của AI Teacher không xoá được cache server + dọn cache cũ
+
+**Effort:** S · **Tier:** 3
+
+Phát hiện 2026-06-23: nút "X" trong hộp AI Teacher gọi DELETE lên
+`vocab_explanations` bằng key ẩn danh, nhưng RLS chặn → trả về 204
+nhưng KHÔNG xoá dòng nào. Hệ quả: người dùng không thể "ép sinh lại"
+1 từ; và ~300 dòng cache format cũ vẫn nằm đó (đã vô hại nhờ auto
+nâng-cấp, nhưng là rác).
+
+**Đề xuất:** (a) Cho nút "X" gọi 1 edge function nhỏ dùng service-role
+key để xoá đúng cache theo từ; hoặc (b) chạy 1 lần SQL dọn dòng cũ
+trong Supabase dashboard: `DELETE FROM vocab_explanations WHERE word
+NOT LIKE 'en:%' AND word NOT LIKE 'vi:%';`.
+
+**Trade-off:** Thấp ưu tiên — auto nâng-cấp đã giải quyết phần nhìn thấy.
+
 ### B-012: Multi-user — vợ / con cùng học
 
 **Effort:** XL · **Tier:** 3-Security
@@ -190,6 +207,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-06-23 — AI Teacher: format giải thích tiếng Đức mới (ÖSD A1) + auto nâng-cấp cache cũ. Phát sinh B-019.
 - 2026-06-17 — B-018 closed: fix "Could not load explanation" — Anthropic model ID deprecated, updated to claude-sonnet-4-5
 - 2026-06-12 — B-017 closed: fix mergeFullState ghi đè startDate trong incognito + 4 regression test
 - 2026-06-12 — B-015 closed: sync hoạt động trên máy mới (email-only flow)

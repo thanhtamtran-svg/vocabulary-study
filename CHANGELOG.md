@@ -11,6 +11,29 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-23 — AI Teacher: format giải thích tiếng Đức mới (ÖSD A1)
+
+- **Trước → Sau:** Bấm "Explain this word" cho từ tiếng Đức trước đây
+  hiện "Key Grammar Point / Word Family / Example Sentences". Giờ đổi
+  sang bố cục mới, dễ đọc và sát kỳ thi ÖSD A1 hơn:
+  - **Simple explanation** — giải thích ngắn gọn (tiếng Anh).
+  - **At a glance** — Tone / Mode / Register / Nuance / Dialect (ký hiệu
+    gọn N/F/S… + giải thích trong ngoặc).
+  - **Plural form** kèm phiên âm — chỉ hiện với danh từ.
+  - **Conjugation** Präsens + Perfekt — mỗi dạng 1 dòng có nút đọc 🔊
+    riêng (chỉ hiện với động từ).
+  - **ÖSD-style example**, **Similar words** (xếp từ ít → trang trọng),
+    **Nuance differences**, **Usage tips**.
+- **Tự nâng cấp từ cũ:** 300 từ tiếng Đức đang lưu cache theo format cũ
+  sẽ tự sinh lại theo format mới ngay lần mở tiếp theo — không cần xoá
+  tay (key ẩn danh không xoá được cache do RLS chặn). Tiếng Anh / Việt
+  không bị ảnh hưởng.
+- **Verify live:** der Tisch (danh từ) + duschen (động từ) ra đúng
+  format mới; kochen (đang cache format cũ) tự nâng cấp và lưu lại đúng
+  format mới ✅. Build + 15/15 test pass.
+- **Trade-off:** Mỗi từ cũ tốn 1 lần gọi AI khi mở lại lần đầu (rất nhỏ,
+  chỉ khi xem). Các dòng cache cũ còn sót vô hại, dọn sau (B-019).
+
 ## 2026-06-17 — Fix "Could not load explanation" (model ID hết hạn)
 
 - **Bug:** Bấm "No idea" trong phiên luyện A1.1 → hiện "Could not load
