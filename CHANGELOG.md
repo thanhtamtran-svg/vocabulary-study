@@ -11,6 +11,15 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-23 — Flashcard mặt sau: chữ chính to/đậm/dễ đọc hơn
+
+- **Trước → Sau:** Trên mặt sau, từ "das Obst" trước đây nhỏ (15px) và
+  màu xám nhạt — khó đọc, lại nằm dưới định nghĩa. Giờ **từ chính làm
+  tiêu điểm**: to 24px, in đậm, màu đậm dễ đọc, đặt **lên trên**; phiên
+  âm rõ hơn; định nghĩa lùi xuống làm phần phụ (chữ dịu, nhỏ hơn).
+- Sửa đúng "thứ tự ưu tiên + tương phản" đã bàn. Chỉ là CSS/giao diện,
+  không đụng dữ liệu.
+
 ## 2026-06-23 — Flashcard mặt sau: ảnh to hơn, không còn trống
 
 - **Trước → Sau:** Mặt sau thẻ tiếng Đức trước đây chỉ hiện "def image"
