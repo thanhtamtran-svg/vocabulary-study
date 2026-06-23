@@ -92,8 +92,8 @@ export default React.memo(function Flashcard({
               <div className="flashcard-back-text">
                 {/* Word is the hero on the answer side: big, bold, high-contrast. */}
                 <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',flexWrap:'wrap'}}>
-                  <span style={{fontSize:'24px',fontWeight:700,color:'#2E3033',letterSpacing:'-0.01em'}}>{word.german}</span>
-                  {wordIPA ? <span style={{fontSize:'13px',color:'#94a3b8',fontFamily:'serif',fontStyle:'italic'}}>
+                  <span className="flashcard-back-word">{word.german}</span>
+                  {wordIPA ? <span className="flashcard-back-ipa" style={{color:'#94a3b8',fontFamily:'serif',fontStyle:'italic'}}>
                     {'/' + wordIPA + '/'}
                   </span> : null}
                   <button className="speak-btn back"
@@ -103,8 +103,8 @@ export default React.memo(function Flashcard({
                   </button>
                 </div>
                 {/* Definition demoted to supporting text below the word. */}
-                {wordDefinition ? <div style={{
-                  fontSize:'13px',color:'#718096',lineHeight:'1.45',marginTop:'8px',
+                {wordDefinition ? <div className="flashcard-back-def" style={{
+                  color:'#718096',lineHeight:'1.45',marginTop:'8px',
                   fontStyle:'italic',textAlign:'center'
                 }}>{wordDefinition}</div> : null}
               </div>

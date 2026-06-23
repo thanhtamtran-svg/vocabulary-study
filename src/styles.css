@@ -63,6 +63,10 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:#7E9
 .flashcard-back-text{width:100%;display:flex;flex-direction:column;justify-content:center}
 .flashcard-back-image{width:168px;height:168px;object-fit:contain;border-radius:10px;background:#fff;display:block}
 .flashcard-img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #d8cfc0;background:#faf8f4;cursor:default}
+/* Back word/IPA/definition scale up with screen size (mobile sizes below) */
+.flashcard-back-word{font-size:24px;font-weight:700;color:#2E3033;letter-spacing:-0.01em}
+.flashcard-back-ipa{font-size:13px}
+.flashcard-back-def{font-size:13px}
 
 /* ===== CONFIDENCE BUTTONS ===== */
 .confidence-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:14px 0}
@@ -243,6 +247,11 @@ select:focus{border-color:#D67635}
   .flashcard-back-layout.has-image .flashcard-back-text{flex:1;min-width:0}
   .flashcard-back-image{width:240px;height:240px}
 
+  /* Bigger back text to match the larger desktop card */
+  .flashcard-back-word{font-size:30px}
+  .flashcard-back-ipa{font-size:15px}
+  .flashcard-back-def{font-size:15px}
+
   /* Wider stat grid */
   .stat .num{font-size:32px}
 
@@ -283,6 +292,11 @@ select:focus{border-color:#D67635}
   /* Larger image on big screens — fills card height */
   .flashcard-back-image{width:380px;height:380px}
 
+  /* Back text scales up too on big screens */
+  .flashcard-back-word{font-size:36px}
+  .flashcard-back-ipa{font-size:16px}
+  .flashcard-back-def{font-size:17px}
+
   /* Session/exercise content wider */
   .session-content{width:960px}
 
@@ -304,6 +318,7 @@ select:focus{border-color:#D67635}
   /* Largest flashcard + image on big monitors */
   .flashcard{height:500px}
   .flashcard-back-image{width:440px;height:440px}
+  .flashcard-back-word{font-size:40px}
 
   /* Even bigger exercise content */
   .session-content .card{padding:32px;font-size:17px}
