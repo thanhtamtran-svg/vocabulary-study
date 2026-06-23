@@ -18,9 +18,11 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
   Ký hiệu này đúng về ngữ âm (âm bật thanh hầu) nhưng trông giống dấu
   hỏi và gây rối cho người học A1. Giờ đã bỏ → /ˈoːpst/, /ˈaʁbaɪ̯tən/
   (giống từ điển Hueber/Langenscheidt).
-- **Phạm vi:** 18/128 từ đang lưu có ký hiệu này. Quy tắc sinh phiên âm
-  đã sửa để không tạo nữa; 18 từ cũ tự dọn ngay lần mở tiếp theo (hàm
-  tự ghi đè cache bằng key service-role — không cần thao tác tay).
+- **Phạm vi:** 18/128 từ đang lưu có ký hiệu này. Sửa ở 2 lớp cho chắc:
+  (1) quy tắc sinh phiên âm bỏ ʔ + hàm tự dọn cache khi từ được sinh
+  lại; (2) app cũng tự bỏ ʔ ngay lúc hiển thị — nên cả những từ cũ đã
+  lưu đầy đủ (IPA + định nghĩa, không gọi lại server) vẫn hiện sạch
+  ngay. Không cần thao tác tay.
 - **Verify live:** das Obst → /ˈoːpst/, arbeiten → /ˈaʁbaɪ̯tən/, cache
   đã ghi đè sạch ✅.
 - **Kèm theo:** Lần deploy này cũng đẩy luôn bản sửa model ID

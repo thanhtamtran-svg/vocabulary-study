@@ -67,7 +67,11 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
       }).then(function(r) { return r.ok ? r.json() : []; })
     ]);
+    // Strip the glottal stop (ʔ) from any cached IPA. The server (generate-ipa-def)
+    // omits it now, but legacy cache rows still have it and fully-cached words never
+    // re-hit the server — so clean it here too, the single point all IPA flows through.
     var cachedIpa = results[0]?.[0]?.ipa || null;
+    if (cachedIpa) cachedIpa = cachedIpa.replace(/ʔ/g, '');
     var cachedDef = results[1]?.[0]?.definition || null;
 
     if (cachedIpa && cachedDef) {
@@ -88,7 +92,8 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
       return fallback;
     }
     var data = await res.json();
-    var genResult = { ipa: data.ipa || cachedIpa, definition: data.definition || cachedDef };
+    var genIpa = data.ipa ? data.ipa.replace(/ʔ/g, '') : data.ipa;
+    var genResult = { ipa: genIpa || cachedIpa, definition: data.definition || cachedDef };
     ipaDefCache.set(key, genResult);
     return genResult;
   } catch(e) {
