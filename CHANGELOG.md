@@ -11,6 +11,23 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-06-23 — Phiên âm: bỏ ký hiệu glottal stop (ʔ) cho dễ đọc
+
+- **Trước → Sau:** Phiên âm trên flashcard hiện ký hiệu ʔ trước nguyên
+  âm đầu từ (vd "das Obst" = /ˈʔoːpst/, "arbeiten" = /ˈʔaʁbaɪ̯tən/).
+  Ký hiệu này đúng về ngữ âm (âm bật thanh hầu) nhưng trông giống dấu
+  hỏi và gây rối cho người học A1. Giờ đã bỏ → /ˈoːpst/, /ˈaʁbaɪ̯tən/
+  (giống từ điển Hueber/Langenscheidt).
+- **Phạm vi:** 18/128 từ đang lưu có ký hiệu này. Quy tắc sinh phiên âm
+  đã sửa để không tạo nữa; 18 từ cũ tự dọn ngay lần mở tiếp theo (hàm
+  tự ghi đè cache bằng key service-role — không cần thao tác tay).
+- **Verify live:** das Obst → /ˈoːpst/, arbeiten → /ˈaʁbaɪ̯tən/, cache
+  đã ghi đè sạch ✅.
+- **Kèm theo:** Lần deploy này cũng đẩy luôn bản sửa model ID
+  (claude-sonnet-4-5) của `generate-ipa-def` còn treo từ 2026-06-17.
+- **Trade-off:** Mất một chút độ chi tiết ngữ âm (ʔ là âm có thật),
+  đổi lấy phiên âm gọn dễ đọc — không ảnh hưởng việc học phát âm A1.
+
 ## 2026-06-23 — AI Teacher: format giải thích tiếng Đức mới (ÖSD A1)
 
 - **Trước → Sau:** Bấm "Explain this word" cho từ tiếng Đức trước đây
