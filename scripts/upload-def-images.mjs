@@ -1,59 +1,69 @@
 // Upload German definition images to Supabase Storage.
 //
 // Walks every batch folder under IMAGE_ROOT, maps each filename
-// "{index}.png" to the corresponding word in VOCAB_DATA (formula:
-// wordIdx = (batch - 1) * 8 + index), and POSTs to the public
-// upload-image edge function with key "def {german_lowercase}".
+// "{idx}.png" to VOCAB_DATA.words[idx] (the filename IS the global
+// word index), and POSTs to the upload-image edge function with
+// key "def {german_lowercase}".
 //
-// Run dry-first to preview what would happen:
+// By default skips words that already have a def image in Supabase.
+// Run dry-first to preview:
 //   node scripts/upload-def-images.mjs --dry
 // Then for real:
 //   node scripts/upload-def-images.mjs
-//
-// Rate limit: the edge function caps at 20 uploads/min per IP, so we
-// pace at ~600ms between requests (≈100/min headroom is unsafe — sticking
-// well under the limit with explicit waits and back-off on 429).
+// Force re-upload everything:
+//   node scripts/upload-def-images.mjs --force
 
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const SUPABASE_URL = 'https://qpzepnbqdscshylcwvhr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jHgz4-egQIk9dYaV7HhR5w_MK3AYdC0';
 const UPLOAD_ENDPOINT = SUPABASE_URL + '/functions/v1/upload-image';
 const IMAGE_ROOT = 'C:/Users/ASUS/Documents/Claude/Projects/Image Gen/german-defimages';
-const BATCH_NUMBERS = [1, 3, 4, 5, 6, 7, 8, 9, 10, 21, 22, 23, 24, 25, 26, 27, 29, 31, 87, 88, 89, 90, 91, 105, 106, 107];
-const DELAY_MS = 4000; // 4s between uploads → 15/min, well under the 20/min cap
+const DELAY_MS = 4000; // 4s between uploads → 15/min, well under 20/min cap
 const DRY_RUN = process.argv.includes('--dry');
+const FORCE = process.argv.includes('--force');
+const ONLY_BATCH_ARG = process.argv.find(a => a.startsWith('--only-batch='));
+const ONLY_BATCH = ONLY_BATCH_ARG ? parseInt(ONLY_BATCH_ARG.split('=')[1]) : null;
 
-// Load VOCAB_DATA.words by lightly parsing vocab-data.ts.
-// We avoid a full TypeScript import here (no toolchain) — instead we
-// regex-extract the words array. The data is a stable, well-formed
-// array of [german, english, catIdx, typeIdx] tuples.
+// Query vocab_images for which "def {word}" keys already have an image.
+async function fetchExistingKeys(allKeys) {
+  const present = new Set();
+  const CHUNK = 50;
+  for (let i = 0; i < allKeys.length; i += CHUNK) {
+    const slice = allKeys.slice(i, i + CHUNK);
+    const inFilter = slice.map(k => '"' + k.replace(/"/g, '\\"') + '"').join(',');
+    const url = `${SUPABASE_URL}/rest/v1/vocab_images?word=in.(${encodeURIComponent(inFilter)})&select=word,image_base64`;
+    const res = await fetch(url, {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
+    });
+    if (!res.ok) continue;
+    const rows = await res.json().catch(() => []);
+    for (const row of rows) if (row.image_base64) present.add(row.word);
+  }
+  return present;
+}
+
+// Parse VOCAB_DATA.words from vocab-data.ts without a TS toolchain.
 function loadWords() {
   const src = readFileSync('src/vocab-data.ts', 'utf-8');
   const startMarker = 'words: [';
   const start = src.indexOf(startMarker);
   if (start < 0) throw new Error('Could not find words array in vocab-data.ts');
   const sliceStart = start + startMarker.length;
-  // Find the matching close — assume words array ends before the
-  // line containing "  ],\n  batches:" (the next top-level field).
   const batchesIdx = src.indexOf('batches:', sliceStart);
   if (batchesIdx < 0) throw new Error('Could not find batches marker after words');
-  // Step back to the closing ] of the words array
   const closeIdx = src.lastIndexOf(']', batchesIdx);
   const arrayBody = src.substring(sliceStart, closeIdx);
-
-  // Each line looks like:  ["der Apfel","apple",8,0],
-  // We only need the first string (the German word).
-  const lines = arrayBody.split('\n');
   const words = [];
-  for (const line of lines) {
+  for (const line of arrayBody.split('\n')) {
     const m = line.match(/^\s*\[\s*"((?:[^"\\]|\\.)*)"/);
     if (m) words.push(m[1].replace(/\\"/g, '"').replace(/\\\\/g, '\\'));
   }
   return words;
 }
 
-async function uploadOne({ batch, idx, word, filePath }) {
+async function uploadOne({ idx, word, filePath }) {
   const base64 = readFileSync(filePath).toString('base64');
   const uploadKey = 'def ' + word.toLowerCase();
   if (DRY_RUN) {
@@ -80,35 +90,58 @@ async function main() {
   console.log('Loaded ' + words.length + ' words from vocab-data.ts');
   console.log(DRY_RUN ? '\n*** DRY RUN — no uploads will happen ***\n' : '\n*** LIVE RUN ***\n');
 
+  // Discover all batch folders dynamically
+  const allEntries = readdirSync(IMAGE_ROOT, { withFileTypes: true });
+  const batchDirs = allEntries
+    .filter(e => e.isDirectory() && /^batch-\d+$/.test(e.name))
+    .map(e => ({ name: e.name, num: parseInt(e.name.replace('batch-', '')) }))
+    .sort((a, b) => a.num - b.num);
+
   const plan = [];
-  for (const batch of BATCH_NUMBERS) {
-    const dir = join(IMAGE_ROOT, 'batch-' + batch);
-    if (!existsSync(dir)) {
-      console.log('batch-' + batch + ': MISSING — skipping');
-      continue;
-    }
+  for (const bd of batchDirs) {
+    if (ONLY_BATCH !== null && bd.num !== ONLY_BATCH) continue;
+    const dir = join(IMAGE_ROOT, bd.name);
     const files = readdirSync(dir).filter(f => /^\d+\.png$/.test(f))
       .sort((a, b) => parseInt(a) - parseInt(b));
     for (const file of files) {
       const idx = parseInt(file.replace('.png', ''));
-      const wordIdx = (batch - 1) * 8 + idx;
-      const word = words[wordIdx];
+      const word = words[idx];
       if (!word) {
-        console.log('batch-' + batch + '/' + file + ': NO WORD AT INDEX ' + wordIdx + ' — skipping');
+        console.log(bd.name + '/' + file + ': NO WORD AT INDEX ' + idx + ' — skipping');
         continue;
       }
-      plan.push({ batch, idx, word, filePath: join(dir, file), wordIdx });
+      plan.push({ batch: bd.num, idx, word, filePath: join(dir, file) });
     }
   }
 
-  console.log('Planned ' + plan.length + ' uploads');
+  console.log('Discovered ' + plan.length + ' image files across ' + batchDirs.length + ' batches');
+
+  // Skip already-uploaded keys unless --force was passed.
+  let skipped = 0;
+  if (!FORCE && plan.length > 0) {
+    process.stdout.write('Checking Supabase for already-uploaded def images... ');
+    const allKeys = [...new Set(plan.map(p => 'def ' + p.word.toLowerCase().trim()))];
+    const present = await fetchExistingKeys(allKeys);
+    console.log(present.size + ' of ' + allKeys.length + ' keys already have images.');
+    const before = plan.length;
+    for (let i = plan.length - 1; i >= 0; i--) {
+      if (present.has('def ' + plan[i].word.toLowerCase().trim())) plan.splice(i, 1);
+    }
+    skipped = before - plan.length;
+  }
+
+  console.log('Planned ' + plan.length + ' uploads (' + skipped + ' skipped as already uploaded)');
+  if (plan.length === 0) {
+    console.log('Nothing to upload.');
+    return;
+  }
   console.log('First 5 mappings:');
   for (const p of plan.slice(0, 5)) {
-    console.log('  batch-' + p.batch + '/' + p.idx + '.png → "def ' + p.word.toLowerCase() + '" (word #' + p.wordIdx + ')');
+    console.log('  batch-' + p.batch + '/' + p.idx + '.png → "def ' + p.word.toLowerCase() + '"');
   }
   console.log('Last 3 mappings:');
   for (const p of plan.slice(-3)) {
-    console.log('  batch-' + p.batch + '/' + p.idx + '.png → "def ' + p.word.toLowerCase() + '" (word #' + p.wordIdx + ')');
+    console.log('  batch-' + p.batch + '/' + p.idx + '.png → "def ' + p.word.toLowerCase() + '"');
   }
 
   if (DRY_RUN) {
@@ -122,7 +155,6 @@ async function main() {
     const p = plan[i];
     process.stdout.write('[' + (i + 1) + '/' + plan.length + '] batch-' + p.batch + '/' + p.idx + '.png → def ' + p.word.toLowerCase() + ' ... ');
     let result = await uploadOne(p);
-    // Simple backoff on rate limit: wait 65s and retry once
     if (result.rateLimited) {
       rateLimitHits++;
       process.stdout.write('429, waiting 65s and retrying... ');
