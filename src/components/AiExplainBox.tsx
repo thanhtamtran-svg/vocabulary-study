@@ -105,7 +105,20 @@ export default React.memo(function AiExplainBox({
         >{'\u2715'}</button>
       </div>
       <div className="ai-explain-content">
-        {aiExplanation.split('\n').reduce(function(acc, line, i) {
+        {(function() {
+          var lines = aiExplanation.split('\n');
+          var filtered = [];
+          var skip = false;
+          for (var li = 0; li < lines.length; li++) {
+            var l = lines[li];
+            if (l.match(/^#+\s/)) {
+              var title = l.replace(/^#+\s/, '');
+              skip = title.toLowerCase().startsWith('usage tip');
+            }
+            if (!skip) filtered.push(l);
+          }
+          return filtered;
+        })().reduce(function(acc, line, i) {
           if (!line.trim() || line.match(/^-{3,}$/)) return acc;
           if (line.match(/^\|[-|\s]+\|$/)) return acc;
           if (line.match(/^#+\s/)) {
