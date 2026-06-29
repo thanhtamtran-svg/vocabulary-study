@@ -456,8 +456,9 @@ function App({onHome, vocabData, variant}) {
     if (view !== 'exercise' || !exerciseSession) return;
     function handleKeyDown(e) {
       if (e.key !== 'Enter') return;
-      // Don't interfere with text input (it has its own handler)
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      // Don't interfere with text inputs or focused buttons (button Enter triggers click natively)
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'TEXTAREA') return;
 
       var item = exerciseSession.items[exerciseIdx];
       if (exerciseFeedback) {
