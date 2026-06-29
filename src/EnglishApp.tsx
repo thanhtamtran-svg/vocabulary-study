@@ -856,8 +856,9 @@ function EnglishApp({onHome}) {
       userAnswer = exerciseAnswer.trim();
       var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
       var na = stripTrailingPunct(userAnswer.toLowerCase());
-      var nc = stripTrailingPunct(item.correctAnswer.toLowerCase());
-      correct = na === nc || na === corePhrase(nc) || corePhrase(na) === corePhrase(nc);
+      var acceptedAnswers = stripTrailingPunct(item.correctAnswer.toLowerCase())
+        .split(/[,/]/).map(function(s) { return s.trim(); }).filter(Boolean);
+      correct = acceptedAnswers.some(function(a) { return na === a || na === corePhrase(a) || corePhrase(na) === corePhrase(a); });
     } else {
       // Generic text input comparison
       userAnswer = exerciseAnswer.trim();

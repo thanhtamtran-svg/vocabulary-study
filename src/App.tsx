@@ -912,7 +912,10 @@ function App({onHome, vocabData, variant}) {
     } else if (item.type === 'fill_english') {
       userAnswer = exerciseAnswer.trim();
       var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
-      correct = stripTrailingPunct(userAnswer).toLowerCase() === stripTrailingPunct(item.correctAnswer).toLowerCase();
+      var normalizedUser = stripTrailingPunct(userAnswer).toLowerCase();
+      var acceptedAnswers = stripTrailingPunct(item.correctAnswer).toLowerCase()
+        .split(/[,/]/).map(function(s) { return s.trim(); }).filter(Boolean);
+      correct = acceptedAnswers.some(function(a) { return a === normalizedUser; });
     } else if (item.type === 'conjugation') {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').replace(/[.,!?;:]+$/, '').trim(); };
