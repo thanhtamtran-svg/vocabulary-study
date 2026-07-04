@@ -169,8 +169,14 @@ export const VOCAB_A11_DATA = {
     // Strategien
     ["Ja, stimmt.","Yes, that's right.",1,4],
     ["Ja, gut.","Yes, good.",1,4],
+    ["Wie bitte?","Pardon? / Sorry, what?",1,4],
     ["Einen Moment, bitte.","One moment, please.",1,4],
     ["Ich weiß es nicht.","I don't know.",1,4],
+    ["Ah, ja.","Oh, yes.",1,4],
+    ["Aha!","I see!",1,4],
+    ["Ah, schön.","Oh, nice.",1,4],
+    ["Ah, toll.","Oh, great.",1,4],
+    ["Interessant.","Interesting.",1,4],
 
     // ===== Cat 2: Lektion 2 — Meine Familie =====
     // Foto-Hörgeschichte
@@ -275,6 +281,8 @@ export const VOCAB_A11_DATA = {
     // Strategien
     ["Ja, genau.","Yes, exactly.",2,4],
     ["Nein, falsch.","No, wrong.",2,4],
+    ["Na ja, ...","Well, ...",2,4],
+    ["Ach, ...","Oh, ...",2,4],
     // Location & directions phrases
     ["Wo liegt...?","Where is... located?",2,4],
     ["Es liegt im Norden.","It is in the north.",2,4],
@@ -717,6 +725,7 @@ export const VOCAB_A11_DATA = {
     ["Um halb elf.","At half past ten.",5,4],
     // Öffnungszeiten
     ["Wann ist ... geöffnet?","When is ... open?",5,4],
+    ["Wann ist der Kindergarten geöffnet?","When is the kindergarten open?",5,4],
     ["Von 7 Uhr 30 bis 17 Uhr.","From 7:30 to 5 pm.",5,4],
     ["Von Montag bis Freitag.","From Monday to Friday.",5,4],
     // Verabredung
@@ -956,10 +965,12 @@ export const VOCAB_A11_DATA = {
     ["Ich mag Wind.","I like wind.",6,4],
     ["Regen mag ich gar nicht.","I don't like rain at all.",6,4],
     // Strategien
+    ["Sag mal, ...","Say, ... / Tell me, ...",6,4],
     ["Guck mal!","Look!",6,4],
     ["Na klar!","Of course!",6,4],
     ["Na gut.","All right.",6,4],
     ["Oh, wie dumm!","Oh, how silly!",6,4],
+    ["Hm, ...","Hmm, ...",6,4],
     ["Kein Problem.","No problem.",6,4],
     ["Ich weiß nicht.","I don't know.",6,4],
     ["Moment mal, ...","Wait a moment, ...",6,4],
