@@ -415,8 +415,9 @@ function EnglishApp({onHome}) {
     if (view !== 'exercise' || !exerciseSession) return;
     function handleKeyDown(e) {
       if (e.key !== 'Enter') return;
-      // Don't interfere with text input (it has its own handler)
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      // Don't interfere with text inputs or focused buttons (button Enter triggers click natively)
+      var tag = document.activeElement && document.activeElement.tagName;
+      if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'TEXTAREA') return;
 
       var item = exerciseSession.items[exerciseIdx];
       if (exerciseFeedback) {
@@ -1191,6 +1192,7 @@ function EnglishApp({onHome}) {
       setPushSubscription={setPushSubscription}
       reminderHour={reminderHour}
       setReminderHour={setReminderHour}
+      reminderHourKey="english_reminder_hour"
       resetStep={resetStep}
       setResetStep={setResetStep}
       resetPass={resetPass}

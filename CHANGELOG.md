@@ -11,6 +11,35 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-10 — Khoá 2 cửa hậu bảo mật + sửa 2 bug khoá tiếng Anh
+
+Kết quả đợt review toàn dự án (PM duyệt "fix priority batch").
+
+- **Khoá cửa đồng bộ tiến độ (sync):** Trước đây ai biết email của bạn
+  là có thể đọc hoặc ghi đè tiến độ học của bạn từ bên ngoài. Giờ server
+  yêu cầu "vé đăng nhập" (cấp khi bạn nhập mật khẩu app) cho khoá tiếng
+  Đức đầy đủ và tiếng Anh. **Khoá A1.1 công khai vẫn sync tự do như cũ**
+  — không đổi gì với người dùng A1.1.
+  - *Lưu ý lịch sử:* ngày 2026-06-12 PM từng quyết định gỡ chốt này để
+    sync chỉ cần email (bỏ ý tưởng Magic Link). Lần này khác: không bắt
+    đăng nhập thêm bước nào — dùng lại đúng phiên đăng nhập mật khẩu mà
+    khoá Đức/Anh vốn đã bắt buộc, nên trải nghiệm không đổi.
+- **Khoá cửa upload ảnh:** Trước đây bất kỳ ai trên mạng cũng có thể
+  ghi đè ảnh minh hoạ từ vựng. Giờ chỉ script của chủ dự án (có mật
+  khẩu app trong file `.env` trên máy) upload được. 3 script upload
+  ảnh đã được nâng cấp để tự đăng nhập.
+- **Tiếng Anh — giờ nhắc học không lưu:** Đổi giờ nhắc trong Settings
+  của khoá tiếng Anh bị trả về giờ cũ sau khi mở lại app (màn hình
+  Settings dùng chung lưu nhầm vào ô của khoá Đức). Đã lưu đúng ô.
+- **Tiếng Anh — phím Enter nhảy câu:** Bug "Enter khi đang focus nút
+  bấm làm nhảy 2 bước trong bài tập" đã sửa cho tiếng Đức từ 2026-06-29
+  nhưng chưa áp cho tiếng Anh. Đã áp cùng một bản sửa.
+
+**Việc bạn cần làm 1 lần:** tạo file `.env` ở gốc dự án với nội dung
+`APP_PASSWORD=mật-khẩu-app` để các routine upload ảnh ("english images",
+"a11 images", "def images") tiếp tục chạy được. File này git bỏ qua,
+không bao giờ bị đưa lên mạng.
+
 ## 2026-06-23 — AI Teacher: vá nốt đường tự-hiện bản giải thích cũ
 
 - **Bug:** Từ đã học (vd "der kuchen") khi mở thẻ vẫn hiện **format cũ**

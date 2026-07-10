@@ -31,6 +31,34 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
+// Validate session token from Authorization header (same scheme as
+// explain-word: HMAC-signed "vocab_auth:<expires>:<sig>" issued by
+// verify-password on login).
+async function validateAuthToken(req: Request): Promise<boolean> {
+  try {
+    const authHeader = req.headers.get("authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) return false;
+    const token = authHeader.slice(7);
+    const parts = token.split(":");
+    if (parts.length < 3 || parts[0] !== "vocab_auth") return false;
+    const expires = parseInt(parts[1], 10);
+    if (isNaN(expires) || Date.now() > expires) return false;
+    const payload = parts[0] + ":" + parts[1];
+    const sigHex = parts.slice(2).join(":");
+    const secret = Deno.env.get("SESSION_SECRET") || Deno.env.get("APP_PASSWORD") || "default";
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw", encoder.encode(secret + "_session_key"),
+      { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+    );
+    const expectedSig = new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(payload)));
+    const expectedHex = Array.from(expectedSig).map(b => b.toString(16).padStart(2, "0")).join("");
+    return sigHex === expectedHex;
+  } catch {
+    return false;
+  }
+}
+
 // Validate email shape — rejects empty / non-string / absurdly long /
 // no-@-sign inputs. Not strict RFC 5322; just enough to block obvious
 // junk from creating rows in vocab_progress.
@@ -68,6 +96,20 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "email required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Auth gate: the A1.1 course (lang "german_a11") is deliberately
+    // public — no password exists for it, so its sync stays open.
+    // Every other namespace (German full, English, legacy no-lang keys)
+    // requires a valid session token, otherwise anyone who knows an
+    // email could read or overwrite that user's progress.
+    if (lang !== "german_a11") {
+      const authenticated = await validateAuthToken(req);
+      if (!authenticated) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const key = lang ? email + ":" + lang : email;

@@ -82,6 +82,9 @@ export default React.memo(function SettingsView({
   pushEnabled, setPushEnabled, pushLoading, setPushLoading,
   pushSubscription, setPushSubscription,
   reminderHour, setReminderHour,
+  // localStorage key the reminder hour persists under — differs per course
+  // (German reads 'vocab_reminder_hour', English 'english_reminder_hour').
+  reminderHourKey,
   resetStep, setResetStep, resetPass, setResetPass, resetError, setResetError,
   setProgress, setTodayCompleted,
   exportProgress, importProgress
@@ -194,7 +197,7 @@ export default React.memo(function SettingsView({
                   onChange={function(e) {
                     var hour = parseInt(e.target.value);
                     setReminderHour(hour);
-                    localStorage.setItem('vocab_reminder_hour', hour);
+                    localStorage.setItem(reminderHourKey || 'vocab_reminder_hour', hour);
                     if (pushSubscription) {
                       updateReminderHour(pushSubscription.endpoint, hour);
                     }

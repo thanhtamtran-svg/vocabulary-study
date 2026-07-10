@@ -17,6 +17,7 @@
 
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { getAuthHeader } from './upload-auth.mjs';
 
 const SUPABASE_URL = 'https://qpzepnbqdscshylcwvhr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jHgz4-egQIk9dYaV7HhR5w_MK3AYdC0';
@@ -71,6 +72,9 @@ function loadPhrases() {
   return phrases;
 }
 
+// Set in main() before the live upload loop (upload-image requires auth).
+let AUTH_HEADER = {};
+
 async function uploadOne({ idx, phrase, filePath }) {
   const base64 = readFileSync(filePath).toString('base64');
   const uploadKey = phrase.toLowerCase();
@@ -79,7 +83,7 @@ async function uploadOne({ idx, phrase, filePath }) {
   }
   const res = await fetch(UPLOAD_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...AUTH_HEADER },
     body: JSON.stringify({ word: uploadKey, image: base64 }),
   });
   if (res.status === 429) {
@@ -156,6 +160,8 @@ async function main() {
     console.log('\nDry run complete. Re-run without --dry to upload for real.');
     return;
   }
+
+  AUTH_HEADER = await getAuthHeader(SUPABASE_URL);
 
   let ok = 0, failed = 0, rateLimitHits = 0;
   const failures = [];

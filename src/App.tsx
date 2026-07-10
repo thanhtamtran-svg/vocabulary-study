@@ -1258,6 +1258,7 @@ function App({onHome, vocabData, variant}) {
       setPushSubscription={setPushSubscription}
       reminderHour={reminderHour}
       setReminderHour={setReminderHour}
+      reminderHourKey="vocab_reminder_hour"
       resetStep={resetStep}
       setResetStep={setResetStep}
       resetPass={resetPass}
