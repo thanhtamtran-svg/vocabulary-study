@@ -11,6 +11,22 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-14 — Gói polish từ đợt review (B-021): emoji đúng từ, nới AI, nút không kẹt
+
+- **Emoji minh hoạ đúng từng từ:** Phát hiện thêm khi sửa — mặt trước
+  thẻ (khi từ chưa có ảnh) **luôn** hiện 📚 cho mọi từ do một lỗi nhỏ,
+  dù dự án có sẵn bộ 1.500 emoji chọn tay theo từng từ. Giờ hiện đúng
+  emoji của từ (🍎 cho Apfel, 🌅 cho Guten Morgen...). Khoá A1.1 dùng
+  bộ từ khác (emoji không khớp số thứ tự) nên giữ 📚 trung tính — tránh
+  hiện emoji sai nghĩa.
+- **Nới giới hạn AI cho khoá A1.1 công khai:** Người chưa đăng nhập
+  trước đây chỉ được hỏi AI 2 lượt/phút — lướt thẻ nhanh là bị chặn.
+  Nâng lên 6 lượt/phút; vẫn đủ chặn lạm dụng chi phí.
+- **Nút "Enabling..." không còn kẹt vĩnh viễn:** Khi bật nhắc học mà
+  trình duyệt treo (hộp xin quyền bị bỏ quên...), nút trước đây quay
+  mãi. Giờ sau 30 giây nút tự trở lại kèm hướng dẫn; nếu sau đó trình
+  duyệt phản hồi thì việc bật vẫn hoàn tất bình thường.
+
 ## 2026-07-14 — Sync không còn làm mất ngày "ôn lần cuối" của từ (B-020)
 
 - **Bug:** Khi 2 máy (PC ↔ điện thoại) gộp tiến độ, nếu một máy có ngày

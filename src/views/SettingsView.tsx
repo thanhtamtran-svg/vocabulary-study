@@ -242,16 +242,29 @@ export default React.memo(function SettingsView({
               disabled={pushLoading}
               onClick={function() {
                 setPushLoading(true);
+                // Watchdog: if any step hangs (stalled service-worker
+                // registration, permission prompt left unanswered), the
+                // button used to stay on "Enabling..." forever. Reset it
+                // after 30s; if the flow completes later it still enables.
+                var watchdog = setTimeout(function() {
+                  watchdog = null;
+                  setPushLoading(false);
+                  toast.error('No response from the browser. If a permission popup is open, choose Allow and tap the button again.');
+                }, 30000);
+                var settle = function() {
+                  if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+                  setPushLoading(false);
+                };
                 registerServiceWorker().then(function(reg) {
                   if (!reg) {
                     toast.error('Service Worker not supported');
-                    setPushLoading(false);
+                    settle();
                     return;
                   }
                   return Notification.requestPermission().then(function(perm) {
                     if (perm !== 'granted') {
                       toast.error('Notification permission denied. Please enable it in browser settings.');
-                      setPushLoading(false);
+                      settle();
                       return;
                     }
                     return subscribeToPush(reg).then(function(sub) {
@@ -262,13 +275,13 @@ export default React.memo(function SettingsView({
                         } else {
                           toast.error('Failed to save subscription. Please try again.');
                         }
-                        setPushLoading(false);
+                        settle();
                       });
                     });
                   });
                 }).catch(function(err) {
                   toast.error('Failed to enable notifications. Please try again.');
-                  setPushLoading(false);
+                  settle();
                 });
               }}
             >{pushLoading ? 'Enabling...' : '\uD83D\uDD14 Enable Daily Reminder'}</button>

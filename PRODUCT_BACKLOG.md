@@ -203,25 +203,13 @@ auth (Supabase Auth) thay vì password chung.
 
 ---
 
-### B-021: Các item polish nhỏ từ review 2026-07-10
-
-**Effort:** S mỗi cái · **Tier:** 1–2
-
-Gói các phát hiện nhỏ chưa sửa trong đợt review toàn dự án 2026-07-10
-(PM chọn chỉ fix priority batch trước):
-- Throttle AI cho người chưa đăng nhập hơi gắt (2 lượt/phút) — cân
-  nhắc nới cho khoá A1.1 công khai.
-- Emoji minh hoạ fallback 📚 chung chung khi từ không khớp — có thể
-  map thêm theo category.
-- Nút bật nhắc học có thể kẹt ở trạng thái "Enabling..." nếu trình
-  duyệt treo permission prompt — thêm timeout.
-
 ---
 
 ## ✅ Completed (gần đây)
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-14 — B-021 closed: emoji hiện đúng từng từ (trước luôn 📚 do lỗi scope), nới AI unauth 2→6/phút, watchdog 30s cho nút Enable Reminder.
 - 2026-07-14 — B-020 closed: mergeProgress không còn mất lastReview khi một máy thiếu ngày; +4 regression test.
 - 2026-07-10 — Review toàn dự án: khoá auth cho sync-progress (trừ A1.1 công khai) + upload-image; sửa 2 bug tiếng Anh (giờ nhắc không lưu, Enter nhảy câu). Phát sinh B-020, B-021.
 - 2026-06-23 — AI Teacher: format giải thích tiếng Đức mới (ÖSD A1) + auto nâng-cấp cache cũ. Phát sinh B-019.

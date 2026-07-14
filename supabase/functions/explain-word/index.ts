@@ -23,7 +23,11 @@ function getCorsHeaders(req: Request) {
 const rateLimitMap = new Map<string, number[]>();
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX_AUTH = 10;
-const RATE_LIMIT_MAX_UNAUTH = 2;
+// Unauthenticated = the public A1.1 course. 2/min proved too tight for
+// normal flashcard browsing (each "Explain" click is one request, and
+// cache hits count too); 6/min still caps abuse cost while letting a
+// real learner read explanations back-to-back.
+const RATE_LIMIT_MAX_UNAUTH = 6;
 
 function isRateLimited(ip: string, authenticated: boolean): boolean {
   const now = Date.now();

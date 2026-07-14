@@ -72,7 +72,10 @@ export default React.memo(function SessionView({
               style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}} />
           </div> : null}
           {!imageLoading && !wordImage ? <div style={{textAlign:'center',fontSize:'48px',padding:'20px'}}>
-            {typeof WORD_EMOJIS !== 'undefined' ? WORD_EMOJIS[w.idx] : '\uD83D\uDCDA'}
+            {/* Per-word emoji from the emojis prop; the old global
+                WORD_EMOJIS check never resolved in module scope, so
+                every word showed the generic book fallback. */}
+            {(emojis && emojis[w.idx]) || '\uD83D\uDCDA'}
           </div> : null}
         </div> : null}
 

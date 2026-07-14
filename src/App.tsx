@@ -1100,7 +1100,7 @@ function App({onHome, vocabData, variant}) {
       setAiLoading={setAiLoading}
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
-      emojis={WORD_EMOJIS}
+      emojis={isA11 ? undefined : WORD_EMOJIS}
       onGenerateImage={function() {
         var w = sessionWords[currentIdx];
         if (!w) return;
@@ -1120,7 +1120,7 @@ function App({onHome, vocabData, variant}) {
       sessionType={sessionType}
       progress={progress}
       setView={setView}
-      emojis={WORD_EMOJIS}
+      emojis={isA11 ? undefined : WORD_EMOJIS}
     /></Suspense>;
   }
 
@@ -1231,7 +1231,7 @@ function App({onHome, vocabData, variant}) {
       setFlipped={setFlipped}
       setStreak={setStreak}
       setView={setView}
-      emojis={WORD_EMOJIS}
+      emojis={isA11 ? undefined : WORD_EMOJIS}
     /></Suspense>;
   }
 
