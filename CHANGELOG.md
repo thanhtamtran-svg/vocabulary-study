@@ -11,6 +11,28 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-14 — Chống dò mật khẩu (B-022) + màn thiết lập hiện đúng khoá (B-023)
+
+**B-022 — chống dò mật khẩu thật sự:** Cơ chế "giới hạn số lần thử/phút"
+cũ đếm trong bộ nhớ tạm của máy chủ, mà máy chủ tắt/bật liên tục nên bộ
+đếm bị xoá — thực tế gần như không chặn được ai (kiểm chứng: 15 lần thử
+liền không dính lần nào). Giờ đếm trong cơ sở dữ liệu (dùng chung, không
+bị xoá).
+- Cửa đăng nhập (`verify-password`) giờ chặn cứng sau **12 lần thử/phút
+  tính chung** — kiểm chứng trực tiếp: đúng 12 lần rồi bị chặn (429).
+- Đếm chung (không theo địa chỉ máy) vì hạ tầng Supabase cho thấy địa chỉ
+  máy thay đổi mỗi lần gọi → đếm theo máy không đáng tin. Với app một
+  người dùng, đếm chung lại chắc hơn: kẻ xấu đổi máy bao nhiêu cũng vẫn
+  bị chặn, còn bạn gõ sai vài lần thì không sao.
+- Hàm đếm được khoá chỉ cho phía máy chủ gọi (trước đó khoá công khai
+  trong trình duyệt cũng gọi được).
+
+**B-023 — màn thiết lập hiện đúng tên/số của từng khoá:** Máy mới vào
+khoá Schritte A1.1 trước đây thấy nhầm "German 1500 / 28 weeks / 2357
+Reviews" (số của khoá 1.500 từ). Giờ tên khoá, số tuần và số từ mỗi ngày
+được tính đúng theo từng khoá. Bỏ luôn con số "2357 Reviews" bịa cứng —
+thay bằng mô tả lịch ôn (không phải con số sai).
+
 ## 2026-07-14 — Gói polish từ đợt review (B-021): emoji đúng từ, nới AI, nút không kẹt
 
 - **Emoji minh hoạ đúng từng từ:** Phát hiện thêm khi sửa — mặt trước

@@ -25,29 +25,17 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## ⭐ High
 
-### B-022: Giới hạn lượt/phút không giữ được giữa các lần server khởi động lại
+### B-024: Các edge function khác vẫn đếm lượt trong bộ nhớ tạm
 
-**Effort:** M · **Tier:** 3-Security
+**Effort:** S · **Tier:** 3-Security
 
-Phát hiện 2026-07-14 khi kiểm chứng B-021: bộ đếm "X lượt/phút" của
-mọi edge function nằm trong bộ nhớ tạm, mà server tắt/bật liên tục →
-bộ đếm bị xoá, thực tế gần như không chặn được ai (probe 15 lượt liền
-không dính 429). Ảnh hưởng lớn nhất: `verify-password` — kẻ xấu dò
-mật khẩu nhanh hơn nhiều so với 5 lượt/phút như thiết kế.
-
-**Đề xuất:** Đếm lượt trong database (bảng nhỏ + xoá dòng cũ) cho
-verify-password trước tiên; các function khác đã có khoá đăng nhập
-nên ít cấp bách hơn. Giảm nhẹ tạm thời: mật khẩu app nên đủ dài/khó.
-
-### B-023: Màn hình thiết lập A1.1 hiện nhầm chữ "German 1500"
-
-**Effort:** XS · **Tier:** 2
-
-Phát hiện 2026-07-14 khi verify trên trang thật: vào khoá Schritte
-A1.1 lần đầu (máy mới), màn hình thiết lập hiện "German 1500 — Master
-1500 words" và "2357 Reviews" (số của khoá 1500 từ). Chỉ sai chữ,
-không sai dữ liệu — SetupScreen dùng copy cố định chưa phân biệt
-variant.
+B-022 mới chỉ chuyển `verify-password` sang đếm bền trong DB. Các hàm
+còn lại (`explain-word`, `sync-progress`, `upload-image`,
+`push-subscription`) vẫn đếm trong bộ nhớ tạm → cùng lỗ hổng "reset
+khi server bật lại". Rủi ro thấp hơn nhiều vì sync/upload/push đã bắt
+buộc token đăng nhập; `explain-word` cho khách chỉ là khoá A1.1 công
+khai, giá trị lạm dụng thấp. Nhưng để nhất quán nên chuyển hết sang
+dùng `check_rate_limit` (hàm DB đã có sẵn từ B-022).
 
 ### B-014: Retry trên lỗi network thay vì exit cả batch upload
 
@@ -233,6 +221,8 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-14 — B-022 closed: verify-password đếm lượt bền trong DB, chặn cứng 12 lần/phút tính chung (đã verify 429). Phát sinh B-024.
+- 2026-07-14 — B-023 closed: màn thiết lập hiện đúng tên/số tuần/số từ theo từng khoá; bỏ số "2357 Reviews" bịa cứng.
 - 2026-07-14 — B-021 closed: emoji hiện đúng từng từ (trước luôn 📚 do lỗi scope), nới AI unauth 2→6/phút, watchdog 30s cho nút Enable Reminder.
 - 2026-07-14 — B-020 closed: mergeProgress không còn mất lastReview khi một máy thiếu ngày; +4 regression test.
 - 2026-07-10 — Review toàn dự án: khoá auth cho sync-progress (trừ A1.1 công khai) + upload-image; sửa 2 bug tiếng Anh (giờ nhắc không lưu, Enter nhảy câu). Phát sinh B-020, B-021.

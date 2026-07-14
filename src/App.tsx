@@ -1073,6 +1073,13 @@ function App({onHome, vocabData, variant}) {
       connectSync={connectSync}
       syncStatus={syncStatus}
       syncMsg={syncMsg}
+      courseFlag={'🇩🇪'}
+      courseTitle={isA11 ? 'Schritte A1.1' : 'German 1500'}
+      courseDesc={isA11
+        ? 'Master the Schritte Plus Neu A1.1 textbook vocabulary with science-based spaced repetition'
+        : 'Master 1500 words with science-based spaced repetition'}
+      newPerDay={Math.round(VOCAB_DATA.words.length / Math.max(1, batches.length))}
+      weeks={Math.ceil(batches.length / 6)}
     /></Suspense>;
   }
 

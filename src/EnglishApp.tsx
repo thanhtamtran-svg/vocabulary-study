@@ -1009,6 +1009,8 @@ function EnglishApp({onHome}) {
       courseFlag={'\uD83C\uDDEC\uD83C\uDDE7'}
       courseTitle="IELTS Speaking 1340"
       courseDesc="Master 1340 phrases for IELTS Speaking with spaced repetition"
+      newPerDay={Math.round(words.length / Math.max(1, batches.length))}
+      weeks={Math.ceil(batches.length / 6)}
     /></Suspense>;
   }
 

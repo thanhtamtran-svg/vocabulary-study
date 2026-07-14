@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { dateKey } from '../lib/dates';
 
-export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg, courseFlag, courseTitle, courseDesc }) {
+export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg, courseFlag, courseTitle, courseDesc, newPerDay, weeks }) {
   var [emailInput, setEmailInput] = useState('');
+  // Commitment numbers are per-course (passed in). Fall back to the
+  // German-1500 figures if a caller hasn't supplied them yet.
+  var perDay = newPerDay || 8;
+  var totalWeeks = weeks || 28;
   return (
     <div className="app">
       <div style={{padding:'24px',textAlign:'center'}}>
@@ -67,7 +71,7 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
         <div className="card" style={{textAlign:'left'}}>
           <h2>Your daily commitment</h2>
           <div className="task-item">
-            <div className="task-badge badge-new">8</div>
+            <div className="task-badge badge-new">{perDay}</div>
             <div>
               <strong>New words</strong>
               <br />
@@ -79,7 +83,7 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
           <div className="task-item">
             <div className="task-badge badge-r2">+</div>
             <div>
-              <strong>2357 Reviews</strong>
+              <strong>Scheduled reviews</strong>
               <br />
               <span style={{fontSize:'11px',color:'#718096'}}>
                 Previous batches on schedule: Day +2, +3, +5, +7
@@ -88,7 +92,7 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
           </div>
           <div style={{textAlign:'center',margin:'8px 0'}}>
             <span className="phase-indicator" style={{background:'#EBF5FB',color:'#1B4F72'}}>
-              ~45-60 min/day {'\u2022'} 28 weeks
+              ~45-60 min/day {'\u2022'} {totalWeeks} weeks
             </span>
           </div>
         </div>

@@ -16,12 +16,16 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Simple rate limiter: max 5 attempts per minute per IP
-const rateLimitMap = new Map<string, number[]>();
+// Rate limit: max 5 attempts per minute per IP.
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 5;
 
-function isRateLimited(ip: string): boolean {
+// Fast in-memory pre-filter: catches rapid bursts that happen to hit the
+// same warm isolate. NOT authoritative — isolates recycle and each keeps
+// its own Map, which is exactly why brute force slipped through (B-022).
+// The durable DB check below is the real gate.
+const rateLimitMap = new Map<string, number[]>();
+function isRateLimitedMemory(ip: string): boolean {
   const now = Date.now();
   const timestamps = rateLimitMap.get(ip) || [];
   const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
@@ -29,6 +33,54 @@ function isRateLimited(ip: string): boolean {
   recent.push(now);
   rateLimitMap.set(ip, recent);
   return false;
+}
+
+// Durable, cross-isolate limit via the check_rate_limit Postgres function
+// (see migrations/20260714_rate_limit.sql). Counted in the DB so it is
+// shared by every isolate — the in-memory Map above resets when isolates
+// recycle, which is exactly how brute force slipped through (B-022).
+//
+// GLOBAL bucket, not per-IP: the client IP this function observes in
+// x-forwarded-for is not stable across requests on Supabase's edge
+// network (verified 2026-07-14 — a per-IP key almost never accumulated),
+// so per-IP limiting is unreliable here. A single global counter caps
+// total login attempts regardless of source, which is the right model
+// for a single-user app: a distributed brute-force is bounded no matter
+// how many IPs it uses. GLOBAL_MAX is generous enough that the real user
+// mistyping a few times is never affected.
+//
+// Called with a plain fetch to PostgREST rather than the supabase-js
+// client: the client's cold-start (dynamic esm.sh download on a fresh
+// isolate) intermittently errored, and because we fail open that let
+// extra attempts through. Fails OPEN on any error: a DB hiccup must not
+// lock the user out of their own app; the in-memory pre-filter still
+// provides some protection then.
+const GLOBAL_MAX = 12;
+async function isRateLimitedDb(): Promise<boolean> {
+  try {
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const res = await fetch(
+      Deno.env.get("SUPABASE_URL")! + "/rest/v1/rpc/check_rate_limit",
+      {
+        method: "POST",
+        headers: {
+          "apikey": serviceKey,
+          "Authorization": "Bearer " + serviceKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          p_bucket: "verify-password:global",
+          p_max: GLOBAL_MAX,
+          p_window_seconds: 60,
+        }),
+      }
+    );
+    if (!res.ok) return false;        // fail open
+    const allowed = await res.json(); // RPC returns true=allowed
+    return allowed === false;         // so false=limited
+  } catch {
+    return false; // fail open
+  }
 }
 
 // Timing-safe string comparison
@@ -79,7 +131,7 @@ Deno.serve(async (req) => {
 
   try {
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp)) {
+    if (isRateLimitedMemory(clientIp) || await isRateLimitedDb()) {
       return new Response(
         JSON.stringify({ ok: false, error: "Too many attempts. Please wait a minute." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
