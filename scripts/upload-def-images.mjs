@@ -15,7 +15,13 @@
 
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import sharp from 'sharp';
 import { getAuthHeader } from './upload-auth.mjs';
+
+// Compress each image to WebP q80 before upload to keep Supabase storage small.
+// WebP keeps transparency (unlike JPEG) and is ~10x smaller than raw PNG.
+// The server still names the file .png, but browsers read by content, so it works.
+const WEBP_QUALITY = 80;
 
 const SUPABASE_URL = 'https://qpzepnbqdscshylcwvhr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jHgz4-egQIk9dYaV7HhR5w_MK3AYdC0';
@@ -26,6 +32,8 @@ const DRY_RUN = process.argv.includes('--dry');
 const FORCE = process.argv.includes('--force');
 const ONLY_BATCH_ARG = process.argv.find(a => a.startsWith('--only-batch='));
 const ONLY_BATCH = ONLY_BATCH_ARG ? parseInt(ONLY_BATCH_ARG.split('=')[1]) : null;
+const LIMIT_ARG = process.argv.find(a => a.startsWith('--limit='));
+const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split('=')[1]) : null;
 
 // Query vocab_images for which "def {word}" keys already have an image.
 async function fetchExistingKeys(allKeys) {
@@ -68,7 +76,9 @@ function loadWords() {
 let AUTH_HEADER = {};
 
 async function uploadOne({ idx, word, filePath }) {
-  const base64 = readFileSync(filePath).toString('base64');
+  // Compress to WebP before upload (keeps storage ~10x smaller).
+  const webp = await sharp(readFileSync(filePath)).webp({ quality: WEBP_QUALITY }).toBuffer();
+  const base64 = webp.toString('base64');
   const uploadKey = 'def ' + word.toLowerCase();
   if (DRY_RUN) {
     return { ok: true, dry: true, uploadKey };
@@ -132,6 +142,11 @@ async function main() {
       if (present.has('def ' + plan[i].word.toLowerCase().trim())) plan.splice(i, 1);
     }
     skipped = before - plan.length;
+  }
+
+  if (LIMIT && plan.length > LIMIT) {
+    plan.length = LIMIT;
+    console.log('Limited to first ' + LIMIT + ' uploads (--limit)');
   }
 
   console.log('Planned ' + plan.length + ' uploads (' + skipped + ' skipped as already uploaded)');
