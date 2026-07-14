@@ -11,6 +11,19 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-14 — Sync không còn làm mất ngày "ôn lần cuối" của từ (B-020)
+
+- **Bug:** Khi 2 máy (PC ↔ điện thoại) gộp tiến độ, nếu một máy có ngày
+  "ôn lần cuối" của một từ còn máy kia chưa có, phép so sánh chọn nhầm
+  bên *thiếu* — ngày ôn thật bị xoá lặng lẽ. Cùng họ với loạt bug lệch
+  streak PC↔phone hồi 2026-05-29.
+- **Fix:** So sánh có phòng thủ: bên nào thiếu thì lấy bên còn lại; cả
+  hai có thì lấy ngày muộn hơn. Kèm 4 test hồi quy (test đầu tiên tái
+  hiện đúng bug — chạy với code cũ sẽ fail).
+- **Ảnh hưởng:** Ngày ôn đã mất trước đây không tự quay lại (không còn
+  dữ liệu), nhưng từ giờ không mất thêm. Lịch ôn tập và streak ổn định
+  hơn giữa các máy.
+
 ## 2026-07-10 — Khoá 2 cửa hậu bảo mật + sửa 2 bug khoá tiếng Anh
 
 Kết quả đợt review toàn dự án (PM duyệt "fix priority batch").

@@ -49,6 +49,43 @@ describe('mergeProgress', () => {
     const merged = mergeProgress(local, remote);
     expect(merged.apple.learned).toBe(true);
   });
+
+  // Regression for B-020 (found in the 2026-07-10 review): `a > b` is
+  // false when either side is undefined, so the merge used to pick the
+  // MISSING side and silently drop a word's real lastReview date —
+  // the same family of PC↔phone drift as the 2026-05-29 streak bugs.
+  describe('lastReview merge (B-020)', () => {
+    it('keeps the local lastReview when the remote side has none (the bug)', () => {
+      const local = { apple: { learned: true, confidence: 3, lastReview: '2026-07-01', reviews: [] } };
+      const remote = { apple: { learned: true, confidence: 3, reviews: [] } };
+      const merged = mergeProgress(local, remote);
+      expect(merged.apple.lastReview).toBe('2026-07-01');
+    });
+
+    it('keeps the remote lastReview when the local side has none', () => {
+      const local = { apple: { learned: true, confidence: 3, reviews: [] } };
+      const remote = { apple: { learned: true, confidence: 3, lastReview: '2026-07-01', reviews: [] } };
+      const merged = mergeProgress(local, remote);
+      expect(merged.apple.lastReview).toBe('2026-07-01');
+    });
+
+    it('picks the later date when both sides have one', () => {
+      const local = { apple: { learned: true, confidence: 3, lastReview: '2026-06-20', reviews: [] } };
+      const remote = { apple: { learned: true, confidence: 3, lastReview: '2026-07-01', reviews: [] } };
+      const merged = mergeProgress(local, remote);
+      expect(merged.apple.lastReview).toBe('2026-07-01');
+      // and symmetrically
+      const merged2 = mergeProgress(remote, local);
+      expect(merged2.apple.lastReview).toBe('2026-07-01');
+    });
+
+    it('leaves lastReview unset when neither side has one', () => {
+      const local = { apple: { learned: true, confidence: 3, reviews: [] } };
+      const remote = { apple: { learned: true, confidence: 3, reviews: [] } };
+      const merged = mergeProgress(local, remote);
+      expect(merged.apple.lastReview).toBeUndefined();
+    });
+  });
 });
 
 describe('isIndexKeyedProgress', () => {

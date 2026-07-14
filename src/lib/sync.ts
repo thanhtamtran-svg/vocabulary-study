@@ -71,6 +71,15 @@ export function mergeFullState(local, remote, todayDateStr, vocabData) {
 }
 
 export function mergeProgress(local, remote) {
+  // Prefer the LATER of two ISO date strings, tolerating a missing side.
+  // A bare `a > b` is false whenever either side is undefined, which used
+  // to pick the missing side and silently drop a word's real lastReview
+  // when the other device hadn't recorded one yet.
+  var pickLater = function(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    return a > b ? a : b;
+  };
   var merged = {...local};
   Object.keys(remote).forEach(function(k) {
     if (!merged[k]) { merged[k] = remote[k]; return; }
@@ -84,7 +93,7 @@ export function mergeProgress(local, remote) {
     merged[k] = {
       learned: merged[k].learned || remote[k].learned,
       confidence: Math.max(merged[k].confidence || 0, remote[k].confidence || 0),
-      lastReview: merged[k].lastReview > remote[k].lastReview ? merged[k].lastReview : remote[k].lastReview,
+      lastReview: pickLater(merged[k].lastReview, remote[k].lastReview),
       reviews: allReviews
     };
   });

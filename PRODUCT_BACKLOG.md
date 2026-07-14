@@ -25,19 +25,6 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## ⭐ High
 
-### B-020: Sync có thể mất ngày "ôn lần cuối" của một từ khi merge
-
-**Effort:** S · **Tier:** 3
-
-Phát hiện trong đợt review 2026-07-10. Trong `mergeProgress`
-(src/lib/sync.ts): khi gộp tiến độ 2 máy, phép so sánh
-`local.lastReview > remote.lastReview` trả về "sai" nếu một bên
-thiếu ngày — kết quả là chọn nhầm bên thiếu, mất ngày ôn gần nhất.
-Liên quan họ bug streak PC↔phone từng gặp 2026-05-29.
-
-**Đề xuất:** So sánh có phòng thủ (thiếu thì lấy bên còn lại) + viết
-regression test trong sync.test.ts (khu vực này đã có sẵn test).
-
 ### B-014: Retry trên lỗi network thay vì exit cả batch upload
 
 **Effort:** S · **Tier:** 1
@@ -235,6 +222,7 @@ Gói các phát hiện nhỏ chưa sửa trong đợt review toàn dự án 2026
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-14 — B-020 closed: mergeProgress không còn mất lastReview khi một máy thiếu ngày; +4 regression test.
 - 2026-07-10 — Review toàn dự án: khoá auth cho sync-progress (trừ A1.1 công khai) + upload-image; sửa 2 bug tiếng Anh (giờ nhắc không lưu, Enter nhảy câu). Phát sinh B-020, B-021.
 - 2026-06-23 — AI Teacher: format giải thích tiếng Đức mới (ÖSD A1) + auto nâng-cấp cache cũ. Phát sinh B-019.
 - 2026-06-17 — B-018 closed: fix "Could not load explanation" — Anthropic model ID deprecated, updated to claude-sonnet-4-5
