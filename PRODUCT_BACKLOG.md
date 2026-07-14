@@ -25,6 +25,30 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## ⭐ High
 
+### B-022: Giới hạn lượt/phút không giữ được giữa các lần server khởi động lại
+
+**Effort:** M · **Tier:** 3-Security
+
+Phát hiện 2026-07-14 khi kiểm chứng B-021: bộ đếm "X lượt/phút" của
+mọi edge function nằm trong bộ nhớ tạm, mà server tắt/bật liên tục →
+bộ đếm bị xoá, thực tế gần như không chặn được ai (probe 15 lượt liền
+không dính 429). Ảnh hưởng lớn nhất: `verify-password` — kẻ xấu dò
+mật khẩu nhanh hơn nhiều so với 5 lượt/phút như thiết kế.
+
+**Đề xuất:** Đếm lượt trong database (bảng nhỏ + xoá dòng cũ) cho
+verify-password trước tiên; các function khác đã có khoá đăng nhập
+nên ít cấp bách hơn. Giảm nhẹ tạm thời: mật khẩu app nên đủ dài/khó.
+
+### B-023: Màn hình thiết lập A1.1 hiện nhầm chữ "German 1500"
+
+**Effort:** XS · **Tier:** 2
+
+Phát hiện 2026-07-14 khi verify trên trang thật: vào khoá Schritte
+A1.1 lần đầu (máy mới), màn hình thiết lập hiện "German 1500 — Master
+1500 words" và "2357 Reviews" (số của khoá 1500 từ). Chỉ sai chữ,
+không sai dữ liệu — SetupScreen dùng copy cố định chưa phân biệt
+variant.
+
 ### B-014: Retry trên lỗi network thay vì exit cả batch upload
 
 **Effort:** S · **Tier:** 1

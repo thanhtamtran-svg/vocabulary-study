@@ -2,6 +2,13 @@
 
 How to communicate with me on this project.
 
+## Language
+
+**Communicate with me in Vietnamese** (added 2026-07-14). Plain
+Vietnamese words; when an English technical term is unavoidable, gloss
+it in one short parenthesis on first use. Code, commit messages, and
+in-app copy stay in their natural language.
+
 ## Who I am
 
 I'm the **project manager** for vocabulary-study, not an engineer. I make
