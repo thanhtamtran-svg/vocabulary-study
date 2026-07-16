@@ -2,6 +2,16 @@ import { SUPABASE_URL, SUPABASE_KEY } from './supabase';
 
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
+// Prefer the app session token (vocab_auth_token) so explain-word sees
+// the caller as authenticated — logged-in users get the higher rate
+// tier (10/min vs 6/min) and may clear cached explanations. Falls back
+// to the anon key for the public A1.1 course.
+function explainAuthHeader() {
+  var token = '';
+  try { token = localStorage.getItem('vocab_auth_token') || ''; } catch (e) {}
+  return 'Bearer ' + (token || SUPABASE_KEY);
+}
+
 // In-memory request caches (session-lifetime, no TTL)
 const imageCache = new Map<string, { url: string; credit: string; link: string | null } | null>();
 const ipaDefCache = new Map<string, { ipa: string | null; definition: string | null }>();
@@ -139,7 +149,7 @@ export async function fetchExplanation(word, wordType, lang?) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + SUPABASE_KEY
+      'Authorization': explainAuthHeader()
     },
     body: JSON.stringify({ word: word, type: wordType || '', lang: lang || 'de' })
   });
@@ -148,4 +158,28 @@ export async function fetchExplanation(word, wordType, lang?) {
   if (data.error) throw new Error(data.error);
   explanationCache.set(cacheKey, data.explanation);
   return data.explanation;
+}
+
+// B-019: clear the server-side cached explanation for one word (and the
+// in-memory caches) so the next "Explain" regenerates it. Requires the
+// session token — resolves false when the server refuses (e.g. A1.1
+// visitor without a login).
+export async function clearExplanation(word, lang?) {
+  var prefix = lang === 'vi' ? 'vi:' : lang === 'en' ? 'en:' : '';
+  var cacheKey = prefix + word.toLowerCase().trim();
+  explanationCache.delete(cacheKey);
+  cachedExplanationCache.delete(cacheKey);
+  try {
+    var res = await fetch(EXPLAIN_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': explainAuthHeader()
+      },
+      body: JSON.stringify({ word: word, lang: lang || 'de', clear: true })
+    });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
 }

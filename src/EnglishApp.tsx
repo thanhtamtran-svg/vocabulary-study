@@ -11,6 +11,7 @@ import { speakEnglish } from './lib/english-speech';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
+import { computeDailyStreak, countCompletedBatches, findNextBatch } from './lib/streak';
 import {
   selectExerciseWords, getDistractors, makeDefinitionOptions, makePhraseOptions,
   getAiSentence, generateExerciseItems, fetchExerciseSentences
@@ -94,72 +95,12 @@ function EnglishApp({onHome}) {
     try { var d = localStorage.getItem('english_study_dates'); return d ? JSON.parse(d) : []; } catch { return []; }
   });
 
-  // Calculate daily streak with 2-day freeze (rest days don't count as missed)
-  const dailyStreak = useMemo(() => {
-    if (!studyDates.length) return {count: 0, status: 'none', frozenDays: 0, studiedToday: false};
-    var sorted = studyDates.slice().sort().reverse(); // most recent first
-    var todayStr = dateKey(todayDate());
-    var studiedToday = sorted[0] === todayStr;
-    var isRestDay = todayDate().getDay() === 0; // Sunday = rest day
-
-    // Count non-rest missed days since last study
-    var lastStudy = parseDate(sorted[0]);
-    var checkDate = new Date();
-    checkDate.setHours(0,0,0,0);
-    var dateSet = new Set(sorted);
-
-    // Count actual missed days (excluding Sundays) between last study and today
-    var realMissed = 0;
-    if (!studiedToday) {
-      var d = new Date(checkDate);
-      d.setDate(d.getDate() - 1); // start from yesterday
-      while (d >= lastStudy) {
-        var dk = dateKey(d);
-        if (!dateSet.has(dk) && d.getDay() !== 0) { // not studied and not Sunday
-          realMissed++;
-        }
-        if (dateSet.has(dk)) break; // found last study day
-        d.setDate(d.getDate() - 1);
-      }
-    }
-
-    // Build streak counting backwards
-    var count = 0;
-    var frozenDays = 0;
-    var consecutiveMissed = 0;
-    var d2 = new Date(checkDate);
-    if (!studiedToday) d2.setDate(d2.getDate() - 1);
-
-    while (true) {
-      var dk2 = dateKey(d2);
-      var isSunday = d2.getDay() === 0;
-      if (dateSet.has(dk2)) {
-        count++;
-        consecutiveMissed = 0;
-        d2.setDate(d2.getDate() - 1);
-      } else if (isSunday) {
-        // Sundays don't count as missed — just skip
-        d2.setDate(d2.getDate() - 1);
-      } else {
-        consecutiveMissed++;
-        if (consecutiveMissed > 6) break; // 7+ non-rest missed = streak broken
-        frozenDays++;
-        d2.setDate(d2.getDate() - 1);
-      }
-      if (count > 365) break;
-    }
-
-    var status = 'active';
-    if (!studiedToday && !isRestDay) {
-      if (realMissed > 6) { status = 'lost'; count = 0; frozenDays = 0; }
-      else if (realMissed >= 5) status = 'danger';
-      else if (realMissed >= 2) status = 'warning';
-    }
-    // On rest day, don't warn — streak is safe
-    if (isRestDay && !studiedToday) status = 'rest';
-
-    return {count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday};
-  }, [studyDates]);
+  // Calculate daily streak with rest-day freeze — pure logic lives in
+  // lib/streak.ts (B-005) where it has regression tests.
+  const dailyStreak = useMemo(
+    () => computeDailyStreak(studyDates, todayDate()),
+    [studyDates]
+  );
 
   // Record today as a study day when user completes a batch or exercise
   function recordStudyDay() {
@@ -339,22 +280,11 @@ function EnglishApp({onHome}) {
   const today = useMemo(todayDate, []);
   const studyDay = useMemo(() => getStudyDay(startDate, today), [startDate, today]);
 
-  // Next batch = first batch where not all words are learned
-  const nextBatch = useMemo(() => {
-    for (var i = 0; i < batches.length; i++) {
-      var allLearned = batches[i].every(function(wi) { return progress[wi]?.learned; });
-      if (!allLearned) return i + 1; // 1-indexed
-    }
-    return null; // all done
-  }, [progress, batches]);
-
-  const batchesCompleted = useMemo(() => {
-    var count = 0;
-    for (var i = 0; i < batches.length; i++) {
-      if (batches[i].every(function(wi) { return progress[wi]?.learned; })) count++;
-    }
-    return count;
-  }, [progress, batches]);
+  // Next batch / completed count — pure logic in lib/streak.ts (B-005).
+  // English progress is keyed by word index directly, so keyFor is identity.
+  const idKey = useCallback(function(wi) { return wi; }, []);
+  const nextBatch = useMemo(() => findNextBatch(batches, progress, idKey), [progress, batches, idKey]);
+  const batchesCompleted = useMemo(() => countCompletedBatches(batches, progress, idKey), [progress, batches, idKey]);
 
   // Schedule tracking: expected batch by studyDay vs actual
   const expectedBatch = Math.min(studyDay, batches.length);
@@ -560,7 +490,11 @@ function EnglishApp({onHome}) {
         progress: progress, todayCompleted: todayCompleted,
         completedDate: dateKey(today), exerciseProgress: exerciseProgress,
         studyDates: studyDates,
-      }, 'english');
+      }, 'english').then(function(ok) {
+        // B-006: surface auto-push failures instead of swallowing them.
+        if (!ok) { setSyncStatus('error'); setSyncMsg('Sync failed — tap to retry'); }
+        else { setSyncStatus('idle'); setSyncMsg(''); }
+      });
     }, 5000);
     return function() { clearTimeout(timer); };
   }, [syncEmail, startDate, started, progress, todayCompleted, today, exerciseProgress]);
@@ -585,6 +519,14 @@ function EnglishApp({onHome}) {
       window.removeEventListener('visibilitychange', handler);
     };
   }, [syncEmail, started, startDate, progress, todayCompleted, today, exerciseProgress]);
+
+  // B-006: "Sync now" — the sync bar in Nav emits this event on tap.
+  useEffect(function() {
+    if (!syncEmail) return;
+    var handler = function() { connectSync(syncEmail); };
+    window.addEventListener('vocab-sync-now', handler);
+    return function() { window.removeEventListener('vocab-sync-now', handler); };
+  });
 
   function connectSync(email) {
     localStorage.setItem(ENGLISH_SYNC_EMAIL_KEY, email);

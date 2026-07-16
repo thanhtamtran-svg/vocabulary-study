@@ -2,6 +2,11 @@ import React from 'react';
 import Nav from '../components/Nav';
 import { MEMORY_STAGES } from '../lib/constants';
 import { getMemoryStage } from '../lib/memory-stages';
+import { computeWeeklyActivity } from '../lib/weekly-activity';
+import { todayDate } from '../lib/dates';
+
+// One planned batch per weekday = 8 words (all courses batch by 8).
+const PLAN_WORDS_PER_DAY = 8;
 
 export default React.memo(function ProgressView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
@@ -17,6 +22,11 @@ export default React.memo(function ProgressView({
   });
   var notLearned = words.length - totalLearned;
   var maxStageCount = Math.max.apply(null, stageCounts.slice(1).concat([1])); // for bar scaling
+
+  // B-007: last-7-days activity vs the plan (1 batch/weekday)
+  var week = computeWeeklyActivity(progress, todayDate());
+  var weekMax = Math.max.apply(null, week.map(function(x) { return x.count; }).concat([PLAN_WORDS_PER_DAY]));
+  var weekTotal = week.reduce(function(s, x) { return s + x.count; }, 0);
 
   return (
     <div className="app">
@@ -41,6 +51,48 @@ export default React.memo(function ProgressView({
           <div className="stat">
             <div className="num">{Math.ceil(notLearned / 8)}</div>
             <div className="label">Batches left</div>
+          </div>
+        </div>
+
+        {/* B-007: This week — actual words practiced vs plan */}
+        <h2>This Week</h2>
+        <div className="card">
+          <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'12px'}}>
+            Words practiced per day (learn + reviews). Dashed line = plan
+            ({PLAN_WORDS_PER_DAY}/day, Sunday off). Total this week: <strong>{weekTotal}</strong>
+          </p>
+          <div style={{position:'relative',height:'120px'}}>
+            {/* plan line */}
+            <div style={{
+              position:'absolute', left:0, right:0,
+              bottom: (PLAN_WORDS_PER_DAY / weekMax * 100) + 'px',
+              borderTop:'2px dashed #F39C12', opacity:0.7
+            }} />
+            <div style={{display:'flex',alignItems:'flex-end',gap:'6px',height:'100px',marginTop:'20px'}}>
+              {week.map(function(day) {
+                var h = day.count > 0 ? Math.max(day.count / weekMax * 100, 4) : 0;
+                var met = day.count >= PLAN_WORDS_PER_DAY;
+                return <div key={day.date} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',height:'100%'}}>
+                  {day.count > 0 ? <div style={{fontSize:'10px',color:'#718096',marginBottom:'2px'}}>{day.count}</div> : null}
+                  <div style={{
+                    width:'100%', maxWidth:'34px', height: h + 'px',
+                    background: day.isSunday ? '#CBD5E1' : met ? '#27AE60' : '#7E9470',
+                    borderRadius:'4px 4px 0 0',
+                    opacity: day.isToday ? 1 : 0.85,
+                    minHeight: day.count > 0 ? '4px' : '0'
+                  }} />
+                </div>;
+              })}
+            </div>
+            <div style={{display:'flex',gap:'6px',marginTop:'4px'}}>
+              {week.map(function(day) {
+                return <div key={day.date} style={{
+                  flex:1, textAlign:'center', fontSize:'10px',
+                  color: day.isSunday ? '#CBD5E1' : day.isToday ? '#2E3033' : '#94a3b8',
+                  fontWeight: day.isToday ? 700 : 400
+                }}>{day.isSunday ? 'Rest' : day.label}</div>;
+              })}
+            </div>
           </div>
         </div>
 

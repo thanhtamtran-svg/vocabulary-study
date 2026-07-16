@@ -117,6 +117,32 @@ Deno.serve(async (req) => {
     // Check cache first (prefix with lang for English to avoid collisions)
     const wordLower = word.toLowerCase();
     const cacheKey = lang === 'vi' ? 'vi:' + wordLower : lang === 'en' ? 'en:' + wordLower : wordLower;
+
+    // B-019: clear the cached explanation for one word so the next
+    // "Explain" regenerates it. The old client did an anon REST DELETE
+    // that RLS silently blocked (204 but zero rows). Deleting shared
+    // cache is a write, so it requires a session token — the anon key
+    // alone can't wipe cache entries (cache-busting costs AI money).
+    if (body?.clear === true) {
+      if (!authenticated) {
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const del = await supabase.from("vocab_explanations").delete().eq("word", cacheKey);
+      if (del.error) {
+        return new Response(
+          JSON.stringify({ error: "Failed to clear" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({ ok: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { data: cached } = await supabase
       .from("vocab_explanations")
       .select("explanation")

@@ -324,3 +324,15 @@ select:focus{border-color:#D67635}
   .session-content .card{padding:32px;font-size:17px}
   .session-content input[type="text"]{font-size:20px;padding:16px 18px}
 }
+
+/* ===== DARK MODE (B-010, pragmatic v1) =====
+   Smart-invert: flips the whole light UI to dark in one rule, so the
+   ~93 inline hardcoded colors across views keep working without a
+   rewrite. Images, flags and photos get re-inverted back to normal.
+   Known trade-off (documented in CHANGELOG): brand hues shift slightly
+   in dark mode. A full CSS-variable theme can replace this later
+   without undoing anything — the toggle + persistence stay the same. */
+html[data-theme="dark"]{filter:invert(0.92) hue-rotate(180deg);background:#0f1113}
+html[data-theme="dark"] img,
+html[data-theme="dark"] .word-image,
+html[data-theme="dark"] .flashcard-back-image img{filter:invert(1) hue-rotate(180deg)}

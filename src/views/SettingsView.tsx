@@ -91,6 +91,10 @@ export default React.memo(function SettingsView({
 }) {
   var toast = useToast();
   var VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
+  // B-010: dark mode state mirrors the data-theme attribute set in main.tsx
+  var [darkMode, setDarkMode] = React.useState(function() {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  });
 
   return (
     <div className="app">
@@ -123,6 +127,20 @@ export default React.memo(function SettingsView({
           <div className="settings-row">
             <span>Auto-save</span>
             <span style={{color:'#27AE60',fontWeight:600}}>{'\u2705 Enabled'}</span>
+          </div>
+          <div className="settings-row">
+            <span>Dark mode</span>
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={function() {
+                var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+                var next = dark ? 'light' : 'dark';
+                if (next === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+                else document.documentElement.removeAttribute('data-theme');
+                try { localStorage.setItem('vocab_theme', next); } catch (e) {}
+                setDarkMode(next === 'dark');
+              }}
+            >{darkMode ? '\ud83c\udf19 On' : '\u2600\ufe0f Off'}</button>
           </div>
         </div>
 

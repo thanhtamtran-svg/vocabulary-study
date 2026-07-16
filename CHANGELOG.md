@@ -11,6 +11,44 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-16 — Batch 7 việc: tự động deploy, dark mode, biểu đồ tuần, sync rõ ràng...
+
+**B-013 — Tự động deploy cửa máy chủ:** Từ giờ mỗi lần đẩy code có sửa
+hàm máy chủ, GitHub tự deploy — hết cảnh "sửa rồi quên deploy, bug âm
+thầm". ⚠️ **Cần bạn làm 1 lần:** tạo mã truy cập Supabase và dán vào
+GitHub (hướng dẫn trong báo cáo). Chưa có mã thì bước tự deploy báo lỗi
+rõ ràng, không hại gì.
+
+**B-005 — Logic chuỗi ngày học giờ có kiểm thử:** Tách phần tính streak
+và số batch hoàn thành (thứ từng gây sự cố 2026-05-29) ra chỗ riêng, kèm
+10 bài kiểm thử tự động (nghỉ Chủ nhật, lỡ 2-4 ngày, lỡ 7+ ngày, batch
+không liền nhau...). Hành vi không đổi — chỉ là từ nay sửa gì quanh đây
+sẽ có lưới an toàn.
+
+**B-006 — Đồng bộ lỗi là biết ngay:** Trước đây tự-đồng-bộ lỗi thì im
+lặng (từng khiến tưởng mất 5 ngày học). Giờ thanh trạng thái chuyển đỏ
+"Sync failed — tap to retry", và **bấm vào thanh sync ở bất kỳ màn nào**
+là đồng bộ lại ngay.
+
+**B-007 — Biểu đồ tuần trong Progress:** Cột số từ ôn/học mỗi ngày 7
+ngày qua, đường kẻ đứt là kế hoạch (8 từ/ngày, Chủ nhật nghỉ) — nhìn một
+phát biết tuần này học đủ hay hụt.
+
+**B-010 — Dark mode (bản v1 thực dụng):** Nút bật/tắt trong Settings,
+nhớ lựa chọn. Dùng kỹ thuật đảo màu thông minh nên toàn bộ màn hình tối
+ngay, ảnh/cờ vẫn hiển thị bình thường. *Đánh đổi đã cân nhắc:* màu
+thương hiệu lệch nhẹ ở chế độ tối; bản "chuẩn từng màu" tốn nửa ngày,
+để dành khi cần.
+
+**B-019 — Nút X của AI Teacher xoá được thật:** Trước bấm X chỉ xoá trên
+màn hình, bản lưu máy chủ còn nguyên (bị chặn ngầm). Giờ X xoá thật (cần
+đăng nhập) → bấm Explain lại là có bản mới. Dọn luôn 267 bản lưu format
+cũ trên máy chủ (đã kiểm chứng còn 0). Sửa kèm một lỗi ngầm: app trước
+gửi nhầm loại vé khi gọi AI nên người đăng nhập vẫn bị tính giới hạn
+"khách" — giờ đúng bậc 10 lượt/phút.
+
+**B-008 — Hết cảnh báo vặt khi lưu code** (chuẩn hoá xuống dòng).
+
 ## 2026-07-14 — Đưa nốt các cửa máy chủ sang bộ đếm bền (B-024)
 
 Nối tiếp B-022. Toàn bộ 8 cửa máy chủ còn lại (giải thích AI, sinh câu

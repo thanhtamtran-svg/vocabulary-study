@@ -29,11 +29,23 @@ export default React.memo(function Nav({ active, onNavigate, onHome, syncEmail, 
         >{item.icon + ' ' + item.label}</button>;
       })}
     </nav>
-    {syncEmail ? <div className="sync-bar">
+    {syncEmail ? <div
+      className="sync-bar"
+      role="button"
+      title="Sync now"
+      style={{cursor:'pointer'}}
+      onClick={function() {
+        // B-006: tapping the sync bar forces a full pull-merge-push.
+        // Nav is rendered from many views, so instead of prop-drilling a
+        // callback through each one, it emits an event that App.tsx /
+        // EnglishApp.tsx listen for (see their 'vocab-sync-now' effects).
+        window.dispatchEvent(new CustomEvent('vocab-sync-now'));
+      }}
+    >
       <div className={'sync-dot ' +
         (syncStatus === 'syncing' ? 'syncing' : syncStatus === 'error' ? 'offline' : 'online')} />
       <span>
-        {syncMsg || ('\u2601\uFE0F ' + syncEmail)}
+        {syncMsg || ('\u2601\uFE0F ' + syncEmail + ' \u2014 tap to sync')}
       </span>
     </div> : null}
   </>;

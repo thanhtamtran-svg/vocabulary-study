@@ -1,6 +1,5 @@
 import React from 'react';
-import { SUPABASE_URL, SUPABASE_KEY } from '../lib/supabase';
-import { fetchExplanation, fetchCachedExplanation } from '../lib/api';
+import { fetchExplanation, fetchCachedExplanation, clearExplanation } from '../lib/api';
 import { speakGerman } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 
@@ -51,14 +50,11 @@ export default React.memo(function AiExplainBox({
   function handleClear() {
     setAiExplanation('');
     setAiSaveStatus('');
-    var wordLower = word.german.toLowerCase().trim();
-    fetch(SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(wordLower), {
-      method: 'DELETE',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY
-      }
-    });
+    // B-019: the old anon REST DELETE was silently blocked by RLS (204,
+    // zero rows deleted). Server-side clearing now goes through the
+    // explain-word function and needs the session token; without one
+    // (public A1.1 visitor) only the local display is cleared.
+    clearExplanation(word.german, lang);
   }
 
   return <>
