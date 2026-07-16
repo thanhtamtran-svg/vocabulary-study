@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -16,22 +17,14 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Per-IP rate limit: max 30 requests/min. Push subscription is a
-// user-facing feature (anyone using the app can enable reminders), so
-// it does NOT require a session token — same stance as sync-progress
+// Rate limit: max 30 requests/min, counted globally. Push subscription
+// is a user-facing feature (anyone using the app can enable reminders),
+// so it does NOT require a session token — same stance as sync-progress
 // for german_a11. Protection is CORS origin allowlist + this rate limit,
 // which stops write-spam without locking out normal users who never
-// logged in with the admin password.
-const rateLimitMap = new Map<string, number[]>();
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < 60_000);
-  if (recent.length >= 30) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
-}
+// logged in with the admin password. Counted in the DB (not a per-IP
+// in-memory Map) so it actually holds across isolates — see
+// _shared/rate-limit.ts.
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -40,8 +33,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp)) {
+    if (await checkRateLimit("push-subscription", 30)) {
       return new Response(JSON.stringify({ error: "Rate limited" }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

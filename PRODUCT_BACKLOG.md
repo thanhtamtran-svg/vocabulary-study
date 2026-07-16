@@ -25,18 +25,6 @@ Bạn (PM) quyết priority, mình (Claude) đề xuất estimate + trade-off.
 
 ## ⭐ High
 
-### B-024: Các edge function khác vẫn đếm lượt trong bộ nhớ tạm
-
-**Effort:** S · **Tier:** 3-Security
-
-B-022 mới chỉ chuyển `verify-password` sang đếm bền trong DB. Các hàm
-còn lại (`explain-word`, `sync-progress`, `upload-image`,
-`push-subscription`) vẫn đếm trong bộ nhớ tạm → cùng lỗ hổng "reset
-khi server bật lại". Rủi ro thấp hơn nhiều vì sync/upload/push đã bắt
-buộc token đăng nhập; `explain-word` cho khách chỉ là khoá A1.1 công
-khai, giá trị lạm dụng thấp. Nhưng để nhất quán nên chuyển hết sang
-dùng `check_rate_limit` (hàm DB đã có sẵn từ B-022).
-
 ### B-014: Retry trên lỗi network thay vì exit cả batch upload
 
 **Effort:** S · **Tier:** 1
@@ -221,6 +209,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-14 — B-024 closed: cả 8 edge function còn lại chuyển sang bộ đếm bền dùng chung (_shared/rate-limit.ts); verify AI chặn 6, sinh câu chặn 2.
 - 2026-07-14 — B-022 closed: verify-password đếm lượt bền trong DB, chặn cứng 12 lần/phút tính chung (đã verify 429). Phát sinh B-024.
 - 2026-07-14 — B-023 closed: màn thiết lập hiện đúng tên/số tuần/số từ theo từng khoá; bỏ số "2357 Reviews" bịa cứng.
 - 2026-07-14 — B-021 closed: emoji hiện đúng từng từ (trước luôn 📚 do lỗi scope), nới AI unauth 2→6/phút, watchdog 30s cho nút Enable Reminder.

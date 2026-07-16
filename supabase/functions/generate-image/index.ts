@@ -1,5 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -15,19 +16,6 @@ function getCorsHeaders(req: Request) {
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
-}
-
-// Rate limiter: stricter for unauthenticated requests
-const rateLimitMap = new Map<string, number[]>();
-function isRateLimited(ip: string, authenticated: boolean): boolean {
-  const now = Date.now();
-  const max = authenticated ? 5 : 2;
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < 60_000);
-  if (recent.length >= max) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
 }
 
 // Validate session token from Authorization header
@@ -85,8 +73,7 @@ Deno.serve(async (req) => {
   try {
     // Auth token validation + rate limiting
     const authenticated = await validateAuthToken(req);
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp, authenticated)) {
+    if (await checkRateLimit(authenticated ? "generate-image:auth" : "generate-image:unauth", authenticated ? 5 : 2)) {
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again later." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }

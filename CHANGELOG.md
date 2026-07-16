@@ -11,6 +11,23 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-14 — Đưa nốt các cửa máy chủ sang bộ đếm bền (B-024)
+
+Nối tiếp B-022. Toàn bộ 8 cửa máy chủ còn lại (giải thích AI, sinh câu
+ví dụ, sinh phiên âm/định nghĩa, sinh ảnh, đồng bộ tiến độ, upload ảnh,
+đăng ký nhắc học, chuyển ảnh) trước đây vẫn đếm lượt trong bộ nhớ tạm —
+cùng lỗ hổng "reset khi máy chủ bật lại" nên gần như không chặn được.
+Giờ tất cả dùng chung một bộ đếm bền trong cơ sở dữ liệu.
+
+- Gom logic đếm vào **một tệp dùng chung** (`_shared/rate-limit.ts`) thay
+  vì chép tay ở từng hàm — sau này chỉnh một chỗ là xong.
+- Đếm **tổng thể theo từng cửa + bậc** (khách / đã đăng nhập), không theo
+  địa chỉ máy (đã biết địa chỉ máy không ổn định trên hạ tầng Supabase).
+- Kiểm chứng trực tiếp: cửa giải thích AI chặn đúng sau 6 lượt khách,
+  cửa sinh câu ví dụ chặn đúng sau 2 lượt khách. Đồng thời xác nhận
+  không làm hỏng gì: đồng bộ A1.1 vẫn mở, đồng bộ khoá Đức vẫn yêu cầu
+  đăng nhập, upload ảnh vẫn yêu cầu đăng nhập.
+
 ## 2026-07-14 — Chống dò mật khẩu (B-022) + màn thiết lập hiện đúng khoá (B-023)
 
 **B-022 — chống dò mật khẩu thật sự:** Cơ chế "giới hạn số lần thử/phút"

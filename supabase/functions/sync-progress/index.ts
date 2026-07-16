@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -16,20 +17,11 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Per-IP rate limit: max 30 requests/min. Protects against bulk
-// scraping or write-spam from any single source. Real users sync
-// at most ~6 times/min in practice (push debounce 5s + occasional
-// pull on focus), so 30/min has plenty of headroom.
-const rateLimitMap = new Map<string, number[]>();
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < 60_000);
-  if (recent.length >= 30) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
-}
+// Rate limit: max 30 requests/min, counted globally in the DB so it
+// holds across isolates (see _shared/rate-limit.ts). Protects against
+// bulk scraping or write-spam. Real users sync at most ~6 times/min in
+// practice (push debounce 5s + occasional pull on focus), so 30/min has
+// plenty of headroom even with a phone and PC both syncing.
 
 // Validate session token from Authorization header (same scheme as
 // explain-word: HMAC-signed "vocab_auth:<expires>:<sig>" issued by
@@ -77,8 +69,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp)) {
+    if (await checkRateLimit("sync-progress", 30)) {
       return new Response(JSON.stringify({ error: "Rate limited" }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

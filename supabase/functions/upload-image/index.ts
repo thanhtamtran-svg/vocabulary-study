@@ -1,5 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -16,8 +17,6 @@ function getCorsHeaders(req: Request) {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 }
-
-const rateLimitMap = new Map<string, number[]>();
 
 // Validate session token from Authorization header (same scheme as
 // explain-word: HMAC-signed "vocab_auth:<expires>:<sig>" issued by
@@ -64,18 +63,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Rate limit: max 20 uploads per minute per IP
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    const now = Date.now();
-    const timestamps = rateLimitMap.get(clientIp) || [];
-    const recent = timestamps.filter((t: number) => now - t < 60000);
-    if (recent.length >= 20) {
+    // Rate limit: max 20 uploads per minute, counted globally in the DB
+    // (see _shared/rate-limit.ts). Only authenticated callers reach this
+    // point, so the counter tracks the owner's own upload scripts.
+    if (await checkRateLimit("upload-image", 20)) {
       return new Response(JSON.stringify({ error: "Rate limited" }), {
         status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    recent.push(now);
-    rateLimitMap.set(clientIp, recent);
 
     const body = await req.json();
     const word = typeof body?.word === "string" ? body.word.trim().toLowerCase() : "";

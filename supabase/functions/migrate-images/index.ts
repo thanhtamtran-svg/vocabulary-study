@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -16,21 +17,6 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Simple rate limiter: max 5 attempts per minute per IP
-const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW = 60_000;
-const RATE_LIMIT_MAX = 5;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
-  if (recent.length >= RATE_LIMIT_MAX) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
-}
-
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -38,9 +24,9 @@ Deno.serve(async (req: Request) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  // Rate limit
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  if (isRateLimited(clientIp)) {
+  // Rate limit: max 5/min, counted globally in the DB (see
+  // _shared/rate-limit.ts) so it holds across isolates.
+  if (await checkRateLimit("migrate-images", 5)) {
     return new Response(
       JSON.stringify({ error: "Too many attempts. Please wait a minute." }),
       { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }

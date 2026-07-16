@@ -1,5 +1,6 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit } from "../_shared/rate-limit.ts";
 
 
 
@@ -19,26 +20,13 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-// Simple in-memory rate limiter
-const rateLimitMap = new Map<string, number[]>();
-const RATE_LIMIT_WINDOW = 60_000;
+// Rate limit tiers. Authenticated = the single real user (German-full /
+// English behind the password gate). Unauthenticated = the public A1.1
+// course. 2/min proved too tight for normal flashcard browsing (each
+// "Explain" click is one request, and cache hits count too); 6/min still
+// caps abuse cost while letting a real learner read back-to-back.
 const RATE_LIMIT_MAX_AUTH = 10;
-// Unauthenticated = the public A1.1 course. 2/min proved too tight for
-// normal flashcard browsing (each "Explain" click is one request, and
-// cache hits count too); 6/min still caps abuse cost while letting a
-// real learner read explanations back-to-back.
 const RATE_LIMIT_MAX_UNAUTH = 6;
-
-function isRateLimited(ip: string, authenticated: boolean): boolean {
-  const now = Date.now();
-  const max = authenticated ? RATE_LIMIT_MAX_AUTH : RATE_LIMIT_MAX_UNAUTH;
-  const timestamps = rateLimitMap.get(ip) || [];
-  const recent = timestamps.filter((t) => now - t < RATE_LIMIT_WINDOW);
-  if (recent.length >= max) return true;
-  recent.push(now);
-  rateLimitMap.set(ip, recent);
-  return false;
-}
 
 // Validate session token from Authorization header
 async function validateAuthToken(req: Request): Promise<boolean> {
@@ -94,8 +82,7 @@ Deno.serve(async (req) => {
   try {
     // Auth token validation + rate limiting
     const authenticated = await validateAuthToken(req);
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-    if (isRateLimited(clientIp, authenticated)) {
+    if (await checkRateLimit(authenticated ? "explain-word:auth" : "explain-word:unauth", authenticated ? RATE_LIMIT_MAX_AUTH : RATE_LIMIT_MAX_UNAUTH)) {
       return new Response(
         JSON.stringify({ error: "Too many requests. Please try again later." }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
