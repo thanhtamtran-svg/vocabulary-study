@@ -107,6 +107,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-16 — B-003 closed: verify live chấm màu giống trên Browse→Flashcard (đúng màu/kích thước, không tràn ngang); mặt sau thẻ + Complete view chưa verify tận mắt (cần lật thẻ tay) — rủi ro thấp.
 - 2026-07-16 — Batch 7 việc closed: B-013 (auto-deploy functions, chờ secret), B-005 (streak.ts + 10 test), B-006 (sync bar đỏ khi lỗi + tap-to-sync), B-007 (biểu đồ tuần), B-008 (.gitattributes), B-010 (dark mode v1), B-019 (X xoá cache thật + dọn 267 dòng cũ + vé đăng nhập đúng bậc khi gọi AI).
 - 2026-07-14 — B-024 closed: cả 8 edge function còn lại chuyển sang bộ đếm bền dùng chung (_shared/rate-limit.ts); verify AI chặn 6, sinh câu chặn 2.
 - 2026-07-14 — B-022 closed: verify-password đếm lượt bền trong DB, chặn cứng 12 lần/phút tính chung (đã verify 429). Phát sinh B-024.
