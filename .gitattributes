@@ -1,0 +1,11 @@
+# Normalize line endings: store LF in the repo, keep LF in the working
+# tree too (the toolchain — Vite, Deno, Node — is happy with LF on
+# Windows). This silences the per-commit "LF will be replaced by CRLF"
+# warnings coming from core.autocrlf=true (B-008).
+* text=auto eol=lf
+
+# Binary assets — never touch line endings.
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary
