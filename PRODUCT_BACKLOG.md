@@ -41,29 +41,19 @@ Retry 2 lần, mỗi lần sleep 10s.
 **Trade-off:** Code mỗi script dài thêm ~15 dòng. Lợi: không phải re-run
 khi mạng chập chờn.
 
-### B-002: Hoàn tất A1.1 images (161 từ thiếu)
+### B-002: Rà soát + hoàn tất ảnh cho khoá Schritte A1 (số liệu cũ đã lạc hậu)
 
-**Effort:** S (chỉ là upload) + Cowork generation thì xa hơn · **Tier:** 1
+**Effort:** S (audit) + upload theo đợt · **Tier:** 1
 
-Hiện trạng: 781/958 từ A1.1 đã có ảnh (81%). Còn thiếu:
-- Lektion 6 (Freizeit): 91 từ
-- Lektion 7 (Kinder und Schule): 70 từ
+Số liệu cũ trong mục này (781/958, thiếu L6-L7) đã lạc hậu: khoá giờ có
+**1462 từ / 14 Lektionen** (A1.2 đã nhập ngày 2026-07-16, ~480 từ mới —
+xem B-004 dưới mục Completed). Ảnh cho từ mới L8-14 gần như chắc chắn
+chưa có.
 
 **Việc cần làm:**
-- Bạn chạy Cowork tiếp với prompt batches 46–66.
-- Mỗi lần Cowork xong vài batch, bạn nói "a11 images" → mình upload.
-
-### B-004: Backlog cho việc cần PM quyết — vocab cập nhật cho A1.2
-
-**Effort:** L · **Tier:** 2
-
-Hiện chỉ có A1.1. Schritte Plus Neu có A1.2 (Lektion 8–14). Nếu bạn
-học tiếp đến A1.2 thì cần:
-- Decision: 1 variant riêng (như A1.1) hay extend A1.1 thành A1?
-- Vocab source (textbook A1.2 PDF / Quizlet / etc.)
-- Image generation pipeline kế thừa được.
-
-Đang ở backlog vì chưa đến thời điểm — bạn báo khi sắp xong A1.1.
+- Chạy `scripts/audit-a11-images.mjs` để có con số phủ ảnh thật.
+- Bạn chạy Cowork sinh ảnh các batch thiếu; mỗi đợt xong nói
+  "a11 images" → mình upload.
 
 ---
 
@@ -107,6 +97,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-17 — B-004 closed (phát hiện muộn): A1.2 Lektion 8-14 (~480 từ) đã nhập vào chung khoá từ 2026-07-16 (commit 74095b4) — hướng "extend thành A1" tự chốt qua vocab routine; đổi tên hiển thị thành "Schritte A1 • 14 Lektionen".
 - 2026-07-17 — Dark mode v2 closed: bảng màu token hoá theo Material, 20/20 cặp đạt WCAG AA, PM duyệt "ổn rồi"; gỡ hẳn bản v1 đảo màu.
 - 2026-07-16 — B-003 closed: verify live chấm màu giống trên Browse→Flashcard (đúng màu/kích thước, không tràn ngang); mặt sau thẻ + Complete view chưa verify tận mắt (cần lật thẻ tay) — rủi ro thấp.
 - 2026-07-16 — Batch 7 việc closed: B-013 (auto-deploy functions, chờ secret), B-005 (streak.ts + 10 test), B-006 (sync bar đỏ khi lỗi + tap-to-sync), B-007 (biểu đồ tuần), B-008 (.gitattributes), B-010 (dark mode v1), B-019 (X xoá cache thật + dọn 267 dòng cũ + vé đăng nhập đúng bậc khi gọi AI).

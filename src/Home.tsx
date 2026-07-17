@@ -151,7 +151,7 @@ export default function Home() {
               <img src="https://flagcdn.com/w80/de.png" alt="German flag" />
             </div>
             <div className="language-name">Schritte A1</div>
-            <div className="language-desc">{'Textbook \u2022 7 Lektionen'}</div>
+            <div className="language-desc">{'Textbook \u2022 14 Lektionen'}</div>
             <div className="language-tag active-tag">Active</div>
           </button>
           <button className="language-card" onClick={function() { trySelectLanguage('english'); }}>
