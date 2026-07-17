@@ -59,7 +59,29 @@ chưa có.
 
 ## 💡 Medium
 
-*Trống — các item Medium đã xong 2026-07-16.*
+### B-025: Thay dòng "Elaboration" trên mặt sau thẻ bằng thứ có giá trị thật
+
+**Effort:** S–M tuỳ phương án · **Tier:** 2
+
+PM nhận xét (2026-07-17): dòng "Elaboration: Create a personal
+sentence..." tĩnh, không làm gì được, chung chung — không có giá trị.
+Đã thảo luận 2 vòng, PM chưa chốt, để suy nghĩ thêm. Các phương án
+trên bàn (không loại trừ nhau):
+
+1. **Câu ví dụ thật** (đề xuất của Claude, ~2h): mặt sau hiện 1 câu
+   tiếng Đức A1 dùng từ đó + nghĩa + nút đọc. Tận dụng kho câu AI có
+   sẵn của phần bài tập (`vocab_sentences`); từ chưa có câu → nút sinh
+   một lần rồi lưu vĩnh viễn.
+2. **Ghi chú cá nhân trên thẻ** (~2–3h): ô "câu của bạn" gõ 1 lần khi
+   học, tự hiện lại mọi lần ôn — elaboration làm thật. Cần sync note
+   theo đường progress sẵn có.
+3. **Điền khuyết mini** (~3h, xây trên phương án 1): câu ví dụ giấu
+   từ đang học, chạm để hiện.
+4. **Xoá trắng dòng đó** (5 phút): mặt sau vốn đã đủ thông tin.
+5. Gợi ý xoay vòng theo loại từ (~30p) — PM đã nghe, chưa thuyết phục.
+
+Lưu ý khi làm: dòng này nằm ở SessionView (cả German lẫn English
+dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ---
 
