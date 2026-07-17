@@ -11,6 +11,28 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-17 — Giọng đọc mới: giọng AI bản xứ, đọc một lần lưu vĩnh viễn
+
+PM phản hồi giọng đọc trên PC kém (đường Google Dịch không chính thức,
+không chọn được giọng, có thể sập bất cứ lúc nào; iPhone thì lấy giọng
+Đức đầu tiên trong máy — thường là giọng robot).
+
+- **Cửa đọc từ mới trên máy chủ:** dùng giọng AI Neural2 của Google
+  (nữ Đức bản xứ, đọc chậm nhẹ hợp A1; nữ Mỹ cho tiếng Anh). Mỗi từ
+  chỉ sinh tiếng **một lần** rồi lưu MP3 vĩnh viễn — mọi lần nghe sau,
+  trên mọi thiết bị, lấy từ kho. PC và điện thoại giờ nghe y hệt nhau.
+- **Chi phí:** 0đ trong dùng bình thường (kho từ ~65k ký tự so với hạn
+  mức miễn phí 1 triệu/tháng, và chỉ tốn một lần). Có giới hạn lượt
+  chống kẻ lạ đốt hạn mức; PM đã dán khoá Google vào Supabase (không
+  qua chat).
+- **Giọng dự phòng thông minh hơn:** nếu cửa mới trục trặc, app rơi về
+  giọng trong máy — và giờ biết **xếp hạng chọn giọng tốt nhất**
+  (natural/neural/Google) thay vì lấy giọng đầu tiên như trước.
+- Đã kiểm chứng trực tiếp: "der Tisch" (Đức) và "reliable" (Anh) sinh
+  file thành công, lần gọi thứ hai lấy từ kho. Đây cũng là lần đầu
+  bộ tự-deploy (B-013) tự đưa một cửa máy chủ hoàn toàn mới lên
+  production không cần thao tác tay.
+
 ## 2026-07-17 — Dark mode bản chuẩn (thay bản v1 đảo màu)
 
 PM phản hồi bản v1 "nâu bùn, không tương phản" → nghiên cứu chuẩn

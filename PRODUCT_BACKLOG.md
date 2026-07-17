@@ -119,6 +119,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-07-17 — Voice upgrade closed: cửa tts mới (Google Neural2 + cache MP3 vĩnh viễn trong bucket tts-audio), client ưu tiên cloud + xếp hạng giọng fallback; verify der Tisch/reliable sinh-rồi-cache OK.
 - 2026-07-17 — B-004 closed (phát hiện muộn): A1.2 Lektion 8-14 (~480 từ) đã nhập vào chung khoá từ 2026-07-16 (commit 74095b4) — hướng "extend thành A1" tự chốt qua vocab routine; đổi tên hiển thị thành "Schritte A1 • 14 Lektionen".
 - 2026-07-17 — Dark mode v2 closed: bảng màu token hoá theo Material, 20/20 cặp đạt WCAG AA, PM duyệt "ổn rồi"; gỡ hẳn bản v1 đảo màu.
 - 2026-07-16 — B-003 closed: verify live chấm màu giống trên Browse→Flashcard (đúng màu/kích thước, không tràn ngang); mặt sau thẻ + Complete view chưa verify tận mắt (cần lật thẻ tay) — rủi ro thấp.
