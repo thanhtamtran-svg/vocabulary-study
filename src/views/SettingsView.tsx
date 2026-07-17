@@ -126,7 +126,7 @@ export default React.memo(function SettingsView({
           </div>
           <div className="settings-row">
             <span>Auto-save</span>
-            <span style={{color:'#27AE60',fontWeight:600}}>{'\u2705 Enabled'}</span>
+            <span style={{color:'var(--success)',fontWeight:600}}>{'\u2705 Enabled'}</span>
           </div>
           <div className="settings-row">
             <span>Dark mode</span>
@@ -146,7 +146,7 @@ export default React.memo(function SettingsView({
 
         <h2>Cloud Sync</h2>
         <div className="card">
-          <p style={{fontSize:'12px',color:'#718096',marginBottom:'10px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-muted)',marginBottom:'10px'}}>
             Sync progress across devices. Enter the same email on each device to keep them in sync.
           </p>
           {syncEmail ?
@@ -157,7 +157,7 @@ export default React.memo(function SettingsView({
               </div>
               <div className="settings-row">
                 <span>Status</span>
-                <span style={{color: syncStatus === 'error' ? '#E74C3C' : '#27AE60', fontWeight:600, fontSize:'12px'}}>
+                <span style={{color: syncStatus === 'error' ? 'var(--danger)' : 'var(--success)', fontWeight:600, fontSize:'12px'}}>
                   {syncStatus === 'syncing' ? 'Syncing...' : syncStatus === 'error' ? 'Error' : 'Connected'}
                 </span>
               </div>
@@ -167,7 +167,7 @@ export default React.memo(function SettingsView({
                   Sync Now
                 </button>
                 <button className="btn btn-secondary btn-sm"
-                  style={{color:'#E74C3C'}}
+                  style={{color:'var(--danger)'}}
                   onClick={disconnectSync}>
                   Disconnect
                 </button>
@@ -194,18 +194,18 @@ export default React.memo(function SettingsView({
 
         <h2>Daily Reminder</h2>
         <div className="card">
-          <p style={{fontSize:'12px',color:'#718096',marginBottom:'10px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-muted)',marginBottom:'10px'}}>
             Get a daily push notification reminding you to study. Works on Android and iOS (Add to Home Screen required).
           </p>
           {!('PushManager' in window) ?
-            <p style={{fontSize:'12px',color:'#E74C3C'}}>
+            <p style={{fontSize:'12px',color:'var(--danger)'}}>
               Push notifications are not supported in this browser. On iOS, add this app to your Home Screen first.
             </p> :
           pushEnabled ?
             <div>
               <div className="settings-row">
                 <span>Status</span>
-                <span style={{color:'#27AE60',fontWeight:600}}>{'\uD83D\uDD14 Active'}</span>
+                <span style={{color:'var(--success)',fontWeight:600}}>{'\uD83D\uDD14 Active'}</span>
               </div>
               <div className="settings-row">
                 <span>Remind me at</span>
@@ -241,7 +241,7 @@ export default React.memo(function SettingsView({
               </div>
               <button
                 className="btn btn-secondary btn-sm"
-                style={{marginTop:'10px',color:'#E74C3C'}}
+                style={{marginTop:'10px',color:'var(--danger)'}}
                 onClick={function() {
                   setPushLoading(true);
                   if (pushSubscription) {
@@ -308,20 +308,20 @@ export default React.memo(function SettingsView({
 
         <h2>Reset</h2>
         <div className="card">
-          <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'10px'}}>
             This will permanently delete all your learning progress. This action cannot be undone.
           </p>
 
           {/* Step 0: Show reset button */}
           {resetStep === 0 ? <button
             className="btn btn-secondary"
-            style={{color:'#E74C3C'}}
+            style={{color:'var(--danger)'}}
             onClick={function() { setResetStep(1); }}
           >Reset All Progress</button> : null}
 
           {/* Step 1: Are you sure? */}
           {resetStep === 1 ? <div>
-            <p style={{fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px'}}>
+            <p style={{fontSize:'13px',color:'var(--danger)',fontWeight:600,marginBottom:'10px'}}>
               {'\u26A0\uFE0F Are you sure? All your progress will be permanently lost.'}
             </p>
             <div className="btn-group">
@@ -331,7 +331,7 @@ export default React.memo(function SettingsView({
               >Cancel</button>
               <button
                 className="btn btn-sm"
-                style={{background:'#E74C3C',color:'#fff'}}
+                style={{background:'var(--danger)',color:'var(--on-tint)'}}
                 onClick={function() { setResetStep(2); setResetPass(''); setResetError(''); }}
               >Yes, reset everything</button>
             </div>
@@ -339,7 +339,7 @@ export default React.memo(function SettingsView({
 
           {/* Step 2: Enter password */}
           {resetStep === 2 ? <div>
-            <p style={{fontSize:'13px',color:'#2E3033',fontWeight:600,marginBottom:'10px'}}>
+            <p style={{fontSize:'13px',color:'var(--text)',fontWeight:600,marginBottom:'10px'}}>
               {'\uD83D\uDD12 Enter your password to confirm reset'}
             </p>
             <input
@@ -350,7 +350,7 @@ export default React.memo(function SettingsView({
               onChange={function(e) { setResetPass(e.target.value); setResetError(''); }}
               onKeyDown={function(e) { if (e.key === 'Enter') document.getElementById('reset-confirm-btn')?.click(); }}
             />
-            {resetError ? <p style={{color:'#E74C3C',fontSize:'12px',marginBottom:'8px'}}>{resetError}</p> : null}
+            {resetError ? <p style={{color:'var(--danger)',fontSize:'12px',marginBottom:'8px'}}>{resetError}</p> : null}
             <div className="btn-group">
               <button
                 className="btn btn-secondary btn-sm"
@@ -359,7 +359,7 @@ export default React.memo(function SettingsView({
               <button
                 id="reset-confirm-btn"
                 className="btn btn-sm"
-                style={{background:'#E74C3C',color:'#fff'}}
+                style={{background:'var(--danger)',color:'var(--on-tint)'}}
                 disabled={resetStep === 3}
                 onClick={function() {
                   if (!resetPass.trim()) { setResetError('Please enter your password'); return; }
@@ -391,7 +391,7 @@ export default React.memo(function SettingsView({
 
         <h2>Backup & Restore</h2>
         <div className="card">
-          <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'10px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'10px'}}>
             Your progress saves automatically to this browser. Use export/import for backup or to transfer between devices.
           </p>
           <div className="btn-group">

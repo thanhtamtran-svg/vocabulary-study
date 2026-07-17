@@ -82,7 +82,7 @@ export default function Home() {
 
   if (language === 'english' && authenticated) {
     return <Suspense fallback={<div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
-      <div style={{width:'32px',height:'32px',border:'3px solid #e2e8f0',borderTopColor:'#324A84',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
+      <div style={{width:'32px',height:'32px',border:'3px solid #e2e8f0',borderTopColor:'var(--brand)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
     </div>}><EnglishApp onHome={goHome} /></Suspense>;
   }
 
@@ -106,7 +106,7 @@ export default function Home() {
             onChange={function(e) { setPassInput(e.target.value); setPassError(''); }}
             onKeyDown={function(e) { if (e.key === 'Enter' && !passLoading) submitPassword(); }}
           />
-          {passError ? <p style={{color:'#E74C3C',fontSize:'12px',marginTop:'8px'}}>{passError}</p> : null}
+          {passError ? <p style={{color:'var(--danger)',fontSize:'12px',marginTop:'8px'}}>{passError}</p> : null}
           <button
             className="btn btn-primary"
             style={{marginTop:'16px',maxWidth:'240px'}}
@@ -135,7 +135,7 @@ export default function Home() {
             </picture>
           </a>
           <h1 style={{fontSize:'20px',marginBottom:'4px',fontFamily:'Montserrat,sans-serif'}}>What would you like to study today?</h1>
-          <p style={{color:'#7E9470',fontSize:'13px'}}>Choose a language to get started</p>
+          <p style={{color:'var(--sage)',fontSize:'13px'}}>Choose a language to get started</p>
         </div>
         <div className="language-grid">
           <button className="language-card" onClick={function() { trySelectLanguage('german'); }}>
@@ -165,10 +165,10 @@ export default function Home() {
         </div>
 
       </div>
-      <div style={{padding:'12px 16px',textAlign:'center',fontSize:'11px',color:'#A0AEC0',lineHeight:'1.6',flexShrink:0}}>
+      <div style={{padding:'12px 16px',textAlign:'center',fontSize:'11px',color:'var(--text-faint)',lineHeight:'1.6',flexShrink:0}}>
         <div>{'\u00A9 2026 Tam Tran Thanh. All rights reserved.'}</div>
         <div>Contact us: {' '}
-          <a href="mailto:uniques@officience.com" style={{color:'#D67635',textDecoration:'none'}}>uniques@officience.com</a>
+          <a href="mailto:uniques@officience.com" style={{color:'var(--accent)',textDecoration:'none'}}>uniques@officience.com</a>
         </div>
       </div>
     </div>

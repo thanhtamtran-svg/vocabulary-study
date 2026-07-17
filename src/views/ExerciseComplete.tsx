@@ -35,7 +35,7 @@ export default React.memo(function ExerciseComplete({
         <div style={{textAlign:'center',marginBottom:'24px'}}>
           <div style={{fontSize:'56px',marginBottom:'8px'}}>{exEmoji}</div>
           <h1 style={{marginBottom:'4px'}}>{exMessage}</h1>
-          <p style={{color:'#718096',fontSize:'13px'}}>
+          <p style={{color:'var(--text-muted)',fontSize:'13px'}}>
             {'Exercise session complete' + (exDuration > 0 ? ' \u2022 ' + exDuration + ' min' : '')}
           </p>
         </div>
@@ -43,7 +43,7 @@ export default React.memo(function ExerciseComplete({
         {/* Stats */}
         <div className="stat-grid">
           <div className="stat">
-            <div className="num" style={{color: exPct >= 70 ? '#7E9470' : '#D67635'}}>{exPct + '%'}</div>
+            <div className="num" style={{color: exPct >= 70 ? 'var(--sage)' : 'var(--accent)'}}>{exPct + '%'}</div>
             <div className="label">Accuracy</div>
           </div>
           <div className="stat">
@@ -61,11 +61,11 @@ export default React.memo(function ExerciseComplete({
             var levelTotal = levelResults.length;
             if (levelTotal === 0) return null;
             var pct = Math.round(levelCorrect / levelTotal * 100);
-            var levelColor = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470', Analyze: '#8E44AD'}[level];
+            var levelColor = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Analyze: '#8E44AD'}[level];
             return <div key={level} style={{marginBottom:'10px'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
                 <span style={{fontSize:'13px',fontWeight:600,color: levelColor}}>{level}</span>
-                <span style={{fontSize:'12px',color:'#718096'}}>{levelCorrect + '/' + levelTotal}</span>
+                <span style={{fontSize:'12px',color:'var(--text-muted)'}}>{levelCorrect + '/' + levelTotal}</span>
               </div>
               <div className="progress-bar" style={{height:'6px'}}>
                 <div className="progress-fill"
@@ -87,8 +87,8 @@ export default React.memo(function ExerciseComplete({
                 <span>
                   <strong>{w.german}</strong>
                 </span>
-                <span style={{color:'#718096'}}>{w.english}</span>
-                <span style={{color: allCorrect ? '#7E9470' : '#D67635', fontWeight:600}}>
+                <span style={{color:'var(--text-muted)'}}>{w.english}</span>
+                <span style={{color: allCorrect ? 'var(--sage)' : 'var(--accent)', fontWeight:600}}>
                   {wr.correct + '/' + wr.total + (allCorrect ? ' \u2705' : ' \u26A0\uFE0F')}
                 </span>
               </div>;
@@ -98,12 +98,12 @@ export default React.memo(function ExerciseComplete({
 
         {/* Weak words encouragement */}
         {weakWords.length > 0 ? <div className="tip-box"
-          style={{marginTop:'12px',background:'#FFF8E1',borderColor:'#E9B746'}}>
+          style={{marginTop:'12px',background:'var(--warning-bg)',borderColor:'var(--gold)'}}>
           <strong>{'\uD83D\uDCA1'} Focus words: </strong>
           {weakWords.map(function(wi) { return getWord(wi).german; }).join(', ')}
           {' \u2014 these will appear more often in future exercises.'}
         </div> : <div className="tip-box"
-          style={{marginTop:'12px',background:'#f0fdf4',borderColor:'#7E9470'}}>
+          style={{marginTop:'12px',background:'var(--success-bg)',borderColor:'var(--sage)'}}>
           <strong>{'\uD83C\uDF1F'} Perfect session! </strong>
           {"All words answered correctly. They'll be reviewed at longer intervals now."}
         </div>}

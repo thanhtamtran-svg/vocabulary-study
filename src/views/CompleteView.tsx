@@ -11,7 +11,7 @@ export default React.memo(function CompleteView({ sessionWords, sessionType, pro
       <div className="content" style={{textAlign:'center',paddingTop:'max(40px, env(safe-area-inset-top, 40px))'}}>
         <div style={{fontSize:'64px',marginBottom:'12px'}}>{'\uD83C\uDF89'}</div>
         <h1>Session Complete!</h1>
-        <p style={{color:'#718096',margin:'8px 0 20px'}}>
+        <p style={{color:'var(--text-muted)',margin:'8px 0 20px'}}>
           {sessionType.type === "learn"
             ? 'Batch ' + sessionType.batchIdx + ' learned!'
             : 'Review completed!'}

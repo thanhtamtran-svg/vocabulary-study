@@ -35,10 +35,10 @@ export default React.memo(function SessionView({
       <div className="content session-content">
         <div className="progress-bar">
           <div className="progress-fill"
-            style={{width: ((currentIdx)/sessionWords.length*100) + '%', background:'#27AE60'}} />
+            style={{width: ((currentIdx)/sessionWords.length*100) + '%', background:'var(--success)'}} />
         </div>
 
-        {streak >= 3 ? <div style={{textAlign:'center',fontSize:'12px',color:'#F39C12',fontWeight:600,margin:'4px 0'}}>
+        {streak >= 3 ? <div style={{textAlign:'center',fontSize:'12px',color:'var(--warning)',fontWeight:600,margin:'4px 0'}}>
           {'\uD83D\uDD25 ' + streak + ' word streak!'}
         </div> : null}
 
@@ -63,13 +63,13 @@ export default React.memo(function SessionView({
 
         {/* Word image (front side) */}
         {!flipped ? <div className="word-image-container">
-          {imageLoading ? <div style={{textAlign:'center',color:'#a0aec0',padding:'20px',fontSize:'12px'}}>
+          {imageLoading ? <div style={{textAlign:'center',color:'var(--text-faint)',padding:'20px',fontSize:'12px'}}>
             <div className="spinner" style={{width:'24px',height:'24px',margin:'0 auto 8px'}}></div>
             Generating image...
           </div> : null}
           {wordImage ? <div>
             <img src={wordImage.url} alt={w.english} className="word-image"
-              style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'#fff'}} />
+              style={{borderRadius:'12px',maxHeight:'200px',objectFit:'contain',background:'var(--card)'}} />
           </div> : null}
           {!imageLoading && !wordImage ? <div style={{textAlign:'center',fontSize:'48px',padding:'20px'}}>
             {/* Per-word emoji from the emojis prop; the old global
@@ -89,7 +89,7 @@ export default React.memo(function SessionView({
             {'Create a personal sentence using "'}<em>{w.german}</em>
             {'" connected to your own life.'}
           </div> : null}
-          <p style={{textAlign:'center',fontSize:'12px',color:'#718096',margin:'8px 0'}}>
+          <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
             How well did you know this?
           </p>
           <ConfidenceButtons onRate={rateWord} />

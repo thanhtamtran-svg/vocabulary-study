@@ -40,20 +40,20 @@ export default class ErrorBoundary extends React.Component {
       },
         React.createElement('div', {
           style: {
-            background: '#fff', borderRadius: '16px', padding: '32px 24px',
+            background: 'var(--card)', borderRadius: '16px', padding: '32px 24px',
             textAlign: 'center', maxWidth: '360px', width: '100%',
             boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #F5EBDC'
           }
         },
           React.createElement('div', { style: { fontSize: '48px', marginBottom: '16px' } }, '\u26A0\uFE0F'),
           React.createElement('h2', {
-            style: { fontFamily: "'Montserrat',sans-serif", fontSize: '18px', color: '#2E3033', marginBottom: '8px' }
+            style: { fontFamily: "'Montserrat',sans-serif", fontSize: '18px', color: 'var(--text)', marginBottom: '8px' }
           }, 'Something went wrong'),
           React.createElement('p', {
-            style: { fontSize: '13px', color: '#718096', marginBottom: '20px', lineHeight: '1.5' }
+            style: { fontSize: '13px', color: 'var(--text-muted)', marginBottom: '20px', lineHeight: '1.5' }
           }, 'An unexpected error occurred. Please try again.'),
           this.state.error ? React.createElement('pre', {
-            style: { fontSize: '10px', color: '#E74C3C', background: '#fef2f2', padding: '8px', borderRadius: '8px', marginBottom: '12px', textAlign: 'left', overflow: 'auto', maxHeight: '120px', wordBreak: 'break-all' }
+            style: { fontSize: '10px', color: 'var(--danger)', background: '#fef2f2', padding: '8px', borderRadius: '8px', marginBottom: '12px', textAlign: 'left', overflow: 'auto', maxHeight: '120px', wordBreak: 'break-all' }
           }, String(this.state.error)) : null,
           React.createElement('button', {
             className: 'btn btn-primary',

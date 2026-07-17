@@ -67,15 +67,15 @@ export default React.memo(function AiExplainBox({
 
     {/* Loading state */}
     {aiLoading ? <div className="ai-explain-box">
-      <div style={{textAlign:'center',color:'#718096',padding:'16px'}}>
+      <div style={{textAlign:'center',color:'var(--text-muted)',padding:'16px'}}>
         {'\u23F3'} Asking AI teacher...
       </div>
     </div> : null}
 
     {/* Error state */}
     {aiError ? <div className="ai-explain-box"
-      style={{borderColor:'#E74C3C',background:'#FEF5F5'}}>
-      <p style={{color:'#E74C3C',fontSize:'12px',margin:0}}>{aiError}</p>
+      style={{borderColor:'var(--danger)',background:'var(--danger-bg)'}}>
+      <p style={{color:'var(--danger)',fontSize:'12px',margin:0}}>{aiError}</p>
       <button className="btn btn-sm btn-secondary"
         style={{marginTop:'8px'}}
         onClick={handleRetry}
@@ -87,9 +87,9 @@ export default React.memo(function AiExplainBox({
       <div className="ai-explain-header">
         <span style={{display:'flex',alignItems:'center',gap:'6px'}}>
           {'\uD83E\uDD16'} AI Teacher
-          {aiSaveStatus === 'saving' ? <span style={{fontSize:'10px',color:'#F39C12',background:'#FEF9E7',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
+          {aiSaveStatus === 'saving' ? <span style={{fontSize:'10px',color:'var(--warning)',background:'var(--warning-bg)',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
             {'\u23F3'} Saving...
-          </span> : aiExplanation && !aiLoading ? <span style={{fontSize:'10px',color:'#27AE60',background:'#E8F8F0',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
+          </span> : aiExplanation && !aiLoading ? <span style={{fontSize:'10px',color:'var(--success)',background:'var(--success-bg)',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
             {'\u2705'} Saved
           </span> : null}
         </span>
@@ -151,11 +151,11 @@ export default React.memo(function AiExplainBox({
               acc.push(<div key={i} style={{
                 display:'flex', justifyContent:'space-between', alignItems:'center',
                 padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
-                background: i % 2 === 0 ? '#f8f6f0' : '#fff',
+                background: i % 2 === 0 ? 'var(--subtle-bg)' : '#fff',
                 fontSize:'13px', border:'1px solid #F5EBDC'
               }}>
-                <span style={{color:'#7E9470',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>
-                <span style={{color:'#324A84',fontWeight:600,flex:1}}>{renderInline(cells[1].trim(), i)}</span>
+                <span style={{color:'var(--sage)',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>
+                <span style={{color:'var(--brand)',fontWeight:600,flex:1}}>{renderInline(cells[1].trim(), i)}</span>
                 {lang !== 'en' && tableGerman.length > 1 ? <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px',marginLeft:'4px'}}
                   aria-label={'Read ' + tableGerman + ' aloud'}
                   onClick={function() { speak(tableGerman); }}

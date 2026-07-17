@@ -45,7 +45,7 @@ export default React.memo(function BrowseView({
           })}
         </div>
 
-        <p style={{fontSize:'11px',color:'#718096',marginBottom:'6px'}}>
+        <p style={{fontSize:'11px',color:'var(--text-muted)',marginBottom:'6px'}}>
           {'Showing ' + filtered.length + ' of 1500 words'}
         </p>
 
@@ -72,7 +72,7 @@ export default React.memo(function BrowseView({
                 <span className={'tag ' + TYPE_TAGS[w.typeIdx]}
                   style={{marginLeft:'6px'}}>{TYPE_NAMES[w.typeIdx]}</span>
               </div>
-              <span style={{color:'#718096',flex:1}}>{w.english}</span>
+              <span style={{color:'var(--text-muted)',flex:1}}>{w.english}</span>
               <span style={{fontSize:'11px'}}>
                 {isLearned ? icons[conf] : '\u2B24'}
               </span>

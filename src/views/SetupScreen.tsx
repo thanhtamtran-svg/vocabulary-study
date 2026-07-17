@@ -12,18 +12,18 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
       <div style={{padding:'24px',textAlign:'center'}}>
         <div style={{fontSize:'48px',marginBottom:'16px'}}>{courseFlag || '\uD83C\uDDE9\uD83C\uDDEA'}</div>
         <h1 style={{fontSize:'22px',marginBottom:'4px'}}>{courseTitle || 'German 1500'}</h1>
-        <p style={{color:'#718096',fontSize:'13px',marginBottom:'24px'}}>
+        <p style={{color:'var(--text-muted)',fontSize:'13px',marginBottom:'24px'}}>
           {courseDesc || 'Master 1500 words with science-based spaced repetition'}
         </p>
 
         <div className="card" style={{
-          background:'#F0F7FF',borderColor:'#BEE3F8',marginBottom:'16px',
+          background:'var(--info-bg)',borderColor:'var(--info-border)',marginBottom:'16px',
           textAlign:'center'
         }}>
           <h2 style={{fontSize:'15px',marginBottom:'4px'}}>
             {'\u2601\uFE0F'} Already studying on another device?
           </h2>
-          <p style={{fontSize:'12px',color:'#718096',margin:'0 0 12px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-muted)',margin:'0 0 12px'}}>
             Enter your email to sync your progress
           </p>
           <div style={{display:'flex',gap:'8px',maxWidth:'360px',margin:'0 auto'}}>
@@ -49,13 +49,13 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
           </div>
           {syncMsg ? <p style={{
             fontSize:'12px',marginTop:'8px',fontWeight:600,
-            color: syncStatus === 'error' ? '#E74C3C' : '#27AE60'
+            color: syncStatus === 'error' ? 'var(--danger)' : 'var(--success)'
           }}>{syncMsg}</p> : null}
         </div>
 
         <div className="card card-accent">
           <h2>When do you want to start?</h2>
-          <p style={{fontSize:'12px',color:'#718096',margin:'6px 0 12px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-muted)',margin:'6px 0 12px'}}>
             Pick your first study day (ideally a Monday)
           </p>
           <input
@@ -75,7 +75,7 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
             <div>
               <strong>New words</strong>
               <br />
-              <span style={{fontSize:'11px',color:'#718096'}}>
+              <span style={{fontSize:'11px',color:'var(--text-muted)'}}>
                 Interleaved mix of nouns, verbs, adjectives
               </span>
             </div>
@@ -85,13 +85,13 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
             <div>
               <strong>Scheduled reviews</strong>
               <br />
-              <span style={{fontSize:'11px',color:'#718096'}}>
+              <span style={{fontSize:'11px',color:'var(--text-muted)'}}>
                 Previous batches on schedule: Day +2, +3, +5, +7
               </span>
             </div>
           </div>
           <div style={{textAlign:'center',margin:'8px 0'}}>
-            <span className="phase-indicator" style={{background:'#EBF5FB',color:'#1B4F72'}}>
+            <span className="phase-indicator" style={{background:'var(--chip-bg)',color:'var(--chip-text)'}}>
               ~45-60 min/day {'\u2022'} {totalWeeks} weeks
             </span>
           </div>

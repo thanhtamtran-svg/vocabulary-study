@@ -34,9 +34,9 @@ export function ToastProvider({ children }) {
   var info = useCallback(function(msg) { return addToast(msg, 'info'); }, [addToast]);
 
   var typeStyles = {
-    success: { background: '#7E9470', color: '#fff', borderColor: '#6d8360' },
-    error: { background: '#E74C3C', color: '#fff', borderColor: '#c0392b' },
-    info: { background: '#324A84', color: '#fff', borderColor: '#283d6e' }
+    success: { background: 'var(--sage)', color: 'var(--on-tint)', borderColor: 'var(--sage-hover)' },
+    error: { background: 'var(--danger)', color: 'var(--on-tint)', borderColor: 'var(--danger)' },
+    info: { background: 'var(--brand)', color: 'var(--on-tint)', borderColor: 'var(--brand-hover)' }
   };
 
   var typeIcons = { success: '\u2705', error: '\u274C', info: '\u2139\uFE0F' };

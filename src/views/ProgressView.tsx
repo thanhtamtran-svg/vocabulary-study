@@ -57,7 +57,7 @@ export default React.memo(function ProgressView({
         {/* B-007: This week — actual words practiced vs plan */}
         <h2>This Week</h2>
         <div className="card">
-          <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'12px'}}>
+          <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'12px'}}>
             Words practiced per day (learn + reviews). Dashed line = plan
             ({PLAN_WORDS_PER_DAY}/day, Sunday off). Total this week: <strong>{weekTotal}</strong>
           </p>
@@ -73,10 +73,10 @@ export default React.memo(function ProgressView({
                 var h = day.count > 0 ? Math.max(day.count / weekMax * 100, 4) : 0;
                 var met = day.count >= PLAN_WORDS_PER_DAY;
                 return <div key={day.date} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'flex-end',height:'100%'}}>
-                  {day.count > 0 ? <div style={{fontSize:'10px',color:'#718096',marginBottom:'2px'}}>{day.count}</div> : null}
+                  {day.count > 0 ? <div style={{fontSize:'10px',color:'var(--text-muted)',marginBottom:'2px'}}>{day.count}</div> : null}
                   <div style={{
                     width:'100%', maxWidth:'34px', height: h + 'px',
-                    background: day.isSunday ? '#CBD5E1' : met ? '#27AE60' : '#7E9470',
+                    background: day.isSunday ? 'var(--border-strong)' : met ? 'var(--success)' : 'var(--sage)',
                     borderRadius:'4px 4px 0 0',
                     opacity: day.isToday ? 1 : 0.85,
                     minHeight: day.count > 0 ? '4px' : '0'
@@ -88,7 +88,7 @@ export default React.memo(function ProgressView({
               {week.map(function(day) {
                 return <div key={day.date} style={{
                   flex:1, textAlign:'center', fontSize:'10px',
-                  color: day.isSunday ? '#CBD5E1' : day.isToday ? '#2E3033' : '#94a3b8',
+                  color: day.isSunday ? 'var(--border-strong)' : day.isToday ? 'var(--text)' : 'var(--text-faint)',
                   fontWeight: day.isToday ? 700 : 400
                 }}>{day.isSunday ? 'Rest' : day.label}</div>;
               })}
@@ -99,7 +99,7 @@ export default React.memo(function ProgressView({
         {/* Memory Stages Bar Chart */}
         <h2>Memory Stages</h2>
         <div className="card memory-stages-card">
-          <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'16px',lineHeight:'1.5'}}>
+          <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'16px',lineHeight:'1.5'}}>
             Words move up through 5 memory stages as you review them. Higher stages need less frequent review.
           </p>
 
@@ -134,15 +134,15 @@ export default React.memo(function ProgressView({
           {/* Not learned row */}
           {totalLearned < 1500 ? <div className="stage-row" style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid #F5EBDC'}}>
             <div className="stage-label">
-              <span className="stage-dot" style={{background: '#CBD5E0'}} />
-              <span className="stage-name" style={{color:'#94a3b8'}}>Not started</span>
+              <span className="stage-dot" style={{background: 'var(--border-strong)'}} />
+              <span className="stage-name" style={{color:'var(--text-faint)'}}>Not started</span>
             </div>
             <div className="stage-bar-track">
               <div className="stage-bar-fill"
-                style={{width: (notLearned / 1500 * 100) + '%', background: '#CBD5E0'}}
+                style={{width: (notLearned / 1500 * 100) + '%', background: 'var(--border-strong)'}}
               />
             </div>
-            <div className="stage-count" style={{color:'#94a3b8'}}>
+            <div className="stage-count" style={{color:'var(--text-faint)'}}>
               <span style={{fontWeight:600}}>{notLearned}</span>
             </div>
           </div> : null}
@@ -154,7 +154,7 @@ export default React.memo(function ProgressView({
                 <div style={{fontWeight:600,fontSize:'12px',color: stage.color, fontFamily:'Montserrat,sans-serif'}}>
                   {'Lv.' + stage.level + ' ' + stage.name}
                 </div>
-                <div style={{fontSize:'11px',color:'#64748b',marginTop:'2px'}}>{stage.desc}</div>
+                <div style={{fontSize:'11px',color:'var(--text-slate)',marginTop:'2px'}}>{stage.desc}</div>
               </div>;
             })}
           </div>
@@ -172,12 +172,12 @@ export default React.memo(function ProgressView({
             return <div key={ci} style={{margin:'6px 0'}}>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:'12px'}}>
                 <span>{cat}</span>
-                <span style={{fontWeight:500,color:'#64748b'}}>{learned + '/' + catWords.length}</span>
+                <span style={{fontWeight:500,color:'var(--text-slate)'}}>{learned + '/' + catWords.length}</span>
               </div>
               <div className="progress-bar" style={{height:'5px'}}>
                 <div className="progress-fill"
                   style={{width: (catWords.length ? learned/catWords.length*100 : 0) + '%',
-                    background:'#324A84'}} />
+                    background:'var(--brand)'}} />
               </div>
             </div>;
           })}

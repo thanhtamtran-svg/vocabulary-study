@@ -6,9 +6,9 @@ import { speakEnglish } from '../lib/english-speech';
 // Falls back to null for non-nouns and article-less nouns (country names).
 function genderDot(germanWord) {
   if (typeof germanWord !== 'string') return null;
-  if (germanWord.startsWith('der ')) return { color: '#3B82F6', label: 'der (masculine)' };
-  if (germanWord.startsWith('die ')) return { color: '#EF4444', label: 'die (feminine/plural)' };
-  if (germanWord.startsWith('das ')) return { color: '#22C55E', label: 'das (neuter)' };
+  if (germanWord.startsWith('der ')) return { color: 'var(--brand)', label: 'der (masculine)' };
+  if (germanWord.startsWith('die ')) return { color: 'var(--danger)', label: 'die (feminine/plural)' };
+  if (germanWord.startsWith('das ')) return { color: 'var(--success)', label: 'das (neuter)' };
   return null;
 }
 
@@ -59,7 +59,7 @@ export default React.memo(function Flashcard({
             </button>
           </div>
           {wordIPA ? <div style={{
-            fontSize:'14px',color:'#94a3b8',fontFamily:'serif',fontStyle:'italic',
+            fontSize:'14px',color:'var(--text-faint)',fontFamily:'serif',fontStyle:'italic',
             marginTop:'2px',letterSpacing:'0.5px'
           }}>{'/' + wordIPA + '/'}</div> : null}
           <div className="flashcard-meta">{word.cat}</div>
@@ -73,13 +73,13 @@ export default React.memo(function Flashcard({
             <div className={'flashcard-back-layout' + (wordImage ? ' has-image' : '')}>
               <div className="flashcard-back-text">
                 <div style={{
-                  fontSize:'14px',color:'#2E3033',lineHeight:'1.5',marginBottom:'6px',
-                  padding:'8px 12px',borderRadius:'8px',background:'#f0f7ff',
+                  fontSize:'14px',color:'var(--text)',lineHeight:'1.5',marginBottom:'6px',
+                  padding:'8px 12px',borderRadius:'8px',background:'var(--info-bg)',
                   textAlign:'center',fontWeight:500
                 }}>{word.english}</div>
                 {vietnameseDef ? <div style={{
-                  fontSize:'13px',color:'#718096',lineHeight:'1.4',
-                  padding:'6px 10px',borderRadius:'8px',background:'#f8f6f0',
+                  fontSize:'13px',color:'var(--text-muted)',lineHeight:'1.4',
+                  padding:'6px 10px',borderRadius:'8px',background:'var(--subtle-bg)',
                   textAlign:'center',fontStyle:'italic'
                 }}>{'\uD83C\uDDFB\uD83C\uDDF3 '}{vietnameseDef}</div> : null}
               </div>
@@ -93,7 +93,7 @@ export default React.memo(function Flashcard({
                 {/* Word is the hero on the answer side: big, bold, high-contrast. */}
                 <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',flexWrap:'wrap'}}>
                   <span className="flashcard-back-word">{word.german}</span>
-                  {wordIPA ? <span className="flashcard-back-ipa" style={{color:'#94a3b8',fontFamily:'serif',fontStyle:'italic'}}>
+                  {wordIPA ? <span className="flashcard-back-ipa" style={{color:'var(--text-faint)',fontFamily:'serif',fontStyle:'italic'}}>
                     {'/' + wordIPA + '/'}
                   </span> : null}
                   <button className="speak-btn back"
@@ -104,7 +104,7 @@ export default React.memo(function Flashcard({
                 </div>
                 {/* Definition demoted to supporting text below the word. */}
                 {wordDefinition ? <div className="flashcard-back-def" style={{
-                  color:'#718096',lineHeight:'1.45',marginTop:'8px',
+                  color:'var(--text-muted)',lineHeight:'1.45',marginTop:'8px',
                   fontStyle:'italic',textAlign:'center'
                 }}>{wordDefinition}</div> : null}
               </div>
@@ -115,7 +115,7 @@ export default React.memo(function Flashcard({
                     {imageLoading
                       ? <>
                           <div className="spinner" style={{width:'24px',height:'24px'}}></div>
-                          <span style={{fontSize:'11px',color:'#a09583'}}>\u0110ang t\u1EA1o \u1EA3nh\u2026</span>
+                          <span style={{fontSize:'11px',color:'var(--text-faint)'}}>\u0110ang t\u1EA1o \u1EA3nh\u2026</span>
                         </>
                       : <>
                           <span style={{fontSize:'34px',opacity:0.45}}>{'\uD83D\uDDBC\uFE0F'}</span>

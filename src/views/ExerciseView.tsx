@@ -78,7 +78,7 @@ export default React.memo(function ExerciseView({
   var exItem = exerciseSession.items[exerciseIdx];
   var exTotal = exerciseSession.items.length;
   var exProgressPct = ((exerciseIdx + (exerciseFeedback ? 1 : 0)) / exTotal * 100);
-  var levelColors = {Remember: '#324A84', Understand: '#D67635', Apply: '#7E9470', Analyze: '#8E44AD'};
+  var levelColors = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Analyze: '#8E44AD'};
   var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F', Analyze: '\uD83D\uDCD6'};
 
   return (
@@ -94,7 +94,7 @@ export default React.memo(function ExerciseView({
               setView('dashboard');
             }}
           >{'\u2190'} Exit</button>
-          <span style={{fontSize:'13px',color:'#718096',fontWeight:600}}>
+          <span style={{fontSize:'13px',color:'var(--text-muted)',fontWeight:600}}>
             {(exerciseIdx + 1) + ' / ' + exTotal}
           </span>
           <span style={{fontSize:'11px',padding:'3px 10px',borderRadius:'12px',fontWeight:600,
@@ -114,19 +114,19 @@ export default React.memo(function ExerciseView({
         <div style={{textAlign:'center',marginBottom:'12px'}}>
           <span className={'tag ' + exItem.wordInfo.typeClass}
             style={{fontSize:'11px'}}>{exItem.wordInfo.type}</span>
-          <span style={{fontSize:'11px',color:'#94a3b8',marginLeft:'8px'}}>
+          <span style={{fontSize:'11px',color:'var(--text-faint)',marginLeft:'8px'}}>
             {exItem.wordInfo.cat}
           </span>
         </div>
 
         {/* Exercise card */}
         <div className="card" style={{
-          border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? '#7E9470' : '#E74C3C')) : '2px solid #e2e8f0',
+          border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? 'var(--sage)' : 'var(--danger)')) : '2px solid #e2e8f0',
           transition: 'border-color 0.2s ease', minHeight:'180px'
         }}>
 
           {/* Prompt */}
-          <p style={{fontSize:'15px',fontWeight:600,color:'#2E3033',marginBottom:'16px',lineHeight:'1.5'}}>
+          <p style={{fontSize:'15px',fontWeight:600,color:'var(--text)',marginBottom:'16px',lineHeight:'1.5'}}>
             {exItem.prompt}
           </p>
 
@@ -134,8 +134,8 @@ export default React.memo(function ExerciseView({
           {exItem.type === 'listening' && !exerciseFeedback ?
             <button
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
-                padding:'14px',borderRadius:'12px',background:'#324A8410',border:'2px solid #324A84',
-                cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'#324A84',fontWeight:600}}
+                padding:'14px',borderRadius:'12px',background:'var(--brand-tint)',border:'2px solid #324A84',
+                cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'var(--brand)',fontWeight:600}}
               onClick={function() { speak(exItem.germanWord); }}
             >{'\uD83D\uDD0A'} Play again</button> : null}
 
@@ -149,7 +149,7 @@ export default React.memo(function ExerciseView({
                   style={{
                     padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
                     border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
-                    background: isSelected ? '#324A8410' : '#fff',
+                    background: isSelected ? 'var(--brand-tint)' : '#fff',
                     cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                   }}
                   onClick={function() { setExerciseSelectedIdx(oi); }}
@@ -170,8 +170,8 @@ export default React.memo(function ExerciseView({
                   key={oi}
                   style={{
                     padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
-                    border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
-                    background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
+                    border: '2px solid ' + (isCorrect ? 'var(--sage)' : (wasSelected && !isCorrect ? 'var(--danger)' : 'var(--border)')),
+                    background: isCorrect ? 'var(--sage-tint)' : (wasSelected && !isCorrect ? 'var(--danger-tint)' : 'var(--row-hover)'),
                     fontWeight: isCorrect ? 600 : 400
                   }}
                 >{(isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text}</div>;
@@ -183,9 +183,9 @@ export default React.memo(function ExerciseView({
             <div>
               <div style={{
                 display:'flex',alignItems:'center',gap:'12px',marginBottom:'12px',
-                padding:'12px 16px',borderRadius:'10px',background:'#324A8410'
+                padding:'12px 16px',borderRadius:'10px',background:'var(--brand-tint)'
               }}>
-                <span style={{fontSize:'20px',fontWeight:700,color:'#324A84'}}>
+                <span style={{fontSize:'20px',fontWeight:700,color:'var(--brand)'}}>
                   {exItem.pronoun}
                 </span>
                 <input
@@ -212,16 +212,16 @@ export default React.memo(function ExerciseView({
                     onClick={function() { insertChar(ch); }}
                     title={'Shortcut: press ' + (i + 1)}
                     style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
-                      border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
-                      fontFamily:'inherit',fontWeight:600,color:'#334155',
+                      border:'1px solid #cbd5e1',background:'var(--row-hover)',cursor:'pointer',
+                      fontFamily:'inherit',fontWeight:600,color:'var(--text)',
                       minWidth:'44px',lineHeight:'1',display:'inline-flex',
                       alignItems:'baseline',gap:'4px'}}
                   >
                     <span>{ch}</span>
-                    <span style={{fontSize:'10px',color:'#94a3b8',fontWeight:500}}>{i + 1}</span>
+                    <span style={{fontSize:'10px',color:'var(--text-faint)',fontWeight:500}}>{i + 1}</span>
                   </button>;
                 })}
-                <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
+                <span style={{fontSize:'12px',color:'var(--text-faint)',marginLeft:'4px'}}>
                   Press 1–4 for ä ö ü ß  ·  or type ae/oe/ue/ss
                 </span>
               </div> : null}
@@ -232,18 +232,18 @@ export default React.memo(function ExerciseView({
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
-                textDecoration:'line-through',color:'#E74C3C'
+                background:'var(--danger-tint)',border:'2px solid #E74C3C',marginBottom:'8px',
+                textDecoration:'line-through',color:'var(--danger)'
               }}>{'\u274C ' + exItem.pronoun + ' ' + exerciseFeedback.userAnswer}</div> : null}
               <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                background:'#7E947018',border:'2px solid #7E9470',marginBottom:'12px'
+                background:'var(--sage-tint)',border:'2px solid #7E9470',marginBottom:'12px'
               }}>{'\u2705 ' + exItem.fullAnswer}</div>
               {/* Full conjugation table — only show when wrong to help learn */}
               {!exerciseFeedback.correct ? <div style={{
-                padding:'12px',borderRadius:'10px',background:'#f8f6f0',border:'1px solid #e8e2d6'
+                padding:'12px',borderRadius:'10px',background:'var(--subtle-bg)',border:'1px solid #e8e2d6'
               }}>
-                <div style={{fontSize:'11px',fontWeight:700,color:'#D67635',
+                <div style={{fontSize:'11px',fontWeight:700,color:'var(--accent)',
                   textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'8px'}}>
                   {'\uD83D\uDCDD Full conjugation: ' + exItem.infinitive}
                 </div>
@@ -256,8 +256,8 @@ export default React.memo(function ExerciseView({
                     background: isTarget ? '#324A8415' : 'transparent',
                     fontWeight: isTarget ? 700 : 400
                   }}>
-                    <span style={{color:'#718096',minWidth:'70px'}}>{p}</span>
-                    <span style={{color:'#2E3033'}}>{exItem.fullTable[pk]}</span>
+                    <span style={{color:'var(--text-muted)',minWidth:'70px'}}>{p}</span>
+                    <span style={{color:'var(--text)'}}>{exItem.fullTable[pk]}</span>
                   </div>;
                 })}
               </div> : null}
@@ -266,7 +266,7 @@ export default React.memo(function ExerciseView({
           {/* Fill in blank / sentence complete / fill english input */}
           {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
             <div>
-              {exItem.hint ? <p style={{fontSize:'12px',color:'#94a3b8',marginBottom:'8px'}}>
+              {exItem.hint ? <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'8px'}}>
                 {'\uD83D\uDCA1 Hint: ' + exItem.hint}
               </p> : null}
               <input
@@ -299,16 +299,16 @@ export default React.memo(function ExerciseView({
                     onClick={function() { insertChar(ch); }}
                     title={'Shortcut: press ' + (i + 1)}
                     style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
-                      border:'1px solid #cbd5e1',background:'#f8fafc',cursor:'pointer',
-                      fontFamily:'inherit',fontWeight:600,color:'#334155',
+                      border:'1px solid #cbd5e1',background:'var(--row-hover)',cursor:'pointer',
+                      fontFamily:'inherit',fontWeight:600,color:'var(--text)',
                       minWidth:'44px',lineHeight:'1',display:'inline-flex',
                       alignItems:'baseline',gap:'4px'}}
                   >
                     <span>{ch}</span>
-                    <span style={{fontSize:'10px',color:'#94a3b8',fontWeight:500}}>{i + 1}</span>
+                    <span style={{fontSize:'10px',color:'var(--text-faint)',fontWeight:500}}>{i + 1}</span>
                   </button>;
                 })}
-                <span style={{fontSize:'12px',color:'#94a3b8',marginLeft:'4px'}}>
+                <span style={{fontSize:'12px',color:'var(--text-faint)',marginLeft:'4px'}}>
                   Press 1–4 for ä ö ü ß  ·  or type ae/oe/ue/ss
                 </span>
               </div> : null}
@@ -319,18 +319,18 @@ export default React.memo(function ExerciseView({
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                background:'#E74C3C10',border:'2px solid #E74C3C',marginBottom:'8px',
-                textDecoration:'line-through',color:'#E74C3C'
+                background:'var(--danger-tint)',border:'2px solid #E74C3C',marginBottom:'8px',
+                textDecoration:'line-through',color:'var(--danger)'
               }}>{'\u274C ' + exerciseFeedback.userAnswer}</div> : null}
               <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                background: exerciseFeedback.correct ? '#7E947018' : '#7E947012',
+                background: exerciseFeedback.correct ? 'var(--sage-tint)' : '#7E947012',
                 border: '2px solid #7E9470',
                 marginBottom:'8px'
               }}>
                 {'\u2705 ' + exerciseFeedback.correctAnswer}
               </div>
-              {exerciseFeedback.sentence ? <p style={{fontSize:'13px',color:'#718096',fontStyle:'italic',marginTop:'8px'}}>
+              {exerciseFeedback.sentence ? <p style={{fontSize:'13px',color:'var(--text-muted)',fontStyle:'italic',marginTop:'8px'}}>
                 {'\uD83D\uDDE3\uFE0F ' + exerciseFeedback.sentence}
               </p> : null}
             </div> : null}
@@ -339,14 +339,14 @@ export default React.memo(function ExerciseView({
           {(exItem.type === 'reading' || exItem.type === 'reading_comprehension') && exItem.passage ?
             <div>
               <div style={{
-                padding:'14px 16px',borderRadius:'10px',background:'#f8f6f0',
+                padding:'14px 16px',borderRadius:'10px',background:'var(--subtle-bg)',
                 border:'1px solid #e8e2d6',marginBottom:'14px',lineHeight:'1.7',fontSize:'14px'
               }}>
-                <div style={{fontSize:'11px',fontWeight:700,color:'#D67635',
+                <div style={{fontSize:'11px',fontWeight:700,color:'var(--accent)',
                   textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'6px'}}>
                   {'\uD83D\uDCD6 ' + (exItem.passageTitle || 'Lesetext')}
                 </div>
-                <p style={{margin:0,color:'#2E3033'}}>{exItem.passage}</p>
+                <p style={{margin:0,color:'var(--text)'}}>{exItem.passage}</p>
               </div>
               {!exerciseFeedback ?
                 <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
@@ -357,7 +357,7 @@ export default React.memo(function ExerciseView({
                       style={{
                         padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
                         border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
-                        background: isSelected ? '#324A8410' : '#fff',
+                        background: isSelected ? 'var(--brand-tint)' : '#fff',
                         cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                       }}
                       onClick={function() { setExerciseSelectedIdx(oi); }}
@@ -378,18 +378,18 @@ export default React.memo(function ExerciseView({
                         key={oi}
                         style={{
                           padding:'12px 16px',borderRadius:'10px',fontSize:'14px',
-                          border: '2px solid ' + (isCorrect ? '#7E9470' : (wasSelected && !isCorrect ? '#E74C3C' : '#e2e8f0')),
-                          background: isCorrect ? '#7E947018' : (wasSelected && !isCorrect ? '#E74C3C10' : '#f8f9fa'),
+                          border: '2px solid ' + (isCorrect ? 'var(--sage)' : (wasSelected && !isCorrect ? 'var(--danger)' : 'var(--border)')),
+                          background: isCorrect ? 'var(--sage-tint)' : (wasSelected && !isCorrect ? 'var(--danger-tint)' : 'var(--row-hover)'),
                           fontWeight: isCorrect ? 600 : 400
                         }}
                       >{(isCorrect ? '\u2705 ' : (wasSelected && !isCorrect ? '\u274C ' : '')) + opt.text}</div>;
                     })}
                   </div>
                   {exItem.passageTranslation ? <details style={{marginTop:'8px'}}>
-                    <summary style={{fontSize:'12px',color:'#94a3b8',cursor:'pointer'}}>
+                    <summary style={{fontSize:'12px',color:'var(--text-faint)',cursor:'pointer'}}>
                       Show English translation
                     </summary>
-                    <p style={{fontSize:'12px',color:'#718096',marginTop:'4px',lineHeight:'1.5',fontStyle:'italic'}}>
+                    <p style={{fontSize:'12px',color:'var(--text-muted)',marginTop:'4px',lineHeight:'1.5',fontStyle:'italic'}}>
                       {exItem.passageTranslation}
                     </p>
                   </details> : null}
@@ -401,8 +401,8 @@ export default React.memo(function ExerciseView({
         {/* Feedback message */}
         {exerciseFeedback ? <div style={{
           textAlign:'center',padding:'12px',margin:'12px 0',borderRadius:'10px',
-          background: exerciseFeedback.correct ? '#f0fdf4' : '#fef2f2',
-          color: exerciseFeedback.correct ? '#166534' : '#991b1b',
+          background: exerciseFeedback.correct ? 'var(--success-bg)' : '#fef2f2',
+          color: exerciseFeedback.correct ? 'var(--success-text)' : 'var(--danger-text)',
           fontWeight:600,fontSize:'14px'
         }}>{exerciseFeedback.message}</div> : null}
 
@@ -410,7 +410,7 @@ export default React.memo(function ExerciseView({
         {exerciseFeedback && !exerciseFeedback.correct ? <div style={{textAlign:'center', marginBottom:'8px'}}>
           {!exerciseWhyText ? <button
             style={{
-              background: 'none', border: '1px solid #D67635', color: '#D67635',
+              background: 'none', border: '1px solid #D67635', color: 'var(--accent)',
               padding: '6px 16px', borderRadius: '8px', cursor: 'pointer',
               fontSize: '13px', fontWeight: 600
             }}
@@ -419,10 +419,10 @@ export default React.memo(function ExerciseView({
           >{exerciseWhyLoading ? 'Thinking...' : '\uD83E\uDD14 Why was I wrong?'}</button> : null}
           {exerciseWhyText ? <div style={{
             textAlign: 'left', padding: '12px 16px', margin: '8px 0',
-            background: '#FFF8F0', border: '1px solid #F5EBDC', borderRadius: '10px',
-            fontSize: '13px', lineHeight: '1.6', color: '#2E3033'
+            background: 'var(--warning-bg)', border: '1px solid #F5EBDC', borderRadius: '10px',
+            fontSize: '13px', lineHeight: '1.6', color: 'var(--text)'
           }}>
-            <div style={{fontWeight: 700, color: '#D67635', marginBottom: '6px', fontSize: '13px'}}>{'\uD83D\uDCA1'} AI Teacher</div>
+            <div style={{fontWeight: 700, color: 'var(--accent)', marginBottom: '6px', fontSize: '13px'}}>{'\uD83D\uDCA1'} AI Teacher</div>
             <div>{renderSafeText(exerciseWhyText)}</div>
           </div> : null}
         </div> : null}

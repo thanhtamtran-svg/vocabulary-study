@@ -39,10 +39,10 @@ export default React.memo(function Dashboard({
   var scheduleIcon = '';
   if (scheduleGap > 0) {
     scheduleText = scheduleGap + ' batch' + (scheduleGap > 1 ? 'es' : '') + ' ahead';
-    scheduleColor = '#27AE60'; scheduleIcon = '\uD83D\uDE80';
+    scheduleColor = 'var(--success)'; scheduleIcon = '\uD83D\uDE80';
   } else if (scheduleGap < 0) {
     scheduleText = Math.abs(scheduleGap) + ' batch' + (Math.abs(scheduleGap) > 1 ? 'es' : '') + ' behind';
-    scheduleColor = '#E74C3C'; scheduleIcon = '\u26A0\uFE0F';
+    scheduleColor = 'var(--danger)'; scheduleIcon = '\u26A0\uFE0F';
   } else {
     scheduleText = 'On track';
     scheduleColor = '#2E86C1'; scheduleIcon = '\u2705';
@@ -56,7 +56,7 @@ export default React.memo(function Dashboard({
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'8px'}}>
           <div>
             <h1 style={{marginBottom:'2px'}}>Today's Plan</h1>
-            <p style={{fontSize:'12px',color:'#718096'}}>
+            <p style={{fontSize:'12px',color:'var(--text-muted)'}}>
               {formatDate(today) + ' \u2022 Day ' + studyDay + ' \u2022 Week ' + weekNum}
             </p>
           </div>
@@ -74,7 +74,7 @@ export default React.memo(function Dashboard({
           <span style={{fontSize:'12px',fontWeight:600,color: scheduleColor}}>
             {scheduleText}
           </span>
-          <span style={{fontSize:'11px',color:'#718096',marginLeft:'auto'}}>
+          <span style={{fontSize:'11px',color:'var(--text-muted)',marginLeft:'auto'}}>
             {batchesCompleted + '/' + batches.length + ' batches \u2022 ' +
             todayLearnCount + ' today'}
           </span>
@@ -102,8 +102,8 @@ export default React.memo(function Dashboard({
         {/* Sunday rest suggestion (but still allow learning) */}
         {isSunday ? <div className="sunday-banner">
           <div className="icon">{'\uD83D\uDCA4'}</div>
-          <h2 style={{color:'#1B4F72',marginBottom:'8px'}}>Rest Day</h2>
-          <p style={{fontSize:'13px',color:'#718096'}}>
+          <h2 style={{color:'var(--chip-text)',marginBottom:'8px'}}>Rest Day</h2>
+          <p style={{fontSize:'13px',color:'var(--text-muted)'}}>
             Sunday is your rest day! But you can still learn if you want.
           </p>
         </div> : null}
@@ -126,9 +126,9 @@ export default React.memo(function Dashboard({
             background: dailyStreak.status === 'danger' ? '#FFF5F5' :
               dailyStreak.status === 'warning' ? '#FFFBEB' :
               dailyStreak.studiedToday ? '#F0FFF4' : '#FFFFFF',
-            borderColor: dailyStreak.status === 'danger' ? '#E74C3C' :
-              dailyStreak.status === 'warning' ? '#E9B746' :
-              dailyStreak.studiedToday ? '#7E9470' : '#e2e8f0',
+            borderColor: dailyStreak.status === 'danger' ? 'var(--danger)' :
+              dailyStreak.status === 'warning' ? 'var(--gold)' :
+              dailyStreak.studiedToday ? 'var(--sage)' : 'var(--border)',
             padding: '16px', textAlign: 'center'
           }}>
             {/* Flame + streak count */}
@@ -137,39 +137,39 @@ export default React.memo(function Dashboard({
                 {dailyStreak.count > 0 ? '\uD83D\uDD25' : '\u2744\uFE0F'}
               </span>
               <span style={{fontSize:'28px',fontWeight:800,fontFamily:'Montserrat,sans-serif',
-                color: dailyStreak.count > 0 ? '#D67635' : '#94a3b8'}}>
+                color: dailyStreak.count > 0 ? 'var(--accent)' : 'var(--text-faint)'}}>
                 {dailyStreak.count}
               </span>
-              <span style={{fontSize:'14px',fontWeight:600,color:'#718096'}}>
+              <span style={{fontSize:'14px',fontWeight:600,color:'var(--text-muted)'}}>
                 {dailyStreak.count === 1 ? 'day streak' : 'day streak'}
               </span>
             </div>
 
             {/* Warning/danger messages */}
             {dailyStreak.status === 'warning' && !dailyStreak.studiedToday ? <div style={{
-              fontSize:'13px',color:'#D67635',fontWeight:600,marginBottom:'10px',
-              padding:'6px 12px',background:'#FFF8F0',borderRadius:'8px',border:'1px solid #F5EBDC'
+              fontSize:'13px',color:'var(--accent)',fontWeight:600,marginBottom:'10px',
+              padding:'6px 12px',background:'var(--warning-bg)',borderRadius:'8px',border:'1px solid #F5EBDC'
             }}>{'\u26A0\uFE0F Your streak is at risk! Study today to keep it going!'}</div> : null}
 
             {dailyStreak.status === 'danger' ? <div style={{
-              fontSize:'13px',color:'#E74C3C',fontWeight:600,marginBottom:'10px',
-              padding:'6px 12px',background:'#FEF2F2',borderRadius:'8px',border:'1px solid #FECACA'
+              fontSize:'13px',color:'var(--danger)',fontWeight:600,marginBottom:'10px',
+              padding:'6px 12px',background:'var(--danger-bg)',borderRadius:'8px',border:'1px solid #FECACA'
             }}>{'\uD83D\uDEA8 Last chance! Study today or lose your ' + dailyStreak.count + '-day streak!'}</div> : null}
 
             {dailyStreak.status === 'lost' ? <div style={{
-              fontSize:'13px',color:'#718096',marginBottom:'10px'
+              fontSize:'13px',color:'var(--text-muted)',marginBottom:'10px'
             }}>Start a new streak today! Every journey begins with one step.</div> : null}
 
             {/* Weekly calendar */}
             <div style={{display:'flex',justifyContent:'center',gap:'6px',marginBottom:'12px'}}>
               {weekDays.map(function(wd, i) {
                 return <div key={i} style={{textAlign:'center',width:'32px'}}>
-                  <div style={{fontSize:'10px',color:'#94a3b8',marginBottom:'4px',fontWeight:600}}>{wd.label}</div>
+                  <div style={{fontSize:'10px',color:'var(--text-faint)',marginBottom:'4px',fontWeight:600}}>{wd.label}</div>
                   <div style={{
                     width:'28px',height:'28px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',
                     fontSize:'14px',margin:'0 auto',
-                    background: wd.studied ? '#7E9470' : wd.isToday ? '#FFF8F0' : 'transparent',
-                    color: wd.studied ? '#fff' : '#94a3b8',
+                    background: wd.studied ? 'var(--sage)' : wd.isToday ? 'var(--warning-bg)' : 'transparent',
+                    color: wd.studied ? '#fff' : 'var(--text-faint)',
                     border: wd.isToday && !wd.studied ? '2px dashed #D67635' :
                       wd.isPast && !wd.studied ? '1px solid #E74C3C33' : '1px solid transparent',
                     fontWeight: wd.isToday ? 700 : 400
@@ -186,11 +186,11 @@ export default React.memo(function Dashboard({
               var prevM = prev.length > 0 ? prev[prev.length - 1] : 0;
               var pct = Math.min(100, Math.round((dailyStreak.count - prevM) / (next - prevM) * 100));
               return <div style={{marginTop:'4px'}}>
-                <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'#94a3b8',marginBottom:'4px'}}>
+                <div style={{display:'flex',justifyContent:'space-between',fontSize:'11px',color:'var(--text-faint)',marginBottom:'4px'}}>
                   <span>{dailyStreak.count + ' days'}</span>
                   <span>{'\uD83C\uDFC6 ' + next + ' days'}</span>
                 </div>
-                <div style={{height:'6px',background:'#e2e8f0',borderRadius:'3px',overflow:'hidden'}}>
+                <div style={{height:'6px',background:'var(--border)',borderRadius:'3px',overflow:'hidden'}}>
                   <div style={{height:'100%',width: pct + '%',
                     background:'linear-gradient(90deg, #D67635, #E9B746)',borderRadius:'3px',
                     transition:'width 0.5s ease'}} />
@@ -200,7 +200,7 @@ export default React.memo(function Dashboard({
 
             {/* Studied today confirmation */}
             {dailyStreak.studiedToday ? <div style={{
-              fontSize:'12px',color:'#7E9470',fontWeight:600,marginTop:'8px'
+              fontSize:'12px',color:'var(--sage)',fontWeight:600,marginTop:'8px'
             }}>{'\u2705 ' + todayLearnCount + ' batch' + (todayLearnCount > 1 ? 'es' : '') + ' learned today!'}</div> : null}
           </div>
 
@@ -209,11 +209,11 @@ export default React.memo(function Dashboard({
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
               <div>
                 <div className="review-type-label"
-                  style={{color:'#27AE60'}}>
+                  style={{color:'var(--success)'}}>
                   {todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'}
                 </div>
                 <strong>{batchLabel(nextBatch)}</strong>
-                <span style={{fontSize:'12px',color:'#718096',marginLeft:'8px'}}>
+                <span style={{fontSize:'12px',color:'var(--text-muted)',marginLeft:'8px'}}>
                   {batches[nextBatch-1].length + ' words'}
                 </span>
               </div>
@@ -235,8 +235,8 @@ export default React.memo(function Dashboard({
             </div>
           </div> :
 
-          <div className="card" style={{background:'#FEF9E7'}}>
-            <span style={{color:'#B7950B',fontWeight:600}}>
+          <div className="card" style={{background:'var(--warning-bg)'}}>
+            <span style={{color:'var(--warning-text)',fontWeight:600}}>
               {'\uD83C\uDFC6 All ' + totalW + ' words introduced! Focus on reviews.'}
             </span>
           </div>}
@@ -249,7 +249,7 @@ export default React.memo(function Dashboard({
             <div className="card" style={{padding:'14px'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                 <div>
-                  <div style={{fontSize:'14px',fontWeight:600,color:'#2E3033',marginBottom:'4px'}}>
+                  <div style={{fontSize:'14px',fontWeight:600,color:'var(--text)',marginBottom:'4px'}}>
                     {reviewsDue.length + ' word' + (reviewsDue.length !== 1 ? 's' : '') + ' need review'}
                   </div>
                   <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
@@ -273,40 +273,40 @@ export default React.memo(function Dashboard({
               </div>
             </div>
           </div> : <div
-            className="card" style={{background:'#EAFAF1',marginTop:'12px',textAlign:'center'}}>
-            <span style={{color:'#27AE60'}}>
+            className="card" style={{background:'var(--success-bg)',marginTop:'12px',textAlign:'center'}}>
+            <span style={{color:'var(--success)'}}>
               {'\u2705 All reviews completed for today!'}
             </span>
           </div>}
 
           {/* Exercise section */}
           {totalLearned >= 5 ? <div className="card card-accent" style={{marginTop:'12px',
-            borderColor:'#324A84',background:'#324A8408'}}>
+            borderColor:'var(--brand)',background:'#324A8408'}}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
               <div>
-                <div className="review-type-label" style={{color:'#324A84'}}>
+                <div className="review-type-label" style={{color:'var(--brand)'}}>
                   {'\uD83C\uDFAF Practice Mode'}
                 </div>
                 <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginTop:'4px'}}>
                   {exerciseStats.weak.length > 0 ? <span
-                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#E74C3C18',color:'#E74C3C',fontWeight:600}}
+                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#E74C3C18',color:'var(--danger)',fontWeight:600}}
                   >{exerciseStats.weak.length + ' weak'}</span> : null}
                   {exerciseStats.due.length > 0 ? <span
-                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#D6763518',color:'#D67635',fontWeight:600}}
+                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#D6763518',color:'var(--accent)',fontWeight:600}}
                   >{exerciseStats.due.length + ' due'}</span> : null}
                   {exerciseStats.neverPracticed.length > 0 ? <span
-                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#324A8418',color:'#324A84',fontWeight:600}}
+                    style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#324A8418',color:'var(--brand)',fontWeight:600}}
                   >{exerciseStats.neverPracticed.length + ' new'}</span> : null}
                   {exerciseStats.weak.length === 0 && exerciseStats.due.length === 0 && exerciseStats.neverPracticed.length === 0 ?
                     <span
-                      style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'#7E947018',color:'#7E9470',fontWeight:600}}
+                      style={{fontSize:'11px',padding:'2px 8px',borderRadius:'8px',background:'var(--sage-tint)',color:'var(--sage)',fontWeight:600}}
                     >{'\u2705 All caught up!'}</span> : null}
                 </div>
               </div>
               <button
                 className="btn btn-sm"
                 disabled={exerciseLoading}
-                style={{width:'auto',background:'#324A84',color:'#fff',border:'none'}}
+                style={{width:'auto',background:'var(--brand)',color:'var(--on-tint)',border:'none'}}
                 onClick={startExercise}
               >{exerciseLoading ? '\u2728 Generating...' : 'Exercise'}</button>
             </div>
@@ -314,7 +314,7 @@ export default React.memo(function Dashboard({
 
           {/* Behind schedule tip */}
           {scheduleGap < -2 ? <div className="tip-box"
-            style={{background:'#FDEDEC',borderColor:'#F5B7B1'}}>
+            style={{background:'var(--danger-bg)',borderColor:'var(--danger-border)'}}>
             <strong>{'\u26A0\uFE0F'} Catching up: </strong>
             {"You're " + Math.abs(scheduleGap) + ' batch' + (Math.abs(scheduleGap) > 1 ? 'es' : '') + ' behind. Try learning 2-3 batches today to catch up! No pressure though \u2014 go at your own pace.'}
           </div> :

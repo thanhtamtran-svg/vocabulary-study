@@ -11,6 +11,25 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-17 — Dark mode bản chuẩn (thay bản v1 đảo màu)
+
+PM phản hồi bản v1 "nâu bùn, không tương phản" → nghiên cứu chuẩn
+Material Design + WCAG và làm lại từ gốc:
+
+- **Toàn bộ màu của app quy về một bảng tên màu** (CSS variables) với hai
+  bộ giá trị sáng/tối — giao diện sáng giữ nguyên như cũ, không đổi gì.
+- **Bảng tối theo chuẩn Material:** nền xám gần đen #121212 (không đen
+  tuyền, không nâu), thẻ sáng hơn nền để phân lớp, chữ chính ~87% trắng,
+  chữ phụ ~60%, màu nhấn làm dịu (xanh thương hiệu → periwinkle nhạt,
+  đỏ → hồng nhạt #F28B82, xanh lá → #81C995...).
+- **Kiểm chứng tương phản bằng script: 20/20 cặp màu đạt chuẩn WCAG AA**
+  (tối thiểu 4,5:1; đa số 7–12:1). Nút màu trong dark mode tự đổi chữ
+  sang tối để không chìm.
+- Màn bài tập, hộp phản hồi đúng/sai, nhãn loại từ, hộp mẹo... đều có
+  cặp màu tối riêng (không còn mảng sáng chói giữa nền tối).
+- Đã gỡ hoàn toàn kỹ thuật đảo màu của v1. Nút bật/tắt và ghi nhớ lựa
+  chọn giữ nguyên.
+
 ## 2026-07-16 — Batch 7 việc: tự động deploy, dark mode, biểu đồ tuần, sync rõ ràng...
 
 **B-013 — Tự động deploy cửa máy chủ:** Từ giờ mỗi lần đẩy code có sửa
