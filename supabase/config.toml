@@ -448,3 +448,9 @@ entrypoint = "./functions/push-subscription/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/migrate-images/index.ts"
+
+[functions.tts]
+enabled = true
+verify_jwt = false
+import_map = "./functions/tts/deno.json"
+entrypoint = "./functions/tts/index.ts"
