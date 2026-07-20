@@ -39,20 +39,41 @@ describe('computeDailyStreak', () => {
     expect(r.count).toBe(1);
   });
 
-  it('warns after 2-4 missed weekdays, danger at 5-6', () => {
+  // Thresholds tightened 2026-07-20 (PM decision): 0-1 missed silent,
+  // 2 = warning, 3 = danger (last chance), 4+ = lost.
+  it('stays silent at 1 missed weekday (grace)', () => {
+    // Last studied Thu 2026-07-09; today Sat 2026-07-11 → missed Fri = 1
+    const r = computeDailyStreak(['2026-07-09'], d('2026-07-11'));
+    expect(r.status).toBe('active');
+    expect(r.realMissed).toBe(1);
+    expect(r.count).toBe(1);
+  });
+
+  it('warns at exactly 2 missed weekdays', () => {
     // Last studied Wed 2026-07-08; today Sat 2026-07-11 → missed Thu+Fri = 2
     const warn = computeDailyStreak(['2026-07-08'], d('2026-07-11'));
     expect(warn.status).toBe('warning');
+    expect(warn.realMissed).toBe(2);
     expect(warn.count).toBe(1); // frozen, not lost
-
-    // Last studied Mon 2026-07-06; today next Mon 2026-07-13 →
-    // missed Tue-Sat = 5 (Sunday skipped) → danger
-    const danger = computeDailyStreak(['2026-07-06'], d('2026-07-13'));
-    expect(danger.status).toBe('danger');
-    expect(danger.count).toBe(1);
   });
 
-  it('loses the streak after 7+ missed weekdays', () => {
+  it('goes danger at exactly 3 missed weekdays', () => {
+    // Last studied Tue 2026-07-07; today Sat 2026-07-11 → missed Wed+Thu+Fri = 3
+    const danger = computeDailyStreak(['2026-07-07'], d('2026-07-11'));
+    expect(danger.status).toBe('danger');
+    expect(danger.realMissed).toBe(3);
+    expect(danger.count).toBe(1); // still frozen — last chance
+  });
+
+  it('loses the streak at 4 missed weekdays', () => {
+    // Last studied Mon 2026-07-06; today Sat 2026-07-11 →
+    // missed Tue+Wed+Thu+Fri = 4 → gone
+    const r = computeDailyStreak(['2026-07-06'], d('2026-07-11'));
+    expect(r.status).toBe('lost');
+    expect(r.count).toBe(0);
+  });
+
+  it('loses the streak after a long gap (Sundays still skipped)', () => {
     // Last studied 2026-07-01 (Wed); today 2026-07-13 (Mon) →
     // missed Jul 2,3,4,6,7,8,9,10,11 (9 weekdays, Sundays 5 & 12 skipped)
     const r = computeDailyStreak(['2026-07-01'], d('2026-07-13'));
@@ -68,12 +89,12 @@ describe('computeDailyStreak', () => {
     );
     expect(r.count).toBe(5);
     // Historical behavior preserved by the B-005 extraction: frozenDays
-    // counts ALL missed weekdays walking backwards until the 7-miss
+    // counts ALL missed weekdays walking backwards until the 4-miss
     // cutoff — including days before the streak's first day (here: Thu
-    // Jul 9 inside the streak + Jul 4..Jun 29 before it = 7), not just
+    // Jul 9 inside the streak + Jul 4,3,2 before it = 4), not just
     // gaps inside the streak. The UI only surfaces it as "frozen" backdrop
     // info, so we document rather than change it.
-    expect(r.frozenDays).toBe(7);
+    expect(r.frozenDays).toBe(4);
     expect(r.status).toBe('active');
   });
 });

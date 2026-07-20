@@ -7,15 +7,18 @@ import { dateKey, parseDate } from './dates';
 // hurt the most. Keep these pure (no Date.now(), no localStorage): the
 // caller passes `today` so tests can pin any date.
 
-// Streak rules (unchanged from the in-component versions):
+// Streak rules (tightened 2026-07-20 per PM decision):
 // - Sunday is a rest day: never counts as missed, doesn't need studying.
-// - Up to 6 consecutive non-Sunday missed days "freeze" the streak
-//   (count kept, shown as frozen); 7+ missed = streak broken.
-// - status: none | active | warning (2-4 missed) | danger (5-6 missed)
-//   | lost (7+ missed) | rest (Sunday, not studied yet today).
+// - Up to 3 consecutive non-Sunday missed days "freeze" the streak
+//   (count kept, shown as frozen); 4+ missed = streak broken.
+// - status: none | active (0-1 missed — silent grace) | warning
+//   (2 missed) | danger (3 missed — last chance) | lost (4+ missed)
+//   | rest (Sunday, not studied yet today).
+// - realMissed is returned so the UI can show concrete numbers
+//   ("2 days missed") instead of vague nudges.
 export function computeDailyStreak(studyDates, today) {
   if (!studyDates || !studyDates.length) {
-    return { count: 0, status: 'none', frozenDays: 0, studiedToday: false };
+    return { count: 0, status: 'none', frozenDays: 0, studiedToday: false, realMissed: 0 };
   }
   var checkDate = new Date(today);
   checkDate.setHours(0, 0, 0, 0);
@@ -62,7 +65,7 @@ export function computeDailyStreak(studyDates, today) {
       d2.setDate(d2.getDate() - 1);
     } else {
       consecutiveMissed++;
-      if (consecutiveMissed > 6) break; // 7+ non-rest missed = streak broken
+      if (consecutiveMissed > 3) break; // 4+ non-rest missed = streak broken
       frozenDays++;
       d2.setDate(d2.getDate() - 1);
     }
@@ -71,14 +74,14 @@ export function computeDailyStreak(studyDates, today) {
 
   var status = 'active';
   if (!studiedToday && !isRestDay) {
-    if (realMissed > 6) { status = 'lost'; count = 0; frozenDays = 0; }
-    else if (realMissed >= 5) status = 'danger';
-    else if (realMissed >= 2) status = 'warning';
+    if (realMissed >= 4) { status = 'lost'; count = 0; frozenDays = 0; }
+    else if (realMissed === 3) status = 'danger';
+    else if (realMissed === 2) status = 'warning';
   }
   // On rest day, don't warn — streak is safe
   if (isRestDay && !studiedToday) status = 'rest';
 
-  return { count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday };
+  return { count: count, status: status, frozenDays: frozenDays, studiedToday: studiedToday, realMissed: realMissed };
 }
 
 // Count fully-learned batches ANYWHERE in the course (deliberately no

@@ -123,9 +123,9 @@ export default React.memo(function Dashboard({
         <>
           {/* Daily Streak Widget */}
           <div className="card" style={{
-            background: dailyStreak.status === 'danger' ? '#FFF5F5' :
-              dailyStreak.status === 'warning' ? '#FFFBEB' :
-              dailyStreak.studiedToday ? '#F0FFF4' : '#FFFFFF',
+            background: dailyStreak.status === 'danger' ? 'var(--danger-bg)' :
+              dailyStreak.status === 'warning' ? 'var(--warning-bg)' :
+              dailyStreak.studiedToday ? 'var(--success-bg)' : 'var(--card)',
             borderColor: dailyStreak.status === 'danger' ? 'var(--danger)' :
               dailyStreak.status === 'warning' ? 'var(--gold)' :
               dailyStreak.studiedToday ? 'var(--sage)' : 'var(--border)',
@@ -145,20 +145,23 @@ export default React.memo(function Dashboard({
               </span>
             </div>
 
-            {/* Warning/danger messages */}
+            {/* Warning/danger messages \u2014 ladder tightened 2026-07-20:
+                2 missed = yellow, 3 = red last-chance, 4+ = lost.
+                Concrete numbers (days missed, streak size) motivate
+                better than the old vague "at risk" copy. */}
             {dailyStreak.status === 'warning' && !dailyStreak.studiedToday ? <div style={{
               fontSize:'13px',color:'var(--accent)',fontWeight:600,marginBottom:'10px',
-              padding:'6px 12px',background:'var(--warning-bg)',borderRadius:'8px',border:'1px solid #F5EBDC'
-            }}>{'\u26A0\uFE0F Your streak is at risk! Study today to keep it going!'}</div> : null}
+              padding:'6px 12px',background:'var(--warning-bg)',borderRadius:'8px',border:'1px solid var(--card-border)'
+            }}>{'\u26A0\uFE0F ' + dailyStreak.realMissed + ' days missed \u2014 study today to keep your ' + dailyStreak.count + '-day streak!'}</div> : null}
 
             {dailyStreak.status === 'danger' ? <div style={{
               fontSize:'13px',color:'var(--danger)',fontWeight:600,marginBottom:'10px',
-              padding:'6px 12px',background:'var(--danger-bg)',borderRadius:'8px',border:'1px solid #FECACA'
-            }}>{'\uD83D\uDEA8 Last chance! Study today or lose your ' + dailyStreak.count + '-day streak!'}</div> : null}
+              padding:'6px 12px',background:'var(--danger-bg)',borderRadius:'8px',border:'1px solid var(--danger-border)'
+            }}>{'\uD83D\uDEA8 Last chance! One more missed day and your ' + dailyStreak.count + '-day streak resets to zero.'}</div> : null}
 
             {dailyStreak.status === 'lost' ? <div style={{
               fontSize:'13px',color:'var(--text-muted)',marginBottom:'10px'
-            }}>Start a new streak today! Every journey begins with one step.</div> : null}
+            }}>{'Your streak has reset. Start again today \u2014 day 1 is the hardest, and you\u2019ve done it before.'}</div> : null}
 
             {/* Weekly calendar */}
             <div style={{display:'flex',justifyContent:'center',gap:'6px',marginBottom:'12px'}}>

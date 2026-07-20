@@ -11,6 +11,28 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-20 — Thang cảnh báo streak nghiêm hơn + câu cảnh báo có số cụ thể
+
+PM hỏi "tại sao lỡ 1 ngày mà không thấy cảnh báo gì" → hoá ra thang cũ
+quá dễ dãi (2-4 ngày mới vàng, 5-6 mới đỏ, 7+ mới mất). PM chốt thang
+mới, chặt hơn:
+
+- **0–1 ngày lỡ:** im lặng, chuỗi giữ nguyên (châm chước như cũ)
+- **2 ngày:** ⚠️ vàng — "2 days missed — study today to keep your
+  39-day streak!" (số ngày lỡ + độ dài chuỗi là **số thật**, không còn
+  câu chung chung "at risk")
+- **3 ngày:** 🚨 đỏ — "Last chance! One more missed day and your
+  39-day streak resets to zero."
+- **4 ngày trở lên:** mất chuỗi, về 0 — kèm câu động viên quay lại,
+  không trách móc.
+- Chủ nhật vẫn là ngày nghỉ tự do, không bao giờ bị tính lỡ.
+- **Lưu ý cho PM:** thang mới "phạt" chuyến đi dài — vắng quá 3 ngày
+  thường là mất chuỗi (trước đây chịu được 6). Đây là chủ đích tạo áp
+  lực giữ nhịp, PM đã cân nhắc và xác nhận.
+- Bộ kiểm thử luật streak cập nhật theo (39/39 đạt) — lần đầu đổi luật
+  khu vực này có lưới an toàn từ B-005. Sửa kèm 4 màu nền ghi cứng của
+  thẻ streak lọt lưới đợt dark mode.
+
 ## 2026-07-17 — Giọng đọc mới: giọng AI bản xứ, đọc một lần lưu vĩnh viễn
 
 PM phản hồi giọng đọc trên PC kém (đường Google Dịch không chính thức,
