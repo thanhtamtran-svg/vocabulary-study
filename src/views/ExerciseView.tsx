@@ -121,7 +121,7 @@ export default React.memo(function ExerciseView({
 
         {/* Exercise card */}
         <div className="card" style={{
-          border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? 'var(--sage)' : 'var(--danger)')) : '2px solid #e2e8f0',
+          border: exerciseFeedback ? ('2px solid ' + (exerciseFeedback.correct ? 'var(--sage)' : 'var(--danger)')) : '2px solid var(--border)',
           transition: 'border-color 0.2s ease', minHeight:'180px'
         }}>
 
@@ -134,7 +134,7 @@ export default React.memo(function ExerciseView({
           {exItem.type === 'listening' && !exerciseFeedback ?
             <button
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
-                padding:'14px',borderRadius:'12px',background:'var(--brand-tint)',border:'2px solid #324A84',
+                padding:'14px',borderRadius:'12px',background:'var(--brand-tint)',border:'2px solid var(--brand)',
                 cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'var(--brand)',fontWeight:600}}
               onClick={function() { speak(exItem.germanWord); }}
             >{'\uD83D\uDD0A'} Play again</button> : null}
@@ -148,8 +148,9 @@ export default React.memo(function ExerciseView({
                   key={oi}
                   style={{
                     padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
-                    border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
-                    background: isSelected ? 'var(--brand-tint)' : '#fff',
+                    border: isSelected ? '2px solid var(--brand)' : '2px solid var(--border)',
+                    background: isSelected ? 'var(--brand-tint)' : 'var(--card)',
+                    color:'var(--text)',
                     cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                   }}
                   onClick={function() { setExerciseSelectedIdx(oi); }}
@@ -203,7 +204,7 @@ export default React.memo(function ExerciseView({
                   placeholder={exItem.pronoun + ' ...'}
                   autoFocus={true} autoComplete="off" autoCapitalize="off"
                   style={{flex:1,padding:'10px 14px',fontSize:'16px',borderRadius:'8px',
-                    border:'2px solid #e2e8f0',outline:'none',fontFamily:'inherit'}}
+                    border:'2px solid var(--border)',outline:'none',fontFamily:'inherit'}}
                 />
               </div>
               {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
@@ -212,7 +213,7 @@ export default React.memo(function ExerciseView({
                     onClick={function() { insertChar(ch); }}
                     title={'Shortcut: press ' + (i + 1)}
                     style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
-                      border:'1px solid #cbd5e1',background:'var(--row-hover)',cursor:'pointer',
+                      border:'1px solid var(--border-strong)',background:'var(--row-hover)',cursor:'pointer',
                       fontFamily:'inherit',fontWeight:600,color:'var(--text)',
                       minWidth:'44px',lineHeight:'1',display:'inline-flex',
                       alignItems:'baseline',gap:'4px'}}
@@ -237,11 +238,11 @@ export default React.memo(function ExerciseView({
               }}>{'\u274C ' + exItem.pronoun + ' ' + exerciseFeedback.userAnswer}</div> : null}
               <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
-                background:'var(--sage-tint)',border:'2px solid #7E9470',marginBottom:'12px'
+                background:'var(--sage-tint)',border:'2px solid var(--sage)',marginBottom:'12px'
               }}>{'\u2705 ' + exItem.fullAnswer}</div>
               {/* Full conjugation table — only show when wrong to help learn */}
               {!exerciseFeedback.correct ? <div style={{
-                padding:'12px',borderRadius:'10px',background:'var(--subtle-bg)',border:'1px solid #e8e2d6'
+                padding:'12px',borderRadius:'10px',background:'var(--subtle-bg)',border:'1px solid var(--card-border)'
               }}>
                 <div style={{fontSize:'11px',fontWeight:700,color:'var(--accent)',
                   textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'8px'}}>
@@ -289,7 +290,7 @@ export default React.memo(function ExerciseView({
                 autoCapitalize="off"
                 style={{
                   width:'100%',padding:'12px 16px',fontSize:'16px',borderRadius:'10px',
-                  border:'2px solid #e2e8f0',outline:'none',boxSizing:'border-box',
+                  border:'2px solid var(--border)',outline:'none',boxSizing:'border-box',
                   fontFamily:'inherit'
                 }}
               />
@@ -299,7 +300,7 @@ export default React.memo(function ExerciseView({
                     onClick={function() { insertChar(ch); }}
                     title={'Shortcut: press ' + (i + 1)}
                     style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
-                      border:'1px solid #cbd5e1',background:'var(--row-hover)',cursor:'pointer',
+                      border:'1px solid var(--border-strong)',background:'var(--row-hover)',cursor:'pointer',
                       fontFamily:'inherit',fontWeight:600,color:'var(--text)',
                       minWidth:'44px',lineHeight:'1',display:'inline-flex',
                       alignItems:'baseline',gap:'4px'}}
@@ -325,7 +326,7 @@ export default React.memo(function ExerciseView({
               <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
                 background: exerciseFeedback.correct ? 'var(--sage-tint)' : '#7E947012',
-                border: '2px solid #7E9470',
+                border: '2px solid var(--sage)',
                 marginBottom:'8px'
               }}>
                 {'\u2705 ' + exerciseFeedback.correctAnswer}
@@ -340,7 +341,7 @@ export default React.memo(function ExerciseView({
             <div>
               <div style={{
                 padding:'14px 16px',borderRadius:'10px',background:'var(--subtle-bg)',
-                border:'1px solid #e8e2d6',marginBottom:'14px',lineHeight:'1.7',fontSize:'14px'
+                border:'1px solid var(--card-border)',marginBottom:'14px',lineHeight:'1.7',fontSize:'14px'
               }}>
                 <div style={{fontSize:'11px',fontWeight:700,color:'var(--accent)',
                   textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:'6px'}}>
@@ -356,8 +357,9 @@ export default React.memo(function ExerciseView({
                       key={oi}
                       style={{
                         padding:'12px 16px',textAlign:'left',borderRadius:'10px',fontSize:'14px',
-                        border: isSelected ? '2px solid #324A84' : '2px solid #e2e8f0',
-                        background: isSelected ? 'var(--brand-tint)' : '#fff',
+                        border: isSelected ? '2px solid var(--brand)' : '2px solid var(--border)',
+                        background: isSelected ? 'var(--brand-tint)' : 'var(--card)',
+                    color:'var(--text)',
                         cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                       }}
                       onClick={function() { setExerciseSelectedIdx(oi); }}
@@ -419,7 +421,7 @@ export default React.memo(function ExerciseView({
           >{exerciseWhyLoading ? 'Thinking...' : '\uD83E\uDD14 Why was I wrong?'}</button> : null}
           {exerciseWhyText ? <div style={{
             textAlign: 'left', padding: '12px 16px', margin: '8px 0',
-            background: 'var(--warning-bg)', border: '1px solid #F5EBDC', borderRadius: '10px',
+            background: 'var(--warning-bg)', border: '1px solid var(--card-border)', borderRadius: '10px',
             fontSize: '13px', lineHeight: '1.6', color: 'var(--text)'
           }}>
             <div style={{fontWeight: 700, color: 'var(--accent)', marginBottom: '6px', fontSize: '13px'}}>{'\uD83D\uDCA1'} AI Teacher</div>

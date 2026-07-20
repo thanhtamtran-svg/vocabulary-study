@@ -173,8 +173,8 @@ export default React.memo(function Dashboard({
                     fontSize:'14px',margin:'0 auto',
                     background: wd.studied ? 'var(--sage)' : wd.isToday ? 'var(--warning-bg)' : 'transparent',
                     color: wd.studied ? '#fff' : 'var(--text-faint)',
-                    border: wd.isToday && !wd.studied ? '2px dashed #D67635' :
-                      wd.isPast && !wd.studied ? '1px solid #E74C3C33' : '1px solid transparent',
+                    border: wd.isToday && !wd.studied ? '2px dashed var(--accent)' :
+                      wd.isPast && !wd.studied ? '1px solid var(--danger-tint)' : '1px solid transparent',
                     fontWeight: wd.isToday ? 700 : 400
                   }}>{wd.studied ? '\u2713' : wd.isPast && !wd.studied ? '\u2022' : ''}</div>
                 </div>;
@@ -195,7 +195,7 @@ export default React.memo(function Dashboard({
                 </div>
                 <div style={{height:'6px',background:'var(--border)',borderRadius:'3px',overflow:'hidden'}}>
                   <div style={{height:'100%',width: pct + '%',
-                    background:'linear-gradient(90deg, #D67635, #E9B746)',borderRadius:'3px',
+                    background:'linear-gradient(90deg, var(--accent), var(--gold))',borderRadius:'3px',
                     transition:'width 0.5s ease'}} />
                 </div>
               </div>;

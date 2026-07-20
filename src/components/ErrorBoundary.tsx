@@ -42,7 +42,7 @@ export default class ErrorBoundary extends React.Component {
           style: {
             background: 'var(--card)', borderRadius: '16px', padding: '32px 24px',
             textAlign: 'center', maxWidth: '360px', width: '100%',
-            boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #F5EBDC'
+            boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid var(--card-border)'
           }
         },
           React.createElement('div', { style: { fontSize: '48px', marginBottom: '16px' } }, '\u26A0\uFE0F'),

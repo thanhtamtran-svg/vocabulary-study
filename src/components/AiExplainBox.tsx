@@ -152,7 +152,7 @@ export default React.memo(function AiExplainBox({
                 display:'flex', justifyContent:'space-between', alignItems:'center',
                 padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
                 background: i % 2 === 0 ? 'var(--subtle-bg)' : '#fff',
-                fontSize:'13px', border:'1px solid #F5EBDC'
+                fontSize:'13px', border:'1px solid var(--card-border)'
               }}>
                 <span style={{color:'var(--sage)',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>
                 <span style={{color:'var(--brand)',fontWeight:600,flex:1}}>{renderInline(cells[1].trim(), i)}</span>

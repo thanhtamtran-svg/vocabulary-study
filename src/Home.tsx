@@ -82,7 +82,7 @@ export default function Home() {
 
   if (language === 'english' && authenticated) {
     return <Suspense fallback={<div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
-      <div style={{width:'32px',height:'32px',border:'3px solid #e2e8f0',borderTopColor:'var(--brand)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
+      <div style={{width:'32px',height:'32px',border:'3px solid var(--border)',borderTopColor:'var(--brand)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
     </div>}><EnglishApp onHome={goHome} /></Suspense>;
   }
 

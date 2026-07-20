@@ -211,7 +211,7 @@ export default React.memo(function SettingsView({
                 <span>Remind me at</span>
                 <select
                   value={reminderHour}
-                  style={{padding:'6px 10px',borderRadius:'6px',border:'1px solid #e2e8f0',fontSize:'13px'}}
+                  style={{padding:'6px 10px',borderRadius:'6px',border:'1px solid var(--border)',fontSize:'13px'}}
                   onChange={function(e) {
                     var hour = parseInt(e.target.value);
                     setReminderHour(hour);

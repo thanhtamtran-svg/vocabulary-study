@@ -37,7 +37,7 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
               }}
               style={{
                 flex:1,padding:'10px 12px',borderRadius:'8px',
-                border:'1px solid #cbd5e1',fontSize:'14px',fontFamily:'inherit'
+                border:'1px solid var(--border-strong)',fontSize:'14px',fontFamily:'inherit'
               }}
             />
             <button

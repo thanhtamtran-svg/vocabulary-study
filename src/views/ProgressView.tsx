@@ -66,7 +66,7 @@ export default React.memo(function ProgressView({
             <div style={{
               position:'absolute', left:0, right:0,
               bottom: (PLAN_WORDS_PER_DAY / weekMax * 100) + 'px',
-              borderTop:'2px dashed #F39C12', opacity:0.7
+              borderTop:'2px dashed var(--warning)', opacity:0.7
             }} />
             <div style={{display:'flex',alignItems:'flex-end',gap:'6px',height:'100px',marginTop:'20px'}}>
               {week.map(function(day) {
@@ -132,7 +132,7 @@ export default React.memo(function ProgressView({
           </div>
 
           {/* Not learned row */}
-          {totalLearned < 1500 ? <div className="stage-row" style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid #F5EBDC'}}>
+          {totalLearned < 1500 ? <div className="stage-row" style={{marginTop:'12px',paddingTop:'12px',borderTop:'1px solid var(--card-border)'}}>
             <div className="stage-label">
               <span className="stage-dot" style={{background: 'var(--border-strong)'}} />
               <span className="stage-name" style={{color:'var(--text-faint)'}}>Not started</span>
