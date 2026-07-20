@@ -215,6 +215,22 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .word-row strong{flex:1;text-align:center}
 .word-row span:last-child{flex:1;text-align:right;color:var(--text-slate)}
 
+/* ===== BROWSE LIST (4-column grid, PM request 2026-07-20) =====
+   word | type | meaning | status — grid so columns align down the whole
+   list (the old flex rows glued the tag to the word and nothing lined
+   up). Browse-only; .word-row below still serves the other views. */
+.browse-row{display:grid;grid-template-columns:minmax(0,1.1fr) 96px minmax(0,1.2fr) 26px;align-items:center;gap:10px;padding:9px 10px;font-size:13px;border-bottom:1px solid var(--row-border);cursor:pointer;transition:background .15s}
+.browse-row:last-child{border-bottom:none}
+.browse-row:hover{background:var(--row-hover)}
+.browse-row .tag{width:100%;text-align:center;margin:0}
+.browse-word{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.browse-meaning{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.browse-status{font-size:11px;text-align:center}
+@media (max-width: 420px){
+  .browse-row{grid-template-columns:minmax(0,1.2fr) 74px minmax(0,1fr) 20px;gap:6px}
+  .browse-row .tag{min-width:0;font-size:9px;padding:3px 4px}
+}
+
 /* ===== TABS ===== */
 .tabs{display:flex;gap:6px;margin:12px 0;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .tab{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s}

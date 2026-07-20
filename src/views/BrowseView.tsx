@@ -46,7 +46,7 @@ export default React.memo(function BrowseView({
         </div>
 
         <p style={{fontSize:'11px',color:'var(--text-muted)',marginBottom:'6px'}}>
-          {'Showing ' + filtered.length + ' of 1500 words'}
+          {'Showing ' + filtered.length + ' of ' + words.length + ' words'}
         </p>
 
         <div style={{maxHeight:'500px',overflowY:'auto'}}>
@@ -55,8 +55,10 @@ export default React.memo(function BrowseView({
             var conf = progress[key]?.confidence || 0;
             var isLearned = progress[key]?.learned;
             var icons = ['','\u274C','\uD83E\uDD14','\uD83D\uDE10','\u2705'];
-            return <div className="word-row" key={i}
-              style={{cursor:'pointer'}}
+            // 4 even columns (PM request 2026-07-20): word | type | meaning | status.
+            // Grid (not flex) so every row's columns line up down the page;
+            // .browse-row is Browse-only \u2014 .word-row stays for the other views.
+            return <div className="browse-row" key={i}
               onClick={function() {
                 var wordData = {idx: w.idx, ...getWord(w.idx)};
                 setSessionWords([wordData]);
@@ -66,14 +68,13 @@ export default React.memo(function BrowseView({
                 setStreak(0);
                 setView('session');
               }}>
-              <div style={{flex:1}}>
+              <strong className="browse-word">
                 {emojis ? <span style={{marginRight:'4px'}}>{emojis[w.idx]}</span> : null}
-                <strong>{w.german}</strong>
-                <span className={'tag ' + TYPE_TAGS[w.typeIdx]}
-                  style={{marginLeft:'6px'}}>{TYPE_NAMES[w.typeIdx]}</span>
-              </div>
-              <span style={{color:'var(--text-muted)',flex:1}}>{w.english}</span>
-              <span style={{fontSize:'11px'}}>
+                {w.german}
+              </strong>
+              <span className={'tag ' + TYPE_TAGS[w.typeIdx]}>{TYPE_NAMES[w.typeIdx]}</span>
+              <span className="browse-meaning">{w.english}</span>
+              <span className="browse-status">
                 {isLearned ? icons[conf] : '\u2B24'}
               </span>
             </div>;
