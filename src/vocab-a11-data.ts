@@ -496,7 +496,7 @@ export const VOCAB_A11_DATA = {
     ["das Gerät","device, appliance",4,0],
     ["gefallen","to please, to like",4,1],
     ["die Farbe","color",4,0],
-    ["ganz","quite",4,5],
+    ["ganz","whole, completely",4,5],
     ["modern","modern",4,2],
     ["schwarz","black",4,2],
     ["grau","gray",4,2],
