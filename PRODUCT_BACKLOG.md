@@ -41,19 +41,21 @@ Retry 2 lần, mỗi lần sleep 10s.
 **Trade-off:** Code mỗi script dài thêm ~15 dòng. Lợi: không phải re-run
 khi mạng chập chờn.
 
-### B-002: Rà soát + hoàn tất ảnh cho khoá Schritte A1 (số liệu cũ đã lạc hậu)
+### B-002: Hoàn tất ảnh cho khoá Schritte A1 — còn thiếu 247 từ
 
-**Effort:** S (audit) + upload theo đợt · **Tier:** 1
+**Effort:** Cowork sinh ảnh (L) + upload (S) · **Tier:** 1
 
-Số liệu cũ trong mục này (781/958, thiếu L6-L7) đã lạc hậu: khoá giờ có
-**1462 từ / 14 Lektionen** (A1.2 đã nhập ngày 2026-07-16, ~480 từ mới —
-xem B-004 dưới mục Completed). Ảnh cho từ mới L8-14 gần như chắc chắn
-chưa có.
+Rà soát 2026-07-20 (`scripts/audit-all-images.mjs`): German 1500 và
+English đã phủ ảnh 100%. Chỉ khoá **Schritte A1 còn thiếu 247/1443 từ**
+(ảnh mặt trước), gần hết nằm ở phần A1.2 mới nhập:
+- L8 Beruf: 49 · L9 Ämter: 39 · L10 Gesundheit: 29 · L14 Feste: 29 ·
+  L13 Kleider: 30 · L12 Kundenservice: 23 · L11 Stadt: 19 · L5 Tag: 16
+- Lác đác: L1 (5), L4 (4), L2 (2), L6 (1), L7 (1)
 
 **Việc cần làm:**
-- Chạy `scripts/audit-a11-images.mjs` để có con số phủ ảnh thật.
-- Bạn chạy Cowork sinh ảnh các batch thiếu; mỗi đợt xong nói
-  "a11 images" → mình upload.
+- Bạn chạy Cowork sinh ảnh cho các Lektion thiếu (ưu tiên L8-L14).
+- Mỗi đợt xong nói "a11 images" → mình upload.
+- Kiểm lại tiến độ bất cứ lúc nào: `node scripts/audit-a11-by-lektion.mjs`.
 
 ---
 
