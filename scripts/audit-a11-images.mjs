@@ -66,6 +66,14 @@ const CATS = [
   'Lektion 5: Mein Tag',
   'Lektion 6: Freizeit',
   'Lektion 7: Kinder und Schule',
+  // A1.2 lessons (added 2026-07-16)
+  'Lektion 8: Beruf und Arbeit',
+  'Lektion 9: Ämter und Behörden',
+  'Lektion 10: Gesundheit und Krankheit',
+  'Lektion 11: In der Stadt unterwegs',
+  'Lektion 12: Kundenservice',
+  'Lektion 13: Neue Kleider',
+  'Lektion 14: Feste',
 ];
 
 const words = loadA11Words();
