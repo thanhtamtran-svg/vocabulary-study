@@ -306,7 +306,10 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator{fi
 
 /* ===== WORD IMAGE ===== */
 .word-image-container{margin:10px 0;text-align:center}
-.word-image{width:100%;max-height:180px;object-fit:cover;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+/* contain, not cover: cover cropped the illustration (user report
+   2026-07-20 — half the picture was cut off). contain shows the whole
+   image; max-width keeps it from ballooning on wide desktop columns. */
+.word-image{max-width:100%;max-height:240px;object-fit:contain;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
 .word-image-credit{font-size:10px;color:var(--text-faint);margin-top:6px}
 .word-image-credit a{color:var(--text-slate);text-decoration:none}
 
