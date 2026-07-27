@@ -11,6 +11,13 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-07-27 — Nới lại thang streak: chịu 5 ngày lỡ (trước 3)
+
+PM thấy mức "chịu 3 ngày" (làm hôm 20/7) quá gắt so với nhịp học thật.
+Nới lên: 0–1 ngày im lặng, 2–4 ngày cảnh báo vàng, 5 ngày báo đỏ (cơ
+hội cuối), **6 ngày trở lên mới mất chuỗi** (trước là 4). Chủ nhật vẫn
+nghỉ tự do. Với dữ liệu hiện tại của PM, chuỗi hiển thị tăng 15 → 20.
+
 ## 2026-07-20 — Thang cảnh báo streak nghiêm hơn + câu cảnh báo có số cụ thể
 
 PM hỏi "tại sao lỡ 1 ngày mà không thấy cảnh báo gì" → hoá ra thang cũ
