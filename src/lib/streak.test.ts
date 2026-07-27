@@ -39,8 +39,9 @@ describe('computeDailyStreak', () => {
     expect(r.count).toBe(1);
   });
 
-  // Thresholds tightened 2026-07-20 (PM decision): 0-1 missed silent,
-  // 2 = warning, 3 = danger (last chance), 4+ = lost.
+  // Thresholds (PM decision, re-confirmed 2026-07-28 after seeing the
+  // real streak under each variant): 0-1 missed silent, 2 = warning,
+  // 3 = danger (last chance), 4+ = lost. History: 6 → 3 → 5 → 3.
   it('stays silent at 1 missed weekday (grace)', () => {
     // Last studied Thu 2026-07-09; today Sat 2026-07-11 → missed Fri = 1
     const r = computeDailyStreak(['2026-07-09'], d('2026-07-11'));
@@ -57,29 +58,21 @@ describe('computeDailyStreak', () => {
     expect(warn.count).toBe(1); // frozen, not lost
   });
 
-  it('still only warns at 4 missed weekdays (tolerate 5)', () => {
-    // Last studied Mon 2026-07-06; today Sat 2026-07-11 →
-    // missed Tue+Wed+Thu+Fri = 4 → warning, not lost
-    const r = computeDailyStreak(['2026-07-06'], d('2026-07-11'));
-    expect(r.status).toBe('warning');
-    expect(r.realMissed).toBe(4);
-    expect(r.count).toBe(1); // frozen
-  });
-
-  it('goes danger at exactly 5 missed weekdays', () => {
-    // Last studied Sat 2026-07-04; today Sat 2026-07-11 →
-    // missed Mon-Fri = 5 (Sunday Jul 5 skipped) → last chance
-    const danger = computeDailyStreak(['2026-07-04'], d('2026-07-11'));
+  it('goes danger at exactly 3 missed weekdays', () => {
+    // Last studied Tue 2026-07-07; today Sat 2026-07-11 →
+    // missed Wed+Thu+Fri = 3 → last chance, still frozen
+    const danger = computeDailyStreak(['2026-07-07'], d('2026-07-11'));
     expect(danger.status).toBe('danger');
-    expect(danger.realMissed).toBe(5);
-    expect(danger.count).toBe(1); // still frozen
+    expect(danger.realMissed).toBe(3);
+    expect(danger.count).toBe(1);
   });
 
-  it('loses the streak at 6 missed weekdays', () => {
-    // Last studied Fri 2026-07-03; today Sat 2026-07-11 →
-    // missed Jul 4 + Mon-Fri = 6 (Sunday Jul 5 skipped) → gone
-    const r = computeDailyStreak(['2026-07-03'], d('2026-07-11'));
+  it('loses the streak at 4 missed weekdays', () => {
+    // Last studied Mon 2026-07-06; today Sat 2026-07-11 →
+    // missed Tue+Wed+Thu+Fri = 4 → gone
+    const r = computeDailyStreak(['2026-07-06'], d('2026-07-11'));
     expect(r.status).toBe('lost');
+    expect(r.realMissed).toBe(4);
     expect(r.count).toBe(0);
   });
 
