@@ -11,6 +11,30 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-08-17 — Thêm 65 từ A1 từ tài liệu Kasus & Präpositionen
+
+PM đưa tài liệu tự soạn *Wortschatz — Kasus · Präpositionen ·
+Personalpronomen* (264 mục). Đối chiếu với app: **172 mục đã có sẵn**,
+còn **92 mục mới**.
+
+Trong 92 mục mới, bỏ **27 mục** không hợp kiểu học thẻ ghi nhớ:
+
+- 22 thuật ngữ ngữ pháp (*der Nominativ, das Subjekt, maskulin,
+  trennbares Verb*…) — đây là thứ để tra cứu, không phải để học thuộc.
+- 2 câu lệnh lớp học (*Übersetzen Sie, Bestimmen Sie*).
+- *die Armut* (sự nghèo đói) — trên trình độ A1, lọt vào từ một câu ví dụ.
+- 2 mục trùng chỉ khác chữ hoa (*Sie, Ihnen* so với *sie, ihr*) — nếu
+  thêm sẽ sinh hai thẻ trông y hệt nhau.
+
+**65 từ còn lại rải theo đúng chủ đề từng Lektion**, không dồn một chỗ:
+đại từ tân ngữ (*mich, mir, dir, ihm*…) vào Lektion 2 nơi đã có
+*er/sie/wir*; giới từ vào bài chúng xuất hiện tự nhiên (*für, ohne,
+gegen* → Einkaufen; *von, zu* → Mein Tag; *durch* → In der Stadt);
+đồ dùng học tập → Kinder und Schule; *schenken, der Blumenstrauß* →
+Feste. Cách này giữ các bài dài đều nhau thay vì phồng một bài lên gấp đôi.
+
+Tổng từ A1: 1462 → 1527.
+
 ## 2026-07-27 — Nới lại thang streak: chịu 5 ngày lỡ (trước 3)
 
 PM thấy mức "chịu 3 ngày" (làm hôm 20/7) quá gắt so với nhịp học thật.

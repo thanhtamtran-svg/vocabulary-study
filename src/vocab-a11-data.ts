@@ -184,6 +184,13 @@ export const VOCAB_A11_DATA = {
     ["Ah, schön.","Oh, nice.",1,4],
     ["Ah, toll.","Oh, great.",1,4],
     ["Interessant.","Interesting.",1,4],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["kennenlernen","to get to know, meet",1,1],
+    ["danken","to thank",1,1],
+    ["Vietnam","Vietnam",1,0],
+    ["Thailand","Thailand",1,0],
+    ["Frankreich","France",1,0],
+    ["der Iran","Iran",1,0],
 
     // ===== Cat 2: Lektion 2 — Meine Familie =====
     // Foto-Hörgeschichte
@@ -300,6 +307,20 @@ export const VOCAB_A11_DATA = {
     ["im Osten","in the east",2,4],
     // Additional family-context noun
     ["die Einladung","invitation",2,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["der Onkel","uncle",2,0],
+    ["die Katze","cat",2,0],
+    ["vertrauen","to trust",2,1],
+    ["es","it",2,3],
+    ["mich","me (accusative)",2,3],
+    ["dich","you (accusative)",2,3],
+    ["ihn","him (accusative)",2,3],
+    ["uns","us (accusative/dative)",2,3],
+    ["euch","you plural (accusative/dative)",2,3],
+    ["mir","to me (dative)",2,3],
+    ["dir","to you (dative)",2,3],
+    ["ihm","to him, to it (dative)",2,3],
+    ["ihnen","to them (dative)",2,3],
 
     // ===== Cat 3: Lektion 3 — Einkaufen =====
     // D — Preise und Mengenangaben
@@ -446,6 +467,16 @@ export const VOCAB_A11_DATA = {
     ["geben","to give",3,1],
     // Additional gift / shopping noun
     ["das Geschenk","gift, present",3,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["brauchen","to need",3,1],
+    ["die Suppe","soup",3,0],
+    ["der Zucker","sugar",3,0],
+    ["die Geldbörse","purse, wallet",3,0],
+    ["der Geldbeutel","wallet",3,0],
+    ["der Euro","euro",3,0],
+    ["für","for (+ accusative)",3,5],
+    ["ohne","without (+ accusative)",3,5],
+    ["gegen","against (+ accusative)",3,5],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -626,6 +657,10 @@ export const VOCAB_A11_DATA = {
     ["Wie?","How?",4,3],
     // Answer word
     ["Doch","Yes! (contradicting a negative)",4,5],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["der Nachbar","neighbour",4,0],
+    ["die Wand","wall",4,0],
+    ["das Holz","wood",4,0],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -837,6 +872,10 @@ export const VOCAB_A11_DATA = {
     ["der Lkw-Fahrer","truck driver",5,0],
     ["der Krieg","war",5,0],
     ["die Blumenstraße","Blumen Street (street name)",5,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["jeden Tag","every day",5,4],
+    ["von","from, of (+ dative)",5,5],
+    ["zu","to (+ dative)",5,5],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -1038,6 +1077,12 @@ export const VOCAB_A11_DATA = {
     ["Kommt sofort.","Coming right up.",6,4],
     ["Ja, gern.","Yes, gladly.",6,4],
     ["oder?","...right? (tag question)",6,4],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["leihen","to lend",6,1],
+    ["springen","to jump",6,1],
+    ["laufen","to run, to walk",6,1],
+    ["kämpfen","to fight",6,1],
+    ["der Ball","ball",6,0],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
@@ -1162,6 +1207,16 @@ export const VOCAB_A11_DATA = {
     ["die Krankmeldung","sick note",7,0],
     // School vocabulary
     ["die Hausaufgaben","homework (pl.)",7,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["vorlesen","to read aloud",7,1],
+    ["das Heft","exercise book",7,0],
+    ["der Stift","pen",7,0],
+    ["der Bleistift","pencil",7,0],
+    ["der Kugelschreiber","ballpoint pen",7,0],
+    ["der Radiergummi","eraser",7,0],
+    ["die Schere","scissors",7,0],
+    ["die Grammatik","grammar",7,0],
+    ["die Aufgabe","task, exercise",7,0],
 
     // ===== Cat 8: Lektion 8 — Beruf und Arbeit =====
     ["die Geschichte","story",8,0],
@@ -1246,6 +1301,9 @@ export const VOCAB_A11_DATA = {
     ["frei","free, available",8,2],
     ["jeweils","each time",8,5],
     ["samstags","on Saturdays",8,5],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["zustimmen","to agree",8,1],
+    ["die Kollegin","colleague (f.)",8,0],
 
     // ===== Cat 9: Lektion 9 — Ämter und Behörden =====
     ["der Führerschein","driving licence",9,0],
@@ -1325,6 +1383,8 @@ export const VOCAB_A11_DATA = {
     ["verdienen","to earn",9,1],
     ["der Pass","passport",9,0],
     ["reisen","to travel",9,1],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["die Postkarte","postcard",9,0],
 
     // ===== Cat 10: Lektion 10 — Gesundheit und Krankheit =====
     ["der Klub","club",10,0],
@@ -1401,6 +1461,9 @@ export const VOCAB_A11_DATA = {
     ["Oh, nein.","Oh no.",10,4],
     ["Oje!","Oh dear!",10,4],
     ["Ach so.","I see.",10,4],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["fehlen","to be missing, to miss",10,1],
+    ["die Kopfschmerzen","headache (pl.)",10,0],
 
     // ===== Cat 11: Lektion 11 — In der Stadt unterwegs =====
     ["die Werkstatt","workshop, garage",11,0],
@@ -1457,6 +1520,12 @@ export const VOCAB_A11_DATA = {
     ["der Schalter","ticket counter",11,0],
     ["hin und zurück","return, round trip",11,4],
     ["der Fahrplan","timetable",11,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["buchen","to book",11,1],
+    ["folgen","to follow",11,1],
+    ["der See","lake",11,0],
+    ["der Tunnel","tunnel",11,0],
+    ["durch","through (+ accusative)",11,5],
 
     // ===== Cat 12: Lektion 12 — Kundenservice =====
     ["die Tüte","bag (plastic/paper)",12,0],
@@ -1506,6 +1575,8 @@ export const VOCAB_A11_DATA = {
     ["der Essig","vinegar",12,0],
     ["die Taste","button, key",12,0],
     ["die Sekunde","second (time)",12,0],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["senden","to send (formal)",12,1],
 
     // ===== Cat 13: Lektion 13 — Neue Kleider =====
     ["die Jacke","jacket",13,0],
@@ -1578,6 +1649,11 @@ export const VOCAB_A11_DATA = {
     ["die Zahnpasta","toothpaste",13,0],
     ["die Größe","size",13,0],
     ["anprobieren","to try on",13,1],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["tauschen","to swap, exchange",13,1],
+    ["die Tasche","bag",13,0],
+    ["die Armbanduhr","wristwatch",13,0],
+    ["die Kette","necklace, chain",13,0],
 
     // ===== Cat 14: Lektion 14 — Feste =====
     ["der Geburtstag","birthday",14,0],
@@ -1636,6 +1712,9 @@ export const VOCAB_A11_DATA = {
     ["Mit freundlichen Grüßen","Yours sincerely",14,4],
     ["Alles Gute zum Geburtstag!","Happy Birthday!",14,4],
     ["Alles Liebe zum Geburtstag!","Happy Birthday! (with love)",14,4],
+    // Additional — Kasus, Präpositionen & Personalpronomen
+    ["schenken","to give as a gift",14,1],
+    ["der Blumenstrauß","bouquet of flowers",14,0],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],
