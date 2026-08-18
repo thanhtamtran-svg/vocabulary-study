@@ -11,6 +11,27 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-08-18 — Dọn 19 từ bị trùng lặp trong danh sách A1
+
+Phát hiện khi rà soát đợt thêm từ hôm trước: 19 từ nằm hai lần trong
+danh sách, nghĩa là PM gặp cùng một thẻ hai lần khi học. Nguyên nhân:
+một đợt thêm từ về sau (khối "Additional food & shopping vocabulary" ở
+Lektion 3) đã dán lại các từ đã có sẵn phía trên — *das Brot, der
+Apfel, die Flasche, das Fleisch, die Tomate*…
+
+**Quy tắc dọn:** giữ bản xuất hiện trước, xóa bản về sau. Với 5 từ nằm
+ở hai bài khác nhau, giữ bản ở bài học trước (nơi PM gặp từ đó đầu
+tiên): *Tut mir leid.* → Lektion 1; *die Verkäuferin* → Lektion 3;
+*Sag mal, ...* và *doch* → Lektion 4; *Hast du Zeit?* → Lektion 5.
+
+*die Verkäuferin* có hai nghĩa hơi khác nhau ở hai chỗ nên gộp lại
+thành "saleswoman, shop assistant (f.)", không mất thông tin nào.
+
+**Tiến độ học của PM không bị ảnh hưởng** — app lưu tiến độ theo tên
+từ, không theo vị trí trong danh sách.
+
+Tổng từ A1: 1527 → 1508. Không còn từ trùng nào.
+
 ## 2026-08-17 — Thêm 65 từ A1 từ tài liệu Kasus & Präpositionen
 
 PM đưa tài liệu tự soạn *Wortschatz — Kasus · Präpositionen ·

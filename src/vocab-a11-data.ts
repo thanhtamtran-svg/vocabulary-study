@@ -176,7 +176,6 @@ export const VOCAB_A11_DATA = {
     // Strategien
     ["Ja, stimmt.","Yes, that's right.",1,4],
     ["Ja, gut.","Yes, good.",1,4],
-    ["Wie bitte?","Pardon? / Sorry, what?",1,4],
     ["Einen Moment, bitte.","One moment, please.",1,4],
     ["Ich weiß es nicht.","I don't know.",1,4],
     ["Ah, ja.","Oh, yes.",1,4],
@@ -342,7 +341,7 @@ export const VOCAB_A11_DATA = {
     ["das Hackfleisch","minced meat",3,0],
     // E — Einkaufen
     ["der Verkäufer","seller, shop assistant",3,0],
-    ["die Verkäuferin","saleswoman",3,0],
+    ["die Verkäuferin","saleswoman, shop assistant (f.)",3,0],
     ["der Kunde","customer (m.)",3,0],
     ["die Kundin","customer (f.)",3,0],
     ["noch","still, also",3,5],
@@ -416,17 +415,7 @@ export const VOCAB_A11_DATA = {
     ["der Becher","cup (container)",3,0],
     ["der Tee","tea",3,0],
     // Additional food & shopping vocabulary
-    ["das Obst","fruit",3,0],
-    ["das Mineralwasser","mineral water",3,0],
-    ["das Fleisch","meat",3,0],
-    ["das Brot","bread",3,0],
-    ["der Kuchen","cake",3,0],
     ["der Wein","wine",3,0],
-    ["die Flasche","bottle",3,0],
-    ["die Bäckerei","bakery",3,0],
-    ["das Sonderangebot","special offer",3,0],
-    ["der Apfel","apple",3,0],
-    ["die Tomate","tomato",3,0],
     // Additional shopping vocab & phrases
     ["die Fleischtheke","meat counter",3,0],
     ["der Flohmarkt","flea market",3,0],
@@ -434,12 +423,9 @@ export const VOCAB_A11_DATA = {
     ["der Kaffee","coffee",3,0],
     ["günstig","reasonable, affordable",3,2],
     ["Ich hätte gern...","I would like...",3,4],
-    ["Sonst noch etwas?","Anything else?",3,4],
-    ["Das ist alles.","That's all.",3,4],
     ["Das macht... Euro.","That comes to... Euro.",3,4],
     ["Das wär's.","That's it.",3,4],
     ["Gern!","Gladly!",3,4],
-    ["Tut mir leid.","I'm sorry.",3,4],
     ["Was kostet...?","How much is...?",3,4],
     // Additional drinks, food & restaurant phrases
     ["der Orangensaft","orange juice",3,0],
@@ -840,7 +826,6 @@ export const VOCAB_A11_DATA = {
     ["am Abend","in the evening",5,4],
     ["in der Nacht","at night",5,4],
     ["der ganze Tag","the whole day",5,4],
-    ["Wie spät ist es?","What time is it?",5,4],
     ["Es ist... Uhr","It is... o'clock",5,4],
     ["Viertel nach","quarter past",5,4],
     ["Viertel vor","quarter to",5,4],
@@ -935,7 +920,6 @@ export const VOCAB_A11_DATA = {
     ["das Getränk","drink, beverage",6,0],
     ["die Cola","cola",6,0],
     // C — Am Imbiss
-    ["doch","yes (contradicting)",6,4],
     ["lieber","rather, prefer",6,5],
     ["nehmen","to take",6,1],
     ["warum","why",6,3],
@@ -1011,7 +995,6 @@ export const VOCAB_A11_DATA = {
     ["Ich mag Wind.","I like wind.",6,4],
     ["Regen mag ich gar nicht.","I don't like rain at all.",6,4],
     // Strategien
-    ["Sag mal, ...","Say, ... / Tell me, ...",6,4],
     ["Guck mal!","Look!",6,4],
     ["Na klar!","Of course!",6,4],
     ["Na gut.","All right.",6,4],
@@ -1041,7 +1024,6 @@ export const VOCAB_A11_DATA = {
     ["November","November",6,5],
     ["Dezember","December",6,5],
     // Leisure phrases
-    ["Hast du Zeit?","Do you have time?",6,4],
     ["Ich habe keine Zeit.","I have no time.",6,4],
     ["Wie gefällt dir...?","How do you like...?",6,4],
     // Additional weather vocabulary
@@ -1191,7 +1173,6 @@ export const VOCAB_A11_DATA = {
     ["die Trainerin","coach (f.)",7,0],
     ["der Projektmanager","project manager (m.)",7,0],
     ["die Projektmanagerin","project manager (f.)",7,0],
-    ["die Verkäuferin","shop assistant (f.)",7,0],
     ["der Koch","cook (m.)",7,0],
     ["die Köchin","cook (f.)",7,0],
     // Childcare vocabulary
