@@ -11,6 +11,37 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-09-05 — Thêm 153 từ chỉ đường & khám bệnh + mở bài A2 mới
+
+PM đưa 4 nguồn: tài liệu tự soạn về *Weg beschreiben* (chỉ đường), và
+3 file Word — *Orte in der Stadt Wortschatz*, *Gesundheit und
+Krankheit*, *Beim Arzt* (hội thoại mẫu). Tổng 178 mục; 25 đã có sẵn
+trong app; **153 mục mới**.
+
+**Mở Lektion 15: A2 — Über A1 hinaus.** Trong đợt này có một nhóm từ
+rõ ràng vượt trình độ A1 (từ bệnh lý B1–B2 như *Krebs, Diabetes,
+Tuberkulose, Fettleber*; cấu trúc A2 *beim + động từ danh hoá*). Trước
+đây những từ như vậy bị bỏ hẳn. PM chốt hướng mới: **giữ lại nhưng để
+riêng một bài**, để chúng không chiếm chỗ của từ vựng A1 cần cho kỳ thi
+mà vẫn học được khi muốn. *die Armut* — bị bỏ ở đợt 17/08 vì lý do
+này — nay được đưa vào bài 15.
+
+Phân bổ 153 từ: Lektion 11 (chỉ đường, địa điểm trong phố) 74 · Lektion
+10 (bệnh, triệu chứng, khám bệnh) 34 · Lektion 6 (giải trí, thể thao) 9
+· Lektion 8 (công việc) 7 · Lektion 3 (mua sắm) 4 · **Lektion 15 (A2)
+22** · các bài khác 3.
+
+Trong đó có **23 mẫu câu hoàn chỉnh** cho phần thi Nói — 10 câu hỏi và
+chỉ đường (*Entschuldigung, wie komme ich zum Bahnhof?*, *Es sind
+ungefähr zehn Minuten zu Fuß.*) và 13 câu khám bệnh (*Was fehlt
+Ihnen?*, *Seit wann haben Sie Schmerzen?*, *Ich möchte gern einen
+Termin machen.*).
+
+Thuật ngữ ngữ pháp vẫn bị bỏ như cũ — đó là thứ để tra cứu, khác với
+"vượt trình độ", nên không đưa vào bài 15.
+
+Tổng từ A1: 1508 → 1661. Không có từ trùng.
+
 ## 2026-08-18 — Dọn 19 từ bị trùng lặp trong danh sách A1
 
 Phát hiện khi rà soát đợt thêm từ hôm trước: 19 từ nằm hai lần trong
