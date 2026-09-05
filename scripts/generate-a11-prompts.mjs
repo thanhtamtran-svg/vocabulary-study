@@ -9,7 +9,7 @@
 // index (mirrors the English flow). The upload script later maps
 // {idx}.png → VOCAB_A11_DATA.words[idx][0] → lowercase German upload key.
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, unlinkSync } from 'fs';
 import { join } from 'path';
 
 // Each generation round gets its OWN prompt/image folder pair. Reusing one
@@ -22,6 +22,14 @@ const ROUND = ROUND_ARG ? ROUND_ARG.split('=')[1] : '2026-09';
 const PROMPT_ROOT = GEN_ROOT + '/a11-image-prompts-' + ROUND;
 const IMAGE_ROOT_NAME = 'a11-images-' + ROUND;
 const BATCH_SIZE = 8;
+
+// Skip word types that don't illustrate well. typeIdx: 0 Noun, 1 Verb,
+// 2 Adjective, 3 Grammar, 4 Phrase/Expression, 5 Foundational.
+// e.g. --skip-types=3,4 drops grammar words and phrases.
+const SKIP_ARG = process.argv.find(a => a.startsWith('--skip-types='));
+const SKIP_TYPES = new Set(
+  SKIP_ARG ? SKIP_ARG.split('=')[1].split(',').map(s => parseInt(s.trim(), 10)) : []
+);
 
 // Load A1.1 words (need global index)
 function loadA11Words() {
@@ -85,9 +93,24 @@ const missingWithIdx = missing.map(w => {
 
 console.log('Missing entries with resolved global index: ' + missingWithIdx.length);
 
+const kept = missingWithIdx.filter(w => !SKIP_TYPES.has(w.typeIdx));
+if (SKIP_TYPES.size) {
+  const dropped = missingWithIdx.length - kept.length;
+  console.log('Skipping types [' + [...SKIP_TYPES].join(',') + ']: ' + dropped + ' entries dropped, ' + kept.length + ' to generate.');
+}
+missingWithIdx.length = 0;
+missingWithIdx.push(...kept);
+
 // Group into batches of 8 by SOURCE ORDER (so a batch is a contiguous slice of the
 // missing list — keeps batches manageable, doesn't try to align with main batches).
 if (!existsSync(PROMPT_ROOT)) mkdirSync(PROMPT_ROOT, { recursive: true });
+
+// Clear stale batch files. Regenerating a round with fewer entries would
+// otherwise leave batch-37.txt..batch-50.txt behind, and Cowork would work
+// through them as if they were real.
+for (const f of readdirSync(PROMPT_ROOT)) {
+  if (/^batch-\d+\.txt$/.test(f)) unlinkSync(join(PROMPT_ROOT, f));
+}
 
 const batches = [];
 for (let i = 0; i < missingWithIdx.length; i += BATCH_SIZE) {
