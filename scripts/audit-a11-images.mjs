@@ -57,24 +57,18 @@ async function fetchExistingKeys(allKeys) {
   return present;
 }
 
-const CATS = [
-  'Anweisungen im Kurs',
-  'Lektion 1: Guten Tag',
-  'Lektion 2: Meine Familie',
-  'Lektion 3: Einkaufen',
-  'Lektion 4: Meine Wohnung',
-  'Lektion 5: Mein Tag',
-  'Lektion 6: Freizeit',
-  'Lektion 7: Kinder und Schule',
-  // A1.2 lessons (added 2026-07-16)
-  'Lektion 8: Beruf und Arbeit',
-  'Lektion 9: Ämter und Behörden',
-  'Lektion 10: Gesundheit und Krankheit',
-  'Lektion 11: In der Stadt unterwegs',
-  'Lektion 12: Kundenservice',
-  'Lektion 13: Neue Kleider',
-  'Lektion 14: Feste',
-];
+// Read the lesson names from vocab-a11-data.ts rather than repeating them
+// here — a duplicated list silently prints "undefined" for any Lektion added
+// later (as it did when Lektion 15 was introduced on 2026-09-05).
+function loadA11Cats() {
+  const src = readFileSync('src/vocab-a11-data.ts', 'utf-8');
+  const start = src.indexOf('cats: [');
+  const end = src.indexOf('types: [');
+  if (start === -1 || end === -1 || end < start) throw new Error('cats array not found in vocab-a11-data.ts');
+  return src.substring(start, end).match(/"((?:[^"\\]|\\.)*)"/g).map(s => s.slice(1, -1));
+}
+
+const CATS = loadA11Cats();
 
 const words = loadA11Words();
 console.log('Loaded ' + words.length + ' A1.1 words');
