@@ -12,7 +12,15 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
-const PROMPT_ROOT = 'C:/Users/ASUS/Documents/Claude/Projects/Image Gen/a11-image-prompts';
+// Each generation round gets its OWN prompt/image folder pair. Reusing one
+// folder across rounds breaks Cowork's "is this batch already done?" check —
+// leftover batch-1/ PNGs from a previous round read as finished work.
+// Pass --round=<name> to target a different round.
+const GEN_ROOT = 'C:/Users/ASUS/Documents/Claude/Projects/Image Gen';
+const ROUND_ARG = process.argv.find(a => a.startsWith('--round='));
+const ROUND = ROUND_ARG ? ROUND_ARG.split('=')[1] : '2026-09';
+const PROMPT_ROOT = GEN_ROOT + '/a11-image-prompts-' + ROUND;
+const IMAGE_ROOT_NAME = 'a11-images-' + ROUND;
 const BATCH_SIZE = 8;
 
 // Load A1.1 words (need global index)
@@ -91,7 +99,7 @@ for (let b = 0; b < batches.length; b++) {
   const batchNum = b + 1;
   const items = batches[b];
   const lines = [];
-  lines.push('Batch ' + batchNum + ' - Save images to: a11-images/batch-' + batchNum + '/');
+  lines.push('Batch ' + batchNum + ' - Save images to: ' + IMAGE_ROOT_NAME + '/batch-' + batchNum + '/');
   lines.push('');
   for (const item of items) {
     lines.push('--- Image ' + item.globalIdx + '.png ---');
@@ -105,6 +113,22 @@ for (let b = 0; b < batches.length; b++) {
   writeFileSync(outPath, lines.join('\n'));
 }
 
+// Manifest: the filename {idx}.png means "word at index idx" AS OF NOW. Word
+// indices shift whenever vocab is added or removed, so a stale folder of PNGs
+// would silently upload the wrong picture for the wrong word. The uploader
+// verifies this manifest before touching anything.
+const manifest = {
+  round: ROUND,
+  generatedAt: new Date().toISOString(),
+  imageRoot: IMAGE_ROOT_NAME,
+  totalWordsAtGeneration: allWords.length,
+  images: Object.fromEntries(missingWithIdx.map(w => [w.globalIdx, w.german])),
+};
+writeFileSync(join(PROMPT_ROOT, 'manifest.json'), JSON.stringify(manifest, null, 1));
+
 console.log('Done. Prompt files written to:');
 console.log('  ' + PROMPT_ROOT);
+console.log('Cowork saves images to:');
+console.log('  ' + GEN_ROOT + '/' + IMAGE_ROOT_NAME + '/batch-{N}/{idx}.png');
 console.log('Total: ' + batches.length + ' files, ' + missingWithIdx.length + ' images.');
+console.log('Wrote manifest.json (' + missingWithIdx.length + ' index->word entries).');

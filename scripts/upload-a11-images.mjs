@@ -19,7 +19,15 @@ import { getAuthHeader } from './upload-auth.mjs';
 const SUPABASE_URL = 'https://qpzepnbqdscshylcwvhr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_jHgz4-egQIk9dYaV7HhR5w_MK3AYdC0';
 const UPLOAD_ENDPOINT = SUPABASE_URL + '/functions/v1/upload-image';
-const IMAGE_ROOT = 'C:/Users/ASUS/Documents/Claude/Projects/Image Gen/a11-images';
+// A round is a prompt folder + image folder pair written by
+// generate-a11-prompts.mjs. Pass --round=<name> to upload a specific round;
+// omit it for the legacy pre-round folders (which have no manifest).
+const GEN_ROOT = 'C:/Users/ASUS/Documents/Claude/Projects/Image Gen';
+const ROUND_ARG = process.argv.find(a => a.startsWith('--round='));
+const ROUND = ROUND_ARG ? ROUND_ARG.split('=')[1] : null;
+const IMAGE_ROOT = ROUND ? GEN_ROOT + '/a11-images-' + ROUND : GEN_ROOT + '/a11-images';
+const PROMPT_ROOT = ROUND ? GEN_ROOT + '/a11-image-prompts-' + ROUND : GEN_ROOT + '/a11-image-prompts';
+const SKIP_VERIFY = process.argv.includes('--no-verify');
 const DELAY_MS = 4000; // 15/min, well under the 20/min cap
 const DRY_RUN = process.argv.includes('--dry');
 const FORCE = process.argv.includes('--force'); // skip the "already uploaded" check
@@ -115,6 +123,48 @@ async function main() {
   }
 
   console.log('Discovered ' + plan.length + ' image files across ' + batchDirs.length + ' batch folders');
+
+  // ---- Index-drift guard --------------------------------------------------
+  // A filename {idx}.png only means anything relative to the word list that
+  // existed when the prompts were generated. Adding or removing vocabulary
+  // shifts every later index, so an old image folder would upload the wrong
+  // picture under the wrong word — silently, since the upload key comes from
+  // words[idx]. Refuse to run unless the manifest still matches.
+  const manifestPath = join(PROMPT_ROOT, 'manifest.json');
+  if (SKIP_VERIFY) {
+    console.log('!! --no-verify: skipping the index-drift check. You are on your own.\n');
+  } else if (!existsSync(manifestPath)) {
+    console.error('\nNo manifest.json found at:\n  ' + manifestPath);
+    console.error('\nThis folder predates the index-drift guard, so its {idx}.png names');
+    console.error('cannot be trusted against the current vocab file. Re-generate prompts');
+    console.error('for a fresh round:');
+    console.error('  node scripts/generate-a11-prompts.mjs --round=<name>');
+    console.error('Or pass --no-verify if you are certain the indices are still valid.');
+    process.exit(1);
+  } else {
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
+    const mismatches = [];
+    for (const p of plan) {
+      const expected = manifest.images[String(p.idx)];
+      if (expected === undefined) {
+        mismatches.push(p.batch + '/' + p.idx + '.png: not in manifest');
+      } else if (expected !== p.word) {
+        mismatches.push(p.batch + '/' + p.idx + '.png: manifest says "' + expected + '", vocab file now has "' + p.word + '"');
+      }
+    }
+    if (mismatches.length) {
+      console.error('\nINDEX DRIFT — refusing to upload. ' + mismatches.length + ' of ' + plan.length + ' files no longer');
+      console.error('point at the word they were generated for:\n');
+      for (const m of mismatches.slice(0, 15)) console.error('  ' + m);
+      if (mismatches.length > 15) console.error('  ... and ' + (mismatches.length - 15) + ' more');
+      console.error('\nThe vocab file changed after these prompts were generated. Re-run:');
+      console.error('  node scripts/audit-a11-images.mjs');
+      console.error('  node scripts/generate-a11-prompts.mjs --round=<new name>');
+      console.error('and regenerate the affected images.');
+      process.exit(1);
+    }
+    console.log('Index-drift check passed: all ' + plan.length + ' files match manifest (round ' + manifest.round + ').');
+  }
 
   // Skip already-uploaded keys unless --force was passed. Bulk-queries
   // vocab_images table for which keys already have an image.
