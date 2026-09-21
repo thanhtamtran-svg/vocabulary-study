@@ -11,6 +11,17 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-09-21 — Thêm 33 từ lễ hội (Feste.docx)
+
+PM đưa file Word *Feste* (Lễ hội): 51 mục, 18 đã có sẵn, **33 mục
+mới**. 32 vào Lektion 14: Feste — ngày lễ (*Silvester, Weihnachten,
+Ostern, Advent, Oktoberfest, Valentinstag, Muttertag…* và ba ngày lễ
+Việt Nam gọi bằng tiếng Đức: *Kindertag, Frauentag, Lehrertag*), đồ
+vật lễ (*Kerze, Weihnachtsbaum, Adventskranz, Feuerwerk, Sekt, Torte*),
+động từ *dekorieren, anstoßen*, và 4 mẫu câu hỏi ngày tháng / chúc
+mừng. *ein besonderes Ereignis* → Lektion 15 (A2) theo quy tắc từ trên
+trình độ. Lektion 14: 69 → 101 từ. Tổng A1: 1756 → 1789, không trùng.
+
 ## 2026-09-21 — Chọn một Lektion để tập trung học (B-026)
 
 **Trước:** app đi thẳng một đường từ Lektion 1 → 15; lớp đang học bài
