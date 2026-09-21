@@ -31,6 +31,7 @@ These are pre-approved by the user. Apply them automatically.
 |---|---|
 | **Translation source language** | Assume Vietnamese; convert to English in the file. |
 | **Target file** | `src/vocab-a11-data.ts` (Schritte Plus Neu A1.1 variant). |
+| **Duplicate matching rule** | Match the German string **exactly** (case-insensitively). Do NOT strip the article before comparing: `der Arm` (body part) and `arm` (poor) are different words, and the file already holds pairs like `morgen`/`der Morgen` and `fernsehen`/`das Fernsehen`. Article-stripping silently dropped `arm` on 2026-09-21. |
 | **Duplicate handling (within A1.1 file)** | Silently skip words already in `src/vocab-a11-data.ts`. List skipped words in the summary, no need to ask per-word. |
 | **Duplicate handling (cross-file)** | Cross-file matches don't block adding to A1.1. If a word is in `src/vocab-data.ts` but NOT in `src/vocab-a11-data.ts`, **add it to A1.1 anyway** so the A1.1 variant stays self-contained. Only pause and ask if the existing translation in `vocab-data.ts` looks like it might mean something different from what you'd write for A1.1 — e.g. different sense ("Bank" = bench vs. financial bank), different gender, or a translation that would confuse the A1.1 learner. |
 | **Lektion classification** | Trust textbook themes (rooms → L4, shopping → L3, daily routine → L5, leisure → L6, school → L7, etc.). Do not override to "current Lektion". The app naturally pulls back to any Lektion with unlearned words, so urgent additions surface in the next session anyway. |

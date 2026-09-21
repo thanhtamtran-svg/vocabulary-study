@@ -11,6 +11,34 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-09-21 — Thêm 95 từ quần áo/so sánh + dạy dạng so sánh trên thẻ cũ
+
+PM đưa bản tổng hợp 11 mục từ vựng (tính từ so sánh, quần áo, màu sắc,
+bài đọc Weltrekord, Präteritum). 160 mục; 65 đã có sẵn; **95 mục mới**.
+
+Phân bổ: Lektion 13 (quần áo, màu, so sánh, Weltrekord) 82 · Lektion 14
+(Präteritum *war/hatte* + trạng ngữ quá khứ) 10 · *die Leute*, *die
+Ferien* 2 · *edel* → Lektion 15 (từ văn chương, trên A1).
+
+**Làm giàu 25 thẻ tính từ đã có, không tạo thẻ mới.** Bảng của PM dạy
+so sánh có biến âm (*alt → älter*), nhưng những tính từ đó đã nằm sẵn
+trong app với nghĩa trơn, nên học xong vẫn không biết dạng biến đổi.
+Nay mặt sau thẻ ghi luôn: `alt` → "old (älter, am ältesten)". Áp dụng
+cho 25 từ gồm cả nhóm biến âm (*groß, jung, kalt, kurz, lang, gesund,
+krank, warm*) và nhóm bất quy tắc (*gut, gern, hoch, teuer, dunkel*).
+
+**Sửa một lỗi trong cách lọc trùng.** Bước lọc cũ cắt mạo từ trước khi
+so sánh, nên `arm` (nghèo) bị coi là trùng với `der Arm` (cánh tay) và
+bị bỏ. Đổi sang so khớp chính xác — app vốn đã có những cặp hợp lệ như
+*morgen*/*der Morgen* và *fernsehen*/*das Fernsehen*. Quy tắc mới ghi
+vào `.claude/vocab-routine.md`. Nhờ sửa mà `arm`, `intelligent`,
+`viel`, `fix` được thêm đúng.
+
+Thuật ngữ ngữ pháp (mục XI: *der Komparativ, der Umlaut, das
+Präteritum*…) vẫn bỏ như quy tắc đã chốt.
+
+Tổng từ A1: 1661 → 1756. Không có từ trùng.
+
 ## 2026-09-05 — Thêm 153 từ chỉ đường & khám bệnh + mở bài A2 mới
 
 PM đưa 4 nguồn: tài liệu tự soạn về *Weg beschreiben* (chỉ đường), và
