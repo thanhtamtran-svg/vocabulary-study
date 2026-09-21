@@ -9,7 +9,8 @@ export default React.memo(function Dashboard({
   totalLearned, batchesCompleted, batches, scheduleGap,
   todayCompleted, nextBatch, reviewsDue, startSession, getWord,
   dailyStreak, weekDays, exerciseStats, exerciseLoading, startExercise,
-  startDate, isSunday, formatDateFn, totalWords, cats, variant, words
+  startDate, isSunday, formatDateFn, totalWords, cats, variant, words,
+  focusCat, lektionStats, setFocusCat
 }) {
   var pendingReviews = reviewsDue.length;
   var hasNextBatch = nextBatch !== null;
@@ -209,6 +210,34 @@ export default React.memo(function Dashboard({
 
           {/* Next batch to learn (always shown if available) */}
           {hasNextBatch ? <div className="card card-accent">
+            {/* B-026: focus one Lektion. Schritte only \u2014 the 1500 course has no Lektionen. */}
+            {variant === 'a11' && cats && lektionStats ? <div className="focus-row">
+              {focusCat !== null && lektionStats[focusCat] ? <>
+                <span className="focus-pill">
+                  {'\uD83D\uDCCC Focus: ' + cats[focusCat] + ' \u00B7 ' +
+                    lektionStats[focusCat].done + '/' + lektionStats[focusCat].total + ' batches done'}
+                </span>
+                <button className="btn btn-secondary btn-sm"
+                  onClick={function() { setFocusCat(null); }}>Back to normal order</button>
+              </> : <>
+                <span className="focus-hint">Following the book order</span>
+                <select className="focus-select" value=""
+                  onChange={function(e) {
+                    var v = parseInt(e.target.value, 10);
+                    if (!isNaN(v)) setFocusCat(v);
+                  }}>
+                  <option value="">{'Focus on a Lektion\u2026'}</option>
+                  {cats.map(function(name, ci) {
+                    if (ci === 0) return null; // Anweisungen ride along in other batches
+                    var st = lektionStats[ci] || {total: 0, done: 0, next: null};
+                    var finished = st.next === null;
+                    return <option key={ci} value={ci} disabled={finished}>
+                      {name + ' (' + st.done + '/' + st.total + ')' + (finished ? ' \u2713' : '')}
+                    </option>;
+                  })}
+                </select>
+              </>}
+            </div> : null}
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
               <div>
                 <div className="review-type-label"

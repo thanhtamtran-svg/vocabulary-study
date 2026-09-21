@@ -108,3 +108,22 @@ export function findNextBatch(batches, progress, keyFor) {
   }
   return null;
 }
+
+// Per-Lektion batch progress for "focus a Lektion" (B-026). A batch belongs
+// to the Lektion of its FIRST word: buildBatches() appends one Anweisung
+// (cat 0) to each of the first 33 batches, so testing every word would
+// misfile those. `next` is 1-indexed like findNextBatch, or null when the
+// Lektion is finished (or has no batches) so the caller can fall back to
+// the normal order.
+export function lektionProgress(batches, progress, keyFor, words, catIdx) {
+  var total = 0, done = 0, next = null;
+  for (var i = 0; i < batches.length; i++) {
+    var first = batches[i][0];
+    if (first === undefined || !words[first] || words[first][2] !== catIdx) continue;
+    total++;
+    var allLearned = batches[i].every(function (wi) { return progress[keyFor(wi)]?.learned; });
+    if (allLearned) done++;
+    else if (next === null) next = i + 1;
+  }
+  return { total: total, done: done, next: next };
+}

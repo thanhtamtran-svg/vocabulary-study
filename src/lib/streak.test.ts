@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeDailyStreak, countCompletedBatches, findNextBatch } from './streak';
+import { computeDailyStreak, countCompletedBatches, findNextBatch, lektionProgress } from './streak';
 
 // Regression tests for the streak/schedule logic extracted in B-005.
 // This logic caused the 2026-05-29 incident (phone showed streak 0,
@@ -129,5 +129,34 @@ describe('countCompletedBatches / findNextBatch', () => {
     const progress = { 'der apfel': { learned: true }, 'das kind': { learned: true } };
     const keyFor = (wi: number) => words[wi];
     expect(countCompletedBatches([[0, 1]], progress, keyFor)).toBe(1);
+  });
+});
+
+describe('lektionProgress (B-026 focus Lektion)', () => {
+  // words: [german, english, catIdx, typeIdx]
+  const words = [
+    ['a', '', 1, 0], ['b', '', 1, 0],   // Lektion 1, one batch
+    ['c', '', 2, 0], ['d', '', 2, 0],   // Lektion 2, batch 1
+    ['e', '', 2, 0], ['f', '', 2, 0],   // Lektion 2, batch 2
+    ['anw', '', 0, 4],                  // Anweisung appended to a batch
+  ];
+  const batches = [[0, 1, 6], [2, 3], [4, 5]];
+  const keyId = (wi: number) => wi;
+
+  it('attributes a batch to the Lektion of its first word, ignoring appended Anweisungen', () => {
+    expect(lektionProgress(batches, {}, keyId, words, 1)).toEqual({ total: 1, done: 0, next: 1 });
+    // cat 0 has no batch of its own — the Anweisung rides along in batch 1
+    expect(lektionProgress(batches, {}, keyId, words, 0)).toEqual({ total: 0, done: 0, next: null });
+  });
+
+  it('skips finished batches and points at the next unfinished one in that Lektion', () => {
+    const progress = { 2: { learned: true }, 3: { learned: true } };
+    expect(lektionProgress(batches, progress, keyId, words, 2)).toEqual({ total: 2, done: 1, next: 3 });
+  });
+
+  it('returns next=null when the Lektion is complete so the caller falls back to normal order', () => {
+    const progress = { 2: { learned: true }, 3: { learned: true }, 4: { learned: true }, 5: { learned: true } };
+    expect(lektionProgress(batches, progress, keyId, words, 2)).toEqual({ total: 2, done: 2, next: null });
+    expect(findNextBatch(batches, progress, keyId)).toBe(1); // Lektion 1 still open
   });
 });

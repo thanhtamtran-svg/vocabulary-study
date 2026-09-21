@@ -14,7 +14,7 @@ import { loadState, saveState } from './lib/storage';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
 import { getMemoryStage } from './lib/memory-stages';
-import { computeDailyStreak, countCompletedBatches, findNextBatch } from './lib/streak';
+import { computeDailyStreak, countCompletedBatches, findNextBatch, lektionProgress } from './lib/streak';
 import { wordKey, migrateProgressToStringKeys, migrateExerciseProgressToStringKeys, isIndexKeyedProgress } from './lib/progress';
 import {
   selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
@@ -76,6 +76,27 @@ function App({onHome, vocabData, variant}) {
     }
     return {learnCount: 0, learnedBatches: [], reviews: {}};
   });
+
+  // B-026 — focus one Lektion. Kept per-device in localStorage on purpose,
+  // NOT in the synced blob: word progress already syncs, so once the user
+  // picks the same Lektion on the phone it computes the same next batch.
+  // Adding it to the sync payload would touch mergeProgress / the edge
+  // function (Tier 3, see the 2026-05-29 incident) for little gain.
+  const focusCatKey = 'schritte_a11_focus_cat';
+  const [focusCat, setFocusCatState] = useState(() => {
+    if (!isA11) return null;
+    try {
+      var v = localStorage.getItem(focusCatKey);
+      return v === null ? null : parseInt(v, 10);
+    } catch { return null; }
+  });
+  const setFocusCat = useCallback(function(cat) {
+    setFocusCatState(cat);
+    try {
+      if (cat === null) localStorage.removeItem(focusCatKey);
+      else localStorage.setItem(focusCatKey, String(cat));
+    } catch (e) {}
+  }, []);
 
   // Daily streak state
   const [studyDates, setStudyDates] = useState(() => {
@@ -319,8 +340,27 @@ function App({onHome, vocabData, variant}) {
   const studyDay = useMemo(() => getStudyDay(startDate, today), [startDate, today]);
 
   // Next batch / completed count — pure logic in lib/streak.ts (B-005).
-  const nextBatch = useMemo(() => findNextBatch(batches, progress, pk), [progress, batches, pk]);
+  // Per-Lektion batch stats (Schritte only) — feeds the focus picker and the
+  // focus-aware next batch below.
+  const lektionStats = useMemo(() =>
+    isA11 ? cats.map((_, ci) => lektionProgress(batches, progress, pk, words, ci)) : null,
+    [isA11, cats, batches, progress, pk, words]);
+  const focusInfo = focusCat !== null && lektionStats ? lektionStats[focusCat] : null;
+  // Focused Lektion wins while it still has an unfinished batch; otherwise
+  // the normal book order. batchesCompleted / scheduleGap deliberately stay
+  // order-agnostic, so learning out of order is never penalised.
+  const nextBatch = useMemo(() => {
+    if (focusInfo && focusInfo.next !== null) return focusInfo.next;
+    return findNextBatch(batches, progress, pk);
+  }, [focusInfo, progress, batches, pk]);
   const batchesCompleted = useMemo(() => countCompletedBatches(batches, progress, pk), [progress, batches, pk]);
+  // Focused Lektion finished (or points at a Lektion that no longer exists):
+  // drop back to normal order rather than sit on an empty "all done" card.
+  useEffect(() => {
+    if (focusCat === null || !focusInfo || focusInfo.next !== null) return;
+    if (focusInfo.total > 0) toast.success((cats[focusCat] || 'Lektion') + ' complete! Back to the normal order.');
+    setFocusCat(null);
+  }, [focusCat, focusInfo]);
 
   // Schedule tracking: expected batch by studyDay vs actual
   const expectedBatch = Math.min(studyDay, batches.length);
@@ -1142,6 +1182,9 @@ function App({onHome, vocabData, variant}) {
       cats={cats}
       variant={variant}
       words={words}
+      focusCat={focusCat}
+      lektionStats={lektionStats}
+      setFocusCat={setFocusCat}
     /></Suspense>;
   }
 

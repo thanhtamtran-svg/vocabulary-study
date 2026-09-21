@@ -89,6 +89,17 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ## 🌱 Low
 
+### B-027: Đồng bộ lựa chọn "Focus Lektion" giữa PC và điện thoại
+
+**Effort:** M · **Tier:** 3 (đụng gói đồng bộ / merge)
+
+B-026 (2026-09-21) cố ý lưu Lektion đang tập trung **theo từng máy**
+để không đụng `mergeProgress` và edge function. Hệ quả: PM phải chọn
+lại bài một lần trên mỗi thiết bị. Chỉ làm khi PM thấy phiền thật.
+Nếu làm: thêm trường vào gói đồng bộ, merge theo "lần chọn mới nhất
+thắng" (kèm timestamp), viết test regression, kiểm cloud state trước/
+sau theo Tier 3.
+
 ### B-009: Add A1.1 word + def images to existing flashcards
 
 **Effort:** M · **Tier:** 2
@@ -121,6 +132,7 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-09-21 — B-026 closed: chọn một Lektion để tập trung trên ô "New Words" (Schritte only); ghim tới khi xong rồi tự về thứ tự sách; nút Back to normal order; lưu theo máy (v1, sync → B-027); `lektionProgress()` thuần + 3 test (42/42); verify local desktop + mobile không tràn ngang. Chờ verify live sau deploy.
 - 2026-07-17 — Voice upgrade closed: cửa tts mới (Google Neural2 + cache MP3 vĩnh viễn trong bucket tts-audio), client ưu tiên cloud + xếp hạng giọng fallback; verify der Tisch/reliable sinh-rồi-cache OK.
 - 2026-07-17 — B-004 closed (phát hiện muộn): A1.2 Lektion 8-14 (~480 từ) đã nhập vào chung khoá từ 2026-07-16 (commit 74095b4) — hướng "extend thành A1" tự chốt qua vocab routine; đổi tên hiển thị thành "Schritte A1 • 14 Lektionen".
 - 2026-07-17 — Dark mode v2 closed: bảng màu token hoá theo Material, 20/20 cặp đạt WCAG AA, PM duyệt "ổn rồi"; gỡ hẳn bản v1 đảo màu.

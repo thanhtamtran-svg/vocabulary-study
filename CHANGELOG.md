@@ -11,6 +11,36 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-09-21 — Chọn một Lektion để tập trung học (B-026)
+
+**Trước:** app đi thẳng một đường từ Lektion 1 → 15; lớp đang học bài
+11 thì vẫn phải cày hết 1→10 mới tới.
+**Sau:** trên ô "New Words" ở trang chính có chỗ chọn *Focus on a
+Lektion…*. Chọn một lần, app ghim bài đó: mỗi ngày đưa nhóm 8 từ chưa
+xong **kế tiếp của bài đó**, hiện rõ *📌 Focus: Lektion 11 · 5/17
+batches done*, kèm nút *Back to normal order*. Học hết bài → app tự
+báo một dòng và quay về thứ tự sách.
+
+Ba cách đã cân nhắc (nhảy một lần · tập trung một bài · mục lục tự
+chọn); PM chọn **tập trung một bài** vì khớp cách học theo lớp và giữ
+kỷ luật "xong nhóm này rồi mới nhóm khác".
+
+**Không đổi gì ở chỗ khác:** lịch ôn từng từ và chỉ số "đi trước /
+chậm tiến độ" tính như cũ — học nhảy bài không bị phạt. Danh sách
+chọn bỏ qua "Anweisungen im Kurs" vì 33 câu lệnh đó vốn được rải kèm
+vào 33 nhóm đầu, không có nhóm riêng.
+
+**Cắt có chủ đích (v1):** lựa chọn Lektion **nhớ theo từng máy**,
+không đồng bộ PC ↔ điện thoại. Đưa vào gói đồng bộ sẽ đụng phần
+merge/edge function (Tier 3, lịch sử sự cố 29/05). Tiến độ từ vẫn đồng
+bộ nên bên điện thoại chỉ cần chọn lại bài một lần là ra đúng nhóm kế
+tiếp. Nếu thấy phiền → mở B-027.
+
+Kỹ thuật: logic chọn nhóm theo Lektion là hàm thuần
+`lektionProgress()` trong `lib/streak.ts`, có 3 test mới (42/42 đạt).
+Giao diện chỉ dùng token màu sẵn có; đã kiểm tra cỡ điện thoại không
+tràn ngang.
+
 ## 2026-09-21 — Thêm 95 từ quần áo/so sánh + dạy dạng so sánh trên thẻ cũ
 
 PM đưa bản tổng hợp 11 mục từ vựng (tính từ so sánh, quần áo, màu sắc,
