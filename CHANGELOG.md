@@ -11,6 +11,26 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-05 — Thêm 48 từ nhà ở / nội thất + sửa nghĩa `ausziehen`
+
+PM đưa bảng tổng hợp 8 mục (nội thất, tính từ cặp đối lập, màu, tìm
+nhà, động từ, danh từ bài tập, giới từ, mẫu câu). 169 mục; **121 đã có
+sẵn**; **48 mục mới**. Lektion 4 Meine Wohnung nhận 25 (tính từ
+*niedrig, sauber, gemütlich, praktisch…*; từ tìm nhà *Nebenkosten,
+Kaution, Vermieter, Mitbewohner, einziehen…*; 4 mẫu câu xem nhà).
+Lektion 11 nhận 11 (*mit dem Bus / Zug / Fahrrad…*, *zu Fuß gehen*,
+dạng rút gọn *zum, zur, vom*). Còn lại rải theo chủ đề.
+
+"warm ↔ kalt (Miete)" thêm thành hai từ chuẩn *die Warmmiete* / *die
+Kaltmiete*, không ghép vào thẻ *warm/kalt* (đang mang nghĩa nhiệt độ).
+
+**Làm giàu thẻ cũ:** `ausziehen` "to take off (clothes)" → "to take
+off (clothes); to move out (separable)" — đi cặp với *einziehen /
+umziehen* vừa thêm.
+
+Lektion 4: 163 → 188 · Lektion 11: 133 → 144. Tổng A1: 1789 → 1837,
+không trùng.
+
 ## 2026-09-21 — Thêm 33 từ lễ hội (Feste.docx)
 
 PM đưa file Word *Feste* (Lễ hội): 51 mục, 18 đã có sẵn, **33 mục

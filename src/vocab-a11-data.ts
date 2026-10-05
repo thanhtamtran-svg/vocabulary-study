@@ -191,6 +191,8 @@ export const VOCAB_A11_DATA = {
     ["Thailand","Thailand",1,0],
     ["Frankreich","France",1,0],
     ["der Iran","Iran",1,0],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["Wie geht es euch?","How are you? (plural)",1,4],
 
     // ===== Cat 2: Lektion 2 — Meine Familie =====
     // Foto-Hörgeschichte
@@ -471,6 +473,10 @@ export const VOCAB_A11_DATA = {
     ["lecker","tasty, delicious",3,2],
     ["frisch","fresh",3,2],
     ["mit Karte bezahlen","to pay by card",3,4],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["die Tasse","cup",3,0],
+    ["Hunger haben","to be hungry",3,4],
+    ["Durst haben","to be thirsty",3,4],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -657,6 +663,32 @@ export const VOCAB_A11_DATA = {
     ["das Holz","wood",4,0],
     // Weg beschreiben, Gesundheit & Orte in der Stadt
     ["die Nachbarin","neighbour (f.)",4,0],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["der Kleiderschrank","wardrobe",4,0],
+    ["niedrig","low",4,2],
+    ["unbequem","uncomfortable",4,2],
+    ["praktisch","practical",4,2],
+    ["unpraktisch","impractical",4,2],
+    ["sauber","clean",4,2],
+    ["gemütlich","cosy",4,2],
+    ["elegant","elegant",4,2],
+    ["nervös","nervous",4,2],
+    ["die Nebenkosten","additional costs, utilities (pl.)",4,0],
+    ["die Warmmiete","rent including utilities",4,0],
+    ["die Kaltmiete","rent excluding utilities",4,0],
+    ["die Kaution","deposit",4,0],
+    ["die Etage","floor, storey",4,0],
+    ["der Vermieter","landlord",4,0],
+    ["die Vermieterin","landlady",4,0],
+    ["der Mieter","tenant (m.)",4,0],
+    ["die Mieterin","tenant (f.)",4,0],
+    ["der Mitbewohner","flatmate (m.)",4,0],
+    ["die Mitbewohnerin","flatmate (f.)",4,0],
+    ["einziehen","to move in (separable)",4,1],
+    ["Das Sofa gefällt mir gut.","I like the sofa.",4,4],
+    ["Das ist zu groß.","That's too big.",4,4],
+    ["Das ist zu klein.","That's too small.",4,4],
+    ["Wie teuer ist die Wohnung?","How much is the flat?",4,4],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -871,6 +903,10 @@ export const VOCAB_A11_DATA = {
     ["jeden Tag","every day",5,4],
     ["von","from, of (+ dative)",5,5],
     ["zu","to (+ dative)",5,5],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["die Zähne putzen","to brush one's teeth",5,4],
+    ["beim","at the, while (bei + dem)",5,3],
+    ["Zeit haben","to have time",5,4],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -1220,6 +1256,8 @@ export const VOCAB_A11_DATA = {
     ["die Schere","scissors",7,0],
     ["die Grammatik","grammar",7,0],
     ["die Aufgabe","task, exercise",7,0],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["die Uni","uni (short for Universität)",7,0],
 
     // ===== Cat 8: Lektion 8 — Beruf und Arbeit =====
     ["die Geschichte","story",8,0],
@@ -1510,6 +1548,9 @@ export const VOCAB_A11_DATA = {
     ["Ich möchte gern einen Termin machen.","I'd like to make an appointment.",10,4],
     ["Können Sie morgen um 10 Uhr kommen?","Can you come tomorrow at 10 o'clock?",10,4],
     ["Danke schön.","Thank you very much.",10,4],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["Angst haben","to be afraid",10,4],
+    ["Fieber haben","to have a fever",10,4],
 
     // ===== Cat 11: Lektion 11 — In der Stadt unterwegs =====
     ["die Werkstatt","workshop, garage",11,0],
@@ -1647,6 +1688,18 @@ export const VOCAB_A11_DATA = {
     ["Wenden Sie!","Turn around!",11,4],
     ["Fahren Sie zurück!","Drive back!",11,4],
     ["Wohnst du in der Stadt oder auf dem Land?","Do you live in town or in the countryside?",11,4],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["der Weg","way, path",11,0],
+    ["zum","to the (zu + dem)",11,3],
+    ["zur","to the (zu + der)",11,3],
+    ["vom","from the, of the (von + dem)",11,3],
+    ["zu Fuß gehen","to walk, go on foot",11,4],
+    ["mit dem Bus","by bus",11,4],
+    ["mit dem Auto","by car",11,4],
+    ["mit dem Zug","by train",11,4],
+    ["mit dem Fahrrad","by bike",11,4],
+    ["mit dem Flugzeug","by plane",11,4],
+    ["mit der U-Bahn","by underground",11,4],
 
     // ===== Cat 12: Lektion 12 — Kundenservice =====
     ["die Tüte","bag (plastic/paper)",12,0],
@@ -1823,7 +1876,7 @@ export const VOCAB_A11_DATA = {
     ["hellblau","light blue",13,2],
     ["dunkelblau","dark blue",13,2],
     ["farblos","colourless",13,2],
-    ["ausziehen","to take off (clothes, separable)",13,1],
+    ["ausziehen","to take off (clothes); to move out (separable)",13,1],
     ["umtauschen","to exchange (separable)",13,1],
     ["Sieh mal!","Look!",13,4],
     ["Wie findest du das?","What do you think of it?",13,4],
@@ -1860,6 +1913,8 @@ export const VOCAB_A11_DATA = {
     ["der Einwohner","inhabitant",13,0],
     ["die Welt","world",13,0],
     ["fast nie","almost never",13,4],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["dunkelgrün","dark green",13,2],
 
     // ===== Cat 14: Lektion 14 — Feste =====
     ["der Geburtstag","birthday",14,0],
@@ -1965,6 +2020,8 @@ export const VOCAB_A11_DATA = {
     ["Der Wievielte ist heute?","What is the date today? (informal)",14,4],
     ["Frohes neues Jahr!","Happy New Year!",14,4],
     ["Herzlichen Glückwunsch zum Geburtstag!","Happy Birthday!",14,4],
+    // Wohnung, Möbel & Redemittel (2026-10-05)
+    ["eine Party machen","to throw a party",14,4],
 
     // ===== Cat 15: Lektion 15: A2 — Über A1 hinaus =====
     ["die Allergie","allergy",15,0],
