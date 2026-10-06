@@ -477,6 +477,40 @@ export const VOCAB_A11_DATA = {
     ["die Tasse","cup",3,0],
     ["Hunger haben","to be hungry",3,4],
     ["Durst haben","to be thirsty",3,4],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["die Nudeln","noodles, pasta (pl.)",3,0],
+    ["die Spaghetti","spaghetti (pl.)",3,0],
+    ["das Hähnchen","chicken",3,0],
+    ["die Gemüsesuppe","vegetable soup",3,0],
+    ["die Tomatensuppe","tomato soup",3,0],
+    ["der Reis","rice",3,0],
+    ["das Steak","steak",3,0],
+    ["der Schokoladenkuchen","chocolate cake",3,0],
+    ["die Tomatensauce","tomato sauce",3,0],
+    ["die Zitrone","lemon",3,0],
+    ["der Honig","honey",3,0],
+    ["die Limonade","lemonade, fizzy drink",3,0],
+    ["der Apfelsaft","apple juice",3,0],
+    ["die Speisen","dishes, food (pl.)",3,0],
+    ["die Getränke","drinks (pl.)",3,0],
+    ["die Kellnerin","waitress",3,0],
+    ["Ich nehme …","I'll have …",3,4],
+    ["Für mich bitte …","For me, please …",3,4],
+    ["Und zum Trinken?","And to drink?",3,4],
+    ["Was darf ich Ihnen bringen?","What can I bring you?",3,4],
+    ["Was können Sie mir empfehlen?","What can you recommend?",3,4],
+    ["Das haben wir heute nicht.","We don't have that today.",3,4],
+    ["Wie war das Essen?","How was the food?",3,4],
+    ["nicht frisch","not fresh",3,4],
+    ["mit der Familie","with the family",3,4],
+    ["mit Freunden","with friends",3,4],
+    ["mit Kollegen","with colleagues",3,4],
+    ["das Trinkgeld","tip",3,0],
+    ["Die Rechnung, bitte.","The bill, please.",3,4],
+    ["Können wir zahlen, bitte?","Can we pay, please?",3,4],
+    ["Machen Sie … Euro.","Make it … euros (incl. tip).",3,4],
+    ["Stimmt so.","Keep the change.",3,4],
+    ["Aber natürlich.","But of course.",3,4],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
     // A — Wohnung
@@ -689,6 +723,10 @@ export const VOCAB_A11_DATA = {
     ["Das ist zu groß.","That's too big.",4,4],
     ["Das ist zu klein.","That's too small.",4,4],
     ["Wie teuer ist die Wohnung?","How much is the flat?",4,4],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["die Treppe","stairs",4,0],
+    ["in der Stadt","in town",4,4],
+    ["Es gibt …","There is / there are …",4,4],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -907,6 +945,18 @@ export const VOCAB_A11_DATA = {
     ["die Zähne putzen","to brush one's teeth",5,4],
     ["beim","at the, while (bei + dem)",5,3],
     ["Zeit haben","to have time",5,4],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["Wie viel Uhr ist es?","What time is it?",5,4],
+    ["Wie lange …?","How long …?",5,4],
+    ["Wie oft …?","How often …?",5,4],
+    ["um … Uhr","at … o'clock",5,4],
+    ["von … bis …","from … to …",5,4],
+    ["einen Termin vereinbaren","to make an appointment",5,4],
+    ["Das geht.","That works.",5,4],
+    ["morgens","in the mornings",5,5],
+    ["nachts","at night",5,5],
+    ["die Linie","line (transport)",5,0],
+    ["die Handynummer","mobile number",5,0],
 
     // ===== Cat 6: Lektion 6 — Freizeit =====
     // Foto-Hörgeschichte — Ausflug
@@ -1123,6 +1173,16 @@ export const VOCAB_A11_DATA = {
     ["warten auf","to wait for (+ accusative)",6,1],
     // Kleidung, Farben, Komparativ & Präteritum
     ["die Ferien","holidays, school break (pl.)",6,0],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["ins Kino gehen","to go to the cinema",6,4],
+    ["schwimmen gehen","to go swimming",6,4],
+    ["Freunde treffen","to meet friends",6,4],
+    ["ein Picknick machen","to have a picnic",6,4],
+    ["Musik hören","to listen to music",6,4],
+    ["Sport machen","to do sport",6,4],
+    ["ins Theater gehen","to go to the theatre",6,4],
+    ["joggen","to jog",6,1],
+    ["sich treffen","to meet (each other)",6,1],
 
     // ===== Cat 7: Lektion 7 — Kinder und Schule =====
     // Foto-Hörgeschichte
@@ -1551,6 +1611,31 @@ export const VOCAB_A11_DATA = {
     // Wohnung, Möbel & Redemittel (2026-10-05)
     ["Angst haben","to be afraid",10,4],
     ["Fieber haben","to have a fever",10,4],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["der Körper","body",10,0],
+    ["die Haare","hair (pl.)",10,0],
+    ["das Gesicht","face",10,0],
+    ["der Grad","degree",10,0],
+    ["die Patientin","patient (f.)",10,0],
+    ["die Medikamente","medicines (pl.)",10,0],
+    ["der Spaziergang","walk, stroll",10,0],
+    ["krank sein","to be ill",10,4],
+    ["erkältet sein","to have a cold",10,4],
+    ["eine Erkältung haben","to have a cold",10,4],
+    ["… tut weh","… hurts",10,4],
+    ["… tun weh","… hurt (pl.)",10,4],
+    ["sehr schlecht","very bad",10,4],
+    ["nicht besonders gut","not especially good",10,4],
+    ["Was ist los?","What's the matter?",10,4],
+    ["Das tut mir leid.","I'm sorry.",10,4],
+    ["zu Hause bleiben","to stay at home",10,4],
+    ["viel schlafen","to sleep a lot",10,4],
+    ["Gymnastik machen","to do exercises",10,4],
+    ["Du musst …","You must …",10,4],
+    ["Du solltest …","You should …",10,4],
+    ["in zwei Tagen","in two days",10,4],
+    ["dreimal pro Tag","three times a day",10,4],
+    ["wiederkommen","to come back (separable)",10,1],
 
     // ===== Cat 11: Lektion 11 — In der Stadt unterwegs =====
     ["die Werkstatt","workshop, garage",11,0],
@@ -1700,6 +1785,10 @@ export const VOCAB_A11_DATA = {
     ["mit dem Fahrrad","by bike",11,4],
     ["mit dem Flugzeug","by plane",11,4],
     ["mit der U-Bahn","by underground",11,4],
+    // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
+    ["der nächste Zug","the next train",11,0],
+    ["nur hin","one way, single",11,4],
+    ["Was kostet das?","How much is that?",11,4],
 
     // ===== Cat 12: Lektion 12 — Kundenservice =====
     ["die Tüte","bag (plastic/paper)",12,0],

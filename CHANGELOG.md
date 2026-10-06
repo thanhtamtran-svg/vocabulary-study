@@ -11,6 +11,21 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-06 — Thêm 83 từ & mẫu câu nhà hàng, giờ giấc, khám bệnh
+
+PM đưa bảng tổng hợp 9 chủ đề (ga tàu, nhà hàng, gọi món, thanh toán,
+thời gian rảnh, giờ giấc, cơ thể, sức khoẻ, nhà ở). 226 mục; **142 đã
+có sẵn**; **83 mục mới**; bỏ 1 mục gần trùng (*Das macht … Euro.* — app
+đã có *Das macht... Euro.*, chỉ khác dấu ba chấm).
+
+Phân bổ: Lektion 3 (món ăn + 16 mẫu câu gọi món / trả tiền như *Was
+darf ich Ihnen bringen?*, *Stimmt so.*) 33 · Lektion 10 (cơ thể + mẫu
+câu khám bệnh *… tut weh*, *Was ist los?*, *Du solltest …*) 24 ·
+Lektion 5 (giờ giấc, *einen Termin vereinbaren*) 11 · Lektion 6 (hoạt
+động rảnh rỗi) 9 · Lektion 4 và 11 mỗi bài 3.
+
+Tổng A1: 1837 → 1920, không trùng, không thẻ thiếu nghĩa.
+
 ## 2026-10-05 — Thêm 48 từ nhà ở / nội thất + sửa nghĩa `ausziehen`
 
 PM đưa bảng tổng hợp 8 mục (nội thất, tính từ cặp đối lập, màu, tìm
