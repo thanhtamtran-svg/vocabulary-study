@@ -11,6 +11,25 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-13 — Máy chủ gộp tiến độ thay vì ghi đè (B-028)
+
+PM báo: học hôm thứ Hai 12/10 nhưng streak không ghi nhận. Kiểm tra máy
+chủ: dữ liệu A1.1 chỉ có tới thứ Sáu 9/10, và bị một thiết bị gửi bản
+cũ lên lúc 13:26 hôm nay. Nguyên nhân: mỗi lần gửi, máy chủ **ghi đè
+toàn bộ** — một tab mở từ lâu chưa tải lại có thể xoá mất buổi học trên
+thiết bị khác.
+
+Giờ máy chủ **gộp** bản gửi lên với bản đang có: ngày học, từ đã thuộc,
+lượt ôn, bài tập chỉ có thể tăng, không bao giờ mất. Ngày bắt đầu vẫn
+giữ ngày sớm hơn (như B-017). Có 7 bài kiểm tra tự động; đã thử thật
+trên máy chủ bằng tài khoản thử nghiệm (gửi bản cũ sau bản mới → cả hai
+còn nguyên), khoá đăng nhập cho khoá German vẫn chặn đúng (401).
+
+Lưu ý: buổi 12/10 đã mất khỏi máy chủ trước khi sửa — chỉ lấy lại được
+nếu thiết bị đã học hôm đó còn giữ dữ liệu (mở app trên thiết bị đó là
+tự gộp lên). Nút "Reset All Progress" vốn đã không xoá được bản trên
+máy chủ (từ trước tới giờ), sửa lần này không làm khác đi.
+
 ## 2026-10-06 — Thêm 83 từ & mẫu câu nhà hàng, giờ giấc, khám bệnh
 
 PM đưa bảng tổng hợp 9 chủ đề (ga tàu, nhà hàng, gọi món, thanh toán,

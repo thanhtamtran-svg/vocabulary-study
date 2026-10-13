@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { mergeSyncPush } from "../_shared/merge-progress.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -130,30 +131,29 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Server-side guard: never let a push move startDate LATER.
-      // A fresh device (empty localStorage, e.g. incognito) initializes
-      // startDate = today and old cached clients push that, wiping the
-      // real start date months earlier. The earlier date always wins.
-      // Doing this on the server makes the guard immune to stale
-      // client bundles cached by service workers.
+      // Merge the push INTO the existing row instead of replacing it
+      // (B-028). A stale device (tab open for days, never reloaded) used
+      // to wipe study done on another device in between. The merge only
+      // ever grows progress and keeps the EARLIER startDate (B-017 guard).
+      // Doing this on the server makes it immune to stale client bundles
+      // cached by service workers.
       const existing = await supabase
         .from("vocab_progress")
         .select("data")
         .eq("user_email", key)
         .maybeSingle();
-      const existingStart = existing.data?.data?.startDate;
-      const incomingStart = data.startDate;
-      if (
-        typeof existingStart === "string" && existingStart &&
-        (typeof incomingStart !== "string" || !incomingStart || existingStart < incomingStart)
-      ) {
-        data.startDate = existingStart;
+      if (existing.error) {
+        // Never fall back to a blind overwrite — that's the bug we're fixing.
+        return new Response(JSON.stringify({ error: "Sync failed" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
+      const merged = mergeSyncPush(existing.data?.data, data);
 
       const res = await supabase.from("vocab_progress").upsert(
         {
           user_email: key,
-          data: data,
+          data: merged,
           updated_at: new Date().toISOString(),
         },
         { onConflict: "user_email" }
