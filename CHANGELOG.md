@@ -11,6 +11,14 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-15 — Bấm Enter để chấm đáp án trắc nghiệm
+
+PM báo: chọn đáp án rồi bấm Enter thì không có gì xảy ra. Nguyên nhân:
+bấm chuột vào một đáp án làm nó "được chọn" bên trong trình duyệt, nên
+Enter chỉ chọn lại đáp án đó thay vì chấm. Giờ Enter khi đang đứng ở
+một đáp án sẽ chấm luôn; Enter lần nữa sang câu sau. Áp dụng cho mọi
+dạng trắc nghiệm, cả khoá tiếng Đức và tiếng Anh. Đã thử trên máy.
+
 ## 2026-10-13 — Máy chủ gộp tiến độ thay vì ghi đè (B-028)
 
 PM báo: học hôm thứ Hai 12/10 nhưng streak không ghi nhận. Kiểm tra máy

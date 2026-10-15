@@ -424,9 +424,15 @@ function App({onHome, vocabData, variant}) {
     if (view !== 'exercise' || !exerciseSession) return;
     function handleKeyDown(e) {
       if (e.key !== 'Enter') return;
-      // Don't interfere with text inputs or focused buttons (button Enter triggers click natively)
-      var tag = document.activeElement && document.activeElement.tagName;
-      if (tag === 'INPUT' || tag === 'BUTTON' || tag === 'TEXTAREA') return;
+      // Don't interfere with text inputs or focused buttons (button Enter
+      // triggers click natively). Exception: answer options. Clicking one
+      // focuses it, so Enter used to just re-select it and never check the
+      // answer — swallow the native click and check instead.
+      var active = document.activeElement as HTMLElement | null;
+      var tag = active && active.tagName;
+      var onOption = !!(active && active.dataset && active.dataset.exerciseOption);
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (tag === 'BUTTON' && !onOption)) return;
+      if (onOption) e.preventDefault();
 
       var item = exerciseSession.items[exerciseIdx];
       if (exerciseFeedback) {

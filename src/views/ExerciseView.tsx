@@ -154,6 +154,7 @@ export default React.memo(function ExerciseView({
                     cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                   }}
                   onClick={function() { setExerciseSelectedIdx(oi); }}
+                  data-exercise-option="true"
                   aria-label={'Option ' + (oi + 1) + ': ' + opt.text}
                   role="radio"
                   aria-checked={isSelected}
@@ -363,6 +364,7 @@ export default React.memo(function ExerciseView({
                         cursor:'pointer',transition:'all 0.15s ease',fontWeight: isSelected ? 600 : 400
                       }}
                       onClick={function() { setExerciseSelectedIdx(oi); }}
+                  data-exercise-option="true"
                       aria-label={'Option ' + (oi + 1) + ': ' + opt.text}
                       role="radio"
                       aria-checked={isSelected}
