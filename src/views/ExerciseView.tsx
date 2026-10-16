@@ -32,7 +32,7 @@ export default React.memo(function ExerciseView({
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
   checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
-  setView, exerciseLoading, lang
+  setView, exerciseLoading, lang, wordLink
 }) {
   var speak = lang === 'en' ? speakEnglish : speakGerman;
   var inputRef = useRef(null);
@@ -409,6 +409,16 @@ export default React.memo(function ExerciseView({
           color: exerciseFeedback.correct ? 'var(--success-text)' : 'var(--danger-text)',
           fontWeight:600,fontSize:'14px'
         }}>{exerciseFeedback.message}</div> : null}
+
+        {/* Open this word's card in a new tab — only after answering, so it
+            can't be used to peek. Reading items span several words: skip. */}
+        {exerciseFeedback && wordLink && exItem.type !== 'reading_comprehension' && exItem.wordIdx >= 0 ?
+          <div style={{textAlign:'center',marginBottom:'8px'}}>
+            <a href={wordLink(exItem.wordIdx)} target="_blank" rel="noopener noreferrer"
+              style={{fontSize:'13px',fontWeight:600,color:'var(--brand)'}}>
+              {'📖 Review "' + exItem.germanWord + '" ↗'}
+            </a>
+          </div> : null}
 
         {/* "Why?" button for wrong answers */}
         {exerciseFeedback && !exerciseFeedback.correct ? <div style={{textAlign:'center', marginBottom:'8px'}}>

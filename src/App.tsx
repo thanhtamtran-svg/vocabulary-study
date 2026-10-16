@@ -20,6 +20,7 @@ import {
   selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
   getAiSentence, generateExerciseItems, fetchExerciseSentences
 } from './lib/exercise-engine';
+import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
 
 import { useToast } from './components/Toast';
 var defImageCache = new Map();
@@ -730,6 +731,25 @@ function App({onHome, vocabData, variant}) {
     return {german: w[0], english: w[1], cat: cats[w[2]], type: TYPE_NAMES[w[3]], typeClass: TYPE_TAGS[w[3]]};
   }
 
+  // Opened from an exercise's "Review this word" link: show that one card.
+  useEffect(function() {
+    var link = readWordLink();
+    if (!link || link.lang !== syncLang) return;
+    clearWordLink();
+    var wi = findWordIndex(words, link.word);
+    if (wi < 0 || !started) return;
+    setSessionWords([{idx: wi, ...getWord(wi)}]);
+    setSessionType({type: 'lookup', batchIdx: 0, interval: 0});
+    setCurrentIdx(0);
+    setFlipped(false);
+    setStreak(0);
+    setView('session');
+  }, []);
+
+  function wordLink(wi) {
+    return wordLinkHref(syncLang, words[wi][0]);
+  }
+
   function startSession(type, batchIdx, interval) {
     if (type === 'review' && !batchIdx) {
       // Per-word review: pick up to 20 due words
@@ -1138,6 +1158,7 @@ function App({onHome, vocabData, variant}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
+      wordLink={wordLink}
       lang="de"
     /></Suspense>;
   }
@@ -1148,6 +1169,7 @@ function App({onHome, vocabData, variant}) {
       exerciseSession={exerciseSession}
       exerciseResults={exerciseResults}
       getWord={getWord}
+      wordLink={wordLink}
       totalLearned={totalLearned}
       startExercise={startExercise}
       setView={setView}

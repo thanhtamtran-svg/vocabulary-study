@@ -3,12 +3,17 @@ import { SUPABASE_URL } from './lib/supabase';
 import App from './App';
 import { VOCAB_DATA } from './vocab-data';
 import { VOCAB_A11_DATA } from './vocab-a11-data';
+import { readWordLink } from './lib/word-link';
 const EnglishApp = lazy(() => import('./EnglishApp'));
 
 const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 
 export default function Home() {
   const [language, setLanguage] = useState(() => {
+    // A word link from an exercise names its course; it wins over the saved
+    // choice for this tab only (not persisted).
+    var link = readWordLink();
+    if (link && ['german', 'german_a11', 'english'].indexOf(link.lang) !== -1) return link.lang;
     try { return localStorage.getItem('vocab_language') || null; } catch { return null; }
   });
   const [authenticated, setAuthenticated] = useState(() => {

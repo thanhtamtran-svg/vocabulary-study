@@ -15,6 +15,9 @@ export default React.memo(function SessionView({
   var w = sessionWords[currentIdx];
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
   var isLearn = sessionType.type === "learn";
+  // Opened from an exercise link in a separate tab: view-only, no rating, so
+  // this tab never writes progress that the exercise tab would then overwrite.
+  var isLookup = sessionType.type === "lookup";
   var reviewInterval = sessionType.interval;
 
   return (
@@ -22,7 +25,7 @@ export default React.memo(function SessionView({
       <div className="session-header">
         <button onClick={function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}>{'\u2190'} Back</button>
         <span style={{fontSize:'13px',fontWeight:600}}>
-          {sessionType.type === 'browse' ? w.german
+          {sessionType.type === 'browse' || isLookup ? w.german
             : isLearn ? 'Learn Batch ' + sessionType.batchIdx
             : sessionType.type === 'review' && !sessionType.batchIdx ? 'Review'
             : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'}
@@ -89,10 +92,14 @@ export default React.memo(function SessionView({
             {'Create a personal sentence using "'}<em>{w.german}</em>
             {'" connected to your own life.'}
           </div> : null}
-          <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
-            How well did you know this?
-          </p>
-          <ConfidenceButtons onRate={rateWord} />
+          {isLookup ? <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
+            Close this tab to return to your exercise.
+          </p> : <>
+            <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
+              How well did you know this?
+            </p>
+            <ConfidenceButtons onRate={rateWord} />
+          </>}
 
           {!hideAiExplain ? <AiExplainBox
             word={w}

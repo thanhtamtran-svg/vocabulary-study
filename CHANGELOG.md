@@ -11,6 +11,17 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-16 — Link ôn lại từ ngay trong bài tập
+
+PM muốn: trong bài tập, mỗi từ có một đường link mở tab mới tới đúng từ
+đó để ôn lại. Giờ sau khi bấm "Check Answer", dưới câu trả lời có dòng
+"📖 Review "<từ>" ↗" — bấm vào mở tab mới hiện thẻ của từ đó (lật được,
+nghe phát âm, xem giải thích AI). Màn hình kết quả cuối bài cũng có
+link ở từng từ. Link chỉ hiện **sau** khi trả lời để không lộ đáp án.
+Tab mở ra chỉ để xem, không có nút chấm mức nhớ, nên không làm lệch
+tiến độ của tab bài tập. Áp dụng cho cả 3 khoá (German, Schritte A1,
+English). Đã thử trên máy.
+
 ## 2026-10-15 — Bấm Enter để chấm đáp án trắc nghiệm
 
 PM báo: chọn đáp án rồi bấm Enter thì không có gì xảy ra. Nguyên nhân:

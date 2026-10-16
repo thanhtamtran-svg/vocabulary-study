@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default React.memo(function ExerciseComplete({
-  exerciseSession, exerciseResults, getWord, totalLearned,
+  exerciseSession, exerciseResults, getWord, wordLink, totalLearned,
   startExercise, setView
 }) {
   var exResults = exerciseResults;
@@ -85,7 +85,10 @@ export default React.memo(function ExerciseComplete({
               var allCorrect = wr.correct === wr.total;
               return <div className="word-row" key={wi}>
                 <span>
-                  <strong>{w.german}</strong>
+                  {wordLink ? <a href={wordLink(parseInt(wi))} target="_blank" rel="noopener noreferrer"
+                    title="Open this word in a new tab" style={{color:'var(--brand)'}}>
+                    <strong>{w.german}</strong>{' ↗'}
+                  </a> : <strong>{w.german}</strong>}
                 </span>
                 <span style={{color:'var(--text-muted)'}}>{w.english}</span>
                 <span style={{color: allCorrect ? 'var(--sage)' : 'var(--accent)', fontWeight:600}}>
