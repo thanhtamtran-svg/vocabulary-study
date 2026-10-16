@@ -23,7 +23,10 @@ export function mergeFullState(local, remote, todayDateStr, vocabData) {
   Object.keys(remoteExerciseProgress).forEach(function(k) {
     if (!mex[k]) { mex[k] = remoteExerciseProgress[k]; return; }
     var l = mex[k], r = remoteExerciseProgress[k];
+    // Last-5 answer window: take the device that practiced most recently.
+    var newer = (l.lastExercise || '') >= (r.lastExercise || '') ? l : r;
     mex[k] = {
+      recent: newer.recent || l.recent || r.recent,
       attempts: Math.max(l.attempts || 0, r.attempts || 0),
       correct: Math.max(l.correct || 0, r.correct || 0),
       streak: Math.max(l.streak || 0, r.streak || 0),

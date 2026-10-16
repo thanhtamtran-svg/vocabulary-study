@@ -17,9 +17,10 @@ import { getMemoryStage } from './lib/memory-stages';
 import { computeDailyStreak, countCompletedBatches, findNextBatch, lektionProgress } from './lib/streak';
 import { wordKey, migrateProgressToStringKeys, migrateExerciseProgressToStringKeys, isIndexKeyedProgress } from './lib/progress';
 import {
-  selectExerciseWords, getDistractors, makeOptions, makeReverseOptions,
-  getAiSentence, generateExerciseItems, fetchExerciseSentences
+  selectExerciseWords, generateExerciseItems, fetchExerciseSentences
 } from './lib/exercise-engine';
+import { scheduleRetry, nextExerciseRecord } from './lib/exercise-core';
+import { checkSentence } from './lib/api';
 import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
 
 import { useToast } from './components/Toast';
@@ -324,6 +325,9 @@ function App({onHome, vocabData, variant}) {
     } catch { return {}; }
   }); // {wordKey: {attempts, correct, lastExercise, nextReview, streak}}
   const [exerciseSelectedIdx, setExerciseSelectedIdx] = useState(-1); // for multiple choice
+  const [exerciseChecking, setExerciseChecking] = useState(false); // AI checking a written sentence
+  const exerciseSessionRef = useRef(null);
+  exerciseSessionRef.current = exerciseSession;
 
   // Save exercise progress
   useEffect(function() {
@@ -907,7 +911,27 @@ function App({onHome, vocabData, variant}) {
     var correct = false;
     var userAnswer = '';
 
-    if (item.type === 'reading_comprehension') {
+    if (item.type === 'write_sentence') {
+      // AI judges and corrects the learner's own sentence (async).
+      userAnswer = exerciseAnswer.trim();
+      if (!userAnswer || exerciseChecking) return;
+      setExerciseChecking(true);
+      var sessionStart = exerciseSession.startTime;
+      checkSentence(userAnswer, item.targetWord, item.hint, 'de').then(function(r) {
+        setExerciseChecking(false);
+        // Ignore a late reply if the learner left or restarted meanwhile
+        if (!exerciseSessionRef.current || exerciseSessionRef.current.startTime !== sessionStart) return;
+        recordExerciseAnswer(item, r.correct, userAnswer, {
+          correctAnswer: r.corrected,
+          aiFeedback: r.feedback,
+          message: r.correct ? 'Great sentence!' : 'Almost — see the corrected sentence.'
+        });
+      }).catch(function() {
+        setExerciseChecking(false);
+        toast.error('Could not check your sentence right now. Please try again.');
+      });
+      return;
+    } else if (item.type === 'reading_comprehension') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = exerciseSelectedIdx === item.correctIdx;
@@ -919,13 +943,6 @@ function App({onHome, vocabData, variant}) {
       var correctOpts = item.options.filter(function(o) { return o.wi === item.wordIdx; });
       correct = selectedOpt.wi === item.wordIdx ||
         correctOpts.some(function(co) { return normalizeOpt(selectedOpt.text) === normalizeOpt(co.text); });
-    } else if (item.type === 'fill_english') {
-      userAnswer = exerciseAnswer.trim();
-      var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
-      var normalizedUser = stripTrailingPunct(userAnswer).toLowerCase();
-      var acceptedAnswers = stripTrailingPunct(item.correctAnswer).toLowerCase()
-        .split(/[,/]/).map(function(s) { return s.trim(); }).filter(Boolean);
-      correct = acceptedAnswers.some(function(a) { return a === normalizedUser; });
     } else if (item.type === 'conjugation') {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').replace(/[.,!?;:]+$/, '').trim(); };
@@ -956,15 +973,34 @@ function App({onHome, vocabData, variant}) {
       if (correctOpt) correctAnswerText = correctOpt.text;
     }
 
-    setExerciseFeedback({
-      correct: correct,
-      userAnswer: userAnswer || '(no answer)',
+    recordExerciseAnswer(item, correct, userAnswer, {
       correctAnswer: correctAnswerText,
-      sentence: item.sentence || null,
       message: correct
         ? ['Great job!', 'Correct!', 'Well done!', 'Exactly right!'][Math.floor(Math.random() * 4)]
         : 'The correct answer is: ' + correctAnswerText
     });
+  }
+
+  // Shows feedback and records the answer. Only the first attempt at an
+  // item counts toward results and the review schedule; a wrong answer
+  // queues the same word again 3–5 questions later (exercise-core).
+  function recordExerciseAnswer(item, correct, userAnswer, fb) {
+    setExerciseFeedback({
+      correct: correct,
+      userAnswer: userAnswer || '(no answer)',
+      correctAnswer: fb.correctAnswer,
+      aiFeedback: fb.aiFeedback || null,
+      sentence: item.sentence || null,
+      message: fb.message
+    });
+
+    if (!correct) {
+      setExerciseSession(function(s) {
+        if (!s) return s; // left the exercise while the AI was checking
+        return Object.assign({}, s, {items: scheduleRetry(s.items, exerciseIdx, item)});
+      });
+    }
+    if (item.isRetry) return;
 
     setExerciseResults(function(prev) {
       return prev.concat([{
@@ -979,19 +1015,8 @@ function App({onHome, vocabData, variant}) {
     // Update exercise progress for this word (keyed by word string)
     var exKey = pk(item.wordIdx);
     setExerciseProgress(function(prev) {
-      var ep = prev[exKey] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
-      var newStreak = correct ? ep.streak + 1 : 0;
-      var intervals = [1, 2, 3, 5, 7, 14, 30];
-      var nextInterval = intervals[Math.min(newStreak, intervals.length - 1)];
-      var nextDate = addDays(today, nextInterval);
       return Object.assign({}, prev, {
-        [exKey]: {
-          attempts: ep.attempts + 1,
-          correct: ep.correct + (correct ? 1 : 0),
-          streak: newStreak,
-          lastExercise: dateKey(today),
-          nextReview: dateKey(nextDate)
-        }
+        [exKey]: nextExerciseRecord(prev[exKey], correct, today, addDays, dateKey)
       });
     });
 
@@ -1158,6 +1183,7 @@ function App({onHome, vocabData, variant}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
+      exerciseChecking={exerciseChecking}
       wordLink={wordLink}
       lang="de"
     /></Suspense>;

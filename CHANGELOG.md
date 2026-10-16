@@ -11,6 +11,26 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-16 — Bài tập kiểu mới: ít lặp hơn, có tự đặt câu
+
+PM thấy bài tập lặp từ tới phát chán. Nguyên nhân: mỗi buổi chỉ 6 từ,
+mỗi từ hỏi 3 lần liền; từ từng sai một thời gian bị coi là "yếu" mãi;
+và các lựa chọn sai lúc nào cũng là mấy từ đầu danh sách. Thiết kế lại
+theo nghiên cứu về ôn tập (PM đã duyệt):
+
+- Mỗi buổi **10 từ**, mỗi từ **1 câu** theo độ khó hợp với nó: từ mới
+  → chọn nghĩa, từ khá → tự gõ từ tiếng Đức, từ vững → điền vào câu.
+- **Đúng ngay → xong cho hôm nay.** Sai → từ đó quay lại sau 3–5 câu
+  (tối đa 2 lần hỏi lại), có dòng báo "This word will come back".
+- Yếu/mạnh tính theo **5 lần trả lời gần nhất**.
+- Lựa chọn sai **bốc ngẫu nhiên trong cùng bài/chủ đề**, đổi mỗi lần.
+- **Bỏ dạng gõ nghĩa tiếng Anh.**
+- **Mới: tự đặt câu** với 2 từ mới nhất của buổi. AI chấm câu bạn viết,
+  đưa ra câu đã sửa và giải thích lỗi (ví dụ "Das Unfall" → "Der Unfall").
+
+Áp dụng cho cả 3 khoá. Đã thử: hỏi lại sau 3–5 câu, giới hạn số lần, AI
+chấm câu đúng/sai (trên máy chủ thật).
+
 ## 2026-10-16 — Link ôn lại từ ngay trong bài tập
 
 PM muốn: trong bài tập, mỗi từ có một đường link mở tab mới tới đúng từ

@@ -1,8 +1,12 @@
 import { SUPABASE_URL } from './supabase';
 import { PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES, TEMPLATE_INCOMPATIBLE_VERBS } from './constants';
 import { getMemoryStage } from './memory-stages';
-import { parseDate } from './dates';
+import { parseDate, dateKey } from './dates';
 import { getConjugation } from './conjugations';
+import {
+  selectSessionWords, wordStrength, makeChoiceOptions, pickSentenceWords,
+  writeSentenceItem, orderSession
+} from './exercise-core';
 
 function wordKeyOf(w) { return String(w[0]).toLowerCase().trim(); }
 
@@ -10,120 +14,33 @@ function wordKeyOf(w) { return String(w[0]).toLowerCase().trim(); }
 // the word is plugged into a sentence template (the parenthetical is a
 // disambiguator for the learner, not part of the German word itself).
 function stripAnnotation(s) { return String(s).replace(/\s*\([^)]*\)\s*/g, '').trim(); }
+function stripArticle(s) { return String(s).replace(/^(der|die|das)\s+/i, ''); }
 
-// Select words for exercise: prioritize mistakes, then due, then new
-// progress and exerciseProgress are keyed by lowercase word string
-export function selectExerciseWords(progress, exerciseProgress, words, today, excludeCats) {
-  var learned = [];
-  for (var wi = 0; wi < words.length; wi++) {
-    var w = words[wi];
-    var key = wordKeyOf(w);
-    var wp = progress[key];
-    if (!wp || !wp.learned) continue;
-    if (excludeCats && excludeCats.indexOf(w[2]) !== -1) continue;
-    var ep = exerciseProgress[key] || {};
-    var stage = getMemoryStage(wp);
-    var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
-    var isDue = today >= nextReview;
-    var accuracy = ep.attempts > 0 ? ep.correct / ep.attempts : null;
-    var isWeak = accuracy !== null && accuracy < 0.6;
-    var neverPracticed = !ep.attempts;
-
-    // Priority scoring: weak > due > never practiced > strong
-    var priority = 0;
-    if (isWeak) priority = 200 + (1 - (accuracy || 0)) * 100; // 200-300
-    else if (isDue) priority = 100 + (5 - stage) * 15; // 100-175
-    else if (neverPracticed) priority = 50 + (5 - stage) * 5; // 50-75
-    else priority = Math.max(0, 20 - (ep.streak || 0) * 3); // 0-20
-
-    learned.push({
-      wi: wi, stage: stage, type: w[3], cat: w[2],
-      confidence: wp.confidence || 0,
-      streak: ep.streak || 0, isDue: isDue,
-      isWeak: isWeak, neverPracticed: neverPracticed,
-      accuracy: accuracy, priority: priority
-    });
-  }
-  if (learned.length < 5) return null;
-
-  // Sort by priority (highest first)
-  learned.sort(function(a, b) { return b.priority - a.priority; });
-
-  // Take top candidates, pick 6 ensuring type diversity
-  var candidates = learned.slice(0, Math.min(30, learned.length));
-  var selected = [];
-  var usedTypes = {};
-  for (var i = 0; i < candidates.length && selected.length < 6; i++) {
-    var t = candidates[i].type;
-    if (!usedTypes[t] || Object.keys(usedTypes).length >= 5) {
-      selected.push(candidates[i]);
-      usedTypes[t] = true;
-      candidates.splice(i, 1);
-      i--;
-    }
-  }
-  for (var i = 0; i < candidates.length && selected.length < 6; i++) {
-    selected.push(candidates[i]);
-  }
-  // Shuffle
-  for (var i = selected.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = selected[i]; selected[i] = selected[j]; selected[j] = tmp;
-  }
-  return selected;
-}
-
-// Generate distractors for multiple choice (same type preferred)
-// progress is keyed by lowercase word string
-export function getDistractors(targetWi, count, progress, words, excludeCats) {
-  var targetWord = words[targetWi];
-  var targetType = targetWord[3];
-  var all = [];
-  for (var wi = 0; wi < words.length; wi++) {
-    if (wi === targetWi) continue;
-    var key = wordKeyOf(words[wi]);
-    var wp = progress[key];
-    if (wp && wp.learned) {
-      if (excludeCats && excludeCats.indexOf(words[wi][2]) !== -1) continue;
-      all.push({wi: wi, sameType: words[wi][3] === targetType});
-    }
-  }
-  // Prefer same type
-  all.sort(function(a, b) { return (b.sameType ? 1 : 0) - (a.sameType ? 1 : 0); });
+// Learned word indices eligible for this session (and as distractors).
+function learnedIndices(progress, words, excludeCats) {
   var result = [];
-  for (var i = 0; i < all.length && result.length < count; i++) {
-    result.push(all[i].wi);
-  }
-  // Shuffle
-  for (var i = result.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = result[i]; result[i] = result[j]; result[j] = tmp;
+  for (var wi = 0; wi < words.length; wi++) {
+    var wp = progress[wordKeyOf(words[wi])];
+    if (!wp || !wp.learned) continue;
+    if (excludeCats && excludeCats.indexOf(words[wi][2]) !== -1) continue;
+    result.push(wi);
   }
   return result;
 }
 
-// Helper: make shuffled multiple choice options
-export function makeOptions(targetWi, targetText, distractorCount, progress, words, excludeCats) {
-  var dists = getDistractors(targetWi, distractorCount, progress, words, excludeCats);
-  var opts = dists.map(function(di) { return {wi: di, text: words[di][1]}; });
-  opts.push({wi: targetWi, text: targetText});
-  for (var i = opts.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
-  }
-  return opts;
-}
-
-// Helper: make reverse options (show English, pick German)
-export function makeReverseOptions(targetWi, targetText, progress, words, excludeCats) {
-  var dists = getDistractors(targetWi, 3, progress, words, excludeCats);
-  var opts = dists.map(function(di) { return {wi: di, text: stripAnnotation(words[di][0])}; });
-  opts.push({wi: targetWi, text: stripAnnotation(targetText)});
-  for (var i = opts.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = opts[i]; opts[i] = opts[j]; opts[j] = tmp;
-  }
-  return opts;
+// Select words for exercise (rules in exercise-core). progress and
+// exerciseProgress are keyed by lowercase word string.
+export function selectExerciseWords(progress, exerciseProgress, words, today, excludeCats) {
+  var entries = learnedIndices(progress, words, excludeCats).map(function(wi) {
+    var key = wordKeyOf(words[wi]);
+    var ep = exerciseProgress[key] || {};
+    var nextReview = ep.nextReview ? parseDate(ep.nextReview) : new Date(0);
+    return {
+      wi: wi, ep: ep, stage: getMemoryStage(progress[key]),
+      type: words[wi][3], cat: words[wi][2], isDue: today >= nextReview
+    };
+  });
+  return selectSessionWords(entries, dateKey(today));
 }
 
 // Get AI sentence for a word, or fall back to template
@@ -143,225 +60,182 @@ export function getAiSentence(w, wordType, aiSentences) {
   return {template: t, full: t.replace('___', stripAnnotation(w.german)), ai: false};
 }
 
-// Generate exercise items — varied by word strength
+// --- Item builders ---------------------------------------------------------
+
+function meaningChoiceItem(wi, w, learned, words) {
+  // Weak words sometimes come as listening for variety
+  var listening = Math.random() < 0.3;
+  return {
+    type: listening ? 'listening' : 'multiple_choice', level: 'Remember', wordIdx: wi,
+    prompt: listening ? 'Listen and choose the correct meaning:' : 'What does "' + stripAnnotation(w.german) + '" mean?',
+    options: makeChoiceOptions(wi, w.english, learned, words, 1), correctAnswer: w.english,
+    germanWord: w.german, wordInfo: w
+  };
+}
+
+function typeGermanItem(wi, w) {
+  return {
+    type: 'fill_blank', level: 'Understand', wordIdx: wi,
+    prompt: 'Type the German word for: ' + w.english,
+    correctAnswer: stripArticle(w.german),
+    fullAnswer: w.german, germanWord: w.german, wordInfo: w
+  };
+}
+
+function conjugationItem(wi, w) {
+  var conj = getConjugation(w.german);
+  var pronIdx = Math.floor(Math.random() * PRONOUNS.length);
+  var pronounKey = PRONOUN_KEYS[pronIdx];
+  return {
+    type: 'conjugation', level: 'Understand', wordIdx: wi,
+    prompt: 'Conjugate "' + w.german + '" for ' + PRONOUNS[pronIdx] + ':',
+    pronoun: PRONOUNS[pronIdx],
+    pronounKey: pronounKey,
+    infinitive: w.german,
+    correctAnswer: conj[pronounKey],
+    fullAnswer: PRONOUNS[pronIdx] + ' ' + conj[pronounKey],
+    fullTable: conj,
+    germanWord: w.german, wordInfo: w
+  };
+}
+
+// Fill the word into a sentence. Returns null when a template would produce
+// broken German and no AI sentence is cached: verbs that need a complement
+// ("heißen", "haben") and grammar words (pronouns, possessives, question
+// words — "Mein ist richtig." is nonsense).
+function sentenceCompleteItem(wi, w, wordType, sent) {
+  var isVerb = wordType === 1;
+  var verbNeedsComplement = isVerb && TEMPLATE_INCOMPATIBLE_VERBS.has(w.german.toLowerCase());
+  if ((verbNeedsComplement || wordType === 3) && !sent.ai) return null;
+
+  // For template plug-in, strip "(formal)"-style annotations so the
+  // generated sentence and correct answer use the bare German word.
+  var germanClean = stripAnnotation(w.german);
+  var answer = stripArticle(germanClean);
+  var fullAnswer = germanClean;
+  var full = sent.full;
+  if (isVerb && !sent.ai) {
+    var verbConj = getConjugation(germanClean);
+    var t = sent.template.toLowerCase();
+    var form = verbConj.ich;
+    if (t.startsWith('wir ') || t.includes(' wir ')) form = verbConj.wir;
+    else if (!(t.startsWith('ich ') || t.includes(' ich ')) && (t.startsWith('er') || t.startsWith('sie'))) form = verbConj.er;
+    answer = form; fullAnswer = form;
+    full = sent.template.replace('___', form);
+  }
+  return {
+    type: 'sentence_complete', level: 'Apply', wordIdx: wi,
+    prompt: sent.template.replace('___', '______'),
+    hint: w.english + (isVerb && !sent.ai ? ' (conjugate!)' : ''),
+    correctAnswer: answer,
+    fullAnswer: fullAnswer, sentence: full,
+    germanWord: w.german, wordInfo: w
+  };
+}
+
+function readingItem(aiPassage, selectedWords, getWord) {
+  try {
+    var passage = typeof aiPassage === 'string' ? JSON.parse(aiPassage) : aiPassage;
+    if (!passage || !passage.text || !passage.translation) return null;
+    var firstWord = selectedWords[0] ? getWord(selectedWords[0].wi) : {german:'', wordInfo:{}};
+    var topicOpts, promptText, correctText;
+
+    // Use AI-generated question & options (Goethe/ÖSD style) if available
+    if (passage.question && passage.options && Array.isArray(passage.options) && passage.options.length >= 4) {
+      promptText = passage.question;
+      var aiOpts = passage.options.slice(0, 4);
+      var correctOpt = aiOpts.find(function(o) { return o.correct; });
+      correctText = correctOpt ? correctOpt.text : aiOpts[0].text;
+      topicOpts = aiOpts.map(function(o, i) {
+        return {text: o.text, isCorrect: !!o.correct, wi: -(10 + i)};
+      });
+    } else {
+      // Fallback: generic "What is this passage mainly about?"
+      promptText = 'What is this passage mainly about?';
+      correctText = passage.translation.split('.')[0].trim().substring(0, 60);
+      var allTopicPool = [
+        'A day at school', 'Shopping at a store', 'A visit to the doctor',
+        'Cooking dinner', 'Traveling by train', 'Playing sports',
+        'Working in an office', 'A birthday party', 'Learning to drive',
+        'Going to the cinema', 'A trip to the zoo', 'Cleaning the house',
+        'Eating at a restaurant', 'Meeting new friends', 'Studying for an exam',
+        'Going on vacation', 'A walk in the park', 'Moving to a new city',
+        'A job interview', 'Shopping for clothes'
+      ];
+      var passageHint = ((passage.title || '') + ' ' + (passage.translation || '').split('.')[0]).toLowerCase();
+      var filteredTopics = allTopicPool.filter(function(t) {
+        var tWords = t.toLowerCase().split(/\s+/);
+        for (var tw = 0; tw < tWords.length; tw++) {
+          if (tWords[tw].length > 3 && passageHint.indexOf(tWords[tw]) >= 0) return false;
+        }
+        return true;
+      });
+      for (var fi = filteredTopics.length - 1; fi > 0; fi--) {
+        var fj = Math.floor(Math.random() * (fi + 1));
+        var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
+      }
+      var wrongOpts = filteredTopics.slice(0, 3).map(function(t, i) {
+        return {text: t, isCorrect: false, wi: -(11+i)};
+      });
+      topicOpts = [{text: correctText, isCorrect: true, wi: -10}].concat(wrongOpts);
+    }
+
+    for (var i = topicOpts.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = topicOpts[i]; topicOpts[i] = topicOpts[j]; topicOpts[j] = tmp;
+    }
+
+    return {
+      type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
+      prompt: promptText,
+      passage: passage.text,
+      passageTitle: passage.title || 'Lesetext',
+      passageTranslation: passage.translation || '',
+      options: topicOpts,
+      correctIdx: topicOpts.findIndex(function(o) { return o.isCorrect; }),
+      correctAnswer: correctText,
+      germanWord: firstWord.german,
+      wordInfo: firstWord
+    };
+  } catch(e) {
+    console.warn('Failed to parse passage:', e);
+    return null;
+  }
+}
+
+// One item per word at the difficulty that fits it, plus sentence writing
+// for the newest words and the reading passage.
 export function generateExerciseItems(selectedWords, aiSentences, aiPassage, getWord, words, exerciseProgress, progress, excludeCats) {
-  var items = [];
+  var learned = learnedIndices(progress, words, excludeCats);
+  var sentenceWis = pickSentenceWords(selectedWords);
+  var mainItems = [];
+  var sentenceItems = [];
 
   selectedWords.forEach(function(sw) {
     var wi = sw.wi;
     var w = getWord(wi);
     var wordType = words[wi][3];
     var ep = exerciseProgress[wordKeyOf(words[wi])] || {};
-    var isWeak = sw.isWeak;
-    var isStrong = ep.streak >= 4;
+    var strength = wordStrength(ep);
     var sent = getAiSentence(w, wordType, aiSentences);
+    var item = null;
 
-    // === ROUND 1 (Remember) ===
-    if (isStrong && Math.random() > 0.5) {
-      var revOpts = makeReverseOptions(wi, w.german, progress, words, excludeCats);
-      items.push({
-        type: 'reverse_choice', level: 'Remember', wordIdx: wi,
-        prompt: 'Which German word means "' + w.english + '"?',
-        options: revOpts, correctAnswer: w.german,
-        germanWord: w.german, wordInfo: w
-      });
-    } else if (isStrong && Math.random() > 0.3) {
-      items.push({
-        type: 'listening', level: 'Remember', wordIdx: wi,
-        prompt: 'Listen and choose the correct meaning:',
-        options: makeOptions(wi, w.english, 3, progress, words, excludeCats), correctAnswer: w.english,
-        germanWord: w.german, wordInfo: w
-      });
+    if (strength === 'new') {
+      item = meaningChoiceItem(wi, w, learned, words);
+    } else if (strength === 'medium') {
+      item = wordType === 1 && Math.random() < 0.5 ? conjugationItem(wi, w) : typeGermanItem(wi, w);
     } else {
-      items.push({
-        type: 'multiple_choice', level: 'Remember', wordIdx: wi,
-        prompt: 'What does "' + stripAnnotation(w.german) + '" mean?',
-        options: makeOptions(wi, w.english, 3, progress, words, excludeCats), correctAnswer: w.english,
-        germanWord: w.german, wordInfo: w
-      });
+      item = (Math.random() < 0.7 && sentenceCompleteItem(wi, w, wordType, sent)) || typeGermanItem(wi, w);
     }
+    mainItems.push(item);
 
-    // === ROUND 2 (Understand) ===
-    var isVerb = wordType === 1;
-    if (isVerb) {
-      var conj = getConjugation(w.german);
-      var pronIdx = Math.floor(Math.random() * PRONOUNS.length);
-      var pronoun = PRONOUNS[pronIdx];
-      var pronounKey = PRONOUN_KEYS[pronIdx];
-      var conjugated = conj[pronounKey];
-      items.push({
-        type: 'conjugation', level: 'Understand', wordIdx: wi,
-        prompt: 'Conjugate "' + w.german + '" for ' + pronoun + ':',
-        pronoun: pronoun,
-        pronounKey: pronounKey,
-        infinitive: w.german,
-        correctAnswer: conjugated,
-        fullAnswer: pronoun + ' ' + conjugated,
-        fullTable: conj,
-        germanWord: w.german, wordInfo: w
-      });
-    } else if (isStrong && Math.random() > 0.6 && sent.ai) {
-      items.push({
-        type: 'fill_english', level: 'Understand', wordIdx: wi,
-        prompt: 'What does "' + stripAnnotation(w.german) + '" mean in this sentence?\n' + sent.full,
-        correctAnswer: w.english.toLowerCase(),
-        fullAnswer: w.english,
-        sentence: sent.full,
-        germanWord: w.german, wordInfo: w
-      });
-    } else {
-      items.push({
-        type: 'fill_blank', level: 'Understand', wordIdx: wi,
-        prompt: 'Type the German word for: ' + w.english,
-        correctAnswer: w.german.replace(/^(der|die|das)\s+/i, ''),
-        fullAnswer: w.german, germanWord: w.german, wordInfo: w
-      });
-    }
-
-    // === ROUND 3 (Apply) ===
-    // Skip sentence_complete when templates would produce broken German:
-    //   - Verbs that strictly require a complement ("heißen", "haben")
-    //   - Grammar-type words (typeIdx 3): pronouns, possessives, question
-    //     words. "Ich sage Sie." or "Mein ist richtig." are nonsense.
-    // For these, fall back to reverse_choice so there's still an Apply
-    // exercise. Skipped only when no AI sentence is cached.
-    var verbNeedsComplement = isVerb && TEMPLATE_INCOMPATIBLE_VERBS.has(w.german.toLowerCase());
-    var isGrammarType = wordType === 3;
-    if ((verbNeedsComplement || isGrammarType) && !sent.ai) {
-      items.push({
-        type: 'reverse_choice', level: 'Apply', wordIdx: wi,
-        prompt: 'Which German word means "' + w.english + '"?',
-        options: makeReverseOptions(wi, w.german, progress, words, excludeCats),
-        correctAnswer: w.german,
-        germanWord: w.german, wordInfo: w
-      });
-    } else {
-      // For template plug-in, strip "(formal)"-style annotations so the
-      // generated sentence and correct answer use the bare German word
-      // ("Sie ist richtig", not "Sie (formal) ist richtig").
-      var germanClean = stripAnnotation(w.german);
-      var sentCorrectAnswer = germanClean.replace(/^(der|die|das)\s+/i, '');
-      var sentFullAnswer = germanClean;
-      var sentPrompt = sent.template.replace('___', '______');
-      var sentFull = sent.full;
-      if (isVerb && !sent.ai) {
-        var verbConj = getConjugation(germanClean);
-        var templateLower = sent.template.toLowerCase();
-        if (templateLower.startsWith('ich ') || templateLower.includes(' ich ')) {
-          sentCorrectAnswer = verbConj.ich;
-          sentFullAnswer = verbConj.ich;
-          sentFull = sent.template.replace('___', verbConj.ich);
-        } else if (templateLower.startsWith('wir ') || templateLower.includes(' wir ')) {
-          sentCorrectAnswer = verbConj.wir;
-          sentFullAnswer = verbConj.wir;
-          sentFull = sent.template.replace('___', verbConj.wir);
-        } else if (templateLower.startsWith('er') || templateLower.startsWith('sie')) {
-          sentCorrectAnswer = verbConj.er;
-          sentFullAnswer = verbConj.er;
-          sentFull = sent.template.replace('___', verbConj.er);
-        } else {
-          sentCorrectAnswer = verbConj.ich;
-          sentFullAnswer = verbConj.ich;
-          sentFull = sent.template.replace('___', verbConj.ich);
-        }
-      }
-      items.push({
-        type: 'sentence_complete', level: 'Apply', wordIdx: wi,
-        prompt: sentPrompt,
-        hint: w.english + (isVerb && !sent.ai ? ' (conjugate!)' : ''),
-        correctAnswer: sentCorrectAnswer,
-        fullAnswer: sentFullAnswer, sentence: sentFull,
-        germanWord: w.german, wordInfo: w
-      });
+    if (sentenceWis.indexOf(wi) !== -1) {
+      sentenceItems.push(writeSentenceItem(wi, w, stripAnnotation(w.german), sent.ai ? sent.full : null));
     }
   });
 
-  // Round 4 (Analyze): Reading comprehension
-  if (aiPassage) {
-    try {
-      var passage = typeof aiPassage === 'string' ? JSON.parse(aiPassage) : aiPassage;
-      if (passage && passage.text && passage.translation) {
-        var firstWord = selectedWords[0] ? getWord(selectedWords[0].wi) : {german:'', wordInfo:{}};
-
-        var topicOpts;
-        var promptText;
-        var correctText;
-
-        // Use AI-generated question & options (Goethe/ÖSD style) if available
-        if (passage.question && passage.options && Array.isArray(passage.options) && passage.options.length >= 4) {
-          promptText = passage.question;
-          var aiOpts = passage.options.slice(0, 4);
-          var correctOpt = aiOpts.find(function(o) { return o.correct; });
-          correctText = correctOpt ? correctOpt.text : aiOpts[0].text;
-          topicOpts = aiOpts.map(function(o, i) {
-            return {text: o.text, isCorrect: !!o.correct, wi: -(10 + i)};
-          });
-        } else {
-          // Fallback: generic "What is this passage mainly about?"
-          promptText = 'What is this passage mainly about?';
-          correctText = passage.translation.split('.')[0].trim().substring(0, 60);
-          var allTopicPool = [
-            'A day at school', 'Shopping at a store', 'A visit to the doctor',
-            'Cooking dinner', 'Traveling by train', 'Playing sports',
-            'Working in an office', 'A birthday party', 'Learning to drive',
-            'Going to the cinema', 'A trip to the zoo', 'Cleaning the house',
-            'Eating at a restaurant', 'Meeting new friends', 'Studying for an exam',
-            'Going on vacation', 'A walk in the park', 'Moving to a new city',
-            'A job interview', 'Shopping for clothes'
-          ];
-          var passageHint = ((passage.title || '') + ' ' + (passage.translation || '').split('.')[0]).toLowerCase();
-          var filteredTopics = allTopicPool.filter(function(t) {
-            var tWords = t.toLowerCase().split(/\s+/);
-            for (var tw = 0; tw < tWords.length; tw++) {
-              if (tWords[tw].length > 3 && passageHint.indexOf(tWords[tw]) >= 0) return false;
-            }
-            return true;
-          });
-          for (var fi = filteredTopics.length - 1; fi > 0; fi--) {
-            var fj = Math.floor(Math.random() * (fi + 1));
-            var ftmp = filteredTopics[fi]; filteredTopics[fi] = filteredTopics[fj]; filteredTopics[fj] = ftmp;
-          }
-          var wrongOpts = filteredTopics.slice(0, 3).map(function(t, i) {
-            return {text: t, isCorrect: false, wi: -(11+i)};
-          });
-          topicOpts = [{text: correctText, isCorrect: true, wi: -10}].concat(wrongOpts);
-        }
-
-        // Shuffle options
-        for (var i = topicOpts.length - 1; i > 0; i--) {
-          var j = Math.floor(Math.random() * (i + 1));
-          var tmp = topicOpts[i]; topicOpts[i] = topicOpts[j]; topicOpts[j] = tmp;
-        }
-
-        items.push({
-          type: 'reading_comprehension', level: 'Analyze', wordIdx: selectedWords[0] ? selectedWords[0].wi : 0,
-          prompt: promptText,
-          passage: passage.text,
-          passageTitle: passage.title || 'Lesetext',
-          passageTranslation: passage.translation || '',
-          options: topicOpts,
-          correctIdx: topicOpts.findIndex(function(o) { return o.isCorrect; }),
-          correctAnswer: correctText,
-          germanWord: firstWord.german,
-          wordInfo: firstWord
-        });
-      }
-    } catch(e) { console.warn('Failed to parse passage:', e); }
-  }
-
-  // Interleave: Round 1 → 2 → 3 → 4, shuffled within each
-  var round1 = items.filter(function(it) { return it.level === 'Remember'; });
-  var round2 = items.filter(function(it) { return it.level === 'Understand'; });
-  var round3 = items.filter(function(it) { return it.level === 'Apply'; });
-  var round4 = items.filter(function(it) { return it.level === 'Analyze'; });
-  [round1, round2, round3, round4].forEach(function(arr) {
-    for (var i = arr.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
-    }
-  });
-
-  return round1.concat(round2).concat(round3).concat(round4);
+  var reading = aiPassage ? readingItem(aiPassage, selectedWords, getWord) : null;
+  return orderSession(mainItems, sentenceItems, reading ? [reading] : []);
 }
 
 // Fetch or generate AI sentences for exercise words

@@ -2,6 +2,7 @@ import React, { useRef, useCallback } from 'react';
 import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants';
 import { speakGerman } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
+import { willRetry } from '../lib/exercise-core';
 
 var SPECIAL_CHARS = ['\u00e4', '\u00f6', '\u00fc', '\u00df'];
 var SPECIAL_CHAR_KEYS = {'1': '\u00e4', '2': '\u00f6', '3': '\u00fc', '4': '\u00df'};
@@ -32,7 +33,7 @@ export default React.memo(function ExerciseView({
   exerciseFeedback, exerciseSelectedIdx, setExerciseSelectedIdx,
   exerciseResults, exerciseWhyLoading, exerciseWhyText,
   checkExerciseAnswer, nextExerciseItem, explainWrongAnswer,
-  setView, exerciseLoading, lang, wordLink
+  setView, exerciseLoading, exerciseChecking, lang, wordLink
 }) {
   var speak = lang === 'en' ? speakEnglish : speakGerman;
   var inputRef = useRef(null);
@@ -63,11 +64,11 @@ export default React.memo(function ExerciseView({
   }, [exerciseAnswer, setExerciseAnswer]);
 
   // Returns true if the key was consumed as a special-char shortcut.
-  // Only active in German exercises and when the answer expects German
-  // (so fill_english — "type the English meaning" — keeps 1-4 as digits).
+  // Only active in German exercises and single-word answers (a written
+  // sentence may contain real digits: "Ich habe 2 Kinder").
   var handleSpecialKeyShortcut = useCallback(function(e, exType) {
     if (lang === 'en') return false;
-    if (exType === 'fill_english') return false;
+    if (exType === 'write_sentence') return false;
     var ch = SPECIAL_CHAR_KEYS[e.key];
     if (!ch) return false;
     e.preventDefault();
@@ -78,8 +79,24 @@ export default React.memo(function ExerciseView({
   var exItem = exerciseSession.items[exerciseIdx];
   var exTotal = exerciseSession.items.length;
   var exProgressPct = ((exerciseIdx + (exerciseFeedback ? 1 : 0)) / exTotal * 100);
-  var levelColors = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Analyze: '#8E44AD'};
-  var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F', Analyze: '\uD83D\uDCD6'};
+  var levelColors = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Create: 'var(--gold)', Analyze: '#8E44AD'};
+  var levelIcons = {Remember: '\uD83E\uDDE0', Understand: '\uD83D\uDCA1', Apply: '\u270D\uFE0F', Create: '\uD83D\uDCDD', Analyze: '\uD83D\uDCD6'};
+  var specialCharButtons = lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
+    {SPECIAL_CHARS.map(function(ch, i) {
+      return <button key={ch} type="button"
+        onClick={function() { insertChar(ch); }}
+        title={'Shortcut: press ' + (i + 1)}
+        style={{padding:'6px 10px',fontSize:'16px',borderRadius:'8px',
+          border:'1px solid var(--border-strong)',background:'var(--row-hover)',cursor:'pointer',
+          fontFamily:'inherit',fontWeight:600,color:'var(--text)',
+          minWidth:'44px',lineHeight:'1',display:'inline-flex',
+          alignItems:'baseline',gap:'4px'}}
+      >
+        <span>{ch}</span>
+        <span style={{fontSize:'10px',color:'var(--text-faint)',fontWeight:500}}>{i + 1}</span>
+      </button>;
+    })}
+  </div> : null;
 
   return (
     <div className="app">
@@ -266,7 +283,67 @@ export default React.memo(function ExerciseView({
             </div> : null}
 
           {/* Fill in blank / sentence complete / fill english input */}
-          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && !exerciseFeedback ?
+          {/* Write your own sentence — AI checks and corrects it */}
+          {exItem.type === 'write_sentence' && !exerciseFeedback ?
+            <div>
+              <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'8px'}}>
+                {'💡 Meaning: ' + exItem.hint + ' · Any sentence about your own life works best.'}
+              </p>
+              <textarea
+                ref={inputRef}
+                value={exerciseAnswer}
+                rows={2}
+                maxLength={300}
+                onChange={function(e) { setExerciseAnswer(e.target.value); }}
+                onKeyDown={function(e) {
+                  if (e.key !== 'Enter' || e.shiftKey) return;
+                  if (e.repeat) return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (feedbackRef.current) { nextExerciseItem(); }
+                  else if (exerciseAnswer.trim()) { checkExerciseAnswer(); }
+                }}
+                placeholder={lang === 'en' ? 'Write a sentence...' : 'Schreib einen Satz...'}
+                readOnly={exerciseChecking /* not disabled: that drops focus, so a retry after an error would need a click */}
+                autoFocus={true}
+                autoComplete="off"
+                style={{
+                  width:'100%',padding:'12px 16px',fontSize:'16px',borderRadius:'10px',
+                  border:'2px solid var(--border)',outline:'none',boxSizing:'border-box',
+                  fontFamily:'inherit',resize:'vertical',background:'var(--card)',color:'var(--text)'
+                }}
+              />
+              {specialCharButtons}
+            </div> : null}
+
+          {exItem.type === 'write_sentence' && exerciseFeedback ?
+            <div>
+              <div style={{fontSize:'11px',fontWeight:700,color:'var(--text-muted)',marginBottom:'4px'}}>Your sentence</div>
+              <div style={{
+                padding:'12px 16px',borderRadius:'10px',fontSize:'15px',marginBottom:'8px',
+                background: exerciseFeedback.correct ? 'var(--sage-tint)' : 'var(--danger-tint)',
+                border: '2px solid ' + (exerciseFeedback.correct ? 'var(--sage)' : 'var(--danger)')
+              }}>{(exerciseFeedback.correct ? '✅ ' : '❌ ') + exerciseFeedback.userAnswer}</div>
+              {!exerciseFeedback.correct ? <>
+                <div style={{fontSize:'11px',fontWeight:700,color:'var(--text-muted)',marginBottom:'4px'}}>Corrected</div>
+                <div style={{
+                  padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,marginBottom:'8px',
+                  background:'var(--sage-tint)',border:'2px solid var(--sage)'
+                }}>{'✅ ' + exerciseFeedback.correctAnswer}</div>
+              </> : null}
+              {exerciseFeedback.aiFeedback ? <div style={{
+                padding:'12px 16px',borderRadius:'10px',fontSize:'13px',lineHeight:'1.6',
+                background:'var(--warning-bg)',border:'1px solid var(--card-border)',color:'var(--text)'
+              }}>
+                <div style={{fontWeight:700,color:'var(--accent)',marginBottom:'4px'}}>{'💡'} AI Teacher</div>
+                {renderSafeText(exerciseFeedback.aiFeedback)}
+              </div> : null}
+              {exerciseFeedback.sentence ? <p style={{fontSize:'13px',color:'var(--text-muted)',fontStyle:'italic',marginTop:'8px'}}>
+                {'🗣️ Another example: ' + exerciseFeedback.sentence}
+              </p> : null}
+            </div> : null}
+
+          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && !exerciseFeedback ?
             <div>
               {exItem.hint ? <p style={{fontSize:'12px',color:'var(--text-faint)',marginBottom:'8px'}}>
                 {'\uD83D\uDCA1 Hint: ' + exItem.hint}
@@ -295,7 +372,7 @@ export default React.memo(function ExerciseView({
                   fontFamily:'inherit'
                 }}
               />
-              {lang !== 'en' && exItem.type !== 'fill_english' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
+              {lang !== 'en' ? <div style={{display:'flex',gap:'6px',marginTop:'6px',alignItems:'center',flexWrap:'wrap'}}>
                 {SPECIAL_CHARS.map(function(ch, i) {
                   return <button key={ch} type="button"
                     onClick={function() { insertChar(ch); }}
@@ -317,7 +394,7 @@ export default React.memo(function ExerciseView({
             </div> : null}
 
           {/* Text input feedback (not conjugation — that has its own section above) */}
-          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'fill_english') && exerciseFeedback ?
+          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && exerciseFeedback ?
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
@@ -410,6 +487,11 @@ export default React.memo(function ExerciseView({
           fontWeight:600,fontSize:'14px'
         }}>{exerciseFeedback.message}</div> : null}
 
+        {exerciseFeedback && !exerciseFeedback.correct && willRetry(exItem) ?
+          <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'-4px 0 10px'}}>
+            {'🔁 This word will come back in a few questions.'}
+          </p> : null}
+
         {/* Open this word's card in a new tab — only after answering, so it
             can't be used to peek. Reading items span several words: skip. */}
         {exerciseFeedback && wordLink && exItem.type !== 'reading_comprehension' && exItem.wordIdx >= 0 ?
@@ -421,7 +503,7 @@ export default React.memo(function ExerciseView({
           </div> : null}
 
         {/* "Why?" button for wrong answers */}
-        {exerciseFeedback && !exerciseFeedback.correct ? <div style={{textAlign:'center', marginBottom:'8px'}}>
+        {exerciseFeedback && !exerciseFeedback.correct && exItem.type !== 'write_sentence' ? <div style={{textAlign:'center', marginBottom:'8px'}}>
           {!exerciseWhyText ? <button
             style={{
               background: 'none', border: '1px solid #D67635', color: 'var(--accent)',
@@ -446,9 +528,10 @@ export default React.memo(function ExerciseView({
           {!exerciseFeedback ?
             <button
               className="btn btn-primary"
-              disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0 : false}
+              disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0
+                : exItem.type === 'write_sentence' ? (exerciseChecking || !exerciseAnswer.trim()) : false}
               onClick={checkExerciseAnswer}
-            >Check Answer</button>
+            >{exerciseChecking ? 'Checking your sentence...' : 'Check Answer'}</button>
           :
             <button
               className="btn btn-primary"

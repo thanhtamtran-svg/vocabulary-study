@@ -55,13 +55,13 @@ export default React.memo(function ExerciseComplete({
         {/* Results by level */}
         <div className="card" style={{marginTop:'16px'}}>
           <h2 style={{marginBottom:'12px'}}>Performance by Stage</h2>
-          {['Remember', 'Understand', 'Apply', 'Analyze'].map(function(level) {
+          {['Remember', 'Understand', 'Apply', 'Create', 'Analyze'].map(function(level) {
             var levelResults = exResults.filter(function(r) { return r.level === level; });
             var levelCorrect = levelResults.filter(function(r) { return r.correct; }).length;
             var levelTotal = levelResults.length;
             if (levelTotal === 0) return null;
             var pct = Math.round(levelCorrect / levelTotal * 100);
-            var levelColor = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Analyze: '#8E44AD'}[level];
+            var levelColor = {Remember: 'var(--brand)', Understand: 'var(--accent)', Apply: 'var(--sage)', Create: 'var(--gold)', Analyze: '#8E44AD'}[level];
             return <div key={level} style={{marginBottom:'10px'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'4px'}}>
                 <span style={{fontSize:'13px',fontWeight:600,color: levelColor}}>{level}</span>

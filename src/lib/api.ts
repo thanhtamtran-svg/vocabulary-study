@@ -12,6 +12,22 @@ function explainAuthHeader() {
   return 'Bearer ' + (token || SUPABASE_KEY);
 }
 
+// AI checks a learner-written sentence that uses `word` and corrects it.
+// Resolves {correct, corrected, feedback}; rejects on network/AI failure so
+// the caller can let the learner retry instead of scoring it.
+export async function checkSentence(sentence, word, meaning, lang) {
+  var res = await fetch(SUPABASE_URL + '/functions/v1/generate-ipa-def', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': explainAuthHeader() },
+    body: JSON.stringify({ mode: 'check-sentence', sentence: sentence, word: word, meaning: meaning, lang: lang })
+  });
+  var data = await res.json().catch(function() { return {}; });
+  if (!res.ok || typeof data.correct !== 'boolean') {
+    throw new Error(data.error || 'Could not check the sentence.');
+  }
+  return data;
+}
+
 // In-memory request caches (session-lifetime, no TTL)
 const imageCache = new Map<string, { url: string; credit: string; link: string | null } | null>();
 const ipaDefCache = new Map<string, { ipa: string | null; definition: string | null }>();

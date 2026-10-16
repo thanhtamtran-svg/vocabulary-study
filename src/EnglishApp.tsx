@@ -13,9 +13,10 @@ import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndD
 import { getMemoryStage } from './lib/memory-stages';
 import { computeDailyStreak, countCompletedBatches, findNextBatch } from './lib/streak';
 import {
-  selectExerciseWords, getDistractors, makeDefinitionOptions, makePhraseOptions,
-  getAiSentence, generateExerciseItems, fetchExerciseSentences
+  selectExerciseWords, generateExerciseItems, fetchExerciseSentences
 } from './lib/english-exercise-engine';
+import { scheduleRetry, nextExerciseRecord } from './lib/exercise-core';
+import { checkSentence } from './lib/api';
 import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
 
 import { useToast } from './components/Toast';
@@ -265,6 +266,9 @@ function EnglishApp({onHome}) {
     try { var d = localStorage.getItem('english_exercise_progress'); return d ? JSON.parse(d) : {}; } catch { return {}; }
   }); // {wordIdx: {attempts, correct, lastExercise, nextReview, streak}}
   const [exerciseSelectedIdx, setExerciseSelectedIdx] = useState(-1); // for multiple choice
+  const [exerciseChecking, setExerciseChecking] = useState(false); // AI checking a written sentence
+  const exerciseSessionRef = useRef(null);
+  exerciseSessionRef.current = exerciseSession;
 
   // Save exercise progress
   useEffect(function() {
@@ -813,7 +817,27 @@ function EnglishApp({onHome}) {
     var correct = false;
     var userAnswer = '';
 
-    if (item.type === 'reading_comprehension') {
+    if (item.type === 'write_sentence') {
+      // AI judges and corrects the learner's own sentence (async).
+      userAnswer = exerciseAnswer.trim();
+      if (!userAnswer || exerciseChecking) return;
+      setExerciseChecking(true);
+      var sessionStart = exerciseSession.startTime;
+      checkSentence(userAnswer, item.targetWord, item.hint, 'en').then(function(r) {
+        setExerciseChecking(false);
+        // Ignore a late reply if the learner left or restarted meanwhile
+        if (!exerciseSessionRef.current || exerciseSessionRef.current.startTime !== sessionStart) return;
+        recordExerciseAnswer(item, r.correct, userAnswer, {
+          correctAnswer: r.corrected,
+          aiFeedback: r.feedback,
+          message: r.correct ? 'Great sentence!' : 'Almost — see the corrected sentence.'
+        });
+      }).catch(function() {
+        setExerciseChecking(false);
+        toast.error('Could not check your sentence right now. Please try again.');
+      });
+      return;
+    } else if (item.type === 'reading_comprehension') {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = exerciseSelectedIdx === item.correctIdx;
@@ -821,13 +845,6 @@ function EnglishApp({onHome}) {
       if (exerciseSelectedIdx < 0) return;
       userAnswer = item.options[exerciseSelectedIdx].text;
       correct = item.options[exerciseSelectedIdx].wi === item.wordIdx;
-    } else if (item.type === 'fill_english') {
-      userAnswer = exerciseAnswer.trim();
-      var stripTrailingPunct = function(s) { return s.replace(/[.,!?;:]+$/, '').trim(); };
-      var na = stripTrailingPunct(userAnswer.toLowerCase());
-      var acceptedAnswers = stripTrailingPunct(item.correctAnswer.toLowerCase())
-        .split(/[,/]/).map(function(s) { return s.trim(); }).filter(Boolean);
-      correct = acceptedAnswers.some(function(a) { return na === a || na === corePhrase(a) || corePhrase(na) === corePhrase(a); });
     } else {
       // Generic text input comparison
       userAnswer = exerciseAnswer.trim();
@@ -850,15 +867,34 @@ function EnglishApp({onHome}) {
       if (correctOpt) correctAnswerText = correctOpt.text;
     }
 
-    setExerciseFeedback({
-      correct: correct,
-      userAnswer: userAnswer || '(no answer)',
+    recordExerciseAnswer(item, correct, userAnswer, {
       correctAnswer: correctAnswerText,
-      sentence: item.sentence || null,
       message: correct
         ? ['Great job!', 'Correct!', 'Well done!', 'Exactly right!'][Math.floor(Math.random() * 4)]
         : 'The correct answer is: ' + correctAnswerText
     });
+  }
+
+  // Shows feedback and records the answer. Only the first attempt at an
+  // item counts toward results and the review schedule; a wrong answer
+  // queues the same phrase again 3–5 questions later (exercise-core).
+  function recordExerciseAnswer(item, correct, userAnswer, fb) {
+    setExerciseFeedback({
+      correct: correct,
+      userAnswer: userAnswer || '(no answer)',
+      correctAnswer: fb.correctAnswer,
+      aiFeedback: fb.aiFeedback || null,
+      sentence: item.sentence || null,
+      message: fb.message
+    });
+
+    if (!correct) {
+      setExerciseSession(function(s) {
+        if (!s) return s; // left the exercise while the AI was checking
+        return Object.assign({}, s, {items: scheduleRetry(s.items, exerciseIdx, item)});
+      });
+    }
+    if (item.isRetry) return;
 
     setExerciseResults(function(prev) {
       return prev.concat([{
@@ -872,19 +908,8 @@ function EnglishApp({onHome}) {
 
     // Update exercise progress for this word
     setExerciseProgress(function(prev) {
-      var ep = prev[item.wordIdx] || {attempts: 0, correct: 0, streak: 0, lastExercise: null, nextReview: null};
-      var newStreak = correct ? ep.streak + 1 : 0;
-      var intervals = [1, 2, 3, 5, 7, 14, 30];
-      var nextInterval = intervals[Math.min(newStreak, intervals.length - 1)];
-      var nextDate = addDays(today, nextInterval);
       return Object.assign({}, prev, {
-        [item.wordIdx]: {
-          attempts: ep.attempts + 1,
-          correct: ep.correct + (correct ? 1 : 0),
-          streak: newStreak,
-          lastExercise: dateKey(today),
-          nextReview: dateKey(nextDate)
-        }
+        [item.wordIdx]: nextExerciseRecord(prev[item.wordIdx], correct, today, addDays, dateKey)
       });
     });
 
@@ -1047,6 +1072,7 @@ function EnglishApp({onHome}) {
       explainWrongAnswer={explainWrongAnswer}
       setView={setView}
       exerciseLoading={exerciseLoading}
+      exerciseChecking={exerciseChecking}
       wordLink={wordLink}
       lang="en"
     /></Suspense>;

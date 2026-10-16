@@ -84,8 +84,9 @@ Deno.serve(async (req) => {
     const words = body?.words;
     const lang = typeof body?.lang === "string" ? body.lang.trim() : "de";
 
-    if (!words || !Array.isArray(words) || words.length === 0 || words.length > 8) {
-      return new Response(JSON.stringify({ error: "Provide 1-8 words" }), {
+    // Exercise sessions use ~10 words (exercise-core SESSION_WORDS); 12 leaves headroom.
+    if (!words || !Array.isArray(words) || words.length === 0 || words.length > 12) {
+      return new Response(JSON.stringify({ error: "Provide 1-12 words" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
