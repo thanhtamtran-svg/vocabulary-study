@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { speakGerman } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 
@@ -13,10 +13,31 @@ function genderDot(germanWord) {
 }
 
 export default React.memo(function Flashcard({
-  word, flipped, onFlip, wordIPA, wordDefinition, defImage,
+  word, flipped, onFlip, wordIPA, wordDefinition, defImage, wordExtras, progress,
   wordImage, imageLoading, emojis, lang, vietnameseDef, onGenerateImage
 }) {
   var speak = lang === 'en' ? speakEnglish : speakGerman;
+  // Example translation stays hidden until asked for, so the learner tries first.
+  var [showTranslation, setShowTranslation] = useState(false);
+  useEffect(function() { setShowTranslation(false); }, [word.german]);
+
+  // Synonyms/antonyms: only words from this course (already filtered), each
+  // with its meaning on hover and a ✓ if the learner has studied it.
+  function relatedRow(label, list) {
+    if (!list || !list.length) return null;
+    return <div style={{marginTop:'6px',fontSize:'13px',textAlign:'center',color:'var(--text-muted)'}}>
+      <span style={{fontWeight:600}}>{label}: </span>
+      {list.map(function(r, i) {
+        var p = progress && progress[String(r.german).toLowerCase().trim()];
+        return <span key={r.wi} title={r.english}>
+          {i > 0 ? ', ' : ''}
+          <span style={{color:'var(--text)'}}>{r.german}</span>
+          {p && p.learned ? <span style={{color:'var(--sage)'}} aria-label="learned">{' ✓'}</span> : null}
+          <span style={{color:'var(--text-faint)'}}>{' (' + String(r.english).replace(/\s*\([^)]*\)/g, '') + ')'}</span>
+        </span>;
+      })}
+    </div>;
+  }
   var gender = lang === 'en' ? null : genderDot(word.german);
   // German back image: prefer the definition illustration, fall back to the
   // word image (def images exist for only ~128 words; word images for ~all).
@@ -102,11 +123,29 @@ export default React.memo(function Flashcard({
                     {'\uD83D\uDD0A'}
                   </button>
                 </div>
-                {/* Definition demoted to supporting text below the word. */}
-                {wordDefinition ? <div className="flashcard-back-def" style={{
-                  color:'var(--text-muted)',lineHeight:'1.45',marginTop:'8px',
-                  fontStyle:'italic',textAlign:'center'
-                }}>{wordDefinition}</div> : null}
+                {/* A1 example sentence instead of the German definition (the
+                    definition used words harder than the word itself). */}
+                {wordExtras && wordExtras.example ? <div className="flashcard-back-def" style={{
+                  color:'var(--text-muted)',lineHeight:'1.45',marginTop:'8px',textAlign:'center'
+                }}>
+                  <span style={{fontStyle:'italic'}}>{wordExtras.example.de}</span>
+                  <button className="speak-btn back" style={{marginLeft:'6px',verticalAlign:'middle'}}
+                    aria-label="Read the example sentence aloud"
+                    onClick={function(e) { e.stopPropagation(); speak(wordExtras.example.de); }}>
+                    {'🔊'}
+                  </button>
+                  <div style={{marginTop:'4px'}}>
+                    {showTranslation
+                      ? <span style={{fontSize:'0.85em',color:'var(--text-faint)'}}>{wordExtras.example.en}</span>
+                      : <button type="button"
+                          onClick={function(e) { e.stopPropagation(); setShowTranslation(true); }}
+                          style={{background:'none',border:'none',padding:'2px 4px',cursor:'pointer',
+                            fontSize:'12px',fontWeight:600,color:'var(--brand)',textDecoration:'underline'}}
+                        >Translate</button>}
+                  </div>
+                </div> : null}
+                {wordExtras ? relatedRow('≈ Similar', wordExtras.synonyms) : null}
+                {wordExtras ? relatedRow('↔ Opposite', wordExtras.antonyms) : null}
               </div>
               {backImage
                 ? <img src={backImage.url} alt="" className="flashcard-back-image" />

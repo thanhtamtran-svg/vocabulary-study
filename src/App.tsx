@@ -20,7 +20,8 @@ import {
   selectExerciseWords, generateExerciseItems, fetchExerciseSentences
 } from './lib/exercise-engine';
 import { scheduleRetry, nextExerciseRecord } from './lib/exercise-core';
-import { checkSentence } from './lib/api';
+import { checkSentence, fetchWordExtras } from './lib/api';
+import { buildWordIndex, matchCourseWords } from './lib/word-extras';
 import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
 
 import { useToast } from './components/Toast';
@@ -180,6 +181,7 @@ function App({onHome, vocabData, variant}) {
   // German definition state
   const [wordDefinition, setWordDefinition] = useState('');
   const [defImage, setDefImage] = useState(null); // {url} for definition illustration
+  const [wordExtras, setWordExtras] = useState(null); // {example, synonyms, antonyms} for the card back
 
   // Push notification state
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -274,7 +276,19 @@ function App({onHome, vocabData, variant}) {
         setAiSaveStatus('saved');
       }
     });
-    // Fetch IPA + German definition (single call, cached)
+    // Example sentence + in-course synonyms/antonyms for the card back
+    setWordExtras(null);
+    fetchWordExtras(w.german, w.english).then(function(extras) {
+      if (cancelled || !extras) return;
+      var examples = extras.examples || [];
+      setWordExtras({
+        example: examples.length ? examples[Math.floor(Math.random() * examples.length)] : null,
+        synonyms: matchCourseWords(extras.synonyms, wordIndex, words, w.idx),
+        antonyms: matchCourseWords(extras.antonyms, wordIndex, words, w.idx)
+      });
+    });
+    // Fetch IPA + German definition (single call, cached). The definition is
+    // no longer shown (too hard at A1) but still keys the definition image.
     setWordIPA('');
     setWordDefinition('');
     setDefImage(null);
@@ -339,6 +353,7 @@ function App({onHome, vocabData, variant}) {
   const [filterType, setFilterType] = useState(-1);
 
   const words = VOCAB_DATA.words;
+  const wordIndex = useMemo(() => buildWordIndex(words), [words]);
   const batches = VOCAB_DATA.batches;
   const cats = VOCAB_DATA.cats;
   const today = useMemo(todayDate, []);
@@ -1133,6 +1148,8 @@ function App({onHome, vocabData, variant}) {
       wordIPA={wordIPA}
       wordDefinition={wordDefinition}
       defImage={defImage}
+      wordExtras={wordExtras}
+      progress={progress}
       aiExplanation={aiExplanation}
       aiLoading={aiLoading}
       aiError={aiError}

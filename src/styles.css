@@ -147,7 +147,7 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 
 /* ===== FLASHCARD ===== */
 .flashcard-container{perspective:1000px;margin:10px 0}
-.flashcard{width:100%;height:300px;position:relative;cursor:pointer;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d}
+.flashcard{width:100%;height:390px;position:relative;cursor:pointer;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);transform-style:preserve-3d}
 .flashcard.flipped{transform:rotateY(180deg)}
 .flashcard-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.08)}
 .flashcard-front{background:linear-gradient(145deg,var(--brand) 0%,#3d5a9e 50%,#4a6ab5 100%);color:#fff}
@@ -161,7 +161,7 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
    column-reverse puts the image (last in DOM) above the text on phones. */
 .flashcard-back-layout{display:flex;flex-direction:column-reverse;align-items:center;justify-content:center;gap:10px;width:100%}
 .flashcard-back-text{width:100%;display:flex;flex-direction:column;justify-content:center}
-.flashcard-back-image{width:168px;height:168px;object-fit:contain;border-radius:10px;background:var(--card);display:block}
+.flashcard-back-image{width:140px;height:140px;object-fit:contain;border-radius:10px;background:var(--card);display:block}
 .flashcard-img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border:1.5px dashed #d8cfc0;background:#faf8f4;cursor:default}
 /* Back word/IPA/definition scale up with screen size (mobile sizes below) */
 .flashcard-back-word{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.01em}

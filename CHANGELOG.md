@@ -11,6 +11,22 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-17 — Mặt sau thẻ: câu ví dụ + từ đồng nghĩa/trái nghĩa
+
+PM thấy dòng định nghĩa tiếng Đức ("Eine Person, die Sachen in einem
+Geschäft an Kunden gibt.") khó hơn chính từ cần học, trình A1 đọc không
+hiểu. Giờ mặt sau thẻ (khoá German và Schritte A1) hiện:
+
+- **Một câu ví dụ A1 ngắn** (có nút 🔊), nút **Translate** để xem bản
+  dịch tiếng Anh. Bản dịch ẩn sẵn để bạn tự thử hiểu trước.
+- **≈ Similar / ↔ Opposite**: từ đồng nghĩa / trái nghĩa, **chỉ hiện từ
+  có trong danh sách từ của khoá** (cùng trình độ), kèm nghĩa; từ đã
+  học có dấu ✓. Không có thì không hiện.
+
+Mỗi từ chỉ gọi AI một lần (lần đầu mở thẻ), rồi lưu vĩnh viễn; dùng lại
+câu ví dụ đã có của phần bài tập. Thẻ trên điện thoại cao hơn một chút
+để vừa nội dung. Đã thử trên điện thoại, máy tính bảng, máy tính.
+
 ## 2026-10-16 — Bài tập kiểu mới: ít lặp hơn, có tự đặt câu
 
 PM thấy bài tập lặp từ tới phát chán. Nguyên nhân: mỗi buổi chỉ 6 từ,

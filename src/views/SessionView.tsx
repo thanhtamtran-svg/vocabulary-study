@@ -7,7 +7,7 @@ import AiExplainBox from '../components/AiExplainBox';
 export default React.memo(function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,
   streak, rateWord, setView,
-  wordImage, imageLoading, wordIPA, wordDefinition, defImage,
+  wordImage, imageLoading, wordIPA, wordDefinition, defImage, wordExtras, progress,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
   hideAiExplain, lang, emojis, vietnameseDef, onGenerateImage
@@ -52,6 +52,8 @@ export default React.memo(function SessionView({
           wordIPA={wordIPA}
           wordDefinition={wordDefinition}
           defImage={defImage}
+          wordExtras={wordExtras}
+          progress={progress}
           wordImage={wordImage}
           imageLoading={imageLoading}
           emojis={emojis}

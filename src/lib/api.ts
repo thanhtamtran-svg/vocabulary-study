@@ -28,6 +28,39 @@ export async function checkSentence(sentence, word, meaning, lang) {
   return data;
 }
 
+// Flashcard back: example sentences + synonym/antonym candidates for a
+// German word. Reads the shared cache directly (free, no rate limit) and
+// only calls the edge function for a word seen for the first time.
+// Resolves {examples: [{de, en}], synonyms: [], antonyms: []} or null.
+const wordExtrasCache = new Map<string, any>();
+export async function fetchWordExtras(germanWord, englishWord) {
+  var key = germanWord.toLowerCase().trim();
+  if (wordExtrasCache.has(key)) return wordExtrasCache.get(key);
+  try {
+    var cacheRes = await fetch(SUPABASE_URL + '/rest/v1/vocab_word_extras?word=eq.' + encodeURIComponent(key) + '&select=examples,synonyms,antonyms', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if (cacheRes.ok) {
+      var rows = await cacheRes.json();
+      if (rows && rows.length) {
+        wordExtrasCache.set(key, rows[0]);
+        return rows[0];
+      }
+    }
+    var res = await fetch(SUPABASE_URL + '/functions/v1/generate-ipa-def', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': explainAuthHeader() },
+      body: JSON.stringify({ mode: 'word-extras', word: germanWord, english: englishWord })
+    });
+    if (!res.ok) return null; // not cached: a later visit retries
+    var data = await res.json();
+    if (data && Array.isArray(data.examples) && data.examples.length) wordExtrasCache.set(key, data);
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
 // In-memory request caches (session-lifetime, no TTL)
 const imageCache = new Map<string, { url: string; credit: string; link: string | null } | null>();
 const ipaDefCache = new Map<string, { ipa: string | null; definition: string | null }>();
