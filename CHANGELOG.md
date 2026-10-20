@@ -11,6 +11,15 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-20 — Giải thích AI tự thử lại khi trục trặc + sửa chữ "Tạo ảnh"
+
+- PM gặp "Could not load explanation" ở thẻ *Ich nehme ...*. Cùng yêu
+  cầu đó chạy lại vài phút sau thì thành công, các từ khác trong ngày
+  cũng bình thường → dịch vụ AI trục trặc chốc lát. Giờ máy chủ tự thử
+  lại một lần (sau 1,5 giây) khi dịch vụ AI báo bận/lỗi.
+- Nút tạo ảnh trên thẻ hiện ký tự lạ thay vì "✨ Tạo ảnh" (và "Đang tạo
+  ảnh…" lúc chờ). Đã sửa; quét toàn bộ giao diện không còn chỗ tương tự.
+
 ## 2026-10-17 — Mặt sau thẻ: câu ví dụ + từ đồng nghĩa/trái nghĩa
 
 PM thấy dòng định nghĩa tiếng Đức ("Eine Person, die Sachen in einem
