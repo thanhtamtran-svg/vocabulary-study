@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
 import { validateWord } from "../_shared/validate-word.ts";
 import { explainCacheKey } from "../_shared/explain-cache-key.ts";
+import { allowedWordType } from "../_shared/word-type.ts";
 
 
 
@@ -95,7 +96,8 @@ Deno.serve(async (req) => {
     // that would let one caller poison the shared explanation.
     // (B-032: the old 'vi' branch read a free-text `definition` field into
     // its prompt; that branch is gone and `definition` is no longer read.)
-    const wordType = typeof body?.type === "string" ? body.type.trim() : "";
+    // B-034: only a fixed course type name may reach the cached prompt
+    const wordType = allowedWordType(body?.type, lang);
     if (!word) {
       return new Response(
         JSON.stringify({ error: "Invalid word. Please provide a valid word." }),

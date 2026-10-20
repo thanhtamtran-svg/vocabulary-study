@@ -89,14 +89,6 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ## 🌱 Low
 
-### B-034: explain-word vẫn đưa trường `type` (chữ tự do) vào câu lệnh German/English
-
-- Phát hiện khi sửa B-032 (2026-10-20): `type` do trình duyệt gửi được
-  chèn thẳng vào prompt German ("type: …") và English, rồi kết quả lưu
-  dùng chung. Chỉ khai thác được với từ **chưa có** bản giải thích lưu
-  sẵn, nhưng cùng loại lỗi đầu độc cache. Sửa: chỉ nhận `type` nằm
-  trong danh sách loại từ cố định của khoá (noun, verb…), còn lại bỏ.
-
 ### B-033: Khoá mẫu câu — còn một kiểm tra trên web thật
 
 - Đã xong 2026-10-20 sau deploy: probe (German/English/không-lang vẫn
@@ -148,6 +140,8 @@ auth (Supabase Auth) thay vì password chung.
 ## ✅ Completed (gần đây)
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
+
+- 2026-10-20 — B-034 closed: explain-word chỉ nhận `type` nằm trong danh sách loại từ cố định của khoá (`_shared/word-type.ts` + 3 test, 120/120); chữ lạ → bỏ. Đã deploy + probe thật: từ chưa có cache kèm `type` chứa lệnh độc → AI làm lơ; German/English vẫn 200.
 
 - 2026-10-20 — B-032 closed: gỡ nhánh dịch tiếng Việt của explain-word (nhận `definition` chữ tự do rồi lưu dùng chung); `vi` và từ Đức mở đầu `vi:`/`en:`/`pat:` bị từ chối 400 (`_shared/explain-cache-key.ts` + test). Đã deploy + probe thật: vi kèm chữ độc → 400, 3 tiền tố → 400, dòng `vi:facilitate something` (2026-03-31) giữ nguyên, German/English/pattern vẫn 200. Còn B-034.
 

@@ -11,6 +11,14 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-20 — Đóng nốt lỗ hổng cùng loại ở phần giải thích AI
+
+- Ô "loại từ" (Noun, Verb…) do trình duyệt gửi lên từng được đưa nguyên
+  văn vào câu lệnh cho AI, rồi lời giải thích được lưu cho mọi người
+  học. Giờ máy chủ chỉ nhận đúng các loại từ có sẵn trong khoá học; chữ
+  lạ bị bỏ. Đã thử thật: gửi lệnh độc trong ô này → AI làm lơ. Bạn
+  không thấy gì khác trên app.
+
 ## 2026-10-20 — Đóng một lỗ hổng: bản dịch tiếng Việt do AI viết
 
 - Máy chủ từng có một "cửa phụ" dịch tiếng Việt cho khoá tiếng Anh, nhận
