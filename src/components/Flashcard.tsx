@@ -154,7 +154,7 @@ export default React.memo(function Flashcard({
                     {imageLoading
                       ? <>
                           <div className="spinner" style={{width:'24px',height:'24px'}}></div>
-                          <span style={{fontSize:'11px',color:'var(--text-faint)'}}>\u0110ang t\u1EA1o \u1EA3nh\u2026</span>
+                          <span style={{fontSize:'11px',color:'var(--text-faint)'}}>{'\u0110ang t\u1EA1o \u1EA3nh\u2026'}</span>
                         </>
                       : <>
                           <span style={{fontSize:'34px',opacity:0.45}}>{'\uD83D\uDDBC\uFE0F'}</span>
@@ -162,7 +162,7 @@ export default React.memo(function Flashcard({
                             style={{width:'auto',padding:'6px 12px',fontSize:'12px'}}
                             aria-label={'Generate image for ' + word.german}
                             onClick={function(e) { e.stopPropagation(); if (onGenerateImage) onGenerateImage(); }}>
-                            {'\u2728'} T\u1EA1o \u1EA3nh
+                            {'\u2728 T\u1EA1o \u1EA3nh'}
                           </button>
                         </>}
                   </div>}

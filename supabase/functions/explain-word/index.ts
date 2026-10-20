@@ -294,7 +294,7 @@ STRICT RULES:
       maxTokens = 1024;
     }
 
-    const response = await fetch(
+    const callAnthropic = () => fetch(
       "https://api.anthropic.com/v1/messages",
       {
         method: "POST",
@@ -311,6 +311,14 @@ STRICT RULES:
         }),
       }
     );
+    // One retry on transient upstream errors (429 / 5xx / 529 overloaded).
+    // 2026-10-20: a single blip showed "Could not load explanation" for
+    // "Ich nehme ..." while the same request succeeded seconds later.
+    let response = await callAnthropic();
+    if (response.status === 429 || response.status >= 500) {
+      await new Promise((r) => setTimeout(r, 1500));
+      response = await callAnthropic();
+    }
 
     if (!response.ok) {
       return new Response(
