@@ -108,7 +108,20 @@ Deno.serve(async (req) => {
 
       const language = isEnglish ? "English" : "German";
       const level = isEnglish ? "B1 learner preparing for IELTS Speaking" : "A1 German learner";
-      const prompt = `Target ${isEnglish ? "phrase" : "word"}: "${word}" (${meaning})
+      // Sentence-pattern course: `word` is the pattern ("Ich möchte …"),
+      // `meaning` is the situation the learner must express with it.
+      const isPattern = body.kind === "pattern" && !isEnglish;
+      const prompt = isPattern ? `Situation: ${meaning}
+Target sentence pattern: "${word}"
+Student's sentence: """${sentence}"""
+
+Judge the student's German sentence.
+- "correct" is true only if the sentence expresses the given situation using the target pattern AND has no grammar or spelling mistakes. The slot values (the "…" parts) may differ from any example. Both du and Sie are acceptable. Ignore missing final punctuation, capitalisation of the first letter and other minor punctuation.
+- "corrected": the student's sentence with the smallest changes that make it correct and natural. Keep their idea and words. If it was already correct, repeat it unchanged.
+- "feedback": 1-3 short sentences in simple English. Name each mistake and why (pattern not used, word order, verb ending, article, case, umlaut…). If correct, praise briefly and, if useful, offer one more natural alternative. Use **bold** for the fixed words.
+
+Respond with ONLY this JSON:
+{"correct": true, "corrected": "...", "feedback": "..."}` : `Target ${isEnglish ? "phrase" : "word"}: "${word}" (${meaning})
 Student's sentence: """${sentence}"""
 
 Judge the student's ${language} sentence.

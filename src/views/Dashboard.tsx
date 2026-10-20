@@ -9,15 +9,18 @@ export default React.memo(function Dashboard({
   totalLearned, batchesCompleted, batches, scheduleGap,
   todayCompleted, nextBatch, reviewsDue, startSession, getWord,
   dailyStreak, weekDays, exerciseStats, exerciseLoading, startExercise,
-  startDate, isSunday, formatDateFn, totalWords, cats, variant, words,
-  focusCat, lektionStats, setFocusCat
+  startDate, isSunday, formatDateFn, totalWords, cats, labelByCat, words,
+  focusCat, lektionStats, setFocusCat, reviewNudge, itemLabel, groupLabel
 }) {
+  var item = itemLabel || 'word';
+  var Item = item.charAt(0).toUpperCase() + item.slice(1);
+  var group = groupLabel || 'Lektion';
   var pendingReviews = reviewsDue.length;
   var hasNextBatch = nextBatch !== null;
   var totalW = totalWords || 1500;
-  // For A1.1 variant: show "Lektion X" label instead of "Batch X"
+  // labelByCat (Lektion/situation courses): show "Lektion X (n)" instead of "Batch X"
   function batchLabel(batchIdx) {
-    if (variant !== 'a11' || !batches || !words || !cats || !batchIdx) return 'Batch ' + batchIdx;
+    if (!labelByCat || !batches || !words || !cats || !batchIdx) return 'Batch ' + batchIdx;
     var firstWi = batches[batchIdx - 1] && batches[batchIdx - 1][0];
     if (firstWi === undefined) return 'Batch ' + batchIdx;
     var catIdx = words[firstWi] && words[firstWi][2];
@@ -84,7 +87,7 @@ export default React.memo(function Dashboard({
         <div className="stat-grid">
           <div className="stat">
             <div className="num">{totalLearned}</div>
-            <div className="label">Words learned</div>
+            <div className="label">{Item + 's learned'}</div>
           </div>
           <div className="stat">
             <div className="num">{Math.round(totalLearned/totalW*100) + '%'}</div>
@@ -94,7 +97,7 @@ export default React.memo(function Dashboard({
 
         <div className="progress-bar" style={{height:'10px',marginBottom:'16px'}}
           role="progressbar" aria-valuenow={totalLearned} aria-valuemin={0} aria-valuemax={totalW}
-          aria-label={totalLearned + ' of ' + totalW + ' words learned'}>
+          aria-label={totalLearned + ' of ' + totalW + ' ' + item + 's learned'}>
           <div className="progress-fill"
             style={{width: (totalLearned/totalW*100) + '%',
               background:'linear-gradient(90deg,#27AE60,#2ECC71)'}} />
@@ -210,8 +213,8 @@ export default React.memo(function Dashboard({
 
           {/* Next batch to learn (always shown if available) */}
           {hasNextBatch ? <div className="card card-accent">
-            {/* B-026: focus one Lektion. Schritte only \u2014 the 1500 course has no Lektionen. */}
-            {variant === 'a11' && cats && lektionStats ? <div className="focus-row">
+            {/* B-026: focus one Lektion. Courses with Lektionen/situations only \u2014 the 1500 course has none. */}
+            {labelByCat && cats && lektionStats ? <div className="focus-row">
               {focusCat !== null && lektionStats[focusCat] ? <>
                 <span className="focus-pill">
                   {'\uD83D\uDCCC Focus: ' + cats[focusCat] + ' \u00B7 ' +
@@ -226,10 +229,11 @@ export default React.memo(function Dashboard({
                     var v = parseInt(e.target.value, 10);
                     if (!isNaN(v)) setFocusCat(v);
                   }}>
-                  <option value="">{'Focus on a Lektion\u2026'}</option>
+                  <option value="">{'Focus on a ' + group + '\u2026'}</option>
                   {cats.map(function(name, ci) {
-                    if (ci === 0) return null; // Anweisungen ride along in other batches
                     var st = lektionStats[ci] || {total: 0, done: 0, next: null};
+                    // No batches of its own (Schritte's Anweisungen ride along in other batches)
+                    if (!st.total) return null;
                     var finished = st.next === null;
                     return <option key={ci} value={ci} disabled={finished}>
                       {name + ' (' + st.done + '/' + st.total + ')' + (finished ? ' \u2713' : '')}
@@ -238,15 +242,19 @@ export default React.memo(function Dashboard({
                 </select>
               </>}
             </div> : null}
+            {/* Patterns course: reviews before new material (soft nudge, never a lock) */}
+            {reviewNudge && pendingReviews > 0 ? <p style={{fontSize:'12px',color:'var(--text-muted)',margin:'0 0 8px'}}>
+              {'💡 Recommended: finish your ' + pendingReviews + ' review' + (pendingReviews === 1 ? '' : 's') + ' first — old patterns stick when you revisit them before adding new ones.'}
+            </p> : null}
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
               <div>
                 <div className="review-type-label"
                   style={{color:'var(--success)'}}>
-                  {todayLearnCount === 0 ? '\uD83C\uDF31 New Words' : '\uD83C\uDF31 Learn More'}
+                  {todayLearnCount === 0 ? '\uD83C\uDF31 New ' + Item + 's' : '\uD83C\uDF31 Learn More'}
                 </div>
                 <strong>{batchLabel(nextBatch)}</strong>
                 <span style={{fontSize:'12px',color:'var(--text-muted)',marginLeft:'8px'}}>
-                  {batches[nextBatch-1].length + ' words'}
+                  {batches[nextBatch-1].length + ' ' + item + 's'}
                 </span>
               </div>
               <button
@@ -269,20 +277,20 @@ export default React.memo(function Dashboard({
 
           <div className="card" style={{background:'var(--warning-bg)'}}>
             <span style={{color:'var(--warning-text)',fontWeight:600}}>
-              {'\uD83C\uDFC6 All ' + totalW + ' words introduced! Focus on reviews.'}
+              {'\uD83C\uDFC6 All ' + totalW + ' ' + item + 's introduced! Focus on reviews.'}
             </span>
           </div>}
 
           {/* Reviews section — per-word based */}
           {reviewsDue.length > 0 ? <div>
             <h2 style={{marginTop:'16px'}}>
-              {'\uD83D\uDD04 Words Due for Review (' + reviewsDue.length + ')'}
+              {'\uD83D\uDD04 ' + Item + 's Due for Review (' + reviewsDue.length + ')'}
             </h2>
             <div className="card" style={{padding:'14px'}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                 <div>
                   <div style={{fontSize:'14px',fontWeight:600,color:'var(--text)',marginBottom:'4px'}}>
-                    {reviewsDue.length + ' word' + (reviewsDue.length !== 1 ? 's' : '') + ' need review'}
+                    {reviewsDue.length + ' ' + item + (reviewsDue.length !== 1 ? 's' : '') + ' need review'}
                   </div>
                   <div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}>
                     {/* Group by stage */}

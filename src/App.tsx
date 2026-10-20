@@ -3,13 +3,14 @@ import { VOCAB_DATA as DEFAULT_VOCAB_DATA } from './vocab-data';
 import { WORD_EMOJIS } from './emoji-data';
 import { SUPABASE_URL, SUPABASE_KEY } from './lib/supabase';
 import {
-  TYPE_TAGS, TYPE_NAMES, REVIEW_LABELS, REVIEW_METHODS,
+  TYPE_TAGS, REVIEW_LABELS, REVIEW_METHODS,
   DUAL_CODING_TIPS, SCIENCE_TIPS, MEMORY_STAGES,
   PRONOUNS, PRONOUN_KEYS, SENTENCE_TEMPLATES,
-  STORAGE_KEY, SYNC_EMAIL_KEY, VAPID_PUBLIC_KEY
+  STORAGE_KEY, VAPID_PUBLIC_KEY
 } from './lib/constants';
 import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
-import { speakGerman } from './lib/speech';
+import { speakGerman, speakPattern } from './lib/speech';
+import { migrateA11ToPatterns } from './lib/patterns-migration';
 import { loadState, saveState } from './lib/storage';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
@@ -19,10 +20,12 @@ import { wordKey, migrateProgressToStringKeys, migrateExerciseProgressToStringKe
 import {
   selectExerciseWords, generateExerciseItems, fetchExerciseSentences
 } from './lib/exercise-engine';
-import { scheduleRetry, nextExerciseRecord } from './lib/exercise-core';
+import { scheduleRetry, nextExerciseRecord, matchesAccepted } from './lib/exercise-core';
+import { generatePatternItems } from './lib/pattern-exercise-engine';
 import { checkSentence, fetchWordExtras } from './lib/api';
 import { buildWordIndex, matchCourseWords } from './lib/word-extras';
 import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
+import { COURSES, studyDatesKeyForLang } from './lib/course-config';
 
 import { useToast } from './components/Toast';
 var defImageCache = new Map();
@@ -40,15 +43,34 @@ const SettingsView = lazy(() => import('./views/SettingsView'));
 function App({onHome, vocabData, variant}) {
   const toast = useToast();
   const VOCAB_DATA = vocabData || DEFAULT_VOCAB_DATA;
-  const isA11 = variant === 'a11';
-  const storageKey = isA11 ? 'schritte_a11' : 'german1500';
-  const syncLang = isA11 ? 'german_a11' : 'german';
-  const syncEmailKey = isA11 ? 'schritte_a11_sync_email' : SYNC_EMAIL_KEY;
-  const studyDatesKey = isA11 ? 'schritte_a11_study_dates' : 'vocab_study_dates';
-  const siblingStudyDatesKey = isA11 ? 'vocab_study_dates' : 'schritte_a11_study_dates';
-  const siblingSyncLang = isA11 ? 'german' : 'german_a11';
-  const exerciseProgressKey = isA11 ? 'schritte_a11_exercise_progress' : 'vocab_exercise_progress';
+  const cfg = COURSES[variant] || COURSES.full;
+  const { storageKey, syncLang, syncEmailKey, studyDatesKey, exerciseProgressKey } = cfg;
+  // Sibling courses' study-dates keys, resolved by their sync language
+  const siblings = useMemo(() => cfg.siblingLangs
+    .map(lang => ({lang, key: studyDatesKeyForLang(lang)}))
+    .filter(s => s.key), [cfg]);
   const saved = useMemo(() => loadState(storageKey), [storageKey]);
+  const isPatternCourse = cfg.engine === 'pattern';
+  // Patterns course: fold in this device's Schritte A1 progress for the rows
+  // that moved here (idempotent merge — see lib/patterns-migration.ts).
+  const initialPatternMigration = useMemo(() => {
+    if (!isPatternCourse) return null;
+    var a11 = loadState(COURSES.a11.storageKey);
+    var a11Ex = null, ownEx = null;
+    try { a11Ex = JSON.parse(localStorage.getItem(COURSES.a11.exerciseProgressKey) || 'null'); } catch (e) {}
+    try { ownEx = JSON.parse(localStorage.getItem(exerciseProgressKey) || 'null'); } catch (e) {}
+    return migrateA11ToPatterns(a11 && a11.progress, a11Ex, saved && saved.progress, ownEx);
+  }, []);
+  // Card direction (patterns course): 'en-de' = situation -> say it in German
+  // (default), 'de-en' = hear/read German -> meaning.
+  const [direction, setDirectionState] = useState(() => {
+    if (!cfg.directionKey) return 'en-de';
+    try { return localStorage.getItem(cfg.directionKey) === 'de-en' ? 'de-en' : 'en-de'; } catch { return 'en-de'; }
+  });
+  const setDirection = useCallback(function(d) {
+    setDirectionState(d);
+    try { if (cfg.directionKey) localStorage.setItem(cfg.directionKey, d); } catch (e) {}
+  }, [cfg]);
 
   const [view, setView] = useState("dashboard");
   const [startDate, setStartDate] = useState(() => {
@@ -59,6 +81,7 @@ function App({onHome, vocabData, variant}) {
   });
   const [started, setStarted] = useState(() => saved?.started || false);
   const [progress, setProgress] = useState(() => {
+    if (initialPatternMigration) return initialPatternMigration.progress;
     var p = saved?.progress || {};
     // One-time migration: numeric keys → lowercase word keys
     if (isIndexKeyedProgress(p)) p = migrateProgressToStringKeys(p, VOCAB_DATA);
@@ -85,9 +108,9 @@ function App({onHome, vocabData, variant}) {
   // picks the same Lektion on the phone it computes the same next batch.
   // Adding it to the sync payload would touch mergeProgress / the edge
   // function (Tier 3, see the 2026-05-29 incident) for little gain.
-  const focusCatKey = 'schritte_a11_focus_cat';
+  const focusCatKey = cfg.focusKey;
   const [focusCat, setFocusCatState] = useState(() => {
-    if (!isA11) return null;
+    if (!cfg.lektionFocus || !focusCatKey) return null;
     try {
       var v = localStorage.getItem(focusCatKey);
       return v === null ? null : parseInt(v, 10);
@@ -95,6 +118,7 @@ function App({onHome, vocabData, variant}) {
   });
   const setFocusCat = useCallback(function(cat) {
     setFocusCatState(cat);
+    if (!focusCatKey) return;
     try {
       if (cat === null) localStorage.removeItem(focusCatKey);
       else localStorage.setItem(focusCatKey, String(cat));
@@ -105,13 +129,20 @@ function App({onHome, vocabData, variant}) {
   const [studyDates, setStudyDates] = useState(() => {
     try { var d = localStorage.getItem(studyDatesKey); return d ? JSON.parse(d) : []; } catch { return []; }
   });
-  // Sibling variant's study dates — German and Schritte A1.1 share streaks
+  // Sibling courses' study dates — all German courses share one streak.
+  // {studyDatesKey: dates[]}
   const [siblingStudyDates, setSiblingStudyDates] = useState(() => {
-    try { var d = localStorage.getItem(siblingStudyDatesKey); return d ? JSON.parse(d) : []; } catch { return []; }
+    var out = {};
+    siblings.forEach(function(s) {
+      try { var d = localStorage.getItem(s.key); out[s.key] = d ? JSON.parse(d) : []; } catch { out[s.key] = []; }
+    });
+    return out;
   });
   // Combined dates drive the streak/week calendar
   const combinedStudyDates = useMemo(() => {
-    return [...new Set([...(studyDates || []), ...(siblingStudyDates || [])])];
+    var all = [...(studyDates || [])];
+    Object.values(siblingStudyDates).forEach(function(d) { all.push(...((d as string[]) || [])); });
+    return [...new Set(all)];
   }, [studyDates, siblingStudyDates]);
 
   // Calculate daily streak with rest-day freeze — pure logic lives in
@@ -258,18 +289,22 @@ function App({onHome, vocabData, variant}) {
     if (!w) return;
     var cancelled = false;
     setWordImage(null);
-    setImageLoading(true);
-    fetchWordImage(w.german, w.english, w.type).then(function(img) {
-      if (cancelled) return;
-      setWordImage(img);
+    if (cfg.images) {
+      setImageLoading(true);
+      fetchWordImage(w.german, w.english, w.type).then(function(img) {
+        if (cancelled) return;
+        setWordImage(img);
+        setImageLoading(false);
+      }).catch(function() { if (!cancelled) setImageLoading(false); });
+    } else {
       setImageLoading(false);
-    }).catch(function() { if (!cancelled) setImageLoading(false); });
+    }
     // Auto-load cached explanation (no API cost)
     setAiExplanation('');
     setAiError('');
     setAiLoading(false);
     setAiSaveStatus('');
-    fetchCachedExplanation(w.german).then(function(text) {
+    fetchCachedExplanation(w.german, undefined, w.meta && w.meta.pattern ? {kind: 'pattern'} : undefined).then(function(text) {
       if (cancelled) return;
       if (text) {
         setAiExplanation(text);
@@ -278,7 +313,7 @@ function App({onHome, vocabData, variant}) {
     });
     // Example sentence + in-course synonyms/antonyms for the card back
     setWordExtras(null);
-    fetchWordExtras(w.german, w.english).then(function(extras) {
+    if (cfg.wordExtras) fetchWordExtras(w.german, w.english).then(function(extras) {
       if (cancelled || !extras) return;
       var examples = extras.examples || [];
       setWordExtras({
@@ -292,7 +327,7 @@ function App({onHome, vocabData, variant}) {
     setWordIPA('');
     setWordDefinition('');
     setDefImage(null);
-    fetchIPAAndDefinition(w.german, w.english).then(function(result) {
+    if (cfg.ipa) fetchIPAAndDefinition(w.german, w.english).then(function(result) {
       if (cancelled) return;
       if (result.ipa) setWordIPA(result.ipa);
       if (result.definition) {
@@ -317,8 +352,11 @@ function App({onHome, vocabData, variant}) {
         }
       }
     });
-    // Autoplay pronunciation
-    speakGerman(w.german);
+    // Autoplay pronunciation. Patterns in en->de mode stay silent until the
+    // learner flips (PatternCard plays it then) — audio would give it away.
+    if (w.meta && w.meta.pattern) {
+      if (direction === 'de-en' || w.meta.listenOnly) speakPattern(w.meta.pattern);
+    } else speakGerman(w.german);
     return function() { cancelled = true; };
   }, [view, currentIdx, sessionWords]);
 
@@ -331,6 +369,7 @@ function App({onHome, vocabData, variant}) {
   const [exerciseWhyText, setExerciseWhyText] = useState('');
   const [exerciseResults, setExerciseResults] = useState([]); // [{wordIdx, type, correct, answer}]
   const [exerciseProgress, setExerciseProgress] = useState(() => {
+    if (initialPatternMigration) return initialPatternMigration.exerciseProgress;
     try {
       var d = localStorage.getItem(exerciseProgressKey);
       var ep = d ? JSON.parse(d) : {};
@@ -363,8 +402,8 @@ function App({onHome, vocabData, variant}) {
   // Per-Lektion batch stats (Schritte only) — feeds the focus picker and the
   // focus-aware next batch below.
   const lektionStats = useMemo(() =>
-    isA11 ? cats.map((_, ci) => lektionProgress(batches, progress, pk, words, ci)) : null,
-    [isA11, cats, batches, progress, pk, words]);
+    cfg.lektionFocus ? cats.map((_, ci) => lektionProgress(batches, progress, pk, words, ci)) : null,
+    [cfg, cats, batches, progress, pk, words]);
   const focusInfo = focusCat !== null && lektionStats ? lektionStats[focusCat] : null;
   // Focused Lektion wins while it still has an unfinished batch; otherwise
   // the normal book order. batchesCompleted / scheduleGap deliberately stay
@@ -435,7 +474,7 @@ function App({onHome, vocabData, variant}) {
     if (view !== 'exercise' || !exerciseSession) return;
     var item = exerciseSession.items[exerciseIdx];
     if (item && item.type === 'listening' && !exerciseFeedback) {
-      setTimeout(function() { speakGerman(item.germanWord); }, 300);
+      setTimeout(function() { (isPatternCourse ? speakPattern : speakGerman)(item.germanWord); }, 300);
     }
   }, [view, exerciseIdx, exerciseSession]);
 
@@ -537,18 +576,39 @@ function App({onHome, vocabData, variant}) {
     isSyncingRef.current = true;
     setSyncStatus('syncing');
     setSyncMsg('Syncing...');
-    // Side pull: sibling variant's studyDates so the streak unions both courses
-    cloudPull(syncEmail, siblingSyncLang).then(function(siblingRemote) {
-      if (!siblingRemote || !siblingRemote.studyDates) return;
-      var union = [...new Set([...(siblingStudyDates || []), ...siblingRemote.studyDates])].sort();
-      localStorage.setItem(siblingStudyDatesKey, JSON.stringify(union));
-      setSiblingStudyDates(union);
-    }).catch(function() {});
+    // Side pulls: sibling courses' studyDates so the streak unions all courses
+    var siblingPulls = {};
+    siblings.forEach(function(s) {
+      var pull = cloudPull(syncEmail, s.lang);
+      siblingPulls[s.lang] = pull;
+      pull.then(function(siblingRemote) {
+        if (!siblingRemote || !siblingRemote.studyDates) return;
+        var union = [...new Set([...(siblingStudyDates[s.key] || []), ...siblingRemote.studyDates])].sort();
+        localStorage.setItem(s.key, JSON.stringify(union));
+        setSiblingStudyDates(function(prev) { return {...prev, [s.key]: union}; });
+      }).catch(function() {});
+    });
+    // Patterns course: also fold in the cloud copy of Schritte A1 progress for
+    // the moved rows (a device may have it only in the cloud). Awaited BEFORE
+    // the merge below so its setProgress can't overwrite the migrated rows.
+    var a11Pull = isPatternCourse && siblingPulls[COURSES.a11.syncLang]
+      ? siblingPulls[COURSES.a11.syncLang].catch(function() { return null; })
+      : Promise.resolve(null);
     // Pull first — cloud is the convergence point
-    cloudPull(syncEmail, syncLang).then(function(remote) {
+    Promise.all([cloudPull(syncEmail, syncLang), a11Pull]).then(function(pulled) {
+      var remote = pulled[0], a11Remote = pulled[1];
+      var baseProgress = progress, baseExercise = exerciseProgress;
+      if (a11Remote && (a11Remote.progress || a11Remote.exerciseProgress)) {
+        var mig = migrateA11ToPatterns(a11Remote.progress, a11Remote.exerciseProgress, progress, exerciseProgress);
+        baseProgress = mig.progress; baseExercise = mig.exerciseProgress;
+        if (mig.changed && !(remote && remote.progress)) {
+          setProgress(baseProgress);
+          setExerciseProgress(baseExercise);
+        }
+      }
       if (remote && remote.progress) {
         var localSnapshot = {
-          progress: progress, exerciseProgress: exerciseProgress,
+          progress: baseProgress, exerciseProgress: baseExercise,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
           startDate: dateKey(startDate), started: started,
         };
@@ -585,12 +645,12 @@ function App({onHome, vocabData, variant}) {
           exerciseProgress: merged.exerciseProgress,
           studyDates: mergedDates,
         }, syncLang);
-      } else if (Object.keys(progress).length > 0) {
+      } else if (Object.keys(baseProgress).length > 0) {
         // No cloud data — push local
         return cloudPush(syncEmail, {
-          startDate: dateKey(startDate), started: started, progress: progress,
+          startDate: dateKey(startDate), started: started, progress: baseProgress,
           todayCompleted: todayCompleted, completedDate: dateKey(today),
-          exerciseProgress: exerciseProgress, studyDates: studyDates,
+          exerciseProgress: baseExercise, studyDates: studyDates,
         }, syncLang);
       }
     }).then(function() {
@@ -718,9 +778,9 @@ function App({onHome, vocabData, variant}) {
       // Resolve word index from key (word string)
       var idx = keyToIdx[k];
       if (idx === undefined) return; // key not in current vocab (legacy from different variant)
-      // A1.1: skip Cat 0 (Anweisungen im Kurs) — classroom instructions are
-      // background reinforcement only, not reviewed or tested
-      if (isA11 && VOCAB_DATA.words[idx] && VOCAB_DATA.words[idx][2] === 0) return;
+      // Background-only categories (e.g. A1.1 Cat 0, Anweisungen im Kurs)
+      // are not reviewed or tested
+      if (cfg.excludeCats && VOCAB_DATA.words[idx] && cfg.excludeCats.includes(VOCAB_DATA.words[idx][2])) return;
       var stage = getMemoryStage(wp);
       if (stage === 0) return;
       // Stage 5 (Mastered) still gets a 30-day final review
@@ -747,7 +807,7 @@ function App({onHome, vocabData, variant}) {
 
   function getWord(wi) {
     const w = words[wi];
-    return {german: w[0], english: w[1], cat: cats[w[2]], type: TYPE_NAMES[w[3]], typeClass: TYPE_TAGS[w[3]]};
+    return {german: w[0], english: w[1], cat: cats[w[2]], type: VOCAB_DATA.types[w[3]], typeClass: TYPE_TAGS[w[3]], meta: w[4]};
   }
 
   // Opened from an exercise's "Review this word" link: show that one card.
@@ -851,7 +911,7 @@ function App({onHome, vocabData, variant}) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'german_progress_' + dateKey(today) + '.json';
+    a.download = cfg.exportPrefix + dateKey(today) + '.json';
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -879,15 +939,29 @@ function App({onHome, vocabData, variant}) {
   }
 
   function startExercise() {
-    // A1.1: exclude Cat 0 (Anweisungen im Kurs) — classroom instructions
-    // are learned as background reinforcement, not tested in exercises
-    var excludeCats = isA11 ? [0] : null;
+    // Background-only categories (e.g. A1.1 Cat 0) are not tested
+    var excludeCats = cfg.excludeCats;
     var selected = selectExerciseWords(progress, exerciseProgress, words, today, excludeCats);
     if (!selected || selected.length < 3) {
       toast.info('You need at least 5 learned words to start exercises. Keep learning!');
       return;
     }
     setExerciseLoading(true);
+
+    // Sentence patterns: items come straight from the data (no AI sentences
+    // or reading passage needed — the pattern IS the sentence).
+    if (cfg.engine === 'pattern') {
+      var pItems = generatePatternItems(selected, getWord, words, exerciseProgress, progress, excludeCats);
+      setExerciseSession({items: pItems, targetWords: selected, startTime: Date.now()});
+      setExerciseIdx(0);
+      setExerciseAnswer('');
+      setExerciseFeedback(null);
+      setExerciseResults([]);
+      setExerciseSelectedIdx(-1);
+      setExerciseLoading(false);
+      setView('exercise');
+      return;
+    }
 
     // Fetch AI sentences (async), then start exercise
     fetchExerciseSentences(selected, getWord).then(function(aiData) {
@@ -932,7 +1006,7 @@ function App({onHome, vocabData, variant}) {
       if (!userAnswer || exerciseChecking) return;
       setExerciseChecking(true);
       var sessionStart = exerciseSession.startTime;
-      checkSentence(userAnswer, item.targetWord, item.hint, 'de').then(function(r) {
+      checkSentence(userAnswer, item.targetWord, item.hint, 'de', item.kind ? {kind: item.kind} : undefined).then(function(r) {
         setExerciseChecking(false);
         // Ignore a late reply if the learner left or restarted meanwhile
         if (!exerciseSessionRef.current || exerciseSessionRef.current.startTime !== sessionStart) return;
@@ -958,6 +1032,11 @@ function App({onHome, vocabData, variant}) {
       var correctOpts = item.options.filter(function(o) { return o.wi === item.wordIdx; });
       correct = selectedOpt.wi === item.wordIdx ||
         correctOpts.some(function(co) { return normalizeOpt(selectedOpt.text) === normalizeOpt(co.text); });
+    } else if (item.accepted) {
+      // Sentence patterns (fill_blank / word_order): whole-sentence match
+      // against every accepted wording; see normalizeAnswer.
+      userAnswer = exerciseAnswer.trim();
+      correct = matchesAccepted(userAnswer, item.accepted.concat([item.correctAnswer]));
     } else if (item.type === 'conjugation') {
       userAnswer = exerciseAnswer.trim();
       var normalize = function(s) { return s.toLowerCase().replace(/[äÄ]/g,'ae').replace(/[öÖ]/g,'oe').replace(/[üÜ]/g,'ue').replace(/[ß]/g,'ss').replace(/[.,!?;:]+$/, '').trim(); };
@@ -1123,10 +1202,9 @@ function App({onHome, vocabData, variant}) {
       syncStatus={syncStatus}
       syncMsg={syncMsg}
       courseFlag={'🇩🇪'}
-      courseTitle={isA11 ? 'Schritte A1' : 'German 1500'}
-      courseDesc={isA11
-        ? 'Master the Schritte Plus Neu A1 textbook vocabulary with science-based spaced repetition'
-        : 'Master 1500 words with science-based spaced repetition'}
+      courseTitle={cfg.title}
+      courseDesc={cfg.desc}
+      itemLabel={cfg.itemLabel}
       newPerDay={Math.round(VOCAB_DATA.words.length / Math.max(1, batches.length))}
       weeks={Math.ceil(batches.length / 6)}
     /></Suspense>;
@@ -1135,6 +1213,7 @@ function App({onHome, vocabData, variant}) {
   // ===== SESSION VIEW =====
   if (view === "session" && sessionWords.length > 0) {
     return <Suspense fallback={loadingFallback}><SessionView
+      direction={direction}
       sessionWords={sessionWords}
       sessionType={sessionType}
       currentIdx={currentIdx}
@@ -1158,7 +1237,7 @@ function App({onHome, vocabData, variant}) {
       setAiLoading={setAiLoading}
       setAiError={setAiError}
       setAiSaveStatus={setAiSaveStatus}
-      emojis={isA11 ? undefined : WORD_EMOJIS}
+      emojis={cfg.emojis ? WORD_EMOJIS : undefined}
       onGenerateImage={function() {
         var w = sessionWords[currentIdx];
         if (!w) return;
@@ -1178,7 +1257,7 @@ function App({onHome, vocabData, variant}) {
       sessionType={sessionType}
       progress={progress}
       setView={setView}
-      emojis={isA11 ? undefined : WORD_EMOJIS}
+      emojis={cfg.emojis ? WORD_EMOJIS : undefined}
     /></Suspense>;
   }
 
@@ -1251,7 +1330,10 @@ function App({onHome, vocabData, variant}) {
       isSunday={today.getDay() === 0}
       totalWords={words.length}
       cats={cats}
-      variant={variant}
+      labelByCat={cfg.lektionFocus}
+      reviewNudge={cfg.engine === 'pattern'}
+      itemLabel={cfg.itemLabel}
+      groupLabel={cfg.groupLabel}
       words={words}
       focusCat={focusCat}
       lektionStats={lektionStats}
@@ -1288,6 +1370,7 @@ function App({onHome, vocabData, variant}) {
       setSearchTerm={setSearchTerm}
       filterType={filterType}
       setFilterType={setFilterType}
+      typeNames={VOCAB_DATA.types}
       getWord={getWord}
       setSessionWords={setSessionWords}
       setSessionType={setSessionType}
@@ -1295,7 +1378,7 @@ function App({onHome, vocabData, variant}) {
       setFlipped={setFlipped}
       setStreak={setStreak}
       setView={setView}
-      emojis={isA11 ? undefined : WORD_EMOJIS}
+      emojis={cfg.emojis ? WORD_EMOJIS : undefined}
     /></Suspense>;
   }
 
@@ -1323,6 +1406,7 @@ function App({onHome, vocabData, variant}) {
       reminderHour={reminderHour}
       setReminderHour={setReminderHour}
       reminderHourKey="vocab_reminder_hour"
+      directionToggle={cfg.directionToggle ? {value: direction, onChange: setDirection} : null}
       resetStep={resetStep}
       setResetStep={setResetStep}
       resetPass={resetPass}

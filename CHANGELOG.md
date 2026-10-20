@@ -11,6 +11,35 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-20 — Thẻ mới "Hören & Sprechen A1": học mẫu câu nói theo tình huống
+
+- Trang chủ có thẻ thứ tư **Hören & Sprechen A1** (mở tự do, không cần
+  mật khẩu, như Schritte A1): **515 mẫu câu** chia 22 tình huống (tự
+  giới thiệu, mua sắm, quán ăn, hẹn giờ, bác sĩ, tàu xe…), học theo lượt
+  6–8 câu, ôn theo lịch như các bộ khác.
+- Nguồn: tài liệu *Hören & Sprechen A1 – Sentence Patterns* (111 track
+  âm thanh của sách; số track ghi trên thẻ) + **toàn bộ câu và câu cảm
+  thán chuyển từ Schritte A1** (344 mục, ví dụ *Wie heißen Sie?*,
+  *Aha!*, *Guten Tag*). Câu trùng giữa hai nguồn được gộp làm một. Cụm từ
+  (*mit dem Bus*, *Hunger haben*) vẫn ở lại Schritte A1.
+- **Tiến độ không mất:** câu nào bạn đã học bên Schritte A1 thì hiện là
+  "đã học" ở thẻ mới (trên mọi máy, kể cả máy chỉ có tiến độ trên mây).
+  Vì các câu đã rời đi nên số từ của Schritte A1 giảm xuống — bình thường.
+- Cách học (dựa trên Pimsleur, Glossika, nghiên cứu "nói to thì nhớ
+  lâu"): mặt trước là tình huống tiếng Anh → bạn **tự nói tiếng Đức**,
+  bấm 🔊 *Check by ear* để nghe so sánh (thẻ không lật), rồi lật xem chữ.
+  Mặt sau: câu Đức (phần thay được tô vàng), nút 🐢 đọc chậm và 🔁 nghe
+  ×3 để đọc theo, gợi ý thay từ, ghi chú ngữ pháp, cách nói đời thường,
+  nút **AI tutor** (lưu lại như phần từ vựng).
+- Cài đặt → *Card direction*: đổi sang chiều nghe (Đức → Anh) khi muốn
+  luyện nghe.
+- Bài tập riêng cho mẫu câu, khó dần theo mức nhớ: chọn câu / nghe chọn
+  nghĩa → điền chỗ trống, **xếp lại trật tự từ** → đổi du↔Sie, trả lời
+  hội thoại, thay từ, nói cả câu → tự viết câu theo tình huống (AI chấm).
+  Gõ ae/oe/ue/ss thay ä/ö/ü/ß, thiếu dấu câu vẫn tính đúng; cách nói
+  khác cũng đúng (*Wie spät ist es?* = *Wie viel Uhr ist es?*).
+- Bảng điều khiển nhắc nhẹ "ôn trước, học mới sau" (không khoá).
+
 ## 2026-10-20 — Sửa "Could not load explanation" cho thẻ có dấu "…" + chữ "Tạo ảnh"
 
 - PM gặp "Could not load explanation" ở thẻ *Ich nehme …*. Chẩn đoán

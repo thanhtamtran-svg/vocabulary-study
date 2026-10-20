@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 import { PRONOUNS, PRONOUN_KEYS } from '../lib/constants';
-import { speakGerman } from '../lib/speech';
+import { speakGerman, speakPattern } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 import { willRetry } from '../lib/exercise-core';
 
@@ -26,6 +26,37 @@ function renderSafeText(text) {
   return text.split('\n').map(function(line, i) {
     return React.createElement('div', { key: 'line_' + i }, renderInline(line, i));
   });
+}
+
+// Tap chips to build the sentence; tap a placed chip to take it back.
+function WordOrder({ chunks, setAnswer, onSubmit }) {
+  var [picked, setPicked] = React.useState([]);
+  React.useEffect(function() { setPicked([]); }, [chunks]);
+  function update(next) {
+    setPicked(next);
+    setAnswer(next.map(function(i) { return chunks[i]; }).join(' '));
+  }
+  return <div onKeyDown={function(e) {
+    if (e.key === 'Enter' && picked.length === chunks.length) { e.preventDefault(); onSubmit(); }
+  }}>
+    <div className="order-answer" aria-label="Your sentence">
+      {picked.length ? picked.map(function(ci, pi) {
+        return <button key={'p' + pi} type="button" className="order-chip placed"
+          onClick={function() { update(picked.filter(function(_, k) { return k !== pi; })); }}
+          aria-label={'Remove ' + chunks[ci]}>{chunks[ci]}</button>;
+      }) : <span className="order-placeholder">Tap the words below in the right order</span>}
+    </div>
+    <div className="order-bank">
+      {chunks.map(function(c, ci) {
+        var used = picked.indexOf(ci) !== -1;
+        return <button key={'b' + ci} type="button" className="order-chip" disabled={used}
+          onClick={function() { if (!used) update(picked.concat([ci])); }}
+          aria-label={'Add ' + c}>{c}</button>;
+      })}
+    </div>
+    {picked.length ? <button type="button" className="btn btn-sm btn-secondary" style={{width:'auto',marginTop:'6px'}}
+      onClick={function() { update([]); }}>Start over</button> : null}
+  </div>;
 }
 
 export default React.memo(function ExerciseView({
@@ -153,8 +184,16 @@ export default React.memo(function ExerciseView({
               style={{display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
                 padding:'14px',borderRadius:'12px',background:'var(--brand-tint)',border:'2px solid var(--brand)',
                 cursor:'pointer',marginBottom:'12px',width:'100%',fontSize:'15px',color:'var(--brand)',fontWeight:600}}
-              onClick={function() { speak(exItem.germanWord); }}
+              onClick={function() { (exItem.isPattern ? speakPattern : speak)(exItem.germanWord); }}
             >{'\uD83D\uDD0A'} Play again</button> : null}
+          {exItem.type === 'listening' && exItem.isPattern && !exerciseFeedback ?
+            <button className="pattern-audio-btn" style={{display:'block',margin:'-4px auto 12px'}}
+              onClick={function() { speakPattern(exItem.germanWord, {slow: true}); }}
+            >{'\uD83D\uDC22 Slow'}</button> : null}
+
+          {exItem.type === 'word_order' && !exerciseFeedback ?
+            <WordOrder chunks={exItem.chunks} setAnswer={setExerciseAnswer}
+              onSubmit={checkExerciseAnswer} /> : null}
 
           {/* All choice-based types (multiple_choice, reverse_choice, listening) */}
           {(exItem.type === 'multiple_choice' || exItem.type === 'reverse_choice' || exItem.type === 'listening') && !exerciseFeedback ?
@@ -394,7 +433,7 @@ export default React.memo(function ExerciseView({
             </div> : null}
 
           {/* Text input feedback (not conjugation — that has its own section above) */}
-          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete') && exerciseFeedback ?
+          {(exItem.type === 'fill_blank' || exItem.type === 'sentence_complete' || exItem.type === 'word_order') && exerciseFeedback ?
             <div>
               {!exerciseFeedback.correct ? <div style={{
                 padding:'12px 16px',borderRadius:'10px',fontSize:'15px',fontWeight:600,
@@ -529,7 +568,8 @@ export default React.memo(function ExerciseView({
             <button
               className="btn btn-primary"
               disabled={(exItem.type === 'multiple_choice' || exItem.type === 'reading' || exItem.type === 'reading_comprehension' || exItem.type === 'reverse_choice' || exItem.type === 'listening') ? exerciseSelectedIdx < 0
-                : exItem.type === 'write_sentence' ? (exerciseChecking || !exerciseAnswer.trim()) : false}
+                : exItem.type === 'write_sentence' ? (exerciseChecking || !exerciseAnswer.trim())
+                : exItem.type === 'word_order' ? !exerciseAnswer.trim() : false}
               onClick={checkExerciseAnswer}
             >{exerciseChecking ? 'Checking your sentence...' : 'Check Answer'}</button>
           :

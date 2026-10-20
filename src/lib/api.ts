@@ -15,11 +15,11 @@ function explainAuthHeader() {
 // AI checks a learner-written sentence that uses `word` and corrects it.
 // Resolves {correct, corrected, feedback}; rejects on network/AI failure so
 // the caller can let the learner retry instead of scoring it.
-export async function checkSentence(sentence, word, meaning, lang) {
+export async function checkSentence(sentence, word, meaning, lang, opts?: { kind?: string }) {
   var res = await fetch(SUPABASE_URL + '/functions/v1/generate-ipa-def', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': explainAuthHeader() },
-    body: JSON.stringify({ mode: 'check-sentence', sentence: sentence, word: word, meaning: meaning, lang: lang })
+    body: JSON.stringify({ mode: 'check-sentence', sentence: sentence, word: word, meaning: meaning, lang: lang, kind: opts && opts.kind })
   });
   var data = await res.json().catch(function() { return {}; });
   if (!res.ok || typeof data.correct !== 'boolean') {
@@ -160,8 +160,13 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
   }
 }
 
-export async function fetchCachedExplanation(word, lang?) {
-  var prefix = lang === 'en' ? 'en:' : '';
+// Sentence-pattern courses pass {kind:'pattern'}; their cache
+// rows live under the 'pat:' prefix so they never collide with words.
+export type ExplainOpts = { kind?: string };
+
+export async function fetchCachedExplanation(word, lang?, opts?: ExplainOpts) {
+  var isPat = !!opts && opts.kind === 'pattern';
+  var prefix = isPat ? 'pat:' : lang === 'en' ? 'en:' : '';
   var cacheKey = prefix + word.toLowerCase().trim();
   if (cachedExplanationCache.has(cacheKey)) return cachedExplanationCache.get(cacheKey);
   var url = SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(cacheKey) + '&select=explanation';
@@ -178,7 +183,7 @@ export async function fetchCachedExplanation(word, lang?) {
     // German: ignore stale OLD-format explanations (headings "Key Grammar Point"
     // / "Word Family") so the app shows the Explain button and regenerates the
     // new ÖSD format on next click, instead of auto-displaying the outdated one.
-    if (lang !== 'en' && lang !== 'vi' && typeof exp === 'string' &&
+    if (!isPat && lang !== 'en' && lang !== 'vi' && typeof exp === 'string' &&
         (exp.indexOf('Key Grammar Point') !== -1 || exp.indexOf('Word Family') !== -1)) {
       cachedExplanationCache.set(cacheKey, null);
       return null;
@@ -190,8 +195,8 @@ export async function fetchCachedExplanation(word, lang?) {
   return null;
 }
 
-export async function fetchExplanation(word, wordType, lang?) {
-  var prefix = lang === 'en' ? 'en:' : '';
+export async function fetchExplanation(word, wordType, lang?, opts?: ExplainOpts) {
+  var prefix = opts && opts.kind === 'pattern' ? 'pat:' : lang === 'en' ? 'en:' : '';
   var cacheKey = prefix + word.toLowerCase().trim();
   if (explanationCache.has(cacheKey)) return explanationCache.get(cacheKey);
   const res = await fetch(EXPLAIN_URL, {
@@ -200,7 +205,7 @@ export async function fetchExplanation(word, wordType, lang?) {
       'Content-Type': 'application/json',
       'Authorization': explainAuthHeader()
     },
-    body: JSON.stringify({ word: word, type: wordType || '', lang: lang || 'de' })
+    body: JSON.stringify({ word: word, type: wordType || '', lang: lang || 'de', kind: opts && opts.kind })
   });
   if (!res.ok) throw new Error('Failed to fetch explanation');
   const data = await res.json();
@@ -213,8 +218,8 @@ export async function fetchExplanation(word, wordType, lang?) {
 // in-memory caches) so the next "Explain" regenerates it. Requires the
 // session token — resolves false when the server refuses (e.g. A1.1
 // visitor without a login).
-export async function clearExplanation(word, lang?) {
-  var prefix = lang === 'vi' ? 'vi:' : lang === 'en' ? 'en:' : '';
+export async function clearExplanation(word, lang?, opts?: ExplainOpts) {
+  var prefix = opts && opts.kind === 'pattern' ? 'pat:' : lang === 'vi' ? 'vi:' : lang === 'en' ? 'en:' : '';
   var cacheKey = prefix + word.toLowerCase().trim();
   explanationCache.delete(cacheKey);
   cachedExplanationCache.delete(cacheKey);
@@ -225,7 +230,7 @@ export async function clearExplanation(word, lang?) {
         'Content-Type': 'application/json',
         'Authorization': explainAuthHeader()
       },
-      body: JSON.stringify({ word: word, lang: lang || 'de', clear: true })
+      body: JSON.stringify({ word: word, lang: lang || 'de', clear: true, kind: opts && opts.kind })
     });
     return res.ok;
   } catch (e) {

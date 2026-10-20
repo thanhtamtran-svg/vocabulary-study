@@ -23,19 +23,26 @@ function authHeader() {
   return token ? 'Bearer ' + token : '';
 }
 
-function playUrl(url, onFail) {
+// Bumped by every speak() so a pending "repeat" or end callback of an older
+// utterance never fires after the learner moved on.
+var playToken = 0;
+
+function playUrl(url, onFail, opts) {
   if (!sharedAudio) { onFail(); return; }
   sharedAudio.pause();
+  sharedAudio.onended = null;
   sharedAudio.src = url;
   sharedAudio.currentTime = 0;
+  if (opts && opts.onEnd) sharedAudio.onended = opts.onEnd;
   sharedAudio.play().catch(onFail);
 }
 
-function speakWithCloudTTS(text, lang, onFail) {
+function speakWithCloudTTS(text, lang, onFail, opts) {
   if (cloudTTSBroken || !sharedAudio) { onFail(); return; }
-  var cacheKey = 'cloud:' + lang + ':' + text.toLowerCase().trim();
+  var rate = opts && opts.rate && opts.rate < 1 ? opts.rate : 1;
+  var cacheKey = 'cloud:' + lang + ':' + (rate < 1 ? 'slow:' : '') + text.toLowerCase().trim();
   if (audioCache.has(cacheKey)) {
-    playUrl(audioCache.get(cacheKey), onFail);
+    playUrl(audioCache.get(cacheKey), onFail, opts);
     return;
   }
   var p = pendingTTS.get(cacheKey);
@@ -45,7 +52,7 @@ function speakWithCloudTTS(text, lang, onFail) {
     if (auth) headers['Authorization'] = auth;
     p = fetch(TTS_URL, {
       method: 'POST', headers: headers,
-      body: JSON.stringify({ text: text, lang: lang })
+      body: JSON.stringify(rate < 1 ? { text: text, lang: lang, rate: rate } : { text: text, lang: lang })
     }).then(function(res) {
       if (res.status === 503 || res.status >= 500) cloudTTSBroken = true;
       if (!res.ok) throw new Error('tts ' + res.status);
@@ -56,16 +63,19 @@ function speakWithCloudTTS(text, lang, onFail) {
       return data.url;
     });
     pendingTTS.set(cacheKey, p);
-    p.finally(function() { pendingTTS.delete(cacheKey); });
+    // The caller handles the failure; this branch only cleans up (no unhandled rejection)
+    p.finally(function() { pendingTTS.delete(cacheKey); }).catch(function() {});
   }
-  p.then(function(url) { playUrl(url, onFail); }).catch(onFail);
+  p.then(function(url) { playUrl(url, onFail, opts); }).catch(onFail);
 }
 
-function speakWithGoogleTranslate(text, lang, onFail) {
+function speakWithGoogleTranslate(text, lang, onFail, opts) {
   if (!sharedAudio) { onFail(); return; }
   var tl = lang === 'en' ? 'en' : 'de';
-  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + tl + '&q=' + encodeURIComponent(text);
-  playUrl(url, onFail);
+  var slow = opts && opts.rate && opts.rate < 1;
+  var url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + tl +
+    (slow ? '&ttsspeed=0.4' : '') + '&q=' + encodeURIComponent(text);
+  playUrl(url, onFail, opts);
 }
 
 // Rank browser voices: platform "natural"/"neural" voices and Google's
@@ -87,12 +97,13 @@ function pickBestVoice(voices, prefix) {
   return candidates[0];
 }
 
-function speakWithBrowserTTS(text, lang) {
+function speakWithBrowserTTS(text, lang, opts) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   var utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang === 'en' ? 'en-US' : 'de-DE';
-  utterance.rate = lang === 'en' ? 1.0 : 0.85;
+  utterance.rate = (lang === 'en' ? 1.0 : 0.85) * (opts && opts.rate ? opts.rate : 1);
+  if (opts && opts.onEnd) utterance.onend = opts.onEnd;
 
   var voices = window.speechSynthesis.getVoices();
   if (voices.length > 0) {
@@ -115,17 +126,19 @@ function speakWithBrowserTTS(text, lang) {
   }
 }
 
-function speak(text, lang) {
+// opts: {rate?: 0.7–1 (slow button), onEnd?: called when playback finishes}
+function speak(text, lang, opts?) {
+  playToken++;
   // Cloud first everywhere; per-platform legacy fallbacks preserved.
   speakWithCloudTTS(text, lang, function() {
     if (!isMobile || /Android/i.test(navigator.userAgent)) {
       speakWithGoogleTranslate(text, lang, function() {
-        speakWithBrowserTTS(text, lang);
-      });
+        speakWithBrowserTTS(text, lang, opts);
+      }, opts);
     } else {
-      speakWithBrowserTTS(text, lang); // iOS
+      speakWithBrowserTTS(text, lang, opts); // iOS
     }
-  });
+  }, opts);
 }
 
 export function cleanGermanForSpeech(text) {
@@ -134,6 +147,46 @@ export function cleanGermanForSpeech(text) {
 
 export function speakGerman(text) {
   speak(cleanGermanForSpeech(text), 'de');
+}
+
+// Sentence patterns: "[slot / alt]" -> first value, drop "…" placeholders,
+// and turn the dialogue dash into a sentence break so the voice pauses.
+// Kept separate from cleanGermanForSpeech so word audio (and its cached
+// files, keyed by the cleaned text) stays exactly as it was.
+export function cleanPatternForSpeech(text) {
+  return cleanGermanForSpeech(String(text)
+    .replace(/\[([^\]]*)\]/g, function(_, inner) { return inner.split(' / ')[0]; })
+    .replace(/\s+[—–]\s+/g, '. ')
+    .replace(/(\.\.\.|…)/g, ' ')
+    .replace(/\s+([,.?!])/g, '$1')
+    .replace(/([.?!])\./g, '$1')
+    .replace(/^[\s,.]+/, ''));
+}
+
+// Speak a pattern once, slowly, or N times with a pause (shadowing).
+// Returns a cancel function; any other speak() also cancels the repeats.
+export function speakPattern(text, opts?: { slow?: boolean; times?: number; gapMs?: number }) {
+  var clean = cleanPatternForSpeech(text);
+  var times = Math.max(1, (opts && opts.times) || 1);
+  var gap = (opts && opts.gapMs) || 1500;
+  var rate = opts && opts.slow ? 0.8 : 1;
+  var left = times, cancelled = false, timer = null;
+  function once() {
+    if (cancelled) return;
+    left--;
+    var mine = -1;
+    speak(clean, 'de', {
+      rate: rate,
+      onEnd: left > 0 ? function() {
+        // Another speak() since ours started -> the learner moved on.
+        if (mine !== playToken) return;
+        timer = setTimeout(function() { if (!cancelled && mine === playToken) once(); }, gap);
+      } : undefined
+    });
+    mine = playToken;
+  }
+  once();
+  return function cancel() { cancelled = true; if (timer) clearTimeout(timer); };
 }
 
 export function cleanEnglishForSpeech(text) {

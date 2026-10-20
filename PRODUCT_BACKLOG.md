@@ -89,6 +89,22 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ## 🌱 Low
 
+### B-032: Bản dịch tiếng Việt (AI) nhận chữ tự do từ trình duyệt rồi lưu dùng chung
+
+- Phát hiện khi rà B-031 (2026-10-20), có từ trước: nhánh `lang: 'vi'`
+  của explain-word đưa trường `definition` (do trình duyệt gửi, không
+  qua bộ lọc) vào câu lệnh AI và lưu kết quả dùng chung dưới khoá
+  `vi:` + từ. Một người cố ý có thể gửi chữ độc hại → bản dịch sai/xấu
+  hiện cho mọi người học tiếng Anh. Sửa: máy chủ tự lấy định nghĩa từ
+  dữ liệu khoá học (hoặc lọc + giới hạn), không tin chữ gửi lên.
+
+### B-033: Sau khi triển khai khoá mẫu câu — kiểm tra trên web thật
+
+- Thử AI tutor + AI chấm câu với một mẫu câu; thử 🐢 chậm và 🔁 ×3 có
+  âm thanh (máy thử nghiệm không gọi được giọng đọc trên mây); đồng bộ
+  PC ↔ điện thoại cho khoá mới; probe curl: `german` vẫn 401 không vé,
+  `german_patterns` thì không.
+
 ### B-027: Đồng bộ lựa chọn "Focus Lektion" giữa PC và điện thoại
 
 **Effort:** M · **Tier:** 3 (đụng gói đồng bộ / merge)
@@ -131,6 +147,8 @@ auth (Supabase Auth) thay vì password chung.
 ## ✅ Completed (gần đây)
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
+
+- 2026-10-20 — B-031 closed: khoá thứ 4 "Hören & Sprechen A1" (515 mẫu câu, 22 tình huống). Data `src/patterns-a1-data.ts` sinh bằng `scripts/build-patterns-data.mjs` từ docx + 344 dòng câu/cảm thán cắt khỏi Schritte A1 (cache `scripts/data/a11-moved-rows.json`); chuyển tiến độ A1 → patterns idempotent (`src/lib/patterns-migration.ts`, chạy khi mở khoá + khi kéo tiến độ A1 từ mây). App.tsx dùng bảng cấu hình `src/lib/course-config.ts` thay cho `isA11`. Thẻ `PatternCard` (nghe-trước-lật-sau, chậm, ×3), bài tập `pattern-exercise-engine.ts` (thêm dạng xếp từ), đổi chiều trong Settings. Server: sync-progress mở `german_patterns` (allow-list), explain-word prompt mẫu câu + cache `pat:` (chỉ nhận đúng câu mẫu đã lọc — không nhận chữ tự do, chống đầu độc cache), check-sentence prompt mẫu câu, tts `rate` chậm (file `-slow` riêng). 112/112 test.
 
 - 2026-10-17 — B-030 closed: mặt sau thẻ German thay định nghĩa tiếng Đức (quá khó ở A1) bằng câu ví dụ A1 + nút Translate (EN) + từ đồng/trái nghĩa lọc theo danh sách từ của khoá (`src/lib/word-extras.ts` + 3 test, 63/63). Bảng cache mới `vocab_word_extras` (migration 20261017, đọc công khai, ghi qua edge function), mode `word-extras` trong generate-ipa-def (bucket 10/15 mỗi phút). Định nghĩa vẫn được tải ngầm vì nó quyết định ảnh minh hoạ. Đã db push + deploy, probe thật (gut ↔ schlecht, der Verkäufer ↔ der Käufer).
 - 2026-10-16 — B-029 closed: thiết kế lại bài tập theo nghiên cứu ôn tập (PM duyệt): 10 từ/buổi, mỗi từ 1 câu theo độ khó (mới → chọn, khá → gõ, vững → điền câu); sai → hỏi lại sau 3–5 câu (tối đa 3 lần); yếu/mạnh theo 5 lần gần nhất (`recent`); lựa chọn sai bốc ngẫu nhiên cùng Lektion; bỏ dạng gõ nghĩa tiếng Anh (`fill_english`); thêm bài tự đặt câu cho 2 từ mới nhất, AI chấm + sửa (mode `check-sentence` trong generate-ipa-def, bucket riêng 6/15 mỗi phút); generate-sentences nhận tối đa 12 từ. Logic chung ở `src/lib/exercise-core.ts` + 11 test (60/60). Đã deploy 2 function, probe thật chấm câu đúng/sai. Còn lại: máy chủ gộp `recent` theo bản gửi lên chứ không theo ngày mới hơn (ảnh hưởng nhỏ).

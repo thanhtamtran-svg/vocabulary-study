@@ -56,6 +56,10 @@
   --brand-tint:rgba(50,74,132,0.06);
   --sage-tint:rgba(126,148,112,0.09);
   --danger-tint:rgba(231,76,60,0.06);
+  --slot-bg:rgba(233,183,70,0.24);      /* swappable [slot] in a pattern */
+  --slot-border:#B7950B;
+  --on-brand-tint:rgba(255,255,255,0.16); /* chips/slots on the blue card front */
+  --on-brand-line:rgba(255,255,255,0.65);
 }
 html[data-theme="dark"]{
   --bg:#0d0d0d;
@@ -101,6 +105,10 @@ html[data-theme="dark"]{
   --brand-tint:rgba(159,180,232,0.10);
   --sage-tint:rgba(169,190,155,0.12);
   --danger-tint:rgba(242,139,130,0.10);
+  --slot-bg:rgba(253,214,99,0.16);
+  --slot-border:#FDD663;
+  --on-brand-tint:rgba(255,255,255,0.14);
+  --on-brand-line:rgba(255,255,255,0.55);
 }
 
 /* ===== RESET & BASE ===== */
@@ -167,6 +175,42 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .flashcard-back-word{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-0.01em}
 .flashcard-back-ipa{font-size:13px}
 .flashcard-back-def{font-size:13px}
+
+/* ===== SENTENCE-PATTERN CARD (Hören & Sprechen A1) ===== */
+.pattern-card .flashcard-face{padding:18px 16px;gap:6px}
+.pattern-prompt{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;opacity:0.8}
+.pattern-cue{font-family:'Montserrat',sans-serif;font-size:21px;font-weight:700;line-height:1.35;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.pattern-german{font-size:22px;font-weight:700;line-height:1.35;text-align:center;color:var(--text);max-width:100%;overflow-wrap:anywhere}
+.pattern-german.on-brand{color:#fff}
+.pattern-german.small{font-size:16px;font-weight:600;color:var(--text-muted)}
+.pattern-meaning{font-size:14px;color:var(--text-muted);text-align:center;line-height:1.45}
+.pattern-meaning.big{font-family:'Montserrat',sans-serif;font-size:21px;font-weight:700;color:var(--brand)}
+.pattern-turn{display:flex;gap:8px;align-items:baseline;justify-content:center;margin:2px 0}
+.pattern-turn-mark{font-size:11px;font-weight:700;opacity:0.55;min-width:12px}
+.pattern-slot{background:var(--slot-bg);border-bottom:2px solid var(--slot-border);border-radius:4px;padding:0 3px}
+.flashcard-front .pattern-slot{background:var(--on-brand-tint);border-bottom-color:var(--on-brand-line)}
+.pattern-chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:4px}
+.pattern-chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--chip-bg);color:var(--chip-text)}
+.pattern-chip.on-brand{background:var(--on-brand-tint);color:#fff}
+.pattern-audio{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
+.pattern-audio-btn{font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;border:1.5px solid var(--border-strong);background:var(--card);color:var(--text)}
+.flashcard-front .pattern-audio-btn{background:var(--on-brand-tint);border-color:var(--on-brand-line);color:#fff}
+.pattern-audio-btn:active{transform:scale(0.96)}
+.pattern-notes{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+.pattern-note{font-size:13px;line-height:1.5;color:var(--text);background:var(--subtle-bg);border-radius:10px;padding:8px 12px}
+.pattern-note-faint{color:var(--text-muted)}
+.pattern-source{font-size:11px;color:var(--text-muted);text-align:center}
+.seg-toggle{display:flex;border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden}
+.seg-toggle button{flex:1;padding:9px 6px;font-size:12px;font-weight:600;border:none;background:var(--card);color:var(--text);cursor:pointer}
+.seg-toggle button.active{background:var(--brand);color:var(--on-tint)}
+
+/* Word-order exercise (patterns): answer row + chip bank */
+.order-answer{min-height:52px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px;border:2px dashed var(--border-strong);border-radius:10px;margin-bottom:10px;background:var(--subtle-bg)}
+.order-placeholder{font-size:12px;color:var(--text-muted)}
+.order-bank{display:flex;flex-wrap:wrap;gap:8px}
+.order-chip{font-size:15px;font-weight:600;padding:8px 12px;border-radius:10px;border:2px solid var(--border-strong);background:var(--card);color:var(--text);cursor:pointer;font-family:inherit}
+.order-chip.placed{border-color:var(--brand);background:var(--brand-tint)}
+.order-chip:disabled{opacity:0.3;cursor:default}
 
 /* ===== CONFIDENCE BUTTONS ===== */
 .confidence-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:14px 0}

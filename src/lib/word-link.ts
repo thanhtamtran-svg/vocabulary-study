@@ -1,6 +1,6 @@
 // Deep link to a single word card, opened in a new tab from exercises so the
 // learner can review the word without leaving the exercise.
-// URL shape: ?lang=<german|german_a11|english>&word=<word text as in data>
+// URL shape: ?lang=<german|german_a11|german_patterns|english>&word=<word text as in data>
 
 var LANG_PARAM = 'lang';
 var WORD_PARAM = 'word';

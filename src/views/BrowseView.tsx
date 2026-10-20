@@ -6,8 +6,10 @@ export default React.memo(function BrowseView({
   onNavigate, onHome, syncEmail, syncStatus, syncMsg, langFlag,
   words, progress, searchTerm, setSearchTerm, filterType, setFilterType,
   getWord, setSessionWords, setSessionType, setCurrentIdx, setFlipped, setStreak, setView,
-  emojis
+  emojis, typeNames
 }) {
+  // Course's own type names (patterns: Statement/Question/…); words default.
+  var TYPES = typeNames || TYPE_NAMES;
   var filtered = words.map(function(w, i) {
     return {idx: i, german: w[0], english: w[1], catIdx: w[2], typeIdx: w[3]};
   }).filter(function(w) {
@@ -36,7 +38,7 @@ export default React.memo(function BrowseView({
             className={'tab' + (filterType === -1 ? ' active' : '')}
             onClick={function() { setFilterType(-1); }}
           >All types</button>
-          {TYPE_NAMES.map(function(t, i) {
+          {TYPES.map(function(t, i) {
             return <button
               key={i}
               className={'tab' + (filterType === i ? ' active' : '')}
@@ -72,7 +74,7 @@ export default React.memo(function BrowseView({
                 {emojis ? <span style={{marginRight:'4px'}}>{emojis[w.idx]}</span> : null}
                 {w.german}
               </strong>
-              <span className={'tag ' + TYPE_TAGS[w.typeIdx]}>{TYPE_NAMES[w.typeIdx]}</span>
+              <span className={'tag ' + TYPE_TAGS[w.typeIdx]}>{TYPES[w.typeIdx]}</span>
               <span className="browse-meaning">{w.english}</span>
               <span className="browse-status">
                 {isLearned ? icons[conf] : '\u2B24'}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { fetchExplanation, fetchCachedExplanation, clearExplanation } from '../lib/api';
-import { speakGerman } from '../lib/speech';
+import { speakGerman, speakPattern } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
 
 // Parse markdown inline: **bold** and *italic*
@@ -20,19 +20,22 @@ function renderInline(text, key) {
 
 export default React.memo(function AiExplainBox({
   word, aiExplanation, aiLoading, aiError, aiSaveStatus,
-  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus, lang
+  setAiExplanation, setAiLoading, setAiError, setAiSaveStatus, lang, explainOpts
 }) {
-  var speak = lang === 'en' ? speakEnglish : speakGerman;
+  // explainOpts {kind:'pattern', note, also}: sentence-pattern AI tutor
+  // (own prompt + 'pat:' cache rows). Absent for word courses.
+  var isPattern = !!explainOpts && explainOpts.kind === 'pattern';
+  var speak = lang === 'en' ? speakEnglish : isPattern ? speakPattern : speakGerman;
   function handleExplain() {
     setAiLoading(true);
     setAiError('');
     setAiSaveStatus('');
-    fetchExplanation(word.german, word.type, lang).then(function(text) {
+    fetchExplanation(word.german, word.type, lang, explainOpts).then(function(text) {
       setAiExplanation(text);
       setAiLoading(false);
       setAiSaveStatus('saving');
       setTimeout(function() {
-        fetchCachedExplanation(word.german, lang).then(function(cached) {
+        fetchCachedExplanation(word.german, lang, explainOpts).then(function(cached) {
           setAiSaveStatus(cached ? 'saved' : '');
         });
       }, 2000);
@@ -54,7 +57,7 @@ export default React.memo(function AiExplainBox({
     // zero rows deleted). Server-side clearing now goes through the
     // explain-word function and needs the session token; without one
     // (public A1.1 visitor) only the local display is cleared.
-    clearExplanation(word.german, lang);
+    clearExplanation(word.german, lang, explainOpts);
   }
 
   return <>
@@ -63,7 +66,7 @@ export default React.memo(function AiExplainBox({
       className="btn btn-secondary"
       style={{marginTop:'10px',fontSize:'13px',gap:'6px'}}
       onClick={handleExplain}
-    >{'\uD83E\uDD16'} Explain this word</button> : null}
+    >{'\uD83E\uDD16'} {isPattern ? 'AI tutor: explain this pattern' : 'Explain this word'}</button> : null}
 
     {/* Loading state */}
     {aiLoading ? <div className="ai-explain-box">
@@ -86,7 +89,7 @@ export default React.memo(function AiExplainBox({
     {aiExplanation ? <div className="ai-explain-box">
       <div className="ai-explain-header">
         <span style={{display:'flex',alignItems:'center',gap:'6px'}}>
-          {'\uD83E\uDD16'} AI Teacher
+          {'\uD83E\uDD16'} {isPattern ? 'AI Tutor' : 'AI Teacher'}
           {aiSaveStatus === 'saving' ? <span style={{fontSize:'10px',color:'var(--warning)',background:'var(--warning-bg)',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
             {'\u23F3'} Saving...
           </span> : aiExplanation && !aiLoading ? <span style={{fontSize:'10px',color:'var(--success)',background:'var(--success-bg)',padding:'2px 6px',borderRadius:'4px',fontWeight:600}}>
@@ -151,7 +154,7 @@ export default React.memo(function AiExplainBox({
               acc.push(<div key={i} style={{
                 display:'flex', justifyContent:'space-between', alignItems:'center',
                 padding:'6px 12px', margin:'2px 0', borderRadius:'8px',
-                background: i % 2 === 0 ? 'var(--subtle-bg)' : '#fff',
+                background: i % 2 === 0 ? 'var(--subtle-bg)' : 'var(--card)',
                 fontSize:'13px', border:'1px solid var(--card-border)'
               }}>
                 <span style={{color:'var(--sage)',fontWeight:600,minWidth:'70px'}}>{cells[0].trim()}</span>

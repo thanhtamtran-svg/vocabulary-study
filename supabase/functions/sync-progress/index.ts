@@ -18,6 +18,10 @@ function getCorsHeaders(req: Request) {
   };
 }
 
+// Course namespaces that sync without a login. Add a lang here ONLY for a
+// course that has no password gate.
+const PUBLIC_LANGS = ["german_a11", "german_patterns"];
+
 // Rate limit: max 30 requests/min, counted globally in the DB so it
 // holds across isolates (see _shared/rate-limit.ts). Protects against
 // bulk scraping or write-spam. Real users sync at most ~6 times/min in
@@ -90,12 +94,14 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Auth gate: the A1.1 course (lang "german_a11") is deliberately
-    // public — no password exists for it, so its sync stays open.
+    // Auth gate: the A1.1 and A1 sentence-pattern courses are deliberately
+    // public — no password exists for them, so their sync stays open
+    // (exact-match allow-list; anything else, including a missing or
+    // non-string lang, falls through to the token check).
     // Every other namespace (German full, English, legacy no-lang keys)
     // requires a valid session token, otherwise anyone who knows an
     // email could read or overwrite that user's progress.
-    if (lang !== "german_a11") {
+    if (typeof lang !== "string" || !PUBLIC_LANGS.includes(lang)) {
       const authenticated = await validateAuthToken(req);
       if (!authenticated) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {

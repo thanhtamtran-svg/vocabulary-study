@@ -179,6 +179,16 @@ export function scheduleRetry(items, idx, item) {
   if (!willRetry(item)) return items;
   var retry = Object.assign({}, item, {attempt: (item.attempt || 1) + 1, isRetry: true});
   if (retry.options) retry.options = shuffle(retry.options.slice());
+  // Word-order chips too, so the retry tests the sentence, not chip positions
+  if (retry.chunks) {
+    var answer = retry.correctAnswer;
+    for (var t = 0, c = retry.chunks.slice(); t < 5; t++) {
+      c = shuffle(c);
+      if (c.join(' ') !== answer && c.join(' ') !== item.chunks.join(' ')) break;
+    }
+    if (c.join(' ') === answer) c.reverse(); // never hand over the solved order
+    retry.chunks = c;
+  }
   var gap = 3 + Math.floor(Math.random() * 3); // 3, 4 or 5 questions later
   var pos = Math.min(idx + 1 + gap, items.length);
   return items.slice(0, pos).concat([retry], items.slice(pos));
@@ -199,4 +209,22 @@ export function nextExerciseRecord(ep, correct, today, addDays, dateKey) {
     lastExercise: dateKey(today),
     nextReview: dateKey(addDays(today, nextInterval))
   });
+}
+
+// Typed-answer comparison for whole sentences (sentence-pattern course):
+// case, punctuation, dialogue dashes, spacing and ä/ö/ü/ß spelled as
+// ae/oe/ue/ss don't matter; the words and their order do.
+export function normalizeAnswer(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[’‘`´]/g, "'")
+    .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
+    .replace(/(\.\.\.|…)/g, ' ')
+    .replace(/[.,!?;:„“"«»()–—-]+/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+export function matchesAccepted(answer, accepted) {
+  var a = normalizeAnswer(answer);
+  if (!a) return false;
+  return (accepted || []).some(function(x) { return normalizeAnswer(x) === a; });
 }

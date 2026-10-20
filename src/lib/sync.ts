@@ -19,21 +19,7 @@ export function mergeFullState(local, remote, todayDateStr, vocabData) {
 
   var mp = mergeProgress(local.progress || {}, remoteProgress);
 
-  var mex = {...(local.exerciseProgress || {})};
-  Object.keys(remoteExerciseProgress).forEach(function(k) {
-    if (!mex[k]) { mex[k] = remoteExerciseProgress[k]; return; }
-    var l = mex[k], r = remoteExerciseProgress[k];
-    // Last-5 answer window: take the device that practiced most recently.
-    var newer = (l.lastExercise || '') >= (r.lastExercise || '') ? l : r;
-    mex[k] = {
-      recent: newer.recent || l.recent || r.recent,
-      attempts: Math.max(l.attempts || 0, r.attempts || 0),
-      correct: Math.max(l.correct || 0, r.correct || 0),
-      streak: Math.max(l.streak || 0, r.streak || 0),
-      lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
-      nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
-    };
-  });
+  var mex = mergeExerciseProgress(local.exerciseProgress || {}, remoteExerciseProgress);
 
   var mtc = local.todayCompleted || {};
   if (remote.todayCompleted && remote.completedDate === todayDateStr) {
@@ -71,6 +57,26 @@ export function mergeFullState(local, remote, todayDateStr, vocabData) {
     startDate: pickEarlier(local.startDate, remote.startDate),
     started: local.started || remote.started,
   };
+}
+
+// Per-word exercise records from two sources (two devices, or a course migration).
+export function mergeExerciseProgress(local, remote) {
+  var mex = {...local};
+  Object.keys(remote).forEach(function(k) {
+    if (!mex[k]) { mex[k] = remote[k]; return; }
+    var l = mex[k], r = remote[k];
+    // Last-5 answer window: take the device that practiced most recently.
+    var newer = (l.lastExercise || '') >= (r.lastExercise || '') ? l : r;
+    mex[k] = {
+      recent: newer.recent || l.recent || r.recent,
+      attempts: Math.max(l.attempts || 0, r.attempts || 0),
+      correct: Math.max(l.correct || 0, r.correct || 0),
+      streak: Math.max(l.streak || 0, r.streak || 0),
+      lastExercise: (l.lastExercise || '') > (r.lastExercise || '') ? l.lastExercise : r.lastExercise,
+      nextReview: (l.nextReview || '') < (r.nextReview || '') ? l.nextReview : r.nextReview
+    };
+  });
+  return mex;
 }
 
 export function mergeProgress(local, remote) {

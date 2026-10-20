@@ -1,0 +1,1722 @@
+[
+ {
+  "de": "Guten Tag",
+  "en": "Good day / Hello",
+  "lektion": 1
+ },
+ {
+  "de": "Hallo",
+  "en": "Hello",
+  "lektion": 1
+ },
+ {
+  "de": "Auf Wiedersehen",
+  "en": "Goodbye",
+  "lektion": 1
+ },
+ {
+  "de": "Tschüs",
+  "en": "Bye (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Guten Abend",
+  "en": "Good evening",
+  "lektion": 1
+ },
+ {
+  "de": "Guten Morgen",
+  "en": "Good morning",
+  "lektion": 1
+ },
+ {
+  "de": "Gute Nacht",
+  "en": "Good night",
+  "lektion": 1
+ },
+ {
+  "de": "Entschuldigung",
+  "en": "excuse me, sorry",
+  "lektion": 1
+ },
+ {
+  "de": "Wie bitte?",
+  "en": "Pardon? Sorry?",
+  "lektion": 1
+ },
+ {
+  "de": "Vielen Dank",
+  "en": "Thank you very much",
+  "lektion": 1
+ },
+ {
+  "de": "Auf Wiederhören",
+  "en": "Goodbye (on phone)",
+  "lektion": 1
+ },
+ {
+  "de": "(Herzlich) Willkommen.",
+  "en": "(Warm) Welcome.",
+  "lektion": 1
+ },
+ {
+  "de": "Freut mich.",
+  "en": "Nice to meet you.",
+  "lektion": 1
+ },
+ {
+  "de": "Wie heißen Sie?",
+  "en": "What is your name? (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Wie heißt du?",
+  "en": "What is your name? (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Wer bist du?",
+  "en": "Who are you? (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Wer sind Sie?",
+  "en": "Who are you? (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Wie ist Ihr Name?",
+  "en": "What is your name? (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Wer ist das?",
+  "en": "Who is that?",
+  "lektion": 1
+ },
+ {
+  "de": "Ich heiße ...",
+  "en": "My name is ...",
+  "lektion": 1
+ },
+ {
+  "de": "Mein Name ist ...",
+  "en": "My name is ...",
+  "lektion": 1
+ },
+ {
+  "de": "Das ist Herr ...",
+  "en": "This is Mr. ...",
+  "lektion": 1
+ },
+ {
+  "de": "Woher kommen Sie?",
+  "en": "Where are you from? (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Woher kommst du?",
+  "en": "Where are you from? (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Ich komme aus ...",
+  "en": "I come from ...",
+  "lektion": 1
+ },
+ {
+  "de": "Was sprechen Sie?",
+  "en": "What languages do you speak? (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Was sprichst du?",
+  "en": "What languages do you speak? (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Ich spreche Deutsch.",
+  "en": "I speak German.",
+  "lektion": 1
+ },
+ {
+  "de": "Sie sprechen gut Deutsch.",
+  "en": "You speak German well. (formal)",
+  "lektion": 1
+ },
+ {
+  "de": "Du sprichst gut Deutsch.",
+  "en": "You speak German well. (informal)",
+  "lektion": 1
+ },
+ {
+  "de": "Nur ein bisschen.",
+  "en": "Just a little.",
+  "lektion": 1
+ },
+ {
+  "de": "Tut mir leid.",
+  "en": "I'm sorry.",
+  "lektion": 1
+ },
+ {
+  "de": "Ist Frau ... da, bitte?",
+  "en": "Is Mrs. ... there, please?",
+  "lektion": 1
+ },
+ {
+  "de": "Buchstabieren Sie, bitte.",
+  "en": "Please spell that.",
+  "lektion": 1
+ },
+ {
+  "de": "Ja, stimmt.",
+  "en": "Yes, that's right.",
+  "lektion": 1
+ },
+ {
+  "de": "Ja, gut.",
+  "en": "Yes, good.",
+  "lektion": 1
+ },
+ {
+  "de": "Einen Moment, bitte.",
+  "en": "One moment, please.",
+  "lektion": 1
+ },
+ {
+  "de": "Ich weiß es nicht.",
+  "en": "I don't know.",
+  "lektion": 1
+ },
+ {
+  "de": "Ah, ja.",
+  "en": "Oh, yes.",
+  "lektion": 1
+ },
+ {
+  "de": "Aha!",
+  "en": "I see!",
+  "lektion": 1
+ },
+ {
+  "de": "Ah, schön.",
+  "en": "Oh, nice.",
+  "lektion": 1
+ },
+ {
+  "de": "Ah, toll.",
+  "en": "Oh, great.",
+  "lektion": 1
+ },
+ {
+  "de": "Interessant.",
+  "en": "Interesting.",
+  "lektion": 1
+ },
+ {
+  "de": "Wie geht es euch?",
+  "en": "How are you? (plural)",
+  "lektion": 1
+ },
+ {
+  "de": "Wie geht's?",
+  "en": "How are you?",
+  "lektion": 2
+ },
+ {
+  "de": "Wie geht es Ihnen?",
+  "en": "How are you? (formal)",
+  "lektion": 2
+ },
+ {
+  "de": "Wie geht es dir?",
+  "en": "How are you? (informal)",
+  "lektion": 2
+ },
+ {
+  "de": "Und Ihnen?",
+  "en": "And you? (formal)",
+  "lektion": 2
+ },
+ {
+  "de": "Und dir?",
+  "en": "And you? (informal)",
+  "lektion": 2
+ },
+ {
+  "de": "Sehr gut, danke.",
+  "en": "Very good, thanks.",
+  "lektion": 2
+ },
+ {
+  "de": "Gut, danke.",
+  "en": "Good, thanks.",
+  "lektion": 2
+ },
+ {
+  "de": "Na ja, es geht.",
+  "en": "Well, so-so.",
+  "lektion": 2
+ },
+ {
+  "de": "Ach, nicht so gut.",
+  "en": "Oh, not so good.",
+  "lektion": 2
+ },
+ {
+  "de": "Auch gut, danke.",
+  "en": "Also fine, thanks.",
+  "lektion": 2
+ },
+ {
+  "de": "Das ist mein Vater.",
+  "en": "This is my father.",
+  "lektion": 2
+ },
+ {
+  "de": "Das sind meine Großeltern.",
+  "en": "These are my grandparents.",
+  "lektion": 2
+ },
+ {
+  "de": "Er kommt aus ...",
+  "en": "He comes from ...",
+  "lektion": 2
+ },
+ {
+  "de": "Sie kommt aus ...",
+  "en": "She comes from ...",
+  "lektion": 2
+ },
+ {
+  "de": "Er lebt in ...",
+  "en": "He lives in ...",
+  "lektion": 2
+ },
+ {
+  "de": "Sie lebt in ...",
+  "en": "She lives in ...",
+  "lektion": 2
+ },
+ {
+  "de": "Wo sind Sie geboren?",
+  "en": "Where were you born?",
+  "lektion": 2
+ },
+ {
+  "de": "Ich bin in ... geboren.",
+  "en": "I was born in ...",
+  "lektion": 2
+ },
+ {
+  "de": "Wo wohnen Sie?",
+  "en": "Where do you live?",
+  "lektion": 2
+ },
+ {
+  "de": "Ich wohne in ...",
+  "en": "I live in ...",
+  "lektion": 2
+ },
+ {
+  "de": "Wie ist Ihre Adresse?",
+  "en": "What is your address?",
+  "lektion": 2
+ },
+ {
+  "de": "Wie ist Ihre Telefonnummer?",
+  "en": "What is your phone number?",
+  "lektion": 2
+ },
+ {
+  "de": "Sind Sie verheiratet?",
+  "en": "Are you married?",
+  "lektion": 2
+ },
+ {
+  "de": "Ja, ich bin verheiratet.",
+  "en": "Yes, I am married.",
+  "lektion": 2
+ },
+ {
+  "de": "Nein, ich bin ledig.",
+  "en": "No, I am single.",
+  "lektion": 2
+ },
+ {
+  "de": "Haben Sie Kinder?",
+  "en": "Do you have children?",
+  "lektion": 2
+ },
+ {
+  "de": "Wie alt ist Ihr Kind?",
+  "en": "How old is your child?",
+  "lektion": 2
+ },
+ {
+  "de": "Wie alt sind Ihre Kinder?",
+  "en": "How old are your children?",
+  "lektion": 2
+ },
+ {
+  "de": "Hamburg liegt in Deutschland.",
+  "en": "Hamburg is in Germany.",
+  "lektion": 2
+ },
+ {
+  "de": "... ist die Hauptstadt von ...",
+  "en": "... is the capital of ...",
+  "lektion": 2
+ },
+ {
+  "de": "Ja, genau.",
+  "en": "Yes, exactly.",
+  "lektion": 2
+ },
+ {
+  "de": "Nein, falsch.",
+  "en": "No, wrong.",
+  "lektion": 2
+ },
+ {
+  "de": "Na ja, ...",
+  "en": "Well, ...",
+  "lektion": 2
+ },
+ {
+  "de": "Ach, ...",
+  "en": "Oh, ...",
+  "lektion": 2
+ },
+ {
+  "de": "Wo liegt...?",
+  "en": "Where is... located?",
+  "lektion": 2
+ },
+ {
+  "de": "Es liegt im Norden.",
+  "en": "It is in the north.",
+  "lektion": 2
+ },
+ {
+  "de": "Es liegt im Süden.",
+  "en": "It is in the south.",
+  "lektion": 2
+ },
+ {
+  "de": "Was ist das?",
+  "en": "What is that?",
+  "lektion": 3
+ },
+ {
+  "de": "Das ist ein Apfel.",
+  "en": "That is an apple.",
+  "lektion": 3
+ },
+ {
+  "de": "Wie heißt das auf Deutsch?",
+  "en": "What is that called in German?",
+  "lektion": 3
+ },
+ {
+  "de": "Ist das ein Würstchen?",
+  "en": "Is that a sausage?",
+  "lektion": 3
+ },
+ {
+  "de": "Das stimmt.",
+  "en": "That's right.",
+  "lektion": 3
+ },
+ {
+  "de": "Kann ich Ihnen helfen?",
+  "en": "Can I help you? (formal)",
+  "lektion": 3
+ },
+ {
+  "de": "Kann ich dir helfen?",
+  "en": "Can I help you? (informal)",
+  "lektion": 3
+ },
+ {
+  "de": "Bitte schön?",
+  "en": "Can I help you? / Here you go.",
+  "lektion": 3
+ },
+ {
+  "de": "Wo finde ich ...?",
+  "en": "Where can I find ...?",
+  "lektion": 3
+ },
+ {
+  "de": "Ich hätte gern ...",
+  "en": "I'd like ...",
+  "lektion": 3
+ },
+ {
+  "de": "Ich möchte ...",
+  "en": "I'd like ...",
+  "lektion": 3
+ },
+ {
+  "de": "Haben Sie Eier?",
+  "en": "Do you have eggs?",
+  "lektion": 3
+ },
+ {
+  "de": "Wie viel möchten Sie?",
+  "en": "How much do you want?",
+  "lektion": 3
+ },
+ {
+  "de": "Wie viel kostet ein Kilo ...?",
+  "en": "How much does a kilo of ... cost?",
+  "lektion": 3
+ },
+ {
+  "de": "Wie viel kosten 100 Gramm ...?",
+  "en": "How much does 100 grams of ... cost?",
+  "lektion": 3
+ },
+ {
+  "de": "Das macht 2 Euro 50.",
+  "en": "That comes to 2 Euro 50.",
+  "lektion": 3
+ },
+ {
+  "de": "Hier, bitte.",
+  "en": "Here you go.",
+  "lektion": 3
+ },
+ {
+  "de": "Sonst noch etwas?",
+  "en": "Anything else?",
+  "lektion": 3
+ },
+ {
+  "de": "Ja, bitte.",
+  "en": "Yes, please.",
+  "lektion": 3
+ },
+ {
+  "de": "Nein, danke.",
+  "en": "No, thanks.",
+  "lektion": 3
+ },
+ {
+  "de": "Das ist alles.",
+  "en": "That's all.",
+  "lektion": 3
+ },
+ {
+  "de": "Ja, natürlich.",
+  "en": "Yes, of course.",
+  "lektion": 3
+ },
+ {
+  "de": "Nein, tut mir leid.",
+  "en": "No, I'm sorry.",
+  "lektion": 3
+ },
+ {
+  "de": "Ich hätte gern...",
+  "en": "I would like...",
+  "lektion": 3
+ },
+ {
+  "de": "Das macht... Euro.",
+  "en": "That comes to... Euro.",
+  "lektion": 3
+ },
+ {
+  "de": "Das wär's.",
+  "en": "That's it.",
+  "lektion": 3
+ },
+ {
+  "de": "Gern!",
+  "en": "Gladly!",
+  "lektion": 3
+ },
+ {
+  "de": "Was kostet...?",
+  "en": "How much is...?",
+  "lektion": 3
+ },
+ {
+  "de": "Was möchten Sie?",
+  "en": "What would you like? (formal)",
+  "lektion": 3
+ },
+ {
+  "de": "Ich bringe ... sofort.",
+  "en": "I'll bring ... right away.",
+  "lektion": 3
+ },
+ {
+  "de": "Natürlich.",
+  "en": "Of course.",
+  "lektion": 3
+ },
+ {
+  "de": "Ich nehme …",
+  "en": "I'll have …",
+  "lektion": 3
+ },
+ {
+  "de": "Für mich bitte …",
+  "en": "For me, please …",
+  "lektion": 3
+ },
+ {
+  "de": "Und zum Trinken?",
+  "en": "And to drink?",
+  "lektion": 3
+ },
+ {
+  "de": "Was darf ich Ihnen bringen?",
+  "en": "What can I bring you?",
+  "lektion": 3
+ },
+ {
+  "de": "Was können Sie mir empfehlen?",
+  "en": "What can you recommend?",
+  "lektion": 3
+ },
+ {
+  "de": "Das haben wir heute nicht.",
+  "en": "We don't have that today.",
+  "lektion": 3
+ },
+ {
+  "de": "Wie war das Essen?",
+  "en": "How was the food?",
+  "lektion": 3
+ },
+ {
+  "de": "Die Rechnung, bitte.",
+  "en": "The bill, please.",
+  "lektion": 3
+ },
+ {
+  "de": "Können wir zahlen, bitte?",
+  "en": "Can we pay, please?",
+  "lektion": 3
+ },
+ {
+  "de": "Machen Sie … Euro.",
+  "en": "Make it … euros (incl. tip).",
+  "lektion": 3
+ },
+ {
+  "de": "Stimmt so.",
+  "en": "Keep the change.",
+  "lektion": 3
+ },
+ {
+  "de": "Aber natürlich.",
+  "en": "But of course.",
+  "lektion": 3
+ },
+ {
+  "de": "Wie gefällt dir der Tisch?",
+  "en": "How do you like the table? (informal)",
+  "lektion": 4
+ },
+ {
+  "de": "Wie gefällt Ihnen der Tisch?",
+  "en": "How do you like the table? (formal)",
+  "lektion": 4
+ },
+ {
+  "de": "Wie gefallen dir die Betten?",
+  "en": "How do you like the beds? (informal)",
+  "lektion": 4
+ },
+ {
+  "de": "Wie gefallen Ihnen die Betten?",
+  "en": "How do you like the beds? (formal)",
+  "lektion": 4
+ },
+ {
+  "de": "Sehr gut.",
+  "en": "Very good.",
+  "lektion": 4
+ },
+ {
+  "de": "Ganz gut.",
+  "en": "Quite good.",
+  "lektion": 4
+ },
+ {
+  "de": "Es geht.",
+  "en": "It's okay.",
+  "lektion": 4
+ },
+ {
+  "de": "Nicht so gut.",
+  "en": "Not so good.",
+  "lektion": 4
+ },
+ {
+  "de": "Wo ist die Küche?",
+  "en": "Where is the kitchen?",
+  "lektion": 4
+ },
+ {
+  "de": "Ist das hier das Bad?",
+  "en": "Is this the bathroom?",
+  "lektion": 4
+ },
+ {
+  "de": "Ja, das hier ist das Bad.",
+  "en": "Yes, this is the bathroom.",
+  "lektion": 4
+ },
+ {
+  "de": "Ist hier auch ein Arbeitszimmer?",
+  "en": "Is there also a study here?",
+  "lektion": 4
+ },
+ {
+  "de": "Wie ist dein Zimmer?",
+  "en": "What is your room like?",
+  "lektion": 4
+ },
+ {
+  "de": "Es ist teuer.",
+  "en": "It's expensive.",
+  "lektion": 4
+ },
+ {
+  "de": "Es ist nicht teuer.",
+  "en": "It's not expensive.",
+  "lektion": 4
+ },
+ {
+  "de": "Es ist sehr teuer.",
+  "en": "It's very expensive.",
+  "lektion": 4
+ },
+ {
+  "de": "Wie lang ist der Tisch?",
+  "en": "How long is the table?",
+  "lektion": 4
+ },
+ {
+  "de": "Wie breit ist der Tisch?",
+  "en": "How wide is the table?",
+  "lektion": 4
+ },
+ {
+  "de": "Wie hoch ist der Tisch?",
+  "en": "How tall is the table?",
+  "lektion": 4
+ },
+ {
+  "de": "Ungefähr zwei Meter.",
+  "en": "Approximately two meters.",
+  "lektion": 4
+ },
+ {
+  "de": "Genau zwei Meter.",
+  "en": "Exactly two meters.",
+  "lektion": 4
+ },
+ {
+  "de": "Wie groß ist das Bett?",
+  "en": "How big is the bed?",
+  "lektion": 4
+ },
+ {
+  "de": "Welche Farbe hat der Tisch?",
+  "en": "What color is the table?",
+  "lektion": 4
+ },
+ {
+  "de": "Er ist dunkelbraun.",
+  "en": "It is dark brown.",
+  "lektion": 4
+ },
+ {
+  "de": "Sie verkaufen doch ...?",
+  "en": "You're selling ..., right?",
+  "lektion": 4
+ },
+ {
+  "de": "Ist der ... noch da?",
+  "en": "Is the ... still available?",
+  "lektion": 4
+ },
+ {
+  "de": "Wie alt ist er?",
+  "en": "How old is it?",
+  "lektion": 4
+ },
+ {
+  "de": "Was kostet er?",
+  "en": "How much does it cost?",
+  "lektion": 4
+ },
+ {
+  "de": "Und wo wohnen Sie, bitte?",
+  "en": "And where do you live, please?",
+  "lektion": 4
+ },
+ {
+  "de": "In der ... straße.",
+  "en": "On ... street.",
+  "lektion": 4
+ },
+ {
+  "de": "Sind Sie heute zu Hause?",
+  "en": "Are you home today?",
+  "lektion": 4
+ },
+ {
+  "de": "Sind Sie morgen zu Hause?",
+  "en": "Are you home tomorrow?",
+  "lektion": 4
+ },
+ {
+  "de": "Ja, ich bin da.",
+  "en": "Yes, I'm home.",
+  "lektion": 4
+ },
+ {
+  "de": "Nein, ich bin nicht da.",
+  "en": "No, I'm not home.",
+  "lektion": 4
+ },
+ {
+  "de": "Sagen Sie mal, ...",
+  "en": "Tell me, ... (formal)",
+  "lektion": 4
+ },
+ {
+  "de": "Sag mal, ...",
+  "en": "Tell me, ... (informal)",
+  "lektion": 4
+ },
+ {
+  "de": "Ja, richtig.",
+  "en": "Yes, right.",
+  "lektion": 4
+ },
+ {
+  "de": "Aha, gut!",
+  "en": "Oh, good!",
+  "lektion": 4
+ },
+ {
+  "de": "..., nicht?",
+  "en": "..., right?",
+  "lektion": 4
+ },
+ {
+  "de": "..., oder?",
+  "en": "..., or?",
+  "lektion": 4
+ },
+ {
+  "de": "..., richtig?",
+  "en": "..., correct?",
+  "lektion": 4
+ },
+ {
+  "de": "Schau mal!",
+  "en": "Look! (informal)",
+  "lektion": 4
+ },
+ {
+  "de": "Schauen Sie mal!",
+  "en": "Look! (formal)",
+  "lektion": 4
+ },
+ {
+  "de": "Es gibt kein...",
+  "en": "There is no...",
+  "lektion": 4
+ },
+ {
+  "de": "Das Sofa gefällt mir gut.",
+  "en": "I like the sofa.",
+  "lektion": 4
+ },
+ {
+  "de": "Das ist zu groß.",
+  "en": "That's too big.",
+  "lektion": 4
+ },
+ {
+  "de": "Das ist zu klein.",
+  "en": "That's too small.",
+  "lektion": 4
+ },
+ {
+  "de": "Wie teuer ist die Wohnung?",
+  "en": "How much is the flat?",
+  "lektion": 4
+ },
+ {
+  "de": "Es gibt …",
+  "en": "There is / there are …",
+  "lektion": 4
+ },
+ {
+  "de": "Wie spät ist es?",
+  "en": "What time is it?",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist sieben Uhr.",
+  "en": "It is seven o'clock.",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist acht Uhr dreißig.",
+  "en": "It is eight thirty.",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist halb neun.",
+  "en": "It is half past eight.",
+  "lektion": 5
+ },
+ {
+  "de": "Ist es schon zwölf?",
+  "en": "Is it twelve already?",
+  "lektion": 5
+ },
+ {
+  "de": "Nein, es ist erst Viertel vor zwölf.",
+  "en": "No, it's only a quarter to twelve.",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist kurz vor zwölf.",
+  "en": "It's almost twelve.",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist gleich zwölf.",
+  "en": "It's almost twelve.",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist kurz nach zwölf.",
+  "en": "It's just past twelve.",
+  "lektion": 5
+ },
+ {
+  "de": "Um wie viel Uhr gehst du ins Bett?",
+  "en": "What time do you go to bed?",
+  "lektion": 5
+ },
+ {
+  "de": "Um elf Uhr.",
+  "en": "At eleven.",
+  "lektion": 5
+ },
+ {
+  "de": "Um halb elf.",
+  "en": "At half past ten.",
+  "lektion": 5
+ },
+ {
+  "de": "Wann ist ... geöffnet?",
+  "en": "When is ... open?",
+  "lektion": 5
+ },
+ {
+  "de": "Wann ist der Kindergarten geöffnet?",
+  "en": "When is the kindergarten open?",
+  "lektion": 5
+ },
+ {
+  "de": "Von 7 Uhr 30 bis 17 Uhr.",
+  "en": "From 7:30 to 5 pm.",
+  "lektion": 5
+ },
+ {
+  "de": "Von Montag bis Freitag.",
+  "en": "From Monday to Friday.",
+  "lektion": 5
+ },
+ {
+  "de": "Ich mache am Freitag eine Party.",
+  "en": "I'm having a party on Friday.",
+  "lektion": 5
+ },
+ {
+  "de": "Hast du Zeit?",
+  "en": "Do you have time?",
+  "lektion": 5
+ },
+ {
+  "de": "Wann fängt die Party an?",
+  "en": "When does the party start?",
+  "lektion": 5
+ },
+ {
+  "de": "Um sieben Uhr.",
+  "en": "At seven o'clock.",
+  "lektion": 5
+ },
+ {
+  "de": "Das passt gut.",
+  "en": "That works well.",
+  "lektion": 5
+ },
+ {
+  "de": "Ich komme gern.",
+  "en": "I'd love to come.",
+  "lektion": 5
+ },
+ {
+  "de": "Da habe ich keine Zeit.",
+  "en": "I don't have time then.",
+  "lektion": 5
+ },
+ {
+  "de": "Was machst du gern?",
+  "en": "What do you like to do?",
+  "lektion": 5
+ },
+ {
+  "de": "Was machst du nicht gern?",
+  "en": "What do you not like to do?",
+  "lektion": 5
+ },
+ {
+  "de": "Stehst du gern früh auf?",
+  "en": "Do you like getting up early?",
+  "lektion": 5
+ },
+ {
+  "de": "Ich stehe nicht gern früh auf.",
+  "en": "I don't like getting up early.",
+  "lektion": 5
+ },
+ {
+  "de": "Ich arbeite gern.",
+  "en": "I like working.",
+  "lektion": 5
+ },
+ {
+  "de": "Stimmt.",
+  "en": "That's right.",
+  "lektion": 5
+ },
+ {
+  "de": "Ich glaube, ...",
+  "en": "I think ...",
+  "lektion": 5
+ },
+ {
+  "de": "Es ist... Uhr",
+  "en": "It is... o'clock",
+  "lektion": 5
+ },
+ {
+  "de": "Von wann bis wann...?",
+  "en": "From when to when...?",
+  "lektion": 5
+ },
+ {
+  "de": "Wie viel Uhr ist es?",
+  "en": "What time is it?",
+  "lektion": 5
+ },
+ {
+  "de": "Wie lange …?",
+  "en": "How long …?",
+  "lektion": 5
+ },
+ {
+  "de": "Wie oft …?",
+  "en": "How often …?",
+  "lektion": 5
+ },
+ {
+  "de": "Das geht.",
+  "en": "That works.",
+  "lektion": 5
+ },
+ {
+  "de": "Was sind deine Hobbys?",
+  "en": "What are your hobbies? (informal)",
+  "lektion": 6
+ },
+ {
+  "de": "Was sind Ihre Hobbys?",
+  "en": "What are your hobbies? (formal)",
+  "lektion": 6
+ },
+ {
+  "de": "Meine Hobbys sind Lesen und Gitarre spielen.",
+  "en": "My hobbies are reading and playing guitar.",
+  "lektion": 6
+ },
+ {
+  "de": "Was machst du gern in der Freizeit?",
+  "en": "What do you like to do in your free time? (informal)",
+  "lektion": 6
+ },
+ {
+  "de": "Was machen Sie gern in der Freizeit?",
+  "en": "What do you like to do in your free time? (formal)",
+  "lektion": 6
+ },
+ {
+  "de": "Ich schwimme viel.",
+  "en": "I swim a lot.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich tanze gern.",
+  "en": "I like to dance.",
+  "lektion": 6
+ },
+ {
+  "de": "Das macht Spaß.",
+  "en": "That's fun.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich mache gern Sport.",
+  "en": "I like doing sports.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich finde Krimis gut.",
+  "en": "I think crime novels are good.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich finde Krimis toll.",
+  "en": "I think crime novels are great.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich finde Krimis interessant.",
+  "en": "I think crime novels are interesting.",
+  "lektion": 6
+ },
+ {
+  "de": "Mein Lieblingsbuch ist ...",
+  "en": "My favorite book is ...",
+  "lektion": 6
+ },
+ {
+  "de": "Mein Lieblingsfilm ist ...",
+  "en": "My favorite film is ...",
+  "lektion": 6
+ },
+ {
+  "de": "Mein Lieblingsspiel ist ...",
+  "en": "My favorite game is ...",
+  "lektion": 6
+ },
+ {
+  "de": "Meine Lieblingsmusik ist ...",
+  "en": "My favorite music is ...",
+  "lektion": 6
+ },
+ {
+  "de": "Wie ist das Wetter?",
+  "en": "What's the weather like?",
+  "lektion": 6
+ },
+ {
+  "de": "Die Sonne scheint.",
+  "en": "The sun is shining.",
+  "lektion": 6
+ },
+ {
+  "de": "Es ist warm.",
+  "en": "It's warm.",
+  "lektion": 6
+ },
+ {
+  "de": "Es ist heiß.",
+  "en": "It's hot.",
+  "lektion": 6
+ },
+ {
+  "de": "Es ist kalt.",
+  "en": "It's cold.",
+  "lektion": 6
+ },
+ {
+  "de": "Es ist windig.",
+  "en": "It's windy.",
+  "lektion": 6
+ },
+ {
+  "de": "Es ist bewölkt.",
+  "en": "It's cloudy.",
+  "lektion": 6
+ },
+ {
+  "de": "Es gibt viele Wolken.",
+  "en": "There are many clouds.",
+  "lektion": 6
+ },
+ {
+  "de": "Es schneit.",
+  "en": "It's snowing.",
+  "lektion": 6
+ },
+ {
+  "de": "Es regnet.",
+  "en": "It's raining.",
+  "lektion": 6
+ },
+ {
+  "de": "Heute sind es sieben Grad.",
+  "en": "Today it's seven degrees.",
+  "lektion": 6
+ },
+ {
+  "de": "Im Sommer ist das Wetter sehr gut.",
+  "en": "In summer the weather is very nice.",
+  "lektion": 6
+ },
+ {
+  "de": "Was ist dein Lieblingswetter?",
+  "en": "What is your favorite weather? (informal)",
+  "lektion": 6
+ },
+ {
+  "de": "Was ist Ihr Lieblingswetter?",
+  "en": "What is your favorite weather? (formal)",
+  "lektion": 6
+ },
+ {
+  "de": "Ich finde warme Tage gut.",
+  "en": "I like warm days.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich finde kalte Tage gut.",
+  "en": "I like cold days.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich mag Wind.",
+  "en": "I like wind.",
+  "lektion": 6
+ },
+ {
+  "de": "Regen mag ich gar nicht.",
+  "en": "I don't like rain at all.",
+  "lektion": 6
+ },
+ {
+  "de": "Guck mal!",
+  "en": "Look!",
+  "lektion": 6
+ },
+ {
+  "de": "Na klar!",
+  "en": "Of course!",
+  "lektion": 6
+ },
+ {
+  "de": "Na gut.",
+  "en": "All right.",
+  "lektion": 6
+ },
+ {
+  "de": "Oh, wie dumm!",
+  "en": "Oh, how silly!",
+  "lektion": 6
+ },
+ {
+  "de": "Hm, ...",
+  "en": "Hmm, ...",
+  "lektion": 6
+ },
+ {
+  "de": "Kein Problem.",
+  "en": "No problem.",
+  "lektion": 6
+ },
+ {
+  "de": "Ich weiß nicht.",
+  "en": "I don't know.",
+  "lektion": 6
+ },
+ {
+  "de": "Moment mal, ...",
+  "en": "Wait a moment, ...",
+  "lektion": 6
+ },
+ {
+  "de": "Ich habe keine Zeit.",
+  "en": "I have no time.",
+  "lektion": 6
+ },
+ {
+  "de": "Wie gefällt dir...?",
+  "en": "How do you like...?",
+  "lektion": 6
+ },
+ {
+  "de": "Kommt sofort.",
+  "en": "Coming right up.",
+  "lektion": 6
+ },
+ {
+  "de": "Ja, gern.",
+  "en": "Yes, gladly.",
+  "lektion": 6
+ },
+ {
+  "de": "oder?",
+  "en": "...right? (tag question)",
+  "lektion": 6
+ },
+ {
+  "de": "Was willst du lernen?",
+  "en": "What do you want to learn? (informal)",
+  "lektion": 7
+ },
+ {
+  "de": "Was wollen Sie lernen?",
+  "en": "What do you want to learn? (formal)",
+  "lektion": 7
+ },
+ {
+  "de": "Ich will Jonglieren lernen.",
+  "en": "I want to learn to juggle.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich will gut Deutsch lernen.",
+  "en": "I want to learn German well.",
+  "lektion": 7
+ },
+ {
+  "de": "Wollen wir Fahrrad fahren?",
+  "en": "Shall we go cycling?",
+  "lektion": 7
+ },
+ {
+  "de": "Wollen wir schwimmen gehen?",
+  "en": "Shall we go swimming?",
+  "lektion": 7
+ },
+ {
+  "de": "Ich kann sehr gut Ski fahren.",
+  "en": "I can ski very well.",
+  "lektion": 7
+ },
+ {
+  "de": "Kannst du Ski fahren?",
+  "en": "Can you ski? (informal)",
+  "lektion": 7
+ },
+ {
+  "de": "Können Sie Ski fahren?",
+  "en": "Can you ski? (formal)",
+  "lektion": 7
+ },
+ {
+  "de": "Ja, ich kann sehr gut Ski fahren.",
+  "en": "Yes, I can ski very well.",
+  "lektion": 7
+ },
+ {
+  "de": "Ja, ich kann ein bisschen Ski fahren.",
+  "en": "Yes, I can ski a bit.",
+  "lektion": 7
+ },
+ {
+  "de": "Nein, ich kann nicht so gut Ski fahren.",
+  "en": "No, I can't ski so well.",
+  "lektion": 7
+ },
+ {
+  "de": "Nein, ich kann gar nicht Ski fahren.",
+  "en": "No, I can't ski at all.",
+  "lektion": 7
+ },
+ {
+  "de": "Nein, nicht so gut.",
+  "en": "No, not so well.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich bin krank.",
+  "en": "I am sick.",
+  "lektion": 7
+ },
+ {
+  "de": "Oh, das tut mir leid.",
+  "en": "Oh, I'm sorry to hear that.",
+  "lektion": 7
+ },
+ {
+  "de": "Mein Kind ist krank.",
+  "en": "My child is sick.",
+  "lektion": 7
+ },
+ {
+  "de": "Mein Sohn ist krank.",
+  "en": "My son is sick.",
+  "lektion": 7
+ },
+ {
+  "de": "Meine Tochter ist krank.",
+  "en": "My daughter is sick.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich kann heute nicht zum Deutschkurs kommen.",
+  "en": "I can't come to German class today.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich kann heute leider nicht zum Unterricht kommen.",
+  "en": "Unfortunately I can't come to class today.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich sage es der Lehrerin.",
+  "en": "I'll tell the teacher (f.).",
+  "lektion": 7
+ },
+ {
+  "de": "Ich sage es dem Lehrer.",
+  "en": "I'll tell the teacher (m.).",
+  "lektion": 7
+ },
+ {
+  "de": "Ich gehe zum Arzt.",
+  "en": "I'm going to the doctor.",
+  "lektion": 7
+ },
+ {
+  "de": "Gute Besserung!",
+  "en": "Get well soon!",
+  "lektion": 7
+ },
+ {
+  "de": "Das habe ich gestern gemacht.",
+  "en": "I did this yesterday.",
+  "lektion": 7
+ },
+ {
+  "de": "Gestern habe ich gearbeitet.",
+  "en": "Yesterday I worked.",
+  "lektion": 7
+ },
+ {
+  "de": "Am Wochenende bin ich Fahrrad gefahren.",
+  "en": "On the weekend I went cycling.",
+  "lektion": 7
+ },
+ {
+  "de": "Lara hat Tee gemacht.",
+  "en": "Lara made tea.",
+  "lektion": 7
+ },
+ {
+  "de": "Ich bin spazieren gegangen.",
+  "en": "I went for a walk.",
+  "lektion": 7
+ },
+ {
+  "de": "Bist du pünktlich gekommen?",
+  "en": "Did you arrive on time?",
+  "lektion": 7
+ },
+ {
+  "de": "Ja, super!",
+  "en": "Yes, great!",
+  "lektion": 7
+ },
+ {
+  "de": "Nein, nicht so gern.",
+  "en": "No, not really.",
+  "lektion": 7
+ },
+ {
+  "de": "Schade!",
+  "en": "What a pity!",
+  "lektion": 7
+ },
+ {
+  "de": "Haben Sie noch Fragen?",
+  "en": "Do you have any more questions?",
+  "lektion": 7
+ },
+ {
+  "de": "Hoffentlich!",
+  "en": "Hopefully!",
+  "lektion": 10
+ },
+ {
+  "de": "Bis später.",
+  "en": "See you later.",
+  "lektion": 10
+ },
+ {
+  "de": "Oh, nein.",
+  "en": "Oh no.",
+  "lektion": 10
+ },
+ {
+  "de": "Oje!",
+  "en": "Oh dear!",
+  "lektion": 10
+ },
+ {
+  "de": "Ach so.",
+  "en": "I see.",
+  "lektion": 10
+ },
+ {
+  "de": "Ich habe Kopfschmerzen.",
+  "en": "I have a headache.",
+  "lektion": 10
+ },
+ {
+  "de": "Was fehlt Ihnen?",
+  "en": "What's wrong? (doctor asking)",
+  "lektion": 10
+ },
+ {
+  "de": "Seit wann haben Sie Schmerzen?",
+  "en": "Since when have you had pain?",
+  "lektion": 10
+ },
+ {
+  "de": "Seit zwei Tagen.",
+  "en": "For two days.",
+  "lektion": 10
+ },
+ {
+  "de": "Haben Sie auch Fieber?",
+  "en": "Do you also have a fever?",
+  "lektion": 10
+ },
+ {
+  "de": "Ich habe kein Fieber.",
+  "en": "I don't have a fever.",
+  "lektion": 10
+ },
+ {
+  "de": "Ich gebe Ihnen Tabletten.",
+  "en": "I'll give you tablets.",
+  "lektion": 10
+ },
+ {
+  "de": "Brauche ich Medikamente?",
+  "en": "Do I need medicine?",
+  "lektion": 10
+ },
+ {
+  "de": "Ich möchte gern einen Termin machen.",
+  "en": "I'd like to make an appointment.",
+  "lektion": 10
+ },
+ {
+  "de": "Können Sie morgen um 10 Uhr kommen?",
+  "en": "Can you come tomorrow at 10 o'clock?",
+  "lektion": 10
+ },
+ {
+  "de": "Danke schön.",
+  "en": "Thank you very much.",
+  "lektion": 10
+ },
+ {
+  "de": "… tut weh",
+  "en": "… hurts",
+  "lektion": 10
+ },
+ {
+  "de": "… tun weh",
+  "en": "… hurt (pl.)",
+  "lektion": 10
+ },
+ {
+  "de": "Was ist los?",
+  "en": "What's the matter?",
+  "lektion": 10
+ },
+ {
+  "de": "Das tut mir leid.",
+  "en": "I'm sorry.",
+  "lektion": 10
+ },
+ {
+  "de": "Du musst …",
+  "en": "You must …",
+  "lektion": 10
+ },
+ {
+  "de": "Du solltest …",
+  "en": "You should …",
+  "lektion": 10
+ },
+ {
+  "de": "zuerst ... dann ...",
+  "en": "first ... then ...",
+  "lektion": 11
+ },
+ {
+  "de": "Entschuldigung, wie komme ich zum Bahnhof?",
+  "en": "Excuse me, how do I get to the station?",
+  "lektion": 11
+ },
+ {
+  "de": "Ist es weit?",
+  "en": "Is it far?",
+  "lektion": 11
+ },
+ {
+  "de": "Es ist nicht weit von hier.",
+  "en": "It is not far from here.",
+  "lektion": 11
+ },
+ {
+  "de": "Es sind ungefähr zehn Minuten zu Fuß.",
+  "en": "It is about ten minutes on foot.",
+  "lektion": 11
+ },
+ {
+  "de": "Ich bin nicht von hier.",
+  "en": "I am not from around here.",
+  "lektion": 11
+ },
+ {
+  "de": "Gehen Sie geradeaus.",
+  "en": "Go straight ahead.",
+  "lektion": 11
+ },
+ {
+  "de": "Biegen Sie links ab.",
+  "en": "Turn left.",
+  "lektion": 11
+ },
+ {
+  "de": "Wenden Sie!",
+  "en": "Turn around!",
+  "lektion": 11
+ },
+ {
+  "de": "Fahren Sie zurück!",
+  "en": "Drive back!",
+  "lektion": 11
+ },
+ {
+  "de": "Wohnst du in der Stadt oder auf dem Land?",
+  "en": "Do you live in town or in the countryside?",
+  "lektion": 11
+ },
+ {
+  "de": "Was kostet das?",
+  "en": "How much is that?",
+  "lektion": 11
+ },
+ {
+  "de": "Sieh mal!",
+  "en": "Look!",
+  "lektion": 13
+ },
+ {
+  "de": "Wie findest du das?",
+  "en": "What do you think of it?",
+  "lektion": 13
+ },
+ {
+  "de": "Gut, den nehme ich.",
+  "en": "OK, I'll take it.",
+  "lektion": 13
+ },
+ {
+  "de": "Na und?",
+  "en": "So what?",
+  "lektion": 13
+ },
+ {
+  "de": "Herzlichen Glückwunsch!",
+  "en": "Congratulations!",
+  "lektion": 14
+ },
+ {
+  "de": "Frohe Ostern!",
+  "en": "Happy Easter!",
+  "lektion": 14
+ },
+ {
+  "de": "Frohe Weihnachten!",
+  "en": "Merry Christmas!",
+  "lektion": 14
+ },
+ {
+  "de": "Ein gutes neues Jahr!",
+  "en": "Happy New Year!",
+  "lektion": 14
+ },
+ {
+  "de": "Viele Grüße",
+  "en": "Best regards",
+  "lektion": 14
+ },
+ {
+  "de": "Herzliche Grüße",
+  "en": "Kind regards",
+  "lektion": 14
+ },
+ {
+  "de": "Mit freundlichen Grüßen",
+  "en": "Yours sincerely",
+  "lektion": 14
+ },
+ {
+  "de": "Alles Gute zum Geburtstag!",
+  "en": "Happy Birthday!",
+  "lektion": 14
+ },
+ {
+  "de": "Alles Liebe zum Geburtstag!",
+  "en": "Happy Birthday! (with love)",
+  "lektion": 14
+ },
+ {
+  "de": "Welches Datum haben wir heute?",
+  "en": "What is the date today?",
+  "lektion": 14
+ },
+ {
+  "de": "Der Wievielte ist heute?",
+  "en": "What is the date today? (informal)",
+  "lektion": 14
+ },
+ {
+  "de": "Frohes neues Jahr!",
+  "en": "Happy New Year!",
+  "lektion": 14
+ },
+ {
+  "de": "Herzlichen Glückwunsch zum Geburtstag!",
+  "en": "Happy Birthday!",
+  "lektion": 14
+ },
+ {
+  "de": "Worum geht es?",
+  "en": "What is it about?",
+  "lektion": 15
+ },
+ {
+  "de": "Liebe Grüße",
+  "en": "Kind regards (LG)",
+  "lektion": 14
+ }
+]

@@ -3,6 +3,7 @@ import { DUAL_CODING_TIPS, REVIEW_LABELS, REVIEW_METHODS } from '../lib/constant
 import Flashcard from '../components/Flashcard';
 import ConfidenceButtons from '../components/ConfidenceButtons';
 import AiExplainBox from '../components/AiExplainBox';
+import PatternCard, { PatternNotes } from '../components/PatternCard';
 
 export default React.memo(function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,
@@ -10,9 +11,11 @@ export default React.memo(function SessionView({
   wordImage, imageLoading, wordIPA, wordDefinition, defImage, wordExtras, progress,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
-  hideAiExplain, lang, emojis, vietnameseDef, onGenerateImage
+  hideAiExplain, lang, emojis, vietnameseDef, onGenerateImage, direction
 }) {
   var w = sessionWords[currentIdx];
+  // Sentence-pattern course rows carry meta (see patterns-a1-data.ts)
+  var isPattern = !!(w && w.meta && w.meta.pattern);
   var tip = DUAL_CODING_TIPS[currentIdx % DUAL_CODING_TIPS.length];
   var isLearn = sessionType.type === "learn";
   // Opened from an exercise link in a separate tab: view-only, no rating, so
@@ -25,7 +28,8 @@ export default React.memo(function SessionView({
       <div className="session-header">
         <button onClick={function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}>{'\u2190'} Back</button>
         <span style={{fontSize:'13px',fontWeight:600}}>
-          {sessionType.type === 'browse' || isLookup ? w.german
+          {/* Patterns, en->de: the German is the answer — title with the situation instead */}
+          {sessionType.type === 'browse' || isLookup ? (isPattern && direction !== 'de-en' && !w.meta.listenOnly ? w.cat : w.german)
             : isLearn ? 'Learn Batch ' + sessionType.batchIdx
             : sessionType.type === 'review' && !sessionType.batchIdx ? 'Review'
             : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'}
@@ -45,7 +49,12 @@ export default React.memo(function SessionView({
           {'\uD83D\uDD25 ' + streak + ' word streak!'}
         </div> : null}
 
-        <Flashcard
+        {isPattern ? <PatternCard
+          word={w}
+          flipped={flipped}
+          onFlip={function() { setFlipped(!flipped); }}
+          direction={direction}
+        /> : <Flashcard
           word={w}
           flipped={flipped}
           onFlip={function() { setFlipped(!flipped); }}
@@ -60,14 +69,14 @@ export default React.memo(function SessionView({
           lang={lang}
           vietnameseDef={vietnameseDef}
           onGenerateImage={onGenerateImage}
-        />
+        />}
 
-        {isLearn && !flipped ? <div className="dual-coding-prompt">
+        {isLearn && !flipped && !isPattern ? <div className="dual-coding-prompt">
           <strong>{'\uD83C\uDFA8'} Dual Coding: </strong>{tip}
         </div> : null}
 
         {/* Word image (front side) */}
-        {!flipped ? <div className="word-image-container">
+        {!flipped && !isPattern ? <div className="word-image-container">
           {imageLoading ? <div style={{textAlign:'center',color:'var(--text-faint)',padding:'20px',fontSize:'12px'}}>
             <div className="spinner" style={{width:'24px',height:'24px',margin:'0 auto 8px'}}></div>
             Generating image...
@@ -89,7 +98,11 @@ export default React.memo(function SessionView({
         </div> : null}
 
         {flipped ? <>
-          {isLearn ? <div className="dual-coding-prompt">
+          {isPattern ? <PatternNotes word={w} /> : null}
+          {isLearn && isPattern ? <div className="dual-coding-prompt">
+            <strong>{'\uD83D\uDDE3\uFE0F'} Say it about you: </strong>
+            {'swap in your own words and say the whole sentence out loud, twice.'}
+          </div> : isLearn ? <div className="dual-coding-prompt">
             <strong>{'\u270D\uFE0F'} Elaboration: </strong>
             {'Create a personal sentence using "'}<em>{w.german}</em>
             {'" connected to your own life.'}
@@ -114,6 +127,7 @@ export default React.memo(function SessionView({
             setAiError={setAiError}
             setAiSaveStatus={setAiSaveStatus}
             lang={lang}
+            explainOpts={isPattern ? {kind: 'pattern'} : undefined}
           /> : null}
         </> : null}
       </div>

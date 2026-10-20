@@ -85,6 +85,8 @@ export default React.memo(function SettingsView({
   // localStorage key the reminder hour persists under — differs per course
   // (German reads 'vocab_reminder_hour', English 'english_reminder_hour').
   reminderHourKey,
+  // Patterns course only: {value: 'en-de'|'de-en', onChange}. Null hides it.
+  directionToggle,
   resetStep, setResetStep, resetPass, setResetPass, resetError, setResetError,
   setProgress, setTodayCompleted,
   exportProgress, importProgress
@@ -143,6 +145,25 @@ export default React.memo(function SettingsView({
             >{darkMode ? '\ud83c\udf19 On' : '\u2600\ufe0f Off'}</button>
           </div>
         </div>
+
+        {directionToggle ? <>
+          <h2>Card direction</h2>
+          <div className="card">
+            <p style={{fontSize:'12px',color:'var(--text-muted)',marginBottom:'10px'}}>
+              {'Speaking practice shows the situation in English and you say it in German. Listening practice plays the German and you recall the meaning.'}
+            </p>
+            <div className="seg-toggle" role="group" aria-label="Card direction">
+              <button type="button" aria-pressed={directionToggle.value !== 'de-en'}
+                className={directionToggle.value !== 'de-en' ? 'active' : ''}
+                onClick={function() { directionToggle.onChange('en-de'); }}
+              >{'🗣️ Speaking: English → German'}</button>
+              <button type="button" aria-pressed={directionToggle.value === 'de-en'}
+                className={directionToggle.value === 'de-en' ? 'active' : ''}
+                onClick={function() { directionToggle.onChange('de-en'); }}
+              >{'👂 Listening: German → English'}</button>
+            </div>
+          </div>
+        </> : null}
 
         <h2>Cloud Sync</h2>
         <div className="card">

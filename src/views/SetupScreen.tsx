@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { dateKey } from '../lib/dates';
 
-export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg, courseFlag, courseTitle, courseDesc, newPerDay, weeks }) {
+export default React.memo(function SetupScreen({ startDate, setStartDate, setStarted, importProgress, connectSync, syncStatus, syncMsg, courseFlag, courseTitle, courseDesc, newPerDay, weeks, itemLabel }) {
   var [emailInput, setEmailInput] = useState('');
   // Commitment numbers are per-course (passed in). Fall back to the
   // German-1500 figures if a caller hasn't supplied them yet.
@@ -73,10 +73,10 @@ export default React.memo(function SetupScreen({ startDate, setStartDate, setSta
           <div className="task-item">
             <div className="task-badge badge-new">{perDay}</div>
             <div>
-              <strong>New words</strong>
+              <strong>{itemLabel === 'pattern' ? 'New sentence patterns' : 'New words'}</strong>
               <br />
               <span style={{fontSize:'11px',color:'var(--text-muted)'}}>
-                Interleaved mix of nouns, verbs, adjectives
+                {itemLabel === 'pattern' ? 'One everyday situation at a time — say each one out loud' : 'Interleaved mix of nouns, verbs, adjectives'}
               </span>
             </div>
           </div>

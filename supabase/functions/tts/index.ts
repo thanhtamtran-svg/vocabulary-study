@@ -87,9 +87,15 @@ Deno.serve(async (req) => {
     if (!text) return json({ error: "text required (max 300 chars)" }, 400);
 
     const voice = VOICES[lang];
+    // Optional slower playback for the "slow" button: clamp to 0.7–1.0 and
+    // multiply the voice's own base rate. Slow audio gets its own file.
+    const reqRate = typeof body?.rate === "number" && isFinite(body.rate)
+      ? Math.min(1.0, Math.max(0.7, body.rate)) : 1.0;
+    const slow = reqRate < 1;
+    const effRate = Math.max(0.5, Math.round(voice.rate * reqRate * 100) / 100);
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const hash = await sha256Hex(voice.name + ":" + voice.rate + ":" + text.toLowerCase());
-    const path = lang + "/" + hash + ".mp3";
+    const hash = await sha256Hex(voice.name + ":" + effRate + ":" + text.toLowerCase());
+    const path = lang + "/" + hash + (slow ? "-slow" : "") + ".mp3";
     const publicUrl = supabaseUrl + "/storage/v1/object/public/tts-audio/" + path;
 
     // Cache check: HEAD on the public URL (no key needed, bucket is public)
@@ -110,7 +116,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           input: { text: text },
           voice: { languageCode: voice.languageCode, name: voice.name },
-          audioConfig: { audioEncoding: "MP3", speakingRate: voice.rate },
+          audioConfig: { audioEncoding: "MP3", speakingRate: effRate },
         }),
       }
     );

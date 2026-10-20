@@ -5,6 +5,11 @@ import { VOCAB_DATA } from './vocab-data';
 import { VOCAB_A11_DATA } from './vocab-a11-data';
 import { readWordLink } from './lib/word-link';
 const EnglishApp = lazy(() => import('./EnglishApp'));
+const PatternsCourse = lazy(() => import('./PatternsCourse'));
+
+// Courses anyone can open without the password.
+const PUBLIC_COURSES = ['german_a11', 'german_patterns'];
+const COURSE_IDS = ['german', 'german_a11', 'german_patterns', 'english'];
 
 const VERIFY_URL = SUPABASE_URL + '/functions/v1/verify-password';
 
@@ -13,7 +18,7 @@ export default function Home() {
     // A word link from an exercise names its course; it wins over the saved
     // choice for this tab only (not persisted).
     var link = readWordLink();
-    if (link && ['german', 'german_a11', 'english'].indexOf(link.lang) !== -1) return link.lang;
+    if (link && COURSE_IDS.indexOf(link.lang) !== -1) return link.lang;
     try { return localStorage.getItem('vocab_language') || null; } catch { return null; }
   });
   const [authenticated, setAuthenticated] = useState(() => {
@@ -36,8 +41,8 @@ export default function Home() {
   const [passLoading, setPassLoading] = useState(false);
 
   function trySelectLanguage(lang) {
-    // Schritte A1.1 is publicly open — no password required
-    if (authenticated || lang === 'german_a11') {
+    // Schritte A1.1 and Hören & Sprechen A1 are publicly open — no password
+    if (authenticated || PUBLIC_COURSES.indexOf(lang) !== -1) {
       localStorage.setItem('vocab_language', lang);
       setLanguage(lang);
     } else {
@@ -85,10 +90,16 @@ export default function Home() {
     return <App onHome={goHome} vocabData={VOCAB_A11_DATA} variant="a11" />;
   }
 
+  var spinner = <div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
+    <div style={{width:'32px',height:'32px',border:'3px solid var(--border)',borderTopColor:'var(--brand)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
+  </div>;
+
+  if (language === 'german_patterns') {
+    return <Suspense fallback={spinner}><PatternsCourse onHome={goHome} /></Suspense>;
+  }
+
   if (language === 'english' && authenticated) {
-    return <Suspense fallback={<div style={{display:'flex',justifyContent:'center',alignItems:'center',height:'60vh'}}>
-      <div style={{width:'32px',height:'32px',border:'3px solid var(--border)',borderTopColor:'var(--brand)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
-    </div>}><EnglishApp onHome={goHome} /></Suspense>;
+    return <Suspense fallback={spinner}><EnglishApp onHome={goHome} /></Suspense>;
   }
 
   // Password prompt
@@ -158,6 +169,14 @@ export default function Home() {
             <div className="language-name">Schritte A1</div>
             <div className="language-desc">{'Textbook \u2022 14 Lektionen'}</div>
             <div className="language-tag active-tag">Active</div>
+          </button>
+          <button className="language-card" onClick={function() { trySelectLanguage('german_patterns'); }}>
+            <div className="language-flag">
+              <img src="https://flagcdn.com/w80/de.png" alt="German flag" />
+            </div>
+            <div className="language-name">{'H\u00F6ren & Sprechen A1'}</div>
+            <div className="language-desc">{'515 sentence patterns \u2022 22 situations'}</div>
+            <div className="language-tag active-tag">New</div>
           </button>
           <button className="language-card" onClick={function() { trySelectLanguage('english'); }}>
             <div className="language-flag">

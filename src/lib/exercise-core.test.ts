@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   recentAccuracy, wordStrength, scheduleRetry, willRetry, nextExerciseRecord,
-  pickDistractors, selectSessionWords, pickSentenceWords
+  pickDistractors, selectSessionWords, pickSentenceWords,
+  normalizeAnswer, matchesAccepted
 } from './exercise-core';
 
 var dk = function(d) { return d.toISOString().slice(0, 10); };
@@ -83,5 +84,34 @@ describe('selectSessionWords', () => {
   it('sentence writing goes to the newest words', () => {
     var sel = [{wi: 1, stage: 3}, {wi: 2, stage: 1}, {wi: 3, stage: 1, neverPracticed: true}];
     expect(pickSentenceWords(sel)).toEqual([3, 2]);
+  });
+});
+
+describe('normalizeAnswer / matchesAccepted', () => {
+  it('ignores case, punctuation, dashes and umlaut spelling', () => {
+    expect(normalizeAnswer('Nein, danke. Das ist alles!')).toBe('nein danke das ist alles');
+    expect(normalizeAnswer('Grüß Gott — Tschüß')).toBe(normalizeAnswer('gruess gott tschuess'));
+    expect(normalizeAnswer('  Wie   geht’s? ')).toBe("wie geht's");
+  });
+  it('accepts any listed alternative, not other sentences', () => {
+    expect(matchesAccepted('ich heisse anna', ['Mein Name ist Anna.', 'Ich heiße Anna.'])).toBe(true);
+    expect(matchesAccepted('Ich heiße', ['Ich heiße Anna.'])).toBe(false);
+    expect(matchesAccepted('', ['x'])).toBe(false);
+    expect(matchesAccepted('Anna heiße ich', ['Ich heiße Anna.'])).toBe(false);
+  });
+});
+
+describe('scheduleRetry — word-order chips', () => {
+  it('re-shuffles the chips of a retried word-order item', () => {
+    const item = { type: 'word_order', wordIdx: 0, chunks: ['Sie?', 'kommen', 'Woher'], correctAnswer: 'Woher kommen Sie?' };
+    let changed = 0;
+    for (let i = 0; i < 20; i++) {
+      const items = scheduleRetry([item, {}, {}, {}, {}, {}, {}], 0, item);
+      const retry: any = items.find((x: any) => x.isRetry);
+      expect([...retry.chunks].sort()).toEqual([...item.chunks].sort());
+      expect(retry.chunks.join(' ')).not.toBe('Woher kommen Sie?');
+      if (retry.chunks.join(' ') !== item.chunks.join(' ')) changed++;
+    }
+    expect(changed).toBeGreaterThan(10);
   });
 });
