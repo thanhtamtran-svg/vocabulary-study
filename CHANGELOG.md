@@ -11,6 +11,19 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-20 — Đóng một lỗ hổng: bản dịch tiếng Việt do AI viết
+
+- Máy chủ từng có một "cửa phụ" dịch tiếng Việt cho khoá tiếng Anh, nhận
+  luôn đoạn chữ do trình duyệt gửi lên rồi lưu bản dịch cho **mọi người
+  học** dùng chung. Người cố ý có thể gửi chữ xấu và làm hỏng bản dịch.
+- App đã thôi hiện bản dịch tiếng Việt từ tháng 4/2026, nên cửa này được
+  **đóng hẳn**: máy chủ từ chối mọi yêu cầu dịch tiếng Việt. Các bản
+  dịch cũ vẫn nằm yên, không ai sửa được.
+- Bạn không thấy gì khác trên app. Cần đưa bản sửa lên máy chủ mới có
+  hiệu lực (xem B-032).
+
+---
+
 ## 2026-10-20 — Thẻ mới "Hören & Sprechen A1": học mẫu câu nói theo tình huống
 
 - Trang chủ có thẻ thứ tư **Hören & Sprechen A1** (mở tự do, không cần

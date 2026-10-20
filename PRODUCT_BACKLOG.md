@@ -91,12 +91,25 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ### B-032: Bản dịch tiếng Việt (AI) nhận chữ tự do từ trình duyệt rồi lưu dùng chung
 
-- Phát hiện khi rà B-031 (2026-10-20), có từ trước: nhánh `lang: 'vi'`
-  của explain-word đưa trường `definition` (do trình duyệt gửi, không
-  qua bộ lọc) vào câu lệnh AI và lưu kết quả dùng chung dưới khoá
-  `vi:` + từ. Một người cố ý có thể gửi chữ độc hại → bản dịch sai/xấu
-  hiện cho mọi người học tiếng Anh. Sửa: máy chủ tự lấy định nghĩa từ
-  dữ liệu khoá học (hoặc lọc + giới hạn), không tin chữ gửi lên.
+- Phát hiện khi rà B-031 (2026-10-20): nhánh `lang: 'vi'` của
+  explain-word đưa trường `definition` (trình duyệt gửi, không lọc) vào
+  câu lệnh AI rồi lưu dùng chung dưới khoá `vi:` + từ.
+- **Code đã sửa 2026-10-20** (app đã thôi dùng bản dịch Việt từ 04/2026
+  nên gỡ hẳn nhánh này; mọi yêu cầu `vi` bị từ chối 400; từ tiếng Đức
+  mở đầu bằng `vi:`/`en:`/`pat:` cũng bị từ chối để khỏi lọt sang ngăn
+  khác). `_shared/explain-cache-key.ts` + 5 test (117/117), build OK.
+- **Còn lại:** deploy explain-word (lần chạy tự động bị chặn quyền) rồi
+  probe: gửi `lang: 'vi'` + `definition` độc → phải 400, dòng
+  `vi:facilitate something` giữ nguyên ("làm cho một hành động hoặc một
+  quá trình có thể hoặc dễ dàng hơn", tạo 2026-03-31).
+
+### B-034: explain-word vẫn đưa trường `type` (chữ tự do) vào câu lệnh German/English
+
+- Phát hiện khi sửa B-032 (2026-10-20): `type` do trình duyệt gửi được
+  chèn thẳng vào prompt German ("type: …") và English, rồi kết quả lưu
+  dùng chung. Chỉ khai thác được với từ **chưa có** bản giải thích lưu
+  sẵn, nhưng cùng loại lỗi đầu độc cache. Sửa: chỉ nhận `type` nằm
+  trong danh sách loại từ cố định của khoá (noun, verb…), còn lại bỏ.
 
 ### B-033: Khoá mẫu câu — còn một kiểm tra trên web thật
 
