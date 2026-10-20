@@ -98,12 +98,14 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
   hiện cho mọi người học tiếng Anh. Sửa: máy chủ tự lấy định nghĩa từ
   dữ liệu khoá học (hoặc lọc + giới hạn), không tin chữ gửi lên.
 
-### B-033: Sau khi triển khai khoá mẫu câu — kiểm tra trên web thật
+### B-033: Khoá mẫu câu — còn một kiểm tra trên web thật
 
-- Thử AI tutor + AI chấm câu với một mẫu câu; thử 🐢 chậm và 🔁 ×3 có
-  âm thanh (máy thử nghiệm không gọi được giọng đọc trên mây); đồng bộ
-  PC ↔ điện thoại cho khoá mới; probe curl: `german` vẫn 401 không vé,
-  `german_patterns` thì không.
+- Đã xong 2026-10-20 sau deploy: probe (German/English/không-lang vẫn
+  401; `german_patterns` + A1 mở; bộ lọc chặn chữ dài/ngoặc; ghi chú
+  độc hại bị bỏ qua), AI tutor lưu `pat:` + tự hiện trên web, AI chấm
+  câu đúng/sai hợp lý, giọng đọc thường + file `-slow` riêng.
+- Còn lại: PM nhập email đồng bộ ở khoá mới trên PC và điện thoại, xác
+  nhận tiến độ (kể cả câu chuyển từ Schritte A1) hiện giống nhau.
 
 ### B-027: Đồng bộ lựa chọn "Focus Lektion" giữa PC và điện thoại
 
