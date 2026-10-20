@@ -1,6 +1,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkRateLimit } from "../_shared/rate-limit.ts";
+import { validateWord as validateWordShared } from "../_shared/validate-word.ts";
 
 const ALLOWED_ORIGINS = [
   "https://thanhtamtran-svg.github.io",
@@ -44,16 +45,9 @@ async function validateAuthToken(req: Request): Promise<boolean> {
   }
 }
 
-// Validate word input
+// Validate word input (shared with explain-word; up to 12 words here)
 function validateWord(word: unknown): string | null {
-  if (typeof word !== "string") return null;
-  const trimmed = word.trim();
-  if (trimmed.length === 0 || trimmed.length > 100) return null;
-  // Allow letters, digits, hyphens, spaces, apostrophes, slashes, periods,
-  // plus, parens, commas, tilde, and end-of-sentence punctuation (?!:;)
-  if (!/^[\p{L}\d\s\-'\/\.\+\(\),~?!:;]+$/u.test(trimmed)) return null;
-  if (trimmed.split(/\s+/).length > 12) return null;
-  return trimmed;
+  return validateWordShared(word, undefined, 12);
 }
 
 function validateShortString(val: unknown, maxLen = 100): string | null {

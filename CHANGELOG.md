@@ -11,12 +11,20 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
-## 2026-10-20 — Giải thích AI tự thử lại khi trục trặc + sửa chữ "Tạo ảnh"
+## 2026-10-20 — Sửa "Could not load explanation" cho thẻ có dấu "…" + chữ "Tạo ảnh"
 
-- PM gặp "Could not load explanation" ở thẻ *Ich nehme ...*. Cùng yêu
-  cầu đó chạy lại vài phút sau thì thành công, các từ khác trong ngày
-  cũng bình thường → dịch vụ AI trục trặc chốc lát. Giờ máy chủ tự thử
-  lại một lần (sau 1,5 giây) khi dịch vụ AI báo bận/lỗi.
+- PM gặp "Could not load explanation" ở thẻ *Ich nehme …*. Chẩn đoán
+  lần đầu SAI (tưởng dịch vụ AI trục trặc — vì thử bằng "..." ba dấu
+  chấm thì chạy). Nguyên nhân thật: thẻ dùng ký tự "…" (một ký tự), bộ
+  lọc đầu vào trên máy chủ không cho phép → từ chối ngay. Ảnh hưởng 12
+  mẫu câu A1 (*Ich nehme …*, *… tut weh*, *von … bis …*…) và 10 cụm
+  tiếng Anh có dấu "=" — ở cả phần giải thích, tạo câu luyện tập và tạo
+  ảnh. Giờ ba phần dùng chung một bộ lọc, có bài kiểm tra tự động chạy
+  **mọi từ trong cả 3 khoá** qua bộ lọc → từ mới thêm sau này mà bị chặn
+  sẽ bị phát hiện ngay khi kiểm tra. Đã thử thật trên web: *Ich nehme …*
+  ra giải thích; nội dung rác vẫn bị chặn.
+- Giữ thêm: máy chủ tự thử lại một lần (sau 1,5 giây) khi dịch vụ AI
+  báo bận/lỗi.
 - Nút tạo ảnh trên thẻ hiện ký tự lạ thay vì "✨ Tạo ảnh" (và "Đang tạo
   ảnh…" lúc chờ). Đã sửa; quét toàn bộ giao diện không còn chỗ tương tự.
 
