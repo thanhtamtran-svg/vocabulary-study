@@ -19,8 +19,9 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 - App đã thôi hiện bản dịch tiếng Việt từ tháng 4/2026, nên cửa này được
   **đóng hẳn**: máy chủ từ chối mọi yêu cầu dịch tiếng Việt. Các bản
   dịch cũ vẫn nằm yên, không ai sửa được.
-- Bạn không thấy gì khác trên app. Cần đưa bản sửa lên máy chủ mới có
-  hiệu lực (xem B-032).
+- Bạn không thấy gì khác trên app. Đã đưa lên máy chủ và thử thật:
+  yêu cầu dịch tiếng Việt kèm chữ độc bị từ chối, bản dịch cũ còn
+  nguyên; giải thích tiếng Đức, tiếng Anh và AI tutor mẫu câu vẫn chạy.
 
 ---
 

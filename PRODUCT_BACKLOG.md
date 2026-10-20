@@ -89,20 +89,6 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ## 🌱 Low
 
-### B-032: Bản dịch tiếng Việt (AI) nhận chữ tự do từ trình duyệt rồi lưu dùng chung
-
-- Phát hiện khi rà B-031 (2026-10-20): nhánh `lang: 'vi'` của
-  explain-word đưa trường `definition` (trình duyệt gửi, không lọc) vào
-  câu lệnh AI rồi lưu dùng chung dưới khoá `vi:` + từ.
-- **Code đã sửa 2026-10-20** (app đã thôi dùng bản dịch Việt từ 04/2026
-  nên gỡ hẳn nhánh này; mọi yêu cầu `vi` bị từ chối 400; từ tiếng Đức
-  mở đầu bằng `vi:`/`en:`/`pat:` cũng bị từ chối để khỏi lọt sang ngăn
-  khác). `_shared/explain-cache-key.ts` + 5 test (117/117), build OK.
-- **Còn lại:** deploy explain-word (lần chạy tự động bị chặn quyền) rồi
-  probe: gửi `lang: 'vi'` + `definition` độc → phải 400, dòng
-  `vi:facilitate something` giữ nguyên ("làm cho một hành động hoặc một
-  quá trình có thể hoặc dễ dàng hơn", tạo 2026-03-31).
-
 ### B-034: explain-word vẫn đưa trường `type` (chữ tự do) vào câu lệnh German/English
 
 - Phát hiện khi sửa B-032 (2026-10-20): `type` do trình duyệt gửi được
@@ -162,6 +148,8 @@ auth (Supabase Auth) thay vì password chung.
 ## ✅ Completed (gần đây)
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
+
+- 2026-10-20 — B-032 closed: gỡ nhánh dịch tiếng Việt của explain-word (nhận `definition` chữ tự do rồi lưu dùng chung); `vi` và từ Đức mở đầu `vi:`/`en:`/`pat:` bị từ chối 400 (`_shared/explain-cache-key.ts` + test). Đã deploy + probe thật: vi kèm chữ độc → 400, 3 tiền tố → 400, dòng `vi:facilitate something` (2026-03-31) giữ nguyên, German/English/pattern vẫn 200. Còn B-034.
 
 - 2026-10-20 — B-031 closed: khoá thứ 4 "Hören & Sprechen A1" (515 mẫu câu, 22 tình huống). Data `src/patterns-a1-data.ts` sinh bằng `scripts/build-patterns-data.mjs` từ docx + 344 dòng câu/cảm thán cắt khỏi Schritte A1 (cache `scripts/data/a11-moved-rows.json`); chuyển tiến độ A1 → patterns idempotent (`src/lib/patterns-migration.ts`, chạy khi mở khoá + khi kéo tiến độ A1 từ mây). App.tsx dùng bảng cấu hình `src/lib/course-config.ts` thay cho `isA11`. Thẻ `PatternCard` (nghe-trước-lật-sau, chậm, ×3), bài tập `pattern-exercise-engine.ts` (thêm dạng xếp từ), đổi chiều trong Settings. Server: sync-progress mở `german_patterns` (allow-list), explain-word prompt mẫu câu + cache `pat:` (chỉ nhận đúng câu mẫu đã lọc — không nhận chữ tự do, chống đầu độc cache), check-sentence prompt mẫu câu, tts `rate` chậm (file `-slow` riêng). 112/112 test.
 
