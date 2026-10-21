@@ -11,6 +11,29 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-21 — Rà lại 515 mẫu câu: sửa câu không tự nhiên, gộp trùng
+
+- PM phát hiện *Was sprechen Sie?* (nghĩa đời thường là "Ông/bà đang nói
+  gì?") → rà toàn bộ bộ mẫu câu theo tiêu chí: tự nhiên trong văn nói,
+  không gây hiểu nhầm, không trùng, nghĩa tiếng Anh khớp. Kết quả: 502
+  mẫu câu.
+- **Sửa câu (10):** *Was sprechen Sie?/Was sprichst du?* gộp vào *Welche
+  Sprachen …*; *Buchstabieren Sie, bitte.* → *Können Sie das bitte
+  buchstabieren?*; *Ich freue mich.* → *Ich freue mich schon darauf.*;
+  câu hỏi Oliven giờ trả lời đúng Oliven; *bei dem Hotel* → *beim Hotel*;
+  *1 Kilo* → *ein Kilo*; *Oh, wie dumm!* → *Oh, wie blöd!*; *Ist hier
+  auch…* → *Gibt es hier auch…*; *Wenden Sie!* → *Bitte wenden.* (câu
+  máy chỉ đường, chuyển sang nhóm chỉ-nghe cùng với *Heute im Angebot*);
+  bỏ *Fahren Sie zurück!*.
+- **Gộp thẻ gần trùng (11):** *Stimmt./Ja, stimmt.* vào *Das stimmt.*,
+  *Ich weiß nicht.* vào *Ich weiß es nicht.*, *Das tut mir leid.* vào *Tut
+  mir leid.*… — cách nói cũ vẫn được chấp nhận khi làm bài tập.
+- **Sửa nghĩa tiếng Anh (5)** và **thêm lưu ý sắc thái (4):** *Wer sind
+  Sie?* (nghe như chất vấn), *Na und?* (hơi hỗn), *Nein, falsch.* (cụt).
+- **Tiến độ không mất:** câu đã học bị đổi chữ/gộp thì tiến độ chuyển
+  sang câu mới, trên mọi máy (kể cả bản trên mây do app cũ ghi). Thẻ mẫu
+  câu *Was kostet das?* chuyển từ "Hỏi đường" sang "Mua thực phẩm".
+
 ## 2026-10-20 — Đóng nốt lỗ hổng cùng loại ở phần giải thích AI
 
 - Ô "loại từ" (Noun, Verb…) do trình duyệt gửi lên từng được đưa nguyên

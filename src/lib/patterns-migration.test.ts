@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { migrateA11ToPatterns, patternsKeyFor } from './patterns-migration';
-import { A11_TO_PATTERNS } from '../patterns-a1-migration';
+import { migrateA11ToPatterns, patternsKeyFor, applyPatternRenames } from './patterns-migration';
+import { A11_TO_PATTERNS, PATTERN_RENAMES, DROPPED_A11_KEYS } from '../patterns-a1-migration';
 import { VOCAB_PATTERNS_DATA } from '../patterns-a1-data';
 import { VOCAB_A11_DATA } from '../vocab-a11-data';
 import moved from '../../scripts/data/a11-moved-rows.json';
@@ -15,9 +15,11 @@ const MAP = {
 };
 
 describe('A11_TO_PATTERNS (generated map)', () => {
-  it('covers every row cut out of Schritte A1', () => {
+  it('covers every row cut out of Schritte A1 (except rows dropped on purpose)', () => {
     (moved as {de: string}[]).forEach(r => {
-      expect(A11_TO_PATTERNS[r.de.toLowerCase().trim()], r.de).toBeTruthy();
+      const k = r.de.toLowerCase().trim();
+      if (DROPPED_A11_KEYS.includes(k)) return;
+      expect(A11_TO_PATTERNS[k], r.de).toBeTruthy();
     });
   });
   it('points only at rows that exist in the patterns course', () => {
@@ -27,6 +29,32 @@ describe('A11_TO_PATTERNS (generated map)', () => {
   it('left no moved row behind in Schritte A1', () => {
     const left = new Set(VOCAB_A11_DATA.words.map(w => String(w[0]).toLowerCase().trim()));
     (moved as {de: string}[]).forEach(r => expect(left.has(r.de.toLowerCase().trim()), r.de).toBe(false));
+  });
+});
+
+describe('PATTERN_RENAMES (2026-10-21 review)', () => {
+  const current = new Set(VOCAB_PATTERNS_DATA.words.map(w => w[0]));
+  it('every target is a current row, every old key is gone', () => {
+    Object.entries(PATTERN_RENAMES).forEach(([oldKey, target]) => {
+      expect(current.has(target), target).toBe(true);
+      expect([...current].some(g => g.toLowerCase() === oldKey), oldKey).toBe(false);
+    });
+  });
+  it('moves progress of "Was sprechen Sie?" onto "Welche Sprachen sprechen Sie?" without downgrading', () => {
+    const p = {
+      'was sprechen sie?': { learned: true, confidence: 4, lastReview: '2026-10-20', reviews: [{ date: '2026-10-20', type: 'review', conf: 4 }] },
+      'welche sprachen sprechen sie?': { learned: true, confidence: 2, lastReview: '2026-10-18', reviews: [{ date: '2026-10-18', type: 'learn', conf: 2 }] },
+    };
+    const r = applyPatternRenames(p, {});
+    const t = r.progress['welche sprachen sprechen sie?'];
+    expect(t.confidence).toBe(4);
+    expect(t.lastReview).toBe('2026-10-20');
+    expect(t.reviews).toHaveLength(2);
+    expect(applyPatternRenames(r.progress, r.exerciseProgress).changed).toBe(false);
+  });
+  it('chains: a Schritte row that maps to a reworded pattern lands on the new wording', () => {
+    expect(A11_TO_PATTERNS['buchstabieren sie, bitte.']).toBe('Können Sie das bitte buchstabieren?');
+    expect(A11_TO_PATTERNS['was sprechen sie?']).toBe('Welche Sprachen sprechen Sie?');
   });
 });
 

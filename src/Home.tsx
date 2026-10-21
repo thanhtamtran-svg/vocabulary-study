@@ -175,7 +175,7 @@ export default function Home() {
               <img src="https://flagcdn.com/w80/de.png" alt="German flag" />
             </div>
             <div className="language-name">{'H\u00F6ren & Sprechen A1'}</div>
-            <div className="language-desc">{'515 sentence patterns \u2022 22 situations'}</div>
+            <div className="language-desc">{'502 sentence patterns \u2022 22 situations'}</div>
             <div className="language-tag active-tag">New</div>
           </button>
           <button className="language-card" onClick={function() { trySelectLanguage('english'); }}>

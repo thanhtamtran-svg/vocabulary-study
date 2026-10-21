@@ -141,6 +141,8 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-10-21 — Rà tự nhiên 515 mẫu câu → 502 (`scripts/apply-patterns-review-2026-10-21.mjs`, idempotent): 10 câu sửa chữ, 1 bỏ, 2 chuyển nhóm, 11 gộp, 5 sửa nghĩa EN, 4 ghi chú sắc thái. `PATTERN_RENAMES` + `applyPatternRenames()` chuyển tiến độ theo chữ mới (chạy lúc mở khoá + sau mỗi lần kéo từ mây; A11_TO_PATTERNS cũng được trỏ lại). 123/123 test; thử local: tiến độ *Was sprechen Sie?* hiện trên *Welche Sprachen sprechen Sie?*.
+
 - 2026-10-21 — B-013 sửa lại: auto-deploy functions hỏng từ ~13/10 vì mã `SUPABASE_ACCESS_TOKEN` trên GitHub hết hiệu lực ("Invalid access token"). PM tạo mã mới (Supabase, tài khoản uniques-officience) và cập nhật secret trên GitHub (tài khoản thanhtamtran-svg). Chạy lại: thành công, 11 function được deploy; probe sau đó vẫn đúng (German 401, patterns 200, vi 400, tts 200). Nếu lại hỏng với lỗi 401: thay mã theo cách trên.
 
 - 2026-10-20 — B-034 closed: explain-word chỉ nhận `type` nằm trong danh sách loại từ cố định của khoá (`_shared/word-type.ts` + 3 test, 120/120); chữ lạ → bỏ. Đã deploy + probe thật: từ chưa có cache kèm `type` chứa lệnh độc → AI làm lơ; German/English vẫn 200.

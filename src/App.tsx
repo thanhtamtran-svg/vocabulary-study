@@ -10,7 +10,7 @@ import {
 } from './lib/constants';
 import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
 import { speakGerman, speakPattern } from './lib/speech';
-import { migrateA11ToPatterns } from './lib/patterns-migration';
+import { migrateA11ToPatterns, applyPatternRenames } from './lib/patterns-migration';
 import { loadState, saveState } from './lib/storage';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
@@ -59,7 +59,9 @@ function App({onHome, vocabData, variant}) {
     var a11Ex = null, ownEx = null;
     try { a11Ex = JSON.parse(localStorage.getItem(COURSES.a11.exerciseProgressKey) || 'null'); } catch (e) {}
     try { ownEx = JSON.parse(localStorage.getItem(exerciseProgressKey) || 'null'); } catch (e) {}
-    return migrateA11ToPatterns(a11 && a11.progress, a11Ex, saved && saved.progress, ownEx);
+    var fromA11 = migrateA11ToPatterns(a11 && a11.progress, a11Ex, saved && saved.progress, ownEx);
+    // Then fold progress of reworded/merged patterns into their current wording
+    return applyPatternRenames(fromA11.progress, fromA11.exerciseProgress);
   }, []);
   // Card direction (patterns course): 'en-de' = situation -> say it in German
   // (default), 'de-en' = hear/read German -> meaning.
@@ -613,6 +615,12 @@ function App({onHome, vocabData, variant}) {
           startDate: dateKey(startDate), started: started,
         };
         var merged = mergeFullState(localSnapshot, remote, dateKey(today), VOCAB_DATA);
+        // A cloud copy from an older app version may still use reworded keys
+        if (isPatternCourse) {
+          var renamed = applyPatternRenames(merged.progress, merged.exerciseProgress);
+          merged.progress = renamed.progress;
+          merged.exerciseProgress = renamed.exerciseProgress;
+        }
         // Compute studyDates from merged progress + exercises (source of truth)
         // Also union with remote.studyDates in case it has dates not in reviews
         var computedDates = new Set(remote.studyDates || []);

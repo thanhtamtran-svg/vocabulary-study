@@ -6,7 +6,7 @@
 // run on every patterns load and again whenever Schritte state arrives from
 // the cloud. That covers a device that has the old progress only in the cloud.
 import { mergeProgress, mergeExerciseProgress } from './sync';
-import { A11_TO_PATTERNS } from '../patterns-a1-migration';
+import { A11_TO_PATTERNS, PATTERN_RENAMES } from '../patterns-a1-migration';
 
 type Rec = {[k: string]: any};
 
@@ -46,4 +46,13 @@ function stable(v: any): string {
       .map(function(k) { return JSON.stringify(k) + ':' + stable(v[k]); }).join(',') + '}';
   }
   return JSON.stringify(v);
+}
+
+// Patterns reworded or merged after release (PATTERN_RENAMES): fold the old
+// key's progress into the current wording. Same merge rules, so it is just as
+// safe to repeat — run it on load and after every cloud pull, because a cloud
+// copy written by an older app version still carries the old keys. Old keys
+// are left in place (they match no row, so the app ignores them).
+export function applyPatternRenames(progress: Rec | null | undefined, exercise: Rec | null | undefined, renames: Rec = PATTERN_RENAMES) {
+  return migrateA11ToPatterns(progress, exercise, progress, exercise, renames);
 }
