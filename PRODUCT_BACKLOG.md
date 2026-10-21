@@ -141,6 +141,8 @@ auth (Supabase Auth) thay vì password chung.
 
 Đẩy xuống sau khi xong. Detail xem [CHANGELOG.md](CHANGELOG.md).
 
+- 2026-10-21 — B-013 sửa lại: auto-deploy functions hỏng từ ~13/10 vì mã `SUPABASE_ACCESS_TOKEN` trên GitHub hết hiệu lực ("Invalid access token"). PM tạo mã mới (Supabase, tài khoản uniques-officience) và cập nhật secret trên GitHub (tài khoản thanhtamtran-svg). Chạy lại: thành công, 11 function được deploy; probe sau đó vẫn đúng (German 401, patterns 200, vi 400, tts 200). Nếu lại hỏng với lỗi 401: thay mã theo cách trên.
+
 - 2026-10-20 — B-034 closed: explain-word chỉ nhận `type` nằm trong danh sách loại từ cố định của khoá (`_shared/word-type.ts` + 3 test, 120/120); chữ lạ → bỏ. Đã deploy + probe thật: từ chưa có cache kèm `type` chứa lệnh độc → AI làm lơ; German/English vẫn 200.
 
 - 2026-10-20 — B-032 closed: gỡ nhánh dịch tiếng Việt của explain-word (nhận `definition` chữ tự do rồi lưu dùng chung); `vi` và từ Đức mở đầu `vi:`/`en:`/`pat:` bị từ chối 400 (`_shared/explain-cache-key.ts` + test). Đã deploy + probe thật: vi kèm chữ độc → 400, 3 tiền tố → 400, dòng `vi:facilitate something` (2026-03-31) giữ nguyên, German/English/pattern vẫn 200. Còn B-034.
