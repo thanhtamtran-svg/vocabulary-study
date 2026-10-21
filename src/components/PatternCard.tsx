@@ -51,7 +51,7 @@ function AudioButtons({ text, onFront }) {
   }
   return <div className="pattern-audio" onClick={function(e) { e.stopPropagation(); }}>
     <button type="button" className="pattern-audio-btn" aria-label="Play the German sentence"
-      onClick={function(e) { play(e, {}); }}>{'🔊'}{onFront ? ' Check by ear' : ''}</button>
+      onClick={function(e) { play(e, {}); }}>{'🔊'}{onFront ? ' Check by ear' : ' Play'}</button>
     <button type="button" className="pattern-audio-btn" aria-label="Play slowly"
       onClick={function(e) { play(e, { slow: true }); }}>{'🐢 Slow'}</button>
     {!onFront ? <button type="button" className="pattern-audio-btn" aria-label="Play three times with pauses, to shadow along"
@@ -79,9 +79,12 @@ export default React.memo(function PatternCard({ word, flipped, onFlip, directio
     {formal ? <span className="pattern-chip">{formal}</span> : null}
   </div>;
 
+  // Answer side: sentence, its meaning right under it, then the audio row —
+  // the buttons must not split the German from what it means.
   var germanFace = <>
     {chips}
     <div className="pattern-german"><Lines text={pattern} keyPrefix="g" /></div>
+    <div className="pattern-meaning">{String(meta.cue || word.english).replace(/[[\]]/g, '')}</div>
     <AudioButtons text={pattern} onFront={false} />
   </>;
 
@@ -113,10 +116,7 @@ export default React.memo(function PatternCard({ word, flipped, onFlip, directio
           </>}
         </div>
         <div className="flashcard-face flashcard-back pattern-back">
-          {enFirst ? <>
-            {germanFace}
-            <div className="pattern-meaning">{String(meta.cue || word.english).replace(/[[\]]/g, '')}</div>
-          </> : <>
+          {enFirst ? germanFace : <>
             {chips}
             <div className="pattern-meaning big">{word.english}</div>
             <div className="pattern-german small"><Lines text={pattern} keyPrefix="b" /></div>

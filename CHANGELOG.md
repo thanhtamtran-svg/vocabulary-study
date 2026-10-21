@@ -11,6 +11,18 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-10-21 — Thẻ mẫu câu trên máy tính: chữ to hơn, thẻ gọn hơn, không phải cuộn để chấm
+
+- PM thấy chữ nhỏ trên máy tính. Thực tế thẻ cao cố định 500px mà chữ
+  chỉ 22px, nút chấm "Nhớ đến đâu?" bị đẩy xuống dưới mép màn hình.
+- Thẻ mẫu câu giờ **cao vừa với nội dung** (khoảng 300–340px, tự giãn
+  khi gặp hội thoại dài), nên nút chấm và ghi chú nằm ngay dưới thẻ.
+- **Chữ to theo màn hình:** câu Đức/câu gợi ý 22px trên điện thoại →
+  28px máy tính bảng → 36px máy tính → 40px màn lớn; nghĩa 14 → 22px.
+- Mặt sau xếp lại: câu Đức → nghĩa → hàng nút nghe (trước đây hàng nút
+  chen giữa câu và nghĩa). Nút loa có chữ "Play", nút cao hơn cho dễ bấm.
+  "8 word streak" → "8 in a row" ở khoá mẫu câu. Thẻ từ vựng không đổi.
+
 ## 2026-10-21 — Rà lại 515 mẫu câu: sửa câu không tự nhiên, gộp trùng
 
 - PM phát hiện *Was sprechen Sie?* (nghĩa đời thường là "Ông/bà đang nói

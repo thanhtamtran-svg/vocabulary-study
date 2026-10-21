@@ -177,7 +177,12 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .flashcard-back-def{font-size:13px}
 
 /* ===== SENTENCE-PATTERN CARD (Hören & Sprechen A1) ===== */
-.pattern-card .flashcard-face{padding:18px 16px;gap:6px}
+/* The pattern card sizes itself to its content: both faces sit in the same
+   grid cell, so the card is as tall as the taller face (a 3-turn dialogue
+   grows it, a one-liner keeps it compact) and the rating buttons and notes
+   stay in view without scrolling. Word cards keep their fixed height. */
+.flashcard.pattern-card{height:auto;min-height:300px;display:grid}
+.pattern-card .flashcard-face{position:relative;grid-area:1/1;height:auto;padding:22px 18px;gap:8px}
 .pattern-prompt{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;opacity:0.8}
 .pattern-cue{font-family:'Montserrat',sans-serif;font-size:21px;font-weight:700;line-height:1.35;text-align:center;max-width:100%;overflow-wrap:anywhere}
 .pattern-german{font-size:22px;font-weight:700;line-height:1.35;text-align:center;color:var(--text);max-width:100%;overflow-wrap:anywhere}
@@ -193,13 +198,39 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .pattern-chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--chip-bg);color:var(--chip-text)}
 .pattern-chip.on-brand{background:var(--on-brand-tint);color:#fff}
 .pattern-audio{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px}
-.pattern-audio-btn{font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;cursor:pointer;border:1.5px solid var(--border-strong);background:var(--card);color:var(--text)}
+.pattern-audio-btn{font-size:14px;font-weight:600;min-height:44px;padding:8px 16px;border-radius:999px;cursor:pointer;border:1.5px solid var(--border-strong);background:var(--card);color:var(--text)}
 .flashcard-front .pattern-audio-btn{background:var(--on-brand-tint);border-color:var(--on-brand-line);color:#fff}
 .pattern-audio-btn:active{transform:scale(0.96)}
 .pattern-notes{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
 .pattern-note{font-size:13px;line-height:1.5;color:var(--text);background:var(--subtle-bg);border-radius:10px;padding:8px 12px}
 .pattern-note-faint{color:var(--text-muted)}
 .pattern-source{font-size:11px;color:var(--text-muted);text-align:center}
+/* Pattern text scales with the screen (word cards have their own scale above) */
+@media (min-width: 768px) {
+  .flashcard.pattern-card{min-height:320px}
+  .pattern-card .flashcard-face{padding:28px 32px;gap:10px}
+  .pattern-cue,.pattern-german,.pattern-meaning.big{font-size:28px}
+  .pattern-german.small{font-size:20px}
+  .pattern-meaning{font-size:17px}
+  .pattern-prompt{font-size:13px}
+  .pattern-chip,.pattern-card .tag{font-size:12px}
+  .pattern-audio-btn{font-size:15px}
+  .pattern-note{font-size:14px}
+}
+@media (min-width: 1024px) {
+  .flashcard.pattern-card{min-height:340px}
+  .pattern-cue,.pattern-german,.pattern-meaning.big{font-size:36px;line-height:1.3}
+  .pattern-german.small{font-size:24px}
+  .pattern-meaning{font-size:20px}
+  .pattern-audio-btn{font-size:16px;padding:10px 20px}
+  .pattern-note{font-size:15px}
+  .pattern-source{font-size:12px}
+}
+@media (min-width: 1440px) {
+  .pattern-cue,.pattern-german,.pattern-meaning.big{font-size:40px}
+  .pattern-german.small{font-size:26px}
+  .pattern-meaning{font-size:22px}
+}
 .seg-toggle{display:flex;border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden}
 .seg-toggle button{flex:1;padding:9px 6px;font-size:12px;font-weight:600;border:none;background:var(--card);color:var(--text);cursor:pointer}
 .seg-toggle button.active{background:var(--brand);color:var(--on-tint)}

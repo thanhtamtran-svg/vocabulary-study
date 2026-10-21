@@ -46,7 +46,7 @@ export default React.memo(function SessionView({
         </div>
 
         {streak >= 3 ? <div style={{textAlign:'center',fontSize:'12px',color:'var(--warning)',fontWeight:600,margin:'4px 0'}}>
-          {'\uD83D\uDD25 ' + streak + ' word streak!'}
+          {'\uD83D\uDD25 ' + streak + (isPattern ? ' in a row!' : ' word streak!')}
         </div> : null}
 
         {isPattern ? <PatternCard
