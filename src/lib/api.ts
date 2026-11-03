@@ -1,4 +1,5 @@
 import { SUPABASE_URL, SUPABASE_KEY } from './supabase';
+import { dialogueTurnsOk } from '../../supabase/functions/_shared/dialogue-turns';
 
 const EXPLAIN_URL = SUPABASE_URL + '/functions/v1/explain-word';
 
@@ -201,6 +202,12 @@ export async function fetchCachedExplanation(word, lang?, opts?: ExplainOpts) {
     // new ÖSD format on next click, instead of auto-displaying the outdated one.
     if (!isPat && lang !== 'en' && lang !== 'vi' && typeof exp === 'string' &&
         (exp.indexOf('Key Grammar Point') !== -1 || exp.indexOf('Word Family') !== -1)) {
+      cachedExplanationCache.set(cacheKey, null);
+      return null;
+    }
+    // Exam dialogues with broken A/B turns: the server regenerates them, so
+    // show the button instead of the bad cached text (same check as server).
+    if (prefix === 'exam2:' && typeof exp === 'string' && !dialogueTurnsOk(exp)) {
       cachedExplanationCache.set(cacheKey, null);
       return null;
     }

@@ -4,6 +4,7 @@ import { checkRateLimit } from "../_shared/rate-limit.ts";
 import { validateWord } from "../_shared/validate-word.ts";
 import { explainCacheKey } from "../_shared/explain-cache-key.ts";
 import { allowedWordType } from "../_shared/word-type.ts";
+import { dialogueTurnsOk } from "../_shared/dialogue-turns.ts";
 
 
 
@@ -166,7 +167,10 @@ Deno.serve(async (req) => {
       (cached.explanation.includes("## Key Grammar Point") ||
        cached.explanation.includes("Word Family"));
 
-    if (cached?.explanation && !isStaleFormat) {
+    // Exam dialogues cached with broken A/B turns are regenerated too.
+    const isBadExam = isExam && typeof cached?.explanation === "string" && !dialogueTurnsOk(cached.explanation);
+
+    if (cached?.explanation && !isStaleFormat && !isBadExam) {
       return new Response(
         JSON.stringify({ explanation: cached.explanation }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -191,7 +195,7 @@ Give the learner MANY other ways to ask and answer about the same card word, as 
 ### 2
 … (6 dialogues in total)
 
-Vary them: W-questions (Was, Wann, Wo, Wie oft, Mit wem…) and yes/no questions; at least one formal (Sie) dialogue; short and longer answers, one with a reason (weil/denn), one "Nein, …", one with time or frequency. In 2 of the 6 dialogues keep the talk going: add a third turn "- A: " with a natural follow-up question and a fourth turn "- B: " answering it, or B asks back ("Und du?") and A answers.
+Vary them: W-questions (Was, Wann, Wo, Wie oft, Mit wem…) and yes/no questions; at least one formal (Sie) dialogue; short and longer answers, one with a reason (weil/denn), one "Nein, …", one with time or frequency. In 2 of the 6 dialogues keep the talk going: add a third turn "- A: " with a natural follow-up question and a fourth turn "- B: " answering it.
 
 ## Watch out
 - [1–2 short plain "- " bullets (no A:/B:): word order (verb second / verb first in yes-no questions), du vs Sie, or a typical A1 mistake with this word.]
@@ -199,6 +203,7 @@ Vary them: W-questions (Was, Wann, Wo, Wie oft, Mit wem…) and yes/no questions
 STRICT RULES:
 - At most 320 words in total.
 - A1 German only (simple, concrete, everyday), and every German sentence must be correct and natural, exactly what a native speaker says. Separable verbs split correctly (Siehst du gern fern?, not "Siehst du gern Fernsehen?").
+- Turns strictly alternate A, B, A, B, starting with A — never two A or two B turns in a row.
 - Each turn is one bullet: "- A: " or "- B: ", then the German in **bold**, then " – " and the English (the app adds a read-aloud button per turn). One German sentence or short question per turn.
 - NO brackets or placeholders inside German sentences; use real words.
 - NEVER use markdown tables (no | pipes).` : `This is a model answer for Goethe A1 Sprechen Teil 3: the learner draws a picture card of an object or action and must make a polite request about it; the partner reacts. Model (request — reaction): "${word}"
@@ -220,6 +225,7 @@ Vary the request: Können Sie … bitte …?, Kannst du … bitte …?, an imper
 STRICT RULES:
 - At most 260 words in total.
 - A1 German only (simple, concrete, everyday), and every German sentence must be correct and natural, exactly what a native speaker says. Separable verbs split correctly (Siehst du gern fern?, not "Siehst du gern Fernsehen?").
+- Turns strictly alternate A, B, A, B, starting with A — never two A or two B turns in a row.
 - Each turn is one bullet: "- A: " or "- B: ", then the German in **bold**, then " – " and the English (the app adds a read-aloud button per turn). One German sentence or short question per turn.
 - NO brackets or placeholders inside German sentences; use real words.
 - NEVER use markdown tables (no | pipes).`;
@@ -411,13 +417,27 @@ STRICT RULES:
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || "No explanation available.";
+    let text = data.content?.[0]?.text || "No explanation available.";
+
+    // Exam tutor: the shared cache must only hold well-formed dialogues.
+    // One regeneration if A/B turns don't alternate; still bad -> show, don't cache.
+    let cacheable = true;
+    if (isExam && !dialogueTurnsOk(text)) {
+      const again = await callAnthropic();
+      if (again.ok) {
+        const t = (await again.json()).content?.[0]?.text;
+        if (t) text = t;
+      }
+      cacheable = dialogueTurnsOk(text);
+    }
 
     // Save to cache (fire-and-forget, don't block the response)
-    supabase
-      .from("vocab_explanations")
-      .upsert({ word: cacheKey, explanation: text, created_at: new Date().toISOString() }, { onConflict: "word" })
-      .then(() => {});
+    if (cacheable) {
+      supabase
+        .from("vocab_explanations")
+        .upsert({ word: cacheKey, explanation: text, created_at: new Date().toISOString() }, { onConflict: "word" })
+        .then(() => {});
+    }
 
     return new Response(
       JSON.stringify({ explanation: text }),
