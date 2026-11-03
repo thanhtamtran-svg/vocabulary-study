@@ -357,7 +357,7 @@ function App({onHome, vocabData, variant}) {
     // Autoplay pronunciation. Patterns in en->de mode stay silent until the
     // learner flips (PatternCard plays it then) — audio would give it away.
     if (w.meta && w.meta.pattern) {
-      if (direction === 'de-en' || w.meta.listenOnly) speakPattern(w.meta.pattern);
+      if ((direction === 'de-en' || w.meta.listenOnly) && !w.meta.exam) speakPattern(w.meta.pattern);
     } else speakGerman(w.german);
     return function() { cancelled = true; };
   }, [view, currentIdx, sessionWords]);

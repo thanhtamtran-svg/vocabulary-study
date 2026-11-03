@@ -74,3 +74,22 @@ describe('patterns-a1-data', () => {
     expect(PATTERN_LEARN_ORDER[PATTERN_LEARN_ORDER.length - 1]).toBe(PATTERN_LISTEN_ONLY_CAT);
   });
 });
+
+describe('Goethe A1 Sprechen exam cards', () => {
+  const exam = words.filter(w => w[4].exam);
+  it('come in exam-sized sets of 6 per card group', () => {
+    const byCat = new Map<number, number>();
+    exam.forEach(w => byCat.set(w[2], (byCat.get(w[2]) || 0) + 1));
+    expect(byCat.size).toBe(11);
+    byCat.forEach(n => expect(n).toBe(6));
+  });
+  it('are a question/request plus a reply, Teil 2 using the card word', () => {
+    exam.forEach(w => {
+      const m = w[4];
+      expect(m.turns?.length, w[0]).toBe(2);
+      expect(w[0], w[0]).toBe(m.turns!.join(' — '));
+      if (m.exam!.teil === 2) expect(m.turns![0].toLowerCase(), w[0]).toContain(m.exam!.card.toLowerCase().slice(0, 4));
+      else expect(m.exam!.pic, w[0]).toBeTruthy();
+    });
+  });
+});

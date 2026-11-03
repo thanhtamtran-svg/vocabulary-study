@@ -59,9 +59,27 @@ function AudioButtons({ text, onFront }) {
   </div>;
 }
 
+// Goethe A1 Sprechen practice: the front looks like the exam card the learner
+// draws — Teil 2 a "Thema" word card, Teil 3 a picture card.
+var EXAM_TASK = {
+  2: 'Ask a question with this word, then answer it',
+  3: 'Ask for this politely, then react'
+};
+
+function ExamCard({ exam }) {
+  return <div className="exam-card">
+    <div className="exam-card-strip">{exam.teil === 2 ? 'Thema: ' + exam.thema : 'Bitte'}</div>
+    {exam.teil === 3 ? <>
+      <div className="exam-card-pic" aria-hidden="true">{exam.pic}</div>
+      <div className="exam-card-hint">{exam.card}</div>
+    </> : <div className="exam-card-word">{exam.card}</div>}
+  </div>;
+}
+
 export default React.memo(function PatternCard({ word, flipped, onFlip, direction }) {
   var meta = word.meta || {};
-  var enFirst = direction !== 'de-en' && !meta.listenOnly;
+  // Exam cards always start from the card: showing the German first gives the answer away.
+  var enFirst = !!meta.exam || (direction !== 'de-en' && !meta.listenOnly);
   var pattern = meta.pattern || word.german;
   var formal = meta.formal ? FORMAL_LABEL[meta.formal] : null;
 
@@ -92,13 +110,19 @@ export default React.memo(function PatternCard({ word, flipped, onFlip, directio
     <div className="flashcard-container"
       tabIndex={0}
       role="button"
-      aria-label={(enFirst ? 'Say in German: ' + word.english : 'Pattern: ' + word.german) +
+      aria-label={(meta.exam ? 'Exam card: ' + meta.exam.card + '. ' + EXAM_TASK[meta.exam.teil]
+        : enFirst ? 'Say in German: ' + word.english : 'Pattern: ' + word.german) +
         '. ' + (flipped ? 'Showing answer.' : 'Press Enter or Space to flip.')}
       onClick={flip}
       onKeyDown={handleKeyDown}>
       <div className={'flashcard pattern-card' + (flipped ? ' flipped' : '')}>
         <div className="flashcard-face flashcard-front">
-          {enFirst ? <>
+          {meta.exam ? <>
+            <div className="pattern-prompt">{'Prüfung Teil ' + meta.exam.teil + ' · ' + EXAM_TASK[meta.exam.teil]}</div>
+            <ExamCard exam={meta.exam} />
+            <AudioButtons text={pattern} onFront={true} />
+            <div style={{marginTop:'6px',fontSize:'11px',opacity:0.6}}>Say both lines out loud · tap to see a model answer</div>
+          </> : enFirst ? <>
             <div className="pattern-prompt">Say it in German, then check</div>
             <div className="pattern-chips">
               {formal ? <span className="pattern-chip on-brand">{formal}</span> : null}
@@ -137,8 +161,14 @@ export function PatternNotes({ word }) {
   if (meta.tracks && meta.tracks.length) src.push('Track ' + meta.tracks.join(', '));
   if (meta.lektion && meta.lektion.length) src.push('Schritte L' + meta.lektion.join(', L'));
   if (meta.source === 'extra') src.push('not in the audio');
+  if (meta.exam) src.push('Goethe A1 Sprechen Teil ' + meta.exam.teil + ' practice');
   return <div className="pattern-notes">
-    {swaps.length ? <div className="pattern-note">
+    {meta.exam ? <div className="pattern-note">
+      <strong>{'🎓 Exam tip: '}</strong>{meta.exam.teil === 2
+        ? 'your question must use the word on the card (the word alone does not count). Any correct question is fine — this is one model.'
+        : 'make a real request (Können Sie / Kannst du … bitte …? or Geben Sie mir bitte …), not just the word. Your partner may say yes or no — both count.'}
+    </div> : null}
+    {swaps.length ?<div className="pattern-note">
       <strong>{'🔄 Swap in your own words: '}</strong>
       {swaps.map(function(s, i) {
         return <span key={i}>{i > 0 ? ' · ' : ''}<span className="pattern-slot">{s.value}</span>

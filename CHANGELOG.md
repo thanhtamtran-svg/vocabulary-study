@@ -11,6 +11,26 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — Luyện thi nói Goethe A1: Teil 2 và Teil 3
+
+- PM sẽ thi **Goethe A1** (không phải ÖSD) và muốn luyện giống phần thi
+  nói. Thêm **66 thẻ thi** vào khoá Hören & Sprechen A1:
+  - **Teil 2 (hỏi và trả lời theo chủ đề):** 8 chủ đề × 6 thẻ: Freizeit,
+    Essen und Trinken, Familie, Wohnen, Einkaufen, Arbeit, Reisen, Stadt
+    und Verkehr. Mặt trước giống thẻ thi thật: "Thema: Freizeit" kèm một
+    từ (Wochenende…). Người học đặt câu hỏi có từ đó, rồi tự trả lời.
+  - **Teil 3 (nhờ vả và đáp lại):** 3 nhóm × 6 thẻ hình (Am Tisch, Im Kurs
+    und im Büro, Bitten im Alltag). Mặt trước là hình (🍞 das Brot…).
+- Lật thẻ để xem một câu hỏi/câu nhờ mẫu và câu đáp mẫu, có nút nghe,
+  kèm mẹo thi (Teil 2: câu hỏi phải dùng đúng từ trên thẻ; Teil 3: phải
+  nói thành câu nhờ, không chỉ nói mỗi từ).
+- Thẻ thi xếp **cuối lộ trình học** (trước phần chỉ nghe), nên các nhóm
+  đang học không bị xáo trộn. Muốn luyện ngay: trên trang chính chọn
+  ô **"Focus on a…"** → "Prüfung Teil 2 · …" hoặc "Prüfung Teil 3 · …".
+- Bài tập của thẻ thi có thêm dạng "trả lời câu hỏi bằng tiếng Đức".
+- Câu mẫu do Claude soạn ở trình độ A1, dựa theo cách thi Goethe A1 mô
+  tả công khai; chưa đối chiếu với đề thật.
+
 ## 2026-11-03 — Phân tích mẫu câu: bấm vào động từ để ôn lại
 
 - Trong phần **Pattern breakdown** của AI Tutor, mỗi động từ (kể cả dạng
