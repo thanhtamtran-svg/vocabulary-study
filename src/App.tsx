@@ -824,7 +824,7 @@ function App({onHome, vocabData, variant}) {
     if (!link || link.lang !== syncLang) return;
     clearWordLink();
     var wi = findWordIndex(words, link.word);
-    if (wi < 0 || !started) return;
+    if (wi < 0) return; // a lookup shows one card, so it works before setup too
     setSessionWords([{idx: wi, ...getWord(wi)}]);
     setSessionType({type: 'lookup', batchIdx: 0, interval: 0});
     setCurrentIdx(0);
@@ -1199,8 +1199,8 @@ function App({onHome, vocabData, variant}) {
     <div style={{width:'32px',height:'32px',border:'3px solid var(--border)',borderTopColor:'var(--sage)',borderRadius:'50%',animation:'spin 0.6s linear infinite'}} />
   </div>;
 
-  // ===== SETUP SCREEN =====
-  if (!started) {
+  // ===== SETUP SCREEN ===== (skipped for a one-card lookup opened from a link)
+  if (!started && !(view === "session" && sessionType && sessionType.type === "lookup")) {
     return <Suspense fallback={loadingFallback}><SetupScreen
       startDate={startDate}
       setStartDate={setStartDate}

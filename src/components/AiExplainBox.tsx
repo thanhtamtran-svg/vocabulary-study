@@ -2,15 +2,37 @@ import React from 'react';
 import { fetchExplanation, fetchCachedExplanation, clearExplanation } from '../lib/api';
 import { speakGerman, speakPattern } from '../lib/speech';
 import { speakEnglish } from '../lib/english-speech';
+import { findVerb } from '../lib/verb-link';
+import { wordLinkHref } from '../lib/word-link';
+
+// Bold German text with each known verb turned into a link to its word card
+// (new tab; from the installed app it opens in the browser). Capitalised words
+// only count at the start, so nouns like "Essen" mid-phrase stay plain.
+function linkVerbs(text, key) {
+  var parts = text.split(/([A-Za-zÄÖÜäöüß]+)/);
+  var seenWord = false;
+  return parts.map(function(part, pi) {
+    if (!/^[A-Za-zÄÖÜäöüß]+$/.test(part)) return part;
+    var first = !seenWord;
+    seenWord = true;
+    var verb = (first || part === part.toLowerCase()) ? findVerb(part) : null;
+    if (!verb) return part;
+    return <a key={key + '_v' + pi} className="ai-verb-link"
+      href={wordLinkHref(verb.lang, verb.word)} target="_blank" rel="noopener noreferrer"
+      title={'Open "' + verb.word + '" in a new tab'}
+      onClick={function(e) { e.stopPropagation(); }}
+    >{part}</a>;
+  });
+}
 
 // Parse markdown inline: **bold** and *italic*
-function renderInline(text, key) {
+function renderInline(text, key, withVerbLinks?) {
   var parts = [];
   var re = /\*\*(.+?)\*\*|\*(.+?)\*/g;
   var last = 0, m;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) parts.push(text.slice(last, m.index));
-    if (m[1]) parts.push(<strong key={key + '_b' + m.index}>{m[1]}</strong>);
+    if (m[1]) parts.push(<strong key={key + '_b' + m.index}>{withVerbLinks ? linkVerbs(m[1], key + '_' + m.index) : m[1]}</strong>);
     else if (m[2]) parts.push(<em key={key + '_i' + m.index}>{m[2]}</em>);
     last = re.lastIndex;
   }
@@ -59,6 +81,9 @@ export default React.memo(function AiExplainBox({
     // (public A1.1 visitor) only the local display is cleared.
     clearExplanation(word.german, lang, explainOpts);
   }
+
+  // Current "## " heading while rendering; verbs are linked in the pattern breakdown only.
+  var section = '';
 
   return <>
     {/* AI Explain button */}
@@ -121,11 +146,13 @@ export default React.memo(function AiExplainBox({
           if (!line.trim() || line.match(/^-{3,}$/)) return acc;
           if (line.match(/^\|[-|\s]+\|$/)) return acc;
           if (line.match(/^#+\s/)) {
-            acc.push(<div key={i} className="ai-section-title">{line.replace(/^#+\s/, '')}</div>);
+            section = line.replace(/^#+\s/, '');
+            acc.push(<div key={i} className="ai-section-title">{section}</div>);
             return acc;
           }
           if (line.match(/^[-\u2022]\s/)) {
             var bulletText = line.replace(/^[-\u2022]\s/, '');
+            var withVerbLinks = isPattern && section.toLowerCase() === 'pattern breakdown';
             // Extract German phrase: drop English translation after dash/en-dash/em-dash,
             // drop trailing parens (e.g. "ich **werde** (I become)"), strip markdown.
             var germanPhrase = bulletText
@@ -136,14 +163,14 @@ export default React.memo(function AiExplainBox({
               .trim();
             if (lang !== 'en' && germanPhrase && germanPhrase.length > 1) {
               acc.push(<div key={i} className="ai-bullet" style={{display:'flex',alignItems:'center',gap:'6px'}}>
-                <span style={{flex:1}}>{renderInline(bulletText, i)}</span>
+                <span style={{flex:1}}>{renderInline(bulletText, i, withVerbLinks)}</span>
                 <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px'}}
                   aria-label={'Read ' + germanPhrase + ' aloud'}
                   onClick={function() { speak(germanPhrase); }}
                 >{'\uD83D\uDD0A'}</button>
               </div>);
             } else {
-              acc.push(<div key={i} className="ai-bullet">{renderInline(bulletText, i)}</div>);
+              acc.push(<div key={i} className="ai-bullet">{renderInline(bulletText, i, withVerbLinks)}</div>);
             }
             return acc;
           }

@@ -383,6 +383,8 @@ html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator{fi
 .ai-bullet{padding-left:14px;margin:3px 0;position:relative}
 .ai-bullet::before{content:"\2022";position:absolute;left:2px;color:var(--accent)}
 .ai-line{margin:3px 0}
+.ai-verb-link{color:var(--brand);text-decoration:underline dotted;text-underline-offset:3px}
+.ai-verb-link:hover{text-decoration-style:solid}
 
 /* ===== WORD IMAGE ===== */
 .word-image-container{margin:10px 0;text-align:center}

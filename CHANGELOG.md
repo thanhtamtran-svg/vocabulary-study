@@ -11,6 +11,16 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — Phân tích mẫu câu: bấm vào động từ để ôn lại
+
+- Trong phần **Pattern breakdown** của AI Tutor, mỗi động từ (kể cả dạng
+  đã chia như *ist*, *kommt*, *lebt*) giờ là một link gạch chân chấm.
+- Bấm vào mở **thẻ từ của động từ gốc** (*sein*, *kommen*, *leben*) ở
+  tab mới; nếu đang dùng app cài trên máy/điện thoại thì mở ra trình duyệt.
+- Ưu tiên thẻ trong khoá A1.1 (mở không cần mật khẩu), không có thì lấy
+  từ khoá A1 đầy đủ. Thẻ tra cứu giờ mở được cả khi khoá đó chưa bấm
+  "Start" lần nào. "bitte" không bị nhận nhầm thành động từ.
+
 ## 2026-10-21 — Thẻ mẫu câu trên máy tính: chữ to hơn, thẻ gọn hơn, không phải cuộn để chấm
 
 - PM thấy chữ nhỏ trên máy tính. Thực tế thẻ cao cố định 500px mà chữ
