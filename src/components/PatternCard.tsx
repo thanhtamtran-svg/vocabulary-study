@@ -59,20 +59,27 @@ function AudioButtons({ text, onFront }) {
   </div>;
 }
 
-// Goethe A1 Sprechen practice: the front looks like the exam card the learner
-// draws — Teil 2 a "Thema" word card, Teil 3 a picture card.
+// Goethe A1 Sprechen practice: the front looks like the exam sheet — task
+// title and instruction in German, then the card itself: Teil 2 a plain
+// black-ruled "Thema" word card, Teil 3 a picture card.
 var EXAM_TASK = {
   2: 'Ask a question with this word, then answer it',
   3: 'Ask for this politely, then react'
 };
+var EXAM_SHEET = {
+  2: { title: 'Um Informationen bitten und Informationen geben.',
+       task: 'Stellen Sie zu der Karte eine einfache Frage und antworten Sie.' },
+  3: { title: 'Bitten formulieren und darauf reagieren.',
+       task: 'Formulieren Sie zu der Karte eine Bitte und reagieren Sie.' }
+};
 
 function ExamCard({ exam }) {
   return <div className="exam-card">
-    <div className="exam-card-strip">{exam.teil === 2 ? 'Thema: ' + exam.thema : 'Bitte'}</div>
-    {exam.teil === 3 ? <>
+    {exam.teil === 2 ? <div className="exam-card-head">{'Thema: ' + exam.thema}</div> : null}
+    {exam.teil === 3 ? <div className="exam-card-body">
       <div className="exam-card-pic" aria-hidden="true">{exam.pic}</div>
       <div className="exam-card-hint">{exam.card}</div>
-    </> : <div className="exam-card-word">{exam.card}</div>}
+    </div> : <div className="exam-card-body exam-card-word">{exam.card}</div>}
   </div>;
 }
 
@@ -116,9 +123,13 @@ export default React.memo(function PatternCard({ word, flipped, onFlip, directio
       onClick={flip}
       onKeyDown={handleKeyDown}>
       <div className={'flashcard pattern-card' + (flipped ? ' flipped' : '')}>
-        <div className="flashcard-face flashcard-front">
+        <div className={'flashcard-face flashcard-front' + (meta.exam ? ' exam-front' : '')}>
           {meta.exam ? <>
-            <div className="pattern-prompt">{'Prüfung Teil ' + meta.exam.teil + ' · ' + EXAM_TASK[meta.exam.teil]}</div>
+            <div className="exam-sheet">
+              <div className="exam-sheet-teil">{'Teil ' + meta.exam.teil}</div>
+              <div>{EXAM_SHEET[meta.exam.teil].title}</div>
+              <div className="exam-sheet-task">{EXAM_SHEET[meta.exam.teil].task}</div>
+            </div>
             <ExamCard exam={meta.exam} />
           </> : enFirst ? <>
             <div className="pattern-prompt">Say it in German, then check</div>

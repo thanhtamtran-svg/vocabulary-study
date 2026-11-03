@@ -207,11 +207,16 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .exam-drill{margin-top:12px}
 .exam-drill-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:13px}
 .exam-drill-sets{display:flex;flex-wrap:wrap;gap:6px}
-.exam-card{background:var(--card);color:var(--text-strong);border-radius:8px;width:min(260px,100%);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.18);text-align:center}
-.exam-card-strip{background:var(--subtle-bg);border-top:8px solid var(--border-strong);color:var(--text-muted);font-size:12px;font-weight:600;padding:4px 8px}
-.exam-card-word{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:32px;line-height:1.15;padding:22px 12px;overflow-wrap:anywhere}
-.exam-card-pic{font-size:64px;line-height:1;padding:16px 12px 4px}
-.exam-card-hint{color:var(--text-muted);font-size:13px;padding:0 12px 12px}
+.flashcard-front.exam-front,html[data-theme=dark] .flashcard-front.exam-front{background:var(--card);color:var(--text);border:2px solid var(--card-border);justify-content:flex-start;align-items:stretch;gap:14px}
+.exam-sheet{font-size:14px;line-height:1.5;color:var(--text)}
+.exam-sheet-teil{color:var(--brand);font-weight:700;font-size:15px;margin-bottom:2px}
+.exam-sheet-task{margin-top:6px}
+.exam-card{align-self:center;width:min(340px,100%);border:1.5px solid var(--text-strong);background:var(--card);color:var(--text-strong);text-align:center}
+.exam-card-head{border-bottom:1.5px solid var(--text-strong);font-weight:700;font-size:15px;padding:6px 8px}
+.exam-card-body{min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 12px}
+.exam-card-word{font-weight:700;font-size:40px;line-height:1.15;letter-spacing:-.01em;overflow-wrap:anywhere}
+.exam-card-pic{font-size:72px;line-height:1}
+.exam-card-hint{color:var(--text-muted);font-size:13px;margin-top:8px}
 .pattern-source{font-size:11px;color:var(--text-muted);text-align:center}
 /* Pattern text scales with the screen (word cards have their own scale above) */
 @media (min-width: 768px) {
