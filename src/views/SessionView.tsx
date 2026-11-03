@@ -111,7 +111,7 @@ export default React.memo(function SessionView({
             {'Create a personal sentence using "'}<em>{w.german}</em>
             {'" connected to your own life.'}
           </div> : null}
-          {isExam ? <button className="btn btn-primary" style={{margin:'14px 0'}} onClick={onNextExamCard}>
+          {isExam ? <button className="btn btn-primary" style={{display:'flex',margin:'14px auto'}} onClick={onNextExamCard}>
             {currentIdx < sessionWords.length - 1 ? 'Next card →' : 'Finish'}
           </button> : isLookup ? <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
             Close this tab to return to your exercise.
