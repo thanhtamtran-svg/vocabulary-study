@@ -7,7 +7,7 @@ import PatternCard, { PatternNotes } from '../components/PatternCard';
 
 export default React.memo(function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,
-  streak, rateWord, setView,
+  streak, rateWord, onNextExamCard, setView,
   wordImage, imageLoading, wordIPA, wordDefinition, defImage, wordExtras, progress,
   aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus,
@@ -21,6 +21,8 @@ export default React.memo(function SessionView({
   // Opened from an exercise link in a separate tab: view-only, no rating, so
   // this tab never writes progress that the exercise tab would then overwrite.
   var isLookup = sessionType.type === "lookup";
+  // Goethe Sprechen drill: no rating or scheduling, just the next card.
+  var isExam = sessionType.type === "exam";
   var reviewInterval = sessionType.interval;
 
   return (
@@ -29,7 +31,8 @@ export default React.memo(function SessionView({
         <button onClick={function() { setView(sessionType.type === 'browse' ? 'browse' : 'dashboard'); }}>{'\u2190'} Back</button>
         <span style={{fontSize:'13px',fontWeight:600}}>
           {/* Patterns, en->de: the German is the answer — title with the situation instead */}
-          {sessionType.type === 'browse' || isLookup ? (isPattern && direction !== 'de-en' && !w.meta.listenOnly ? w.cat : w.german)
+          {isExam ? sessionType.title
+            : sessionType.type === 'browse' || isLookup ? (isPattern && direction !== 'de-en' && !w.meta.listenOnly ? w.cat : w.german)
             : isLearn ? 'Learn Batch ' + sessionType.batchIdx
             : sessionType.type === 'review' && !sessionType.batchIdx ? 'Review'
             : REVIEW_LABELS[reviewInterval] + ' (Batch ' + sessionType.batchIdx + ')'}
@@ -107,7 +110,9 @@ export default React.memo(function SessionView({
             {'Create a personal sentence using "'}<em>{w.german}</em>
             {'" connected to your own life.'}
           </div> : null}
-          {isLookup ? <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
+          {isExam ? <button className="btn btn-primary" style={{margin:'14px 0'}} onClick={onNextExamCard}>
+            {currentIdx < sessionWords.length - 1 ? 'Next card →' : 'Finish'}
+          </button> : isLookup ? <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>
             Close this tab to return to your exercise.
           </p> : <>
             <p style={{textAlign:'center',fontSize:'12px',color:'var(--text-muted)',margin:'8px 0'}}>

@@ -10,7 +10,8 @@ export default React.memo(function Dashboard({
   todayCompleted, nextBatch, reviewsDue, startSession, getWord,
   dailyStreak, weekDays, exerciseStats, exerciseLoading, startExercise,
   startDate, isSunday, formatDateFn, totalWords, cats, labelByCat, words,
-  focusCat, lektionStats, setFocusCat, reviewNudge, itemLabel, groupLabel
+  focusCat, lektionStats, setFocusCat, reviewNudge, itemLabel, groupLabel,
+  examSets, startExam
 }) {
   var item = itemLabel || 'word';
   var Item = item.charAt(0).toUpperCase() + item.slice(1);
@@ -350,6 +351,32 @@ export default React.memo(function Dashboard({
                 onClick={startExercise}
               >{exerciseLoading ? '\u2728 Generating...' : 'Exercise'}</button>
             </div>
+          </div> : null}
+
+          {/* Goethe A1 Sprechen drill (patterns course): its own card sets, outside batches and reviews */}
+          {examSets && examSets.length ? <div className="card card-accent" style={{marginTop:'12px'}}>
+            <div className="review-type-label" style={{color:'var(--brand)'}}>
+              {'🎓 Goethe A1 Sprechen — exam practice'}
+            </div>
+            {[2, 3].map(function(teil) {
+              var sets = examSets.map(function(s, si) { return {s: s, si: si}; })
+                .filter(function(x) { return x.s.teil === teil; });
+              return <div key={teil} className="exam-drill">
+                <div className="exam-drill-head">
+                  <strong>{'Teil ' + teil}</strong>
+                  <span className="focus-hint">{teil === 2 ? 'Ask and answer with a word card' : 'Ask for something, then react'}</span>
+                </div>
+                <div className="exam-drill-sets">
+                  <button className="btn btn-sm btn-primary" style={{width:'auto'}}
+                    onClick={function() { startExam(sets[Math.floor(Math.random() * sets.length)].si); }}
+                  >{'🎲 Random'}</button>
+                  {sets.map(function(x) {
+                    return <button key={x.si} className="btn btn-sm btn-secondary" style={{width:'auto'}}
+                      onClick={function() { startExam(x.si); }}>{x.s.title}</button>;
+                  })}
+                </div>
+              </div>;
+            })}
           </div> : null}
 
           {/* Behind schedule tip */}

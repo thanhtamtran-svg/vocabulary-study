@@ -40,7 +40,7 @@ const BrowseView = lazy(() => import('./views/BrowseView'));
 const SettingsView = lazy(() => import('./views/SettingsView'));
 
 // ===== MAIN APP =====
-function App({onHome, vocabData, variant}) {
+function App({onHome, vocabData, variant, examData}) {
   const toast = useToast();
   const VOCAB_DATA = vocabData || DEFAULT_VOCAB_DATA;
   const cfg = COURSES[variant] || COURSES.full;
@@ -861,6 +861,37 @@ function App({onHome, vocabData, variant}) {
     setView("session");
   }
 
+  // Goethe Sprechen drill (patterns course only): one card set, shuffled,
+  // shown like the exam; never touches progress or the review schedule.
+  function startExam(setIdx) {
+    var set = examData.sets[setIdx];
+    var cards = examData.rows.map(function(r, i) {
+      return {idx: -1 - i, german: r[0], english: r[1], cat: 'Prüfung Teil ' + set.teil + ' · ' + set.title,
+        type: VOCAB_DATA.types[r[3]], typeClass: TYPE_TAGS[r[3]], meta: r[4], examSet: r[2]};
+    }).filter(function(c) { return c.examSet === setIdx; });
+    for (var i = cards.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = cards[i]; cards[i] = cards[j]; cards[j] = t;
+    }
+    setSessionWords(cards);
+    setSessionType({type: 'exam', title: cards[0].cat});
+    setCurrentIdx(0);
+    setFlipped(false);
+    setStreak(0);
+    setView('session');
+  }
+
+  function nextExamCard() {
+    if (currentIdx < sessionWords.length - 1) {
+      setCurrentIdx(i => i + 1);
+      setFlipped(false);
+      return;
+    }
+    recordStudyDay();
+    toast.success('Exam practice done: ' + sessionType.title);
+    setView('dashboard');
+  }
+
   function rateWord(confidence) {
     const wi = sessionWords[currentIdx].idx;
     const key = pk(wi);
@@ -1229,6 +1260,7 @@ function App({onHome, vocabData, variant}) {
       setFlipped={setFlipped}
       streak={streak}
       rateWord={rateWord}
+      onNextExamCard={nextExamCard}
       setView={setView}
       wordImage={wordImage}
       imageLoading={imageLoading}
@@ -1346,6 +1378,8 @@ function App({onHome, vocabData, variant}) {
       focusCat={focusCat}
       lektionStats={lektionStats}
       setFocusCat={setFocusCat}
+      examSets={examData ? examData.sets : null}
+      startExam={startExam}
     /></Suspense>;
   }
 

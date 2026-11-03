@@ -3,7 +3,7 @@ import { explainCacheKey } from './explain-cache-key.ts';
 import { VOCAB_DATA } from '../../../src/vocab-data';
 import { VOCAB_A11_DATA } from '../../../src/vocab-a11-data';
 import { ENGLISH_VOCAB_DATA } from '../../../src/english-vocab-data';
-import { VOCAB_PATTERNS_DATA } from '../../../src/patterns-a1-data';
+import { VOCAB_PATTERNS_DATA, PATTERN_EXAM } from '../../../src/patterns-a1-data';
 
 describe('explainCacheKey', () => {
   // B-032 regression: the retired Vietnamese branch must never produce a
@@ -33,7 +33,7 @@ describe('explainCacheKey', () => {
     var bad = [];
     VOCAB_DATA.words.concat(VOCAB_A11_DATA.words).forEach(function (w) { if (!explainCacheKey(w[0], 'de', false)) bad.push(w[0]); });
     ENGLISH_VOCAB_DATA.forEach(function (w) { if (!explainCacheKey(w[0], 'en', false)) bad.push(w[0]); });
-    VOCAB_PATTERNS_DATA.words.forEach(function (w) { if (!explainCacheKey(w[0], 'de', true)) bad.push(w[0]); });
+    VOCAB_PATTERNS_DATA.words.concat(PATTERN_EXAM.rows).forEach(function (w) { if (!explainCacheKey(w[0], 'de', true)) bad.push(w[0]); });
     expect(bad).toEqual([]);
   });
 });

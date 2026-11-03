@@ -208,7 +208,7 @@ function patternItem(wi, w, ep, learned, words) {
     return fill || order || choiceItem(wi, w, meta, learned, words, partner);
   }
   var strong = [duSieItem(wi, w, meta, words, partner),
-    words[wi][3] === DIALOGUE_TYPE || meta.exam ? replyItem(wi, w, meta) : null,
+    words[wi][3] === DIALOGUE_TYPE ? replyItem(wi, w, meta) : null,
     substituteItem(wi, w, meta)].filter(Boolean);
   // Saying the whole sentence is always available; weight it like one option.
   strong.push(sayItItem(wi, w, meta));

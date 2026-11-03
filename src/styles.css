@@ -204,6 +204,9 @@ h2{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:600;color:var(
 .pattern-notes{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
 .pattern-note{font-size:13px;line-height:1.5;color:var(--text);background:var(--subtle-bg);border-radius:10px;padding:8px 12px}
 .pattern-note-faint{color:var(--text-muted)}
+.exam-drill{margin-top:12px}
+.exam-drill-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:13px}
+.exam-drill-sets{display:flex;flex-wrap:wrap;gap:6px}
 .exam-card{background:var(--card);color:var(--text-strong);border-radius:8px;width:min(260px,100%);overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.18);text-align:center}
 .exam-card-strip{background:var(--subtle-bg);border-top:8px solid var(--border-strong);color:var(--text-muted);font-size:12px;font-weight:600;padding:4px 8px}
 .exam-card-word{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:32px;line-height:1.15;padding:22px 12px;overflow-wrap:anywhere}

@@ -3,7 +3,7 @@ import { validateWord } from './validate-word.ts';
 import { VOCAB_DATA } from '../../../src/vocab-data';
 import { VOCAB_A11_DATA } from '../../../src/vocab-a11-data';
 import { ENGLISH_VOCAB_DATA } from '../../../src/english-vocab-data';
-import { VOCAB_PATTERNS_DATA } from '../../../src/patterns-a1-data';
+import { VOCAB_PATTERNS_DATA, PATTERN_EXAM } from '../../../src/patterns-a1-data';
 
 // Every word the app can ask explain-word about must pass the server's
 // input check — otherwise the learner gets "Could not load explanation".
@@ -18,7 +18,7 @@ describe('validateWord accepts every vocab entry', () => {
     expect(bad).toEqual([]);
   });
   it('Hören & Sprechen A1 patterns (same limits explain-word uses: 25 words / 160 chars)', () => {
-    var bad = VOCAB_PATTERNS_DATA.words.filter(function (w) { return !validateWord(w[0], 'de', 25, 160); }).map(function (w) { return w[0]; });
+    var bad = VOCAB_PATTERNS_DATA.words.concat(PATTERN_EXAM.rows).filter(function (w) { return !validateWord(w[0], 'de', 25, 160); }).map(function (w) { return w[0]; });
     expect(bad).toEqual([]);
   });
   it('English course', () => {

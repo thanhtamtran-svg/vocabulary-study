@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { VOCAB_PATTERNS_DATA, PATTERN_LISTEN_ONLY_CAT, PATTERN_LEARN_ORDER, patternPartner } from './patterns-a1-data';
+import { VOCAB_PATTERNS_DATA, PATTERN_LISTEN_ONLY_CAT, PATTERN_LEARN_ORDER, PATTERN_EXAM, patternPartner } from './patterns-a1-data';
 
 const { words, cats, types, batches } = VOCAB_PATTERNS_DATA;
 
@@ -75,21 +75,24 @@ describe('patterns-a1-data', () => {
   });
 });
 
-describe('Goethe A1 Sprechen exam cards', () => {
-  const exam = words.filter(w => w[4].exam);
-  it('come in exam-sized sets of 6 per card group', () => {
-    const byCat = new Map<number, number>();
-    exam.forEach(w => byCat.set(w[2], (byCat.get(w[2]) || 0) + 1));
-    expect(byCat.size).toBe(11);
-    byCat.forEach(n => expect(n).toBe(6));
+describe('Goethe A1 Sprechen exam cards (PATTERN_EXAM)', () => {
+  const { sets, rows } = PATTERN_EXAM;
+  it('stay out of the learning data', () => {
+    expect(words.some(w => w[4].exam)).toBe(false);
+  });
+  it('come in exam-sized sets of 6', () => {
+    sets.forEach((_, si) => expect(rows.filter(r => r[2] === si).length).toBe(6));
+    expect(rows.every(r => sets[r[2]] && sets[r[2]].teil === r[4].exam!.teil)).toBe(true);
   });
   it('are a question/request plus a reply, Teil 2 using the card word', () => {
-    exam.forEach(w => {
-      const m = w[4];
-      expect(m.turns?.length, w[0]).toBe(2);
-      expect(w[0], w[0]).toBe(m.turns!.join(' — '));
-      if (m.exam!.teil === 2) expect(m.turns![0].toLowerCase(), w[0]).toContain(m.exam!.card.toLowerCase().slice(0, 4));
-      else expect(m.exam!.pic, w[0]).toBeTruthy();
+    const seen = new Set<string>();
+    rows.forEach(r => {
+      const m = r[4];
+      expect(seen.has(r[0]), r[0]).toBe(false); seen.add(r[0]);
+      expect(m.turns?.length, r[0]).toBe(2);
+      expect(r[0], r[0]).toBe(m.turns!.join(' — '));
+      if (m.exam!.teil === 2) expect(m.turns![0].toLowerCase(), r[0]).toContain(m.exam!.card.toLowerCase().slice(0, 4));
+      else expect(m.exam!.pic, r[0]).toBeTruthy();
     });
   });
 });

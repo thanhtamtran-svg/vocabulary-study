@@ -24,10 +24,13 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 - Lật thẻ để xem một câu hỏi/câu nhờ mẫu và câu đáp mẫu, có nút nghe,
   kèm mẹo thi (Teil 2: câu hỏi phải dùng đúng từ trên thẻ; Teil 3: phải
   nói thành câu nhờ, không chỉ nói mỗi từ).
-- Thẻ thi xếp **cuối lộ trình học** (trước phần chỉ nghe), nên các nhóm
-  đang học không bị xáo trộn. Muốn luyện ngay: trên trang chính chọn
-  ô **"Focus on a…"** → "Prüfung Teil 2 · …" hoặc "Prüfung Teil 3 · …".
-- Bài tập của thẻ thi có thêm dạng "trả lời câu hỏi bằng tiếng Đức".
+- **Bài luyện riêng** (PM yêu cầu tách khỏi lộ trình học cùng ngày): trên
+  trang chính của khoá có ô **"🎓 Goethe A1 Sprechen — exam practice"**.
+  Bấm một chủ đề, hoặc bấm **🎲 Random** để bốc ngẫu nhiên như lúc thi,
+  là được 6 thẻ xáo trộn, mỗi thẻ bấm "Next card".
+- Thẻ thi **không** nằm trong các nhóm học hằng ngày, lịch ôn, bài tập
+  hay số mẫu câu đã học (vẫn 73 nhóm như trước). Luyện xong vẫn được tính
+  là một ngày học cho chuỗi ngày học.
 - Câu mẫu do Claude soạn ở trình độ A1, dựa theo cách thi Goethe A1 mô
   tả công khai; chưa đối chiếu với đề thật.
 
