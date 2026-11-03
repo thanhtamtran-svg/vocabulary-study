@@ -11,6 +11,15 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — Luyện thi: thêm 6 bộ thẻ theo đề mẫu Goethe
+
+- Thêm 4 bộ **Teil 2**: Wochenende, Schule (theo đề Übungssatz 01), Sport
+  và Beruf (theo đề Übungssatz 02). Thẻ trong mỗi bộ giữ đúng như đề thật.
+- Thêm 2 bộ **Teil 3** với các món đồ lấy từ đề mẫu: vở, bút chì, ghế,
+  cặp, radio, đĩa nhạc / dao nĩa, chai, cấm hút thuốc, lịch hẹn, bản đồ,
+  đồng hồ báo thức.
+- Tổng cộng A1 giờ có 12 bộ Teil 2 và 5 bộ Teil 3 để bốc ngẫu nhiên.
+
 ## 2026-11-03 — Luyện thi: chỉ bốc ngẫu nhiên, chia theo cấp độ
 
 - Bỏ các nút chọn chủ đề (Freizeit, Familie…). Giống lúc thi, người học
