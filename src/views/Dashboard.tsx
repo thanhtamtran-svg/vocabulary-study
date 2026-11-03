@@ -353,30 +353,29 @@ export default React.memo(function Dashboard({
             </div>
           </div> : null}
 
-          {/* Goethe A1 Sprechen drill (patterns course): its own card sets, outside batches and reviews */}
+          {/* Goethe Sprechen drill (patterns course): its own card sets, outside batches and
+              reviews. Like the exam, the learner never picks the topic: one random draw per level and Teil. */}
           {examSets && examSets.length ? <div className="card card-accent" style={{marginTop:'12px'}}>
             <div className="review-type-label" style={{color:'var(--brand)'}}>
-              {'🎓 Goethe A1 Sprechen — exam practice'}
+              {'🎓 Goethe Sprechen — exam practice'}
             </div>
-            {[2, 3].map(function(teil) {
-              var sets = examSets.map(function(s, si) { return {s: s, si: si}; })
-                .filter(function(x) { return x.s.teil === teil; });
-              return <div key={teil} className="exam-drill">
-                <div className="exam-drill-head">
-                  <strong>{'Teil ' + teil}</strong>
-                  <span className="focus-hint">{teil === 2 ? 'Ask and answer with a word card' : 'Ask for something, then react'}</span>
-                </div>
-                <div className="exam-drill-sets">
-                  <button className="btn btn-sm btn-primary" style={{width:'auto'}}
-                    onClick={function() { startExam(sets[Math.floor(Math.random() * sets.length)].si); }}
-                  >{'🎲 Random'}</button>
-                  {sets.map(function(x) {
-                    return <button key={x.si} className="btn btn-sm btn-secondary" style={{width:'auto'}}
-                      onClick={function() { startExam(x.si); }}>{x.s.title}</button>;
-                  })}
-                </div>
-              </div>;
-            })}
+            {examSets.map(function(s) { return s.level; })
+              .filter(function(lv, i, all) { return all.indexOf(lv) === i; })
+              .map(function(level) {
+                return <div key={level} className="exam-drill">
+                  <div className="exam-drill-head"><strong>{level}</strong></div>
+                  <div className="exam-drill-sets">
+                    {[2, 3].map(function(teil) {
+                      var pool = [];
+                      examSets.forEach(function(s, si) { if (s.level === level && s.teil === teil) pool.push(si); });
+                      if (!pool.length) return null;
+                      return <button key={teil} className="btn btn-sm btn-primary" style={{width:'auto'}}
+                        onClick={function() { startExam(pool[Math.floor(Math.random() * pool.length)]); }}
+                      >{'🎲 Teil ' + teil + (teil === 2 ? ' · Ask and answer' : ' · Ask for something')}</button>;
+                    })}
+                  </div>
+                </div>;
+              })}
           </div> : null}
 
           {/* Behind schedule tip */}

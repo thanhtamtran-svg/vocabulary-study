@@ -597,20 +597,21 @@ export const VOCAB_PATTERNS_DATA = {
 // Goethe A1 Sprechen practice (Teil 2 Thema word cards, Teil 3 picture request
 // cards). Kept OUT of VOCAB_PATTERNS_DATA.words on purpose: a separate drill on
 // the dashboard, not part of batches, reviews, exercises or progress counts.
-// Row shape as PatternRow; catIdx points into PATTERN_EXAM.sets.
+// Row shape as PatternRow; catIdx points into PATTERN_EXAM.sets. Sets carry
+// a CEFR level: the dashboard offers one random draw per level and Teil.
 export const PATTERN_EXAM = {
   sets: [
-    {teil: 2, title: "Freizeit"},
-    {teil: 2, title: "Essen und Trinken"},
-    {teil: 2, title: "Familie"},
-    {teil: 2, title: "Wohnen"},
-    {teil: 2, title: "Einkaufen"},
-    {teil: 2, title: "Arbeit"},
-    {teil: 2, title: "Reisen"},
-    {teil: 2, title: "Stadt und Verkehr"},
-    {teil: 3, title: "Am Tisch"},
-    {teil: 3, title: "Im Kurs und im Büro"},
-    {teil: 3, title: "Bitten im Alltag"}
+    {level: "A1", teil: 2, title: "Freizeit"},
+    {level: "A1", teil: 2, title: "Essen und Trinken"},
+    {level: "A1", teil: 2, title: "Familie"},
+    {level: "A1", teil: 2, title: "Wohnen"},
+    {level: "A1", teil: 2, title: "Einkaufen"},
+    {level: "A1", teil: 2, title: "Arbeit"},
+    {level: "A1", teil: 2, title: "Reisen"},
+    {level: "A1", teil: 2, title: "Stadt und Verkehr"},
+    {level: "A1", teil: 3, title: "Am Tisch"},
+    {level: "A1", teil: 3, title: "Im Kurs und im Büro"},
+    {level: "A1", teil: 3, title: "Bitten im Alltag"}
   ],
   rows: [
     ["Was machst du am Wochenende? — Am Wochenende besuche ich meine Freunde.", "What do you do at the weekend? — At the weekend I visit my friends.", 0, 3, {"pattern": "Was machst du am Wochenende? — Am Wochenende besuche ich meine Freunde.", "tracks": [], "cue": "What do you do at the weekend? — At the weekend I visit my friends.", "turns": ["Was machst du am Wochenende?", "Am Wochenende besuche ich meine Freunde."], "source": "goethe", "exam": {"teil": 2, "thema": "Freizeit", "card": "Wochenende"}}],

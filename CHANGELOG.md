@@ -11,6 +11,17 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — Luyện thi: chỉ bốc ngẫu nhiên, chia theo cấp độ
+
+- Bỏ các nút chọn chủ đề (Freizeit, Familie…). Giống lúc thi, người học
+  không tự chọn chủ đề: ô luyện thi giờ chỉ có **cấp độ** (hiện có A1) và
+  hai nút **🎲 Teil 2** / **🎲 Teil 3**. Mỗi lần bấm, app bốc ngẫu nhiên
+  một bộ 6 thẻ của cấp độ đó.
+- Mỗi bộ thẻ có ghi cấp độ, nên sau này thêm A2 chỉ cần thêm thẻ: một
+  hàng "A2" sẽ tự hiện ra.
+- AI tutor bắt buộc A và B nói xen kẽ; lời giải sai thứ tự không được lưu
+  và tự tạo lại.
+
 ## 2026-11-03 — Thẻ thi to hơn; AI tutor xếp theo từng đoạn hội thoại
 
 - Thẻ luyện thi giống đề Goethe (nền trắng, viền đen, "Thema: …", đề bài

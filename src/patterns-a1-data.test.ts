@@ -83,6 +83,7 @@ describe('Goethe A1 Sprechen exam cards (PATTERN_EXAM)', () => {
   it('come in exam-sized sets of 6', () => {
     sets.forEach((_, si) => expect(rows.filter(r => r[2] === si).length).toBe(6));
     expect(rows.every(r => sets[r[2]] && sets[r[2]].teil === r[4].exam!.teil)).toBe(true);
+    sets.forEach(s => expect(['A1', 'A2', 'B1', 'B2', 'C1', 'C2']).toContain(s.level));
   });
   it('are a question/request plus a reply, Teil 2 using the card word', () => {
     const seen = new Set<string>();
