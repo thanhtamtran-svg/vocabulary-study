@@ -11,6 +11,19 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — Thẻ thi to hơn; AI tutor xếp theo từng đoạn hội thoại
+
+- Thẻ luyện thi giống đề Goethe (nền trắng, viền đen, "Thema: …", đề bài
+  tiếng Đức) và giờ **to hơn**: rộng ~550px, chữ 68px trên máy tính; trên
+  điện thoại tự co vừa màn hình.
+- AI tutor không còn tách "cách hỏi" và "cách trả lời" thành hai danh
+  sách. Giờ là **6 đoạn hội thoại nhỏ**, mỗi đoạn một khối: A hỏi, B trả
+  lời, vài đoạn có thêm câu hỏi tiếp và câu đáp. Teil 3 tương tự: lời nhờ
+  đi cùng câu đáp (3 đồng ý, 3 từ chối lịch sự).
+- Câu lệnh cho AI yêu cầu thêm: câu tiếng Đức phải đúng và tự nhiên như
+  người bản xứ (lần trước có câu sai kiểu *Sehen Sie gern Fernsehen…*).
+  Lời giải dạng cũ không hiện nữa; lời giải mới được tạo khi bấm nút.
+
 ## 2026-11-03 — AI tutor của thẻ luyện thi: nhiều cách hỏi và trả lời
 
 - Trên thẻ luyện thi Goethe, nút AI giờ là **"AI tutor: more ways to ask

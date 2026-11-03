@@ -86,6 +86,9 @@ export default React.memo(function AiExplainBox({
 
   // Current "## " heading while rendering; verbs are linked in the pattern breakdown only.
   var section = '';
+  // Exam tutor: "### " opens one mini dialogue; its "A:"/"B:" turns render
+  // together in one box (question + answer + follow-up), not as loose bullets.
+  var exchange = null;
 
   return <>
     {/* AI Explain button */}
@@ -147,13 +150,23 @@ export default React.memo(function AiExplainBox({
         })().reduce(function(acc, line, i) {
           if (!line.trim() || line.match(/^-{3,}$/)) return acc;
           if (line.match(/^\|[-|\s]+\|$/)) return acc;
+          if (isExam && line.match(/^###\s/)) {
+            exchange = [];
+            acc.push(<div key={i} className="ai-exchange">{exchange}</div>);
+            return acc;
+          }
           if (line.match(/^#+\s/)) {
             section = line.replace(/^#+\s/, '');
+            exchange = null;
             acc.push(<div key={i} className="ai-section-title">{section}</div>);
             return acc;
           }
           if (line.match(/^[-\u2022]\s/)) {
             var bulletText = line.replace(/^[-\u2022]\s/, '');
+            var speaker = exchange && bulletText.match(/^([AB]):\s*/);
+            if (speaker) bulletText = bulletText.slice(speaker[0].length);
+            var out = exchange || acc;
+            var badge = speaker ? <span className={'ai-turn-mark ai-turn-' + speaker[1]}>{speaker[1]}</span> : null;
             var withVerbLinks = isPattern && section.toLowerCase() === 'pattern breakdown';
             // Extract German phrase: drop English translation after dash/en-dash/em-dash,
             // drop trailing parens (e.g. "ich **werde** (I become)"), strip markdown.
@@ -164,7 +177,8 @@ export default React.memo(function AiExplainBox({
               .replace(/\*(.+?)\*/g, '$1')
               .trim();
             if (lang !== 'en' && germanPhrase && germanPhrase.length > 1) {
-              acc.push(<div key={i} className="ai-bullet" style={{display:'flex',alignItems:'center',gap:'6px'}}>
+              out.push(<div key={i} className={speaker ? 'ai-turn' : 'ai-bullet'} style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                {badge}
                 <span style={{flex:1}}>{renderInline(bulletText, i, withVerbLinks)}</span>
                 <button className="speak-btn" style={{flexShrink:0,fontSize:'14px',padding:'2px 4px'}}
                   aria-label={'Read ' + germanPhrase + ' aloud'}
@@ -172,7 +186,7 @@ export default React.memo(function AiExplainBox({
                 >{'\uD83D\uDD0A'}</button>
               </div>);
             } else {
-              acc.push(<div key={i} className="ai-bullet">{renderInline(bulletText, i, withVerbLinks)}</div>);
+              out.push(<div key={i} className={speaker ? 'ai-turn' : 'ai-bullet'}>{badge}{renderInline(bulletText, i, withVerbLinks)}</div>);
             }
             return acc;
           }

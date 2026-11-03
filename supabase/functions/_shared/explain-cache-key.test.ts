@@ -16,7 +16,7 @@ describe('explainCacheKey', () => {
     expect(explainCacheKey('Das Haus', 'de', '')).toBe('das haus');
     expect(explainCacheKey('Facilitate', 'en', '')).toBe('en:facilitate');
     expect(explainCacheKey('Ich nehme …', 'de', 'pattern')).toBe('pat:ich nehme …');
-    expect(explainCacheKey('Hast du Kinder? — Ja.', 'de', 'exam2')).toBe('exam:hast du kinder? — ja.');
+    expect(explainCacheKey('Hast du Kinder? — Ja.', 'de', 'exam2')).toBe('exam2:hast du kinder? — ja.');
   });
   it('can never emit a vi: key', () => {
     for (const lang of ['de', 'en', 'xx', '', 'vi']) {

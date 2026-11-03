@@ -164,11 +164,12 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
 // rows live under the 'pat:' prefix so they never collide with words.
 export type ExplainOpts = { kind?: string };
 
-// Cache namespace per kind: 'pat:' patterns, 'exam:' Goethe Sprechen cards.
+// Cache namespace per kind: 'pat:' patterns, 'exam2:' Goethe Sprechen cards
+// (mini-dialogue format; must match _shared/explain-cache-key.ts).
 function explainPrefix(lang, opts?: ExplainOpts) {
   var kind = opts && opts.kind;
   if (kind === 'pattern') return 'pat:';
-  if (kind === 'exam2' || kind === 'exam3') return 'exam:';
+  if (kind === 'exam2' || kind === 'exam3') return 'exam2:';
   return lang === 'en' ? 'en:' : '';
 }
 
