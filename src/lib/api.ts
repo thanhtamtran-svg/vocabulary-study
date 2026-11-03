@@ -164,9 +164,24 @@ export async function fetchIPAAndDefinition(germanWord, englishWord) {
 // rows live under the 'pat:' prefix so they never collide with words.
 export type ExplainOpts = { kind?: string };
 
+// Cache namespace per kind: 'pat:' patterns, 'exam:' Goethe Sprechen cards.
+function explainPrefix(lang, opts?: ExplainOpts) {
+  var kind = opts && opts.kind;
+  if (kind === 'pattern') return 'pat:';
+  if (kind === 'exam2' || kind === 'exam3') return 'exam:';
+  return lang === 'en' ? 'en:' : '';
+}
+
+// Explain kind for a card: patterns course rows carry meta.pattern; exam
+// practice cards also carry meta.exam and get their own "more ways" prompt.
+export function explainOptsFor(meta): ExplainOpts | undefined {
+  if (!meta || !meta.pattern) return undefined;
+  return meta.exam ? { kind: 'exam' + meta.exam.teil } : { kind: 'pattern' };
+}
+
 export async function fetchCachedExplanation(word, lang?, opts?: ExplainOpts) {
-  var isPat = !!opts && opts.kind === 'pattern';
-  var prefix = isPat ? 'pat:' : lang === 'en' ? 'en:' : '';
+  var isPat = !!(opts && opts.kind);
+  var prefix = explainPrefix(lang, opts);
   var cacheKey = prefix + word.toLowerCase().trim();
   if (cachedExplanationCache.has(cacheKey)) return cachedExplanationCache.get(cacheKey);
   var url = SUPABASE_URL + '/rest/v1/vocab_explanations?word=eq.' + encodeURIComponent(cacheKey) + '&select=explanation';
@@ -196,7 +211,7 @@ export async function fetchCachedExplanation(word, lang?, opts?: ExplainOpts) {
 }
 
 export async function fetchExplanation(word, wordType, lang?, opts?: ExplainOpts) {
-  var prefix = opts && opts.kind === 'pattern' ? 'pat:' : lang === 'en' ? 'en:' : '';
+  var prefix = explainPrefix(lang, opts);
   var cacheKey = prefix + word.toLowerCase().trim();
   if (explanationCache.has(cacheKey)) return explanationCache.get(cacheKey);
   const res = await fetch(EXPLAIN_URL, {
@@ -219,7 +234,7 @@ export async function fetchExplanation(word, wordType, lang?, opts?: ExplainOpts
 // session token — resolves false when the server refuses (e.g. A1.1
 // visitor without a login).
 export async function clearExplanation(word, lang?, opts?: ExplainOpts) {
-  var prefix = opts && opts.kind === 'pattern' ? 'pat:' : lang === 'vi' ? 'vi:' : lang === 'en' ? 'en:' : '';
+  var prefix = lang === 'vi' ? 'vi:' : explainPrefix(lang, opts);
   var cacheKey = prefix + word.toLowerCase().trim();
   explanationCache.delete(cacheKey);
   cachedExplanationCache.delete(cacheKey);

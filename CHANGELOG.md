@@ -11,6 +11,21 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-03 — AI tutor của thẻ luyện thi: nhiều cách hỏi và trả lời
+
+- Trên thẻ luyện thi Goethe, nút AI giờ là **"AI tutor: more ways to ask
+  and answer"**, với lời giải riêng (không còn dùng lời giải mẫu câu):
+  - **Teil 2:** 6 cách hỏi khác nhau (đều dùng từ trên thẻ, trộn câu hỏi
+    W- và câu Ja/Nein, có cả dạng Sie), 6 cách trả lời (ngắn, dài có lý
+    do, "Nein, …", có thời gian, "gern/lieber"), 2 câu hỏi lại để nói
+    tiếp, và lỗi cần tránh.
+  - **Teil 3:** 6 cách nhờ (Können Sie…?, Kannst du…?, câu mệnh lệnh có
+    bitte, Ich möchte…, Darf ich…?, Haben Sie…?) và 6 cách đáp (3 đồng ý,
+    3 từ chối lịch sự), kèm lỗi cần tránh.
+- Mỗi câu tiếng Đức có nút nghe. Lời giải được lưu dùng chung, lưu riêng
+  với lời giải mẫu câu; máy chủ chỉ nhận một trong vài loại cố định, nên
+  không ai chèn được nội dung lạ vào lời giải dùng chung.
+
 ## 2026-11-03 — Luyện thi nói Goethe A1: Teil 2 và Teil 3
 
 - PM sẽ thi **Goethe A1** (không phải ÖSD) và muốn luyện giống phần thi

@@ -44,9 +44,11 @@ export default React.memo(function AiExplainBox({
   word, aiExplanation, aiLoading, aiError, aiSaveStatus,
   setAiExplanation, setAiLoading, setAiError, setAiSaveStatus, lang, explainOpts
 }) {
-  // explainOpts {kind:'pattern', note, also}: sentence-pattern AI tutor
-  // (own prompt + 'pat:' cache rows). Absent for word courses.
-  var isPattern = !!explainOpts && explainOpts.kind === 'pattern';
+  // explainOpts {kind:'pattern'}: sentence-pattern AI tutor ('pat:' cache rows);
+  // {kind:'exam2'|'exam3'}: Goethe Sprechen card, more ways to ask/answer ('exam:').
+  // Absent for word courses.
+  var isPattern = !!explainOpts && !!explainOpts.kind;
+  var isExam = isPattern && explainOpts.kind !== 'pattern';
   var speak = lang === 'en' ? speakEnglish : isPattern ? speakPattern : speakGerman;
   function handleExplain() {
     setAiLoading(true);
@@ -91,7 +93,7 @@ export default React.memo(function AiExplainBox({
       className="btn btn-secondary"
       style={{marginTop:'10px',fontSize:'13px',gap:'6px'}}
       onClick={handleExplain}
-    >{'\uD83E\uDD16'} {isPattern ? 'AI tutor: explain this pattern' : 'Explain this word'}</button> : null}
+    >{'\uD83E\uDD16'} {isExam ? 'AI tutor: more ways to ask and answer' : isPattern ? 'AI tutor: explain this pattern' : 'Explain this word'}</button> : null}
 
     {/* Loading state */}
     {aiLoading ? <div className="ai-explain-box">

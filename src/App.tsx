@@ -22,7 +22,7 @@ import {
 } from './lib/exercise-engine';
 import { scheduleRetry, nextExerciseRecord, matchesAccepted } from './lib/exercise-core';
 import { generatePatternItems } from './lib/pattern-exercise-engine';
-import { checkSentence, fetchWordExtras } from './lib/api';
+import { checkSentence, fetchWordExtras, explainOptsFor } from './lib/api';
 import { buildWordIndex, matchCourseWords } from './lib/word-extras';
 import { wordLinkHref, readWordLink, clearWordLink, findWordIndex } from './lib/word-link';
 import { COURSES, studyDatesKeyForLang } from './lib/course-config';
@@ -306,7 +306,7 @@ function App({onHome, vocabData, variant, examData}) {
     setAiError('');
     setAiLoading(false);
     setAiSaveStatus('');
-    fetchCachedExplanation(w.german, undefined, w.meta && w.meta.pattern ? {kind: 'pattern'} : undefined).then(function(text) {
+    fetchCachedExplanation(w.german, undefined, explainOptsFor(w.meta)).then(function(text) {
       if (cancelled) return;
       if (text) {
         setAiExplanation(text);

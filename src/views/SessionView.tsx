@@ -4,6 +4,7 @@ import Flashcard from '../components/Flashcard';
 import ConfidenceButtons from '../components/ConfidenceButtons';
 import AiExplainBox from '../components/AiExplainBox';
 import PatternCard, { PatternNotes } from '../components/PatternCard';
+import { explainOptsFor } from '../lib/api';
 
 export default React.memo(function SessionView({
   sessionWords, sessionType, currentIdx, flipped, setFlipped,
@@ -132,7 +133,7 @@ export default React.memo(function SessionView({
             setAiError={setAiError}
             setAiSaveStatus={setAiSaveStatus}
             lang={lang}
-            explainOpts={isPattern ? {kind: 'pattern'} : undefined}
+            explainOpts={explainOptsFor(w.meta)}
           /> : null}
         </> : null}
       </div>

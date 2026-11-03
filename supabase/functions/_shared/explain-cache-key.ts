@@ -12,16 +12,19 @@
 // another namespace ("vi:…", "en:…", "pat:…") would land in that slot;
 // refuse it (no vocab entry starts like that).
 export const RETIRED_LANGS = ["vi"];
-const RESERVED_PREFIXES = ["vi:", "en:", "pat:"];
+const RESERVED_PREFIXES = ["vi:", "en:", "pat:", "exam:"];
 
+// kind: "" (word), "pattern" (sentence pattern) or "exam2"/"exam3" (Goethe
+// Sprechen practice card) — the caller has already reduced it to that list.
 export function explainCacheKey(
   word: string,
   lang: string,
-  isPattern: boolean,
+  kind: string,
 ): string | null {
   if (RETIRED_LANGS.includes(lang)) return null;
   const wordLower = word.toLowerCase();
-  if (isPattern) return "pat:" + wordLower;
+  if (kind === "pattern") return "pat:" + wordLower;
+  if (kind === "exam2" || kind === "exam3") return "exam:" + wordLower;
   if (lang === "en") return "en:" + wordLower;
   if (RESERVED_PREFIXES.some((p) => wordLower.startsWith(p))) return null;
   return wordLower;
