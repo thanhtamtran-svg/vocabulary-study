@@ -120,8 +120,6 @@ export default React.memo(function PatternCard({ word, flipped, onFlip, directio
           {meta.exam ? <>
             <div className="pattern-prompt">{'Prüfung Teil ' + meta.exam.teil + ' · ' + EXAM_TASK[meta.exam.teil]}</div>
             <ExamCard exam={meta.exam} />
-            <AudioButtons text={pattern} onFront={true} />
-            <div style={{marginTop:'6px',fontSize:'11px',opacity:0.6}}>Say both lines out loud · tap to see a model answer</div>
           </> : enFirst ? <>
             <div className="pattern-prompt">Say it in German, then check</div>
             <div className="pattern-chips">
