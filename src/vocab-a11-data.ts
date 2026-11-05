@@ -32,7 +32,6 @@ export const VOCAB_A11_DATA = {
     ["ansehen","to look at",0,1],
     ["das Bild","picture, image",0,0],
     ["hören","to listen",0,1],
-    ["noch einmal","once more, again",0,4],
     ["ankreuzen","to mark / check",0,1],
     ["zuordnen","to match, assign",0,1],
     ["ergänzen","to complete, fill in",0,1],
@@ -72,17 +71,14 @@ export const VOCAB_A11_DATA = {
     ["Deutschland","Germany",1,0],
     ["Deutsch","German (language)",1,0],
     ["und","and",1,5],
-    ["ein bisschen","a little bit",1,4],
     // A — Begrüßung und Abschied
     ["der Herr","Mr., gentleman",1,0],
     ["das Kind","child",1,0],
     ["die Dame","lady",1,0],
-    ["willkommen","welcome",1,4],
     ["bei","at, with",1,5],
     ["die Musik","music",1,0],
     ["international","international",1,2],
     ["die Frau","Mrs., woman, wife",1,0],
-    ["danke","thank you",1,4],
     ["der Papa","dad",1,0],
     // B — Sich vorstellen
     ["sein","to be",1,1],
@@ -97,7 +93,6 @@ export const VOCAB_A11_DATA = {
     ["du","you (informal)",1,3],
     ["Österreich","Austria",1,0],
     ["die Schweiz","Switzerland",1,0],
-    ["aha","I see!",1,4],
     ["toll","great, awesome",1,2],
     ["interessant","interesting (interessanter, am interessantesten)",1,2],
     ["was","what",1,3],
@@ -107,7 +102,6 @@ export const VOCAB_A11_DATA = {
     ["der Buchstabe","letter (of alphabet)",1,0],
     ["das Alphabet","alphabet",1,0],
     ["buchstabieren","to spell",1,1],
-    ["bitte","please",1,4],
     ["die Firma","company, firm",1,0],
     // E — Personalien
     ["die Adresse","address",1,0],
@@ -167,9 +161,6 @@ export const VOCAB_A11_DATA = {
     ["in","in",2,5],
     // A — Befinden
     ["gut","good, well (besser, am besten)",2,2],
-    ["super","great, super",2,4],
-    ["na ja","well... (hesitation)",2,4],
-    ["ach","oh (expression)",2,4],
     ["so","so",2,5],
     ["sehr","very",2,5],
     // B — Familie
@@ -222,10 +213,6 @@ export const VOCAB_A11_DATA = {
     // Ort
     // Strategien
     // Location & directions phrases
-    ["im Norden","in the north",2,4],
-    ["im Süden","in the south",2,4],
-    ["im Westen","in the west",2,4],
-    ["im Osten","in the east",2,4],
     // Additional family-context noun
     ["die Einladung","invitation",2,0],
     // Additional — Kasus, Präpositionen & Personalpronomen
@@ -252,7 +239,6 @@ export const VOCAB_A11_DATA = {
     ["der Prospekt","brochure, flyer",3,0],
     ["das Sonderangebot","special offer",3,0],
     ["das Lebensmittel","food, groceries",3,0],
-    ["wie viel","how much",3,4],
     ["kosten","to cost",3,1],
     ["das Kilo","kilogram",3,0],
     ["das Gramm","gram",3,0],
@@ -304,13 +290,6 @@ export const VOCAB_A11_DATA = {
     // Nachfragen
     // Beim Einkaufen
     // Mengenangaben
-    ["eine Flasche Saft","a bottle of juice",3,4],
-    ["ein Liter Milch","a liter of milk",3,4],
-    ["ein Pfund Brot","a pound of bread",3,4],
-    ["eine Packung Tee","a package of tea",3,4],
-    ["ein Becher Sahne","a cup of cream",3,4],
-    ["ein Kilo Orangen","a kilo of oranges",3,4],
-    ["eine Dose Tomaten","a can of tomatoes",3,4],
     // Strategien
     ["die Packung","package",3,0],
     ["der Becher","cup (container)",3,0],
@@ -328,12 +307,10 @@ export const VOCAB_A11_DATA = {
     ["das Bier","beer",3,0],
     ["die Fanta","Fanta (soft drink)",3,0],
     ["das Würstchen","small sausage",3,0],
-    ["ein Paar Würstchen","a pair of sausages",3,4],
     ["der Gemischte Salat","mixed salad",3,0],
     ["die Gulaschsuppe","goulash soup",3,0],
     ["die Portion Gemischtes Eis","portion of mixed ice cream",3,0],
     ["das Salz","salt",3,0],
-    ["Zum Frühstück","for breakfast",3,4],
     // Additional baked goods & breads
     ["der Apfelkuchen","apple cake",3,0],
     ["der Pfannkuchen","pancake",3,0],
@@ -360,13 +337,10 @@ export const VOCAB_A11_DATA = {
     ["die Liste","list",3,0],
     ["lecker","tasty, delicious",3,2],
     ["frisch","fresh",3,2],
-    ["mit Karte bezahlen","to pay by card",3,4],
     // Wohnung, Möbel & Redemittel (2026-10-05)
     ["die Tasse","cup",3,0],
-    ["Hunger haben","to be hungry",3,4],
-    ["Durst haben","to be thirsty",3,4],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
-    ["die Nudeln","noodles, pasta (pl.)",3,0],
+    ["die Nudel","noodle (pasta)",3,0],
     ["die Spaghetti","spaghetti (pl.)",3,0],
     ["das Hähnchen","chicken",3,0],
     ["die Gemüsesuppe","vegetable soup",3,0],
@@ -379,13 +353,9 @@ export const VOCAB_A11_DATA = {
     ["der Honig","honey",3,0],
     ["die Limonade","lemonade, fizzy drink",3,0],
     ["der Apfelsaft","apple juice",3,0],
-    ["die Speisen","dishes, food (pl.)",3,0],
-    ["die Getränke","drinks (pl.)",3,0],
+    ["die Speise","dish, food",3,0],
+    ["das Getränk","drink, beverage",3,0],
     ["die Kellnerin","waitress",3,0],
-    ["nicht frisch","not fresh",3,4],
-    ["mit der Familie","with the family",3,4],
-    ["mit Freunden","with friends",3,4],
-    ["mit Kollegen","with colleagues",3,4],
     ["das Trinkgeld","tip",3,0],
 
     // ===== Cat 4: Lektion 4 — Meine Wohnung =====
@@ -494,7 +464,6 @@ export const VOCAB_A11_DATA = {
     // Ein Telefongespräch führen
     // Strategien
     ["dunkelbraun","dark brown",4,2],
-    ["zu Hause","at home",4,4],
     // Additional rooms & housing adjectives
     ["das Schlafzimmer","bedroom",4,0],
     ["das Arbeitszimmer","study, home office",4,0],
@@ -553,7 +522,6 @@ export const VOCAB_A11_DATA = {
     ["einziehen","to move in (separable)",4,1],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
     ["die Treppe","stairs",4,0],
-    ["in der Stadt","in town",4,4],
 
     // ===== Cat 5: Lektion 5 — Mein Tag =====
     // Foto-Hörgeschichte & A — Tagesablauf
@@ -638,7 +606,6 @@ export const VOCAB_A11_DATA = {
     ["abholen","to pick up",5,1],
     ["mehr","more",5,5],
     ["das Beispiel","example",5,0],
-    ["zum Beispiel","for example",5,4],
     ["wieder","again",5,5],
     ["der Freund","friend (m.)",5,0],
     ["die Freundin","friend (f.)",5,0],
@@ -680,8 +647,6 @@ export const VOCAB_A11_DATA = {
     ["sonntags","on Sundays",5,5],
     ["manchmal","sometimes",5,5],
     ["abends","in the evening",5,5],
-    ["jede Woche","every week",5,4],
-    ["heute Abend","tonight, this evening",5,4],
     // More daily-routine verbs & time vocabulary
     ["aufhängen","to hang up",5,1],
     ["ausleeren","to empty out",5,1],
@@ -690,21 +655,9 @@ export const VOCAB_A11_DATA = {
     ["ausgehen","to go out",5,1],
     ["putzen","to clean",5,1],
     ["Viertel","quarter (15 min)",5,5],
-    ["kurz vor","shortly before",5,4],
-    ["kurz nach","shortly after",5,4],
-    ["von...bis","from...to",5,4],
     ["seit","since, for",5,5],
     ["im","in (month/season)",5,5],
     // Time of day & time-telling
-    ["am Morgen","in the morning",5,4],
-    ["am Vormittag","in the late morning",5,4],
-    ["am Mittag","at noon",5,4],
-    ["am Nachmittag","in the afternoon",5,4],
-    ["am Abend","in the evening",5,4],
-    ["in der Nacht","at night",5,4],
-    ["der ganze Tag","the whole day",5,4],
-    ["Viertel nach","quarter past",5,4],
-    ["Viertel vor","quarter to",5,4],
     // Additional adverbs of liking (intensifiers for gern)
     ["sehr gern","very much (like to)",5,5],
     ["total gern","really love to (colloquial)",5,5],
@@ -715,12 +668,6 @@ export const VOCAB_A11_DATA = {
     ["Wann?","When?",5,3],
     ["Warum?","Why?",5,3],
     // Time expressions with prepositions
-    ["um 6 Uhr","at 6 o'clock",5,4],
-    ["um 12 Uhr / 13 Uhr","at 12 / 1 o'clock",5,4],
-    ["bis 17 Uhr","until 5 pm",5,4],
-    ["im Mai","in May",5,4],
-    ["für zwei Wochen","for two weeks",5,4],
-    ["fast drei Jahre","almost three years",5,4],
     // Daily routine verbs
     ["duschen","to shower",5,1],
     ["schicken","to send",5,1],
@@ -733,17 +680,11 @@ export const VOCAB_A11_DATA = {
     ["der Krieg","war",5,0],
     ["die Blumenstraße","Blumen Street (street name)",5,0],
     // Additional — Kasus, Präpositionen & Personalpronomen
-    ["jeden Tag","every day",5,4],
     ["von","from, of (+ dative)",5,5],
     ["zu","to (+ dative)",5,5],
     // Wohnung, Möbel & Redemittel (2026-10-05)
-    ["die Zähne putzen","to brush one's teeth",5,4],
     ["beim","at the, while (bei + dem)",5,3],
-    ["Zeit haben","to have time",5,4],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
-    ["um … Uhr","at … o'clock",5,4],
-    ["von … bis …","from … to …",5,4],
-    ["einen Termin vereinbaren","to make an appointment",5,4],
     ["morgens","in the mornings",5,5],
     ["nachts","at night",5,5],
     ["die Linie","line (transport)",5,0],
@@ -798,13 +739,11 @@ export const VOCAB_A11_DATA = {
     // B — Essen und Trinken
     ["die Speisekarte","menu",6,0],
     ["der Hamburger","hamburger",6,0],
-    ["die Speise","dish, food",6,0],
     ["die Pommes frites","French fries",6,0],
     ["die Portion","portion",6,0],
     ["der Ketchup","ketchup",6,0],
     ["der Salat","salad",6,0],
     ["der Schinken","ham",6,0],
-    ["das Getränk","drink, beverage",6,0],
     ["die Cola","cola",6,0],
     // C — Am Imbiss
     ["lieber","rather, prefer",6,5],
@@ -872,23 +811,9 @@ export const VOCAB_A11_DATA = {
     // Additional weather vocabulary
     ["der Nebel","fog",6,0],
     ["das Gewitter","thunderstorm",6,0],
-    ["es regnet","it is raining",6,4],
-    ["es schneit","it is snowing",6,4],
-    ["es ist bewölkt","it is cloudy",6,4],
-    ["es ist kalt","it is cold",6,4],
-    ["es ist warm","it is warm",6,4],
-    ["es ist windig","it is windy",6,4],
-    ["die Sonne scheint","the sun shines",6,4],
-    ["es sind ... Grad","it is ... degrees",6,4],
-    ["unter Null","below zero",6,4],
-    ["über Null","above zero",6,4],
     // Additional weather & geography
-    ["leicht bewölkt","partly cloudy",6,4],
     ["die Küste","coast",6,0],
     ["das Landesinnere","inland, interior",6,0],
-    ["bis zu 20 Grad","up to 20 degrees",6,4],
-    ["minus zwei Grad","minus two degrees",6,4],
-    ["um die 25 Grad","around 25 degrees",6,4],
     // Additional hobby & leisure vocabulary
     ["das Computerspiel","computer game",6,0],
     ["der Satz","sentence",6,0],
@@ -898,7 +823,6 @@ export const VOCAB_A11_DATA = {
     ["surfen","to surf (internet)",6,1],
     ["feiern","to celebrate",6,1],
     ["informieren","to inform",6,1],
-    ["leider nicht","unfortunately not",6,4],
     // Additional — Kasus, Präpositionen & Personalpronomen
     ["leihen","to lend",6,1],
     ["springen","to jump",6,1],
@@ -913,18 +837,11 @@ export const VOCAB_A11_DATA = {
     ["der Tennisplatz","tennis court",6,0],
     ["der Spielplatz","playground",6,0],
     ["die Zeitung","newspaper",6,0],
-    ["die Nachrichten","news (pl.)",6,0],
+    ["die Nachricht","message, news",6,0],
     ["warten auf","to wait for (+ accusative)",6,1],
     // Kleidung, Farben, Komparativ & Präteritum
     ["die Ferien","holidays, school break (pl.)",6,0],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
-    ["ins Kino gehen","to go to the cinema",6,4],
-    ["schwimmen gehen","to go swimming",6,4],
-    ["Freunde treffen","to meet friends",6,4],
-    ["ein Picknick machen","to have a picnic",6,4],
-    ["Musik hören","to listen to music",6,4],
-    ["Sport machen","to do sport",6,4],
-    ["ins Theater gehen","to go to the theatre",6,4],
     ["joggen","to jog",6,1],
     ["sich treffen","to meet (each other)",6,1],
 
@@ -935,13 +852,10 @@ export const VOCAB_A11_DATA = {
     ["wecken","to wake (someone) up",7,1],
     ["das Frühstück","breakfast",7,0],
     ["fertig","ready, finished",7,2],
-    ["los sein","What's going on?",7,4],
     ["die Mathematik","mathematics",7,0],
     ["der Test","test",7,0],
     ["pünktlich","on time, punctual",7,2],
-    ["auf jeden Fall","definitely",7,4],
     ["schmecken","to taste",7,1],
-    ["nach Hause","home (direction)",7,4],
     ["die Schule","school",7,0],
     // A — Fähigkeiten: können
     ["können","can, to be able to",7,1],
@@ -967,7 +881,6 @@ export const VOCAB_A11_DATA = {
     // C — Perfekt
     ["das Buch","book",7,0],
     // D — Vorschläge
-    ["schade","what a pity",7,4],
     ["der Kilometer","kilometer",7,0],
     // E — Schule und Kommunikation
     ["die Kommunikation","communication",7,0],
@@ -1014,7 +927,6 @@ export const VOCAB_A11_DATA = {
     ["der Lohn","wages, salary",7,0],
     ["die Krankmeldung","sick note",7,0],
     // School vocabulary
-    ["die Hausaufgaben","homework (pl.)",7,0],
     // Additional — Kasus, Präpositionen & Personalpronomen
     ["vorlesen","to read aloud",7,1],
     ["das Heft","exercise book",7,0],
@@ -1120,8 +1032,6 @@ export const VOCAB_A11_DATA = {
     ["die Kantine","canteen",8,0],
     ["die Prüfung","exam",8,0],
     ["bestehen","to pass (an exam)",8,1],
-    ["bei der Arbeit","at work",8,4],
-    ["bei Mercedes arbeiten","to work at Mercedes (no article)",8,4],
 
     // ===== Cat 9: Lektion 9 — Ämter und Behörden =====
     ["der Führerschein","driving licence",9,0],
@@ -1235,7 +1145,6 @@ export const VOCAB_A11_DATA = {
     ["der Mund","mouth",10,0],
     ["der Zahn","tooth",10,0],
     ["ausfallen","to be cancelled",10,1],
-    ["die Nachricht","message, news",10,0],
     ["der Kuss","kiss",10,0],
     ["gesund","healthy (gesünder, am gesündesten)",10,2],
     ["hoffentlich","hopefully",10,5],
@@ -1259,9 +1168,7 @@ export const VOCAB_A11_DATA = {
     ["die Unterschrift","signature",10,0],
     ["die Sprechstunde","consultation hours",10,0],
     ["der Notfall","emergency",10,0],
-    ["in der Nähe","nearby",10,4],
     ["die Minute","minute",10,0],
-    ["in Ordnung","all right, OK",10,4],
     ["vorbeikommen","to come by, drop in",10,1],
     ["die Versichertenkarte","health insurance card",10,0],
     ["der Boden","floor, ground",10,0],
@@ -1279,7 +1186,6 @@ export const VOCAB_A11_DATA = {
     ["die Kopfschmerzen","headache (pl.)",10,0],
     // Weg beschreiben, Gesundheit & Orte in der Stadt
     ["der Magen","stomach",10,0],
-    ["die Schmerzen","pain (pl.)",10,0],
     ["die Halsschmerzen","sore throat (pl.)",10,0],
     ["die Zahnschmerzen","toothache (pl.)",10,0],
     ["die Magenschmerzen","stomach ache (pl.)",10,0],
@@ -1292,36 +1198,18 @@ export const VOCAB_A11_DATA = {
     ["die Krankheit","illness, disease",10,0],
     ["sich ausruhen","to rest (separable)",10,1],
     ["regelmäßig","regular, regularly",10,2],
-    ["die Süßigkeiten","sweets (pl.)",10,0],
+    ["die Süßigkeit","sweet, candy",10,0],
     ["der Alkohol","alcohol",10,0],
     ["die Gymnastik","gymnastics, exercises",10,0],
     ["der Hustensaft","cough syrup",10,0],
-    ["Sport treiben","to do sport",10,4],
-    ["im Bett bleiben","to stay in bed",10,4],
-    ["zum Arzt gehen","to go to the doctor",10,4],
-    ["Medikamente nehmen","to take medicine",10,4],
     ["der Zahnarzt","dentist",10,0],
     // Wohnung, Möbel & Redemittel (2026-10-05)
-    ["Angst haben","to be afraid",10,4],
-    ["Fieber haben","to have a fever",10,4],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
     ["der Körper","body",10,0],
-    ["die Haare","hair (pl.)",10,0],
     ["das Gesicht","face",10,0],
     ["der Grad","degree",10,0],
     ["die Patientin","patient (f.)",10,0],
-    ["die Medikamente","medicines (pl.)",10,0],
     ["der Spaziergang","walk, stroll",10,0],
-    ["krank sein","to be ill",10,4],
-    ["erkältet sein","to have a cold",10,4],
-    ["eine Erkältung haben","to have a cold",10,4],
-    ["sehr schlecht","very bad",10,4],
-    ["nicht besonders gut","not especially good",10,4],
-    ["zu Hause bleiben","to stay at home",10,4],
-    ["viel schlafen","to sleep a lot",10,4],
-    ["Gymnastik machen","to do exercises",10,4],
-    ["in zwei Tagen","in two days",10,4],
-    ["dreimal pro Tag","three times a day",10,4],
     ["wiederkommen","to come back (separable)",10,1],
 
     // ===== Cat 11: Lektion 11 — In der Stadt unterwegs =====
@@ -1377,7 +1265,6 @@ export const VOCAB_A11_DATA = {
     ["direkt","direct",11,2],
     ["die Durchsage","announcement",11,0],
     ["der Schalter","ticket counter",11,0],
-    ["hin und zurück","return, round trip",11,4],
     ["der Fahrplan","timetable",11,0],
     // Additional — Kasus, Präpositionen & Personalpronomen
     ["buchen","to book",11,1],
@@ -1429,41 +1316,13 @@ export const VOCAB_A11_DATA = {
     ["erst-","first (ordinal: die erste Straße)",11,3],
     ["zweit-","second (ordinal)",11,3],
     ["dritt-","third (ordinal)",11,3],
-    ["nach links","to the left",11,4],
-    ["nach rechts","to the right",11,4],
-    ["links abbiegen","to turn left",11,4],
-    ["rechts abbiegen","to turn right",11,4],
-    ["bis zur Ampel","as far as the traffic light",11,4],
-    ["an der Post vorbei","past the post office",11,4],
-    ["über die Straße","across the street",11,4],
-    ["über die Brücke","over the bridge",11,4],
-    ["durch den Tunnel","through the tunnel",11,4],
-    ["an der Ecke","on the corner",11,4],
-    ["an der Kreuzung","at the crossroads",11,4],
-    ["an der Ampel","at the traffic light",11,4],
-    ["am Ende der Straße","at the end of the street",11,4],
-    ["auf der rechten Seite","on the right-hand side",11,4],
-    ["auf der linken Seite","on the left-hand side",11,4],
-    ["zu Fuß","on foot",11,4],
-    ["die erste Straße links","the first street on the left",11,4],
-    ["in die Stadt","into town (Wohin?)",11,4],
-    ["auf dem Land","in the countryside (Wo?)",11,4],
-    ["aufs Land","to the countryside (Wohin?)",11,4],
     // Wohnung, Möbel & Redemittel (2026-10-05)
     ["der Weg","way, path",11,0],
     ["zum","to the (zu + dem)",11,3],
     ["zur","to the (zu + der)",11,3],
     ["vom","from the, of the (von + dem)",11,3],
-    ["zu Fuß gehen","to walk, go on foot",11,4],
-    ["mit dem Bus","by bus",11,4],
-    ["mit dem Auto","by car",11,4],
-    ["mit dem Zug","by train",11,4],
-    ["mit dem Fahrrad","by bike",11,4],
-    ["mit dem Flugzeug","by plane",11,4],
-    ["mit der U-Bahn","by underground",11,4],
     // Restaurant, Freizeit, Uhrzeit, Körper & Gesundheit (2026-10-06)
     ["der nächste Zug","the next train",11,0],
-    ["nur hin","one way, single",11,4],
 
     // ===== Cat 12: Lektion 12 — Kundenservice =====
     ["die Tüte","bag (plastic/paper)",12,0],
@@ -1552,7 +1411,6 @@ export const VOCAB_A11_DATA = {
     ["der Hafen","harbour, port",13,0],
     ["nie","never",13,5],
     ["besser","better",13,2],
-    ["am besten","best",13,4],
     ["rückwärts","backwards",13,5],
     ["vorwärts","forwards",13,5],
     ["dabei","at the same time",13,5],
@@ -1561,8 +1419,6 @@ export const VOCAB_A11_DATA = {
     ["trainieren","to train, practise",13,1],
     ["Rad fahren","to cycle",13,1],
     ["der Rekord","record",13,0],
-    ["am liebsten","most preferably",13,4],
-    ["am meisten","most",13,4],
     ["zufrieden","satisfied, content",13,2],
     ["der Witz","joke",13,0],
     ["dies-","this (demonstrative)",13,3],
@@ -1604,7 +1460,7 @@ export const VOCAB_A11_DATA = {
     ["der Flip-Flop","flip-flop",13,0],
     ["die Pantolette","mule, open sandal",13,0],
     ["der Hausschuh","slipper",13,0],
-    ["die High Heels","high heels (pl.)",13,0],
+    ["der High Heel","high heel (shoe)",13,0],
     ["der Rucksack","rucksack, backpack",13,0],
     ["die Sonnenbrille","sunglasses",13,0],
     ["der Gürtel","belt",13,0],
@@ -1642,8 +1498,6 @@ export const VOCAB_A11_DATA = {
     ["farblos","colourless",13,2],
     ["ausziehen","to take off (clothes); to move out (separable)",13,1],
     ["umtauschen","to exchange (separable)",13,1],
-    ["nicht schlecht","not bad",13,4],
-    ["zu eng","too tight",13,4],
     ["bequem","comfortable",13,2],
     ["faul","lazy",13,2],
     ["neugierig","curious, nosy",13,2],
@@ -1663,8 +1517,6 @@ export const VOCAB_A11_DATA = {
     ["nah","near (näher, am nächsten)",13,2],
     ["der Weltrekord","world record",13,0],
     ["die Geige","violin",13,0],
-    ["Geige spielen","to play the violin",13,4],
-    ["von Beruf","by profession",13,4],
     ["nachmachen","to copy, imitate (separable)",13,1],
     ["das Gebiet","area, region",13,0],
     ["die Wüste","desert",13,0],
@@ -1672,7 +1524,6 @@ export const VOCAB_A11_DATA = {
     ["die Höhe","height",13,0],
     ["der Einwohner","inhabitant",13,0],
     ["die Welt","world",13,0],
-    ["fast nie","almost never",13,4],
     // Wohnung, Möbel & Redemittel (2026-10-05)
     ["dunkelgrün","dark green",13,2],
 
@@ -1706,7 +1557,6 @@ export const VOCAB_A11_DATA = {
     ["der Großvater","grandfather",14,0],
     ["die Feier","celebration, party",14,0],
     ["organisieren","to organise",14,1],
-    ["Bescheid geben","to let know, inform",14,4],
     ["der Flug","flight",14,0],
     ["werden","to become, will",14,1],
     ["einladen","to invite",14,1],
@@ -1733,10 +1583,6 @@ export const VOCAB_A11_DATA = {
     ["hatte","had (Präteritum of haben)",14,3],
     ["hatten","had, plural (Präteritum of haben)",14,3],
     ["vorgestern","the day before yesterday",14,5],
-    ["letzte Woche","last week",14,4],
-    ["letztes Jahr","last year",14,4],
-    ["als Kind","as a child",14,4],
-    ["am Wochenende","at the weekend",14,4],
     ["schüchtern","shy",14,2],
     // Feste und Feiern (Feste.docx)
     ["dekorieren","to decorate",14,1],
@@ -1768,7 +1614,6 @@ export const VOCAB_A11_DATA = {
     ["der Lehrertag","Teachers' Day",14,0],
     ["der Tag der Arbeit","Labour Day (1 May)",14,0],
     // Wohnung, Möbel & Redemittel (2026-10-05)
-    ["eine Party machen","to throw a party",14,4],
 
     // ===== Cat 15: Lektion 15: A2 — Über A1 hinaus =====
     ["die Allergie","allergy",15,0],
@@ -1782,21 +1627,13 @@ export const VOCAB_A11_DATA = {
     ["die Sinusitis","sinusitis",15,0],
     ["die Fettleber","fatty liver",15,0],
     ["die Physiotherapie","physiotherapy",15,0],
-    ["die Ernährung umstellen","to change one's diet",15,4],
     ["die Arzthelferin","doctor's receptionist (f.)",15,0],
     ["die Versicherungskarte","insurance card",15,0],
-    ["beim Essen","while eating",15,4],
-    ["beim Kochen","while cooking",15,4],
-    ["beim Einkaufen","while shopping",15,4],
-    ["beim Lernen","while studying",15,4],
-    ["beim Autofahren","while driving",15,4],
-    ["beim Sport","while doing sport",15,4],
     ["die Armut","poverty",15,0],
     // Weg beschreiben, Gesundheit & Orte in der Stadt
     // Kleidung, Farben, Komparativ & Präteritum
     ["edel","noble (edler, am edelsten)",15,2],
     // Feste und Feiern (Feste.docx)
-    ["ein besonderes Ereignis","a special event",15,4],
   ],
   // Batches are auto-generated below (groups of 8 within each Lektion)
   batches: [] as number[][],

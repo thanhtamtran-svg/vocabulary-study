@@ -10,6 +10,8 @@ export default React.memo(function BrowseView({
 }) {
   // Course's own type names (patterns: Statement/Question/…); words default.
   var TYPES = typeNames || TYPE_NAMES;
+  // A filter left on a type the course no longer has shows everything instead.
+  if (filterType >= 0 && !words.some(function(w) { return w[3] === filterType; })) filterType = -1;
   var filtered = words.map(function(w, i) {
     return {idx: i, german: w[0], english: w[1], catIdx: w[2], typeIdx: w[3]};
   }).filter(function(w) {
@@ -39,6 +41,9 @@ export default React.memo(function BrowseView({
             onClick={function() { setFilterType(-1); }}
           >All types</button>
           {TYPES.map(function(t, i) {
+            // Hide a type the course no longer has (Schritte A1 Expressions
+            // moved to Hören & Sprechen on 2026-11-05) — an empty filter.
+            if (!words.some(function(w) { return w[3] === i; })) return null;
             return <button
               key={i}
               className={'tab' + (filterType === i ? ' active' : '')}

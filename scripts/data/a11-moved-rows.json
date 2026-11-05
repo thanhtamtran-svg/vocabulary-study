@@ -1718,5 +1718,785 @@
   "de": "Liebe Grüße",
   "en": "Kind regards (LG)",
   "lektion": 14
+ },
+ {
+  "de": "noch einmal",
+  "en": "once more, again",
+  "lektion": 0
+ },
+ {
+  "de": "ein bisschen",
+  "en": "a little bit",
+  "lektion": 1
+ },
+ {
+  "de": "willkommen",
+  "en": "welcome",
+  "lektion": 1
+ },
+ {
+  "de": "danke",
+  "en": "thank you",
+  "lektion": 1
+ },
+ {
+  "de": "aha",
+  "en": "I see!",
+  "lektion": 1
+ },
+ {
+  "de": "bitte",
+  "en": "please",
+  "lektion": 1
+ },
+ {
+  "de": "super",
+  "en": "great, super",
+  "lektion": 2
+ },
+ {
+  "de": "na ja",
+  "en": "well... (hesitation)",
+  "lektion": 2
+ },
+ {
+  "de": "ach",
+  "en": "oh (expression)",
+  "lektion": 2
+ },
+ {
+  "de": "im Norden",
+  "en": "in the north",
+  "lektion": 2
+ },
+ {
+  "de": "im Süden",
+  "en": "in the south",
+  "lektion": 2
+ },
+ {
+  "de": "im Westen",
+  "en": "in the west",
+  "lektion": 2
+ },
+ {
+  "de": "im Osten",
+  "en": "in the east",
+  "lektion": 2
+ },
+ {
+  "de": "wie viel",
+  "en": "how much",
+  "lektion": 3
+ },
+ {
+  "de": "eine Flasche Saft",
+  "en": "a bottle of juice",
+  "lektion": 3
+ },
+ {
+  "de": "ein Liter Milch",
+  "en": "a liter of milk",
+  "lektion": 3
+ },
+ {
+  "de": "ein Pfund Brot",
+  "en": "a pound of bread",
+  "lektion": 3
+ },
+ {
+  "de": "eine Packung Tee",
+  "en": "a package of tea",
+  "lektion": 3
+ },
+ {
+  "de": "ein Becher Sahne",
+  "en": "a cup of cream",
+  "lektion": 3
+ },
+ {
+  "de": "ein Kilo Orangen",
+  "en": "a kilo of oranges",
+  "lektion": 3
+ },
+ {
+  "de": "eine Dose Tomaten",
+  "en": "a can of tomatoes",
+  "lektion": 3
+ },
+ {
+  "de": "ein Paar Würstchen",
+  "en": "a pair of sausages",
+  "lektion": 3
+ },
+ {
+  "de": "Zum Frühstück",
+  "en": "for breakfast",
+  "lektion": 3
+ },
+ {
+  "de": "mit Karte bezahlen",
+  "en": "to pay by card",
+  "lektion": 3
+ },
+ {
+  "de": "Hunger haben",
+  "en": "to be hungry",
+  "lektion": 3
+ },
+ {
+  "de": "Durst haben",
+  "en": "to be thirsty",
+  "lektion": 3
+ },
+ {
+  "de": "nicht frisch",
+  "en": "not fresh",
+  "lektion": 3
+ },
+ {
+  "de": "mit der Familie",
+  "en": "with the family",
+  "lektion": 3
+ },
+ {
+  "de": "mit Freunden",
+  "en": "with friends",
+  "lektion": 3
+ },
+ {
+  "de": "mit Kollegen",
+  "en": "with colleagues",
+  "lektion": 3
+ },
+ {
+  "de": "zu Hause",
+  "en": "at home",
+  "lektion": 4
+ },
+ {
+  "de": "in der Stadt",
+  "en": "in town",
+  "lektion": 4
+ },
+ {
+  "de": "zum Beispiel",
+  "en": "for example",
+  "lektion": 5
+ },
+ {
+  "de": "jede Woche",
+  "en": "every week",
+  "lektion": 5
+ },
+ {
+  "de": "heute Abend",
+  "en": "tonight, this evening",
+  "lektion": 5
+ },
+ {
+  "de": "kurz vor",
+  "en": "shortly before",
+  "lektion": 5
+ },
+ {
+  "de": "kurz nach",
+  "en": "shortly after",
+  "lektion": 5
+ },
+ {
+  "de": "von...bis",
+  "en": "from...to",
+  "lektion": 5
+ },
+ {
+  "de": "am Morgen",
+  "en": "in the morning",
+  "lektion": 5
+ },
+ {
+  "de": "am Vormittag",
+  "en": "in the late morning",
+  "lektion": 5
+ },
+ {
+  "de": "am Mittag",
+  "en": "at noon",
+  "lektion": 5
+ },
+ {
+  "de": "am Nachmittag",
+  "en": "in the afternoon",
+  "lektion": 5
+ },
+ {
+  "de": "am Abend",
+  "en": "in the evening",
+  "lektion": 5
+ },
+ {
+  "de": "in der Nacht",
+  "en": "at night",
+  "lektion": 5
+ },
+ {
+  "de": "der ganze Tag",
+  "en": "the whole day",
+  "lektion": 5
+ },
+ {
+  "de": "Viertel nach",
+  "en": "quarter past",
+  "lektion": 5
+ },
+ {
+  "de": "Viertel vor",
+  "en": "quarter to",
+  "lektion": 5
+ },
+ {
+  "de": "um 6 Uhr",
+  "en": "at 6 o'clock",
+  "lektion": 5
+ },
+ {
+  "de": "um 12 Uhr / 13 Uhr",
+  "en": "at 12 / 1 o'clock",
+  "lektion": 5
+ },
+ {
+  "de": "bis 17 Uhr",
+  "en": "until 5 pm",
+  "lektion": 5
+ },
+ {
+  "de": "im Mai",
+  "en": "in May",
+  "lektion": 5
+ },
+ {
+  "de": "für zwei Wochen",
+  "en": "for two weeks",
+  "lektion": 5
+ },
+ {
+  "de": "fast drei Jahre",
+  "en": "almost three years",
+  "lektion": 5
+ },
+ {
+  "de": "jeden Tag",
+  "en": "every day",
+  "lektion": 5
+ },
+ {
+  "de": "die Zähne putzen",
+  "en": "to brush one's teeth",
+  "lektion": 5
+ },
+ {
+  "de": "Zeit haben",
+  "en": "to have time",
+  "lektion": 5
+ },
+ {
+  "de": "um … Uhr",
+  "en": "at … o'clock",
+  "lektion": 5
+ },
+ {
+  "de": "von … bis …",
+  "en": "from … to …",
+  "lektion": 5
+ },
+ {
+  "de": "einen Termin vereinbaren",
+  "en": "to make an appointment",
+  "lektion": 5
+ },
+ {
+  "de": "es regnet",
+  "en": "it is raining",
+  "lektion": 6
+ },
+ {
+  "de": "es schneit",
+  "en": "it is snowing",
+  "lektion": 6
+ },
+ {
+  "de": "es ist bewölkt",
+  "en": "it is cloudy",
+  "lektion": 6
+ },
+ {
+  "de": "es ist kalt",
+  "en": "it is cold",
+  "lektion": 6
+ },
+ {
+  "de": "es ist warm",
+  "en": "it is warm",
+  "lektion": 6
+ },
+ {
+  "de": "es ist windig",
+  "en": "it is windy",
+  "lektion": 6
+ },
+ {
+  "de": "die Sonne scheint",
+  "en": "the sun shines",
+  "lektion": 6
+ },
+ {
+  "de": "es sind ... Grad",
+  "en": "it is ... degrees",
+  "lektion": 6
+ },
+ {
+  "de": "unter Null",
+  "en": "below zero",
+  "lektion": 6
+ },
+ {
+  "de": "über Null",
+  "en": "above zero",
+  "lektion": 6
+ },
+ {
+  "de": "leicht bewölkt",
+  "en": "partly cloudy",
+  "lektion": 6
+ },
+ {
+  "de": "bis zu 20 Grad",
+  "en": "up to 20 degrees",
+  "lektion": 6
+ },
+ {
+  "de": "minus zwei Grad",
+  "en": "minus two degrees",
+  "lektion": 6
+ },
+ {
+  "de": "um die 25 Grad",
+  "en": "around 25 degrees",
+  "lektion": 6
+ },
+ {
+  "de": "leider nicht",
+  "en": "unfortunately not",
+  "lektion": 6
+ },
+ {
+  "de": "ins Kino gehen",
+  "en": "to go to the cinema",
+  "lektion": 6
+ },
+ {
+  "de": "schwimmen gehen",
+  "en": "to go swimming",
+  "lektion": 6
+ },
+ {
+  "de": "Freunde treffen",
+  "en": "to meet friends",
+  "lektion": 6
+ },
+ {
+  "de": "ein Picknick machen",
+  "en": "to have a picnic",
+  "lektion": 6
+ },
+ {
+  "de": "Musik hören",
+  "en": "to listen to music",
+  "lektion": 6
+ },
+ {
+  "de": "Sport machen",
+  "en": "to do sport",
+  "lektion": 6
+ },
+ {
+  "de": "ins Theater gehen",
+  "en": "to go to the theatre",
+  "lektion": 6
+ },
+ {
+  "de": "los sein",
+  "en": "What's going on?",
+  "lektion": 7
+ },
+ {
+  "de": "auf jeden Fall",
+  "en": "definitely",
+  "lektion": 7
+ },
+ {
+  "de": "nach Hause",
+  "en": "home (direction)",
+  "lektion": 7
+ },
+ {
+  "de": "schade",
+  "en": "what a pity",
+  "lektion": 7
+ },
+ {
+  "de": "bei der Arbeit",
+  "en": "at work",
+  "lektion": 8
+ },
+ {
+  "de": "bei Mercedes arbeiten",
+  "en": "to work at Mercedes (no article)",
+  "lektion": 8
+ },
+ {
+  "de": "in der Nähe",
+  "en": "nearby",
+  "lektion": 10
+ },
+ {
+  "de": "in Ordnung",
+  "en": "all right, OK",
+  "lektion": 10
+ },
+ {
+  "de": "Sport treiben",
+  "en": "to do sport",
+  "lektion": 10
+ },
+ {
+  "de": "im Bett bleiben",
+  "en": "to stay in bed",
+  "lektion": 10
+ },
+ {
+  "de": "zum Arzt gehen",
+  "en": "to go to the doctor",
+  "lektion": 10
+ },
+ {
+  "de": "Medikamente nehmen",
+  "en": "to take medicine",
+  "lektion": 10
+ },
+ {
+  "de": "Angst haben",
+  "en": "to be afraid",
+  "lektion": 10
+ },
+ {
+  "de": "Fieber haben",
+  "en": "to have a fever",
+  "lektion": 10
+ },
+ {
+  "de": "krank sein",
+  "en": "to be ill",
+  "lektion": 10
+ },
+ {
+  "de": "erkältet sein",
+  "en": "to have a cold",
+  "lektion": 10
+ },
+ {
+  "de": "eine Erkältung haben",
+  "en": "to have a cold",
+  "lektion": 10
+ },
+ {
+  "de": "sehr schlecht",
+  "en": "very bad",
+  "lektion": 10
+ },
+ {
+  "de": "nicht besonders gut",
+  "en": "not especially good",
+  "lektion": 10
+ },
+ {
+  "de": "zu Hause bleiben",
+  "en": "to stay at home",
+  "lektion": 10
+ },
+ {
+  "de": "viel schlafen",
+  "en": "to sleep a lot",
+  "lektion": 10
+ },
+ {
+  "de": "Gymnastik machen",
+  "en": "to do exercises",
+  "lektion": 10
+ },
+ {
+  "de": "in zwei Tagen",
+  "en": "in two days",
+  "lektion": 10
+ },
+ {
+  "de": "dreimal pro Tag",
+  "en": "three times a day",
+  "lektion": 10
+ },
+ {
+  "de": "hin und zurück",
+  "en": "return, round trip",
+  "lektion": 11
+ },
+ {
+  "de": "nach links",
+  "en": "to the left",
+  "lektion": 11
+ },
+ {
+  "de": "nach rechts",
+  "en": "to the right",
+  "lektion": 11
+ },
+ {
+  "de": "links abbiegen",
+  "en": "to turn left",
+  "lektion": 11
+ },
+ {
+  "de": "rechts abbiegen",
+  "en": "to turn right",
+  "lektion": 11
+ },
+ {
+  "de": "bis zur Ampel",
+  "en": "as far as the traffic light",
+  "lektion": 11
+ },
+ {
+  "de": "an der Post vorbei",
+  "en": "past the post office",
+  "lektion": 11
+ },
+ {
+  "de": "über die Straße",
+  "en": "across the street",
+  "lektion": 11
+ },
+ {
+  "de": "über die Brücke",
+  "en": "over the bridge",
+  "lektion": 11
+ },
+ {
+  "de": "durch den Tunnel",
+  "en": "through the tunnel",
+  "lektion": 11
+ },
+ {
+  "de": "an der Ecke",
+  "en": "on the corner",
+  "lektion": 11
+ },
+ {
+  "de": "an der Kreuzung",
+  "en": "at the crossroads",
+  "lektion": 11
+ },
+ {
+  "de": "an der Ampel",
+  "en": "at the traffic light",
+  "lektion": 11
+ },
+ {
+  "de": "am Ende der Straße",
+  "en": "at the end of the street",
+  "lektion": 11
+ },
+ {
+  "de": "auf der rechten Seite",
+  "en": "on the right-hand side",
+  "lektion": 11
+ },
+ {
+  "de": "auf der linken Seite",
+  "en": "on the left-hand side",
+  "lektion": 11
+ },
+ {
+  "de": "zu Fuß",
+  "en": "on foot",
+  "lektion": 11
+ },
+ {
+  "de": "die erste Straße links",
+  "en": "the first street on the left",
+  "lektion": 11
+ },
+ {
+  "de": "in die Stadt",
+  "en": "into town (Wohin?)",
+  "lektion": 11
+ },
+ {
+  "de": "auf dem Land",
+  "en": "in the countryside (Wo?)",
+  "lektion": 11
+ },
+ {
+  "de": "aufs Land",
+  "en": "to the countryside (Wohin?)",
+  "lektion": 11
+ },
+ {
+  "de": "zu Fuß gehen",
+  "en": "to walk, go on foot",
+  "lektion": 11
+ },
+ {
+  "de": "mit dem Bus",
+  "en": "by bus",
+  "lektion": 11
+ },
+ {
+  "de": "mit dem Auto",
+  "en": "by car",
+  "lektion": 11
+ },
+ {
+  "de": "mit dem Zug",
+  "en": "by train",
+  "lektion": 11
+ },
+ {
+  "de": "mit dem Fahrrad",
+  "en": "by bike",
+  "lektion": 11
+ },
+ {
+  "de": "mit dem Flugzeug",
+  "en": "by plane",
+  "lektion": 11
+ },
+ {
+  "de": "mit der U-Bahn",
+  "en": "by underground",
+  "lektion": 11
+ },
+ {
+  "de": "nur hin",
+  "en": "one way, single",
+  "lektion": 11
+ },
+ {
+  "de": "am besten",
+  "en": "best",
+  "lektion": 13
+ },
+ {
+  "de": "am liebsten",
+  "en": "most preferably",
+  "lektion": 13
+ },
+ {
+  "de": "am meisten",
+  "en": "most",
+  "lektion": 13
+ },
+ {
+  "de": "nicht schlecht",
+  "en": "not bad",
+  "lektion": 13
+ },
+ {
+  "de": "zu eng",
+  "en": "too tight",
+  "lektion": 13
+ },
+ {
+  "de": "Geige spielen",
+  "en": "to play the violin",
+  "lektion": 13
+ },
+ {
+  "de": "von Beruf",
+  "en": "by profession",
+  "lektion": 13
+ },
+ {
+  "de": "fast nie",
+  "en": "almost never",
+  "lektion": 13
+ },
+ {
+  "de": "Bescheid geben",
+  "en": "to let know, inform",
+  "lektion": 14
+ },
+ {
+  "de": "letzte Woche",
+  "en": "last week",
+  "lektion": 14
+ },
+ {
+  "de": "letztes Jahr",
+  "en": "last year",
+  "lektion": 14
+ },
+ {
+  "de": "als Kind",
+  "en": "as a child",
+  "lektion": 14
+ },
+ {
+  "de": "am Wochenende",
+  "en": "at the weekend",
+  "lektion": 14
+ },
+ {
+  "de": "eine Party machen",
+  "en": "to throw a party",
+  "lektion": 14
+ },
+ {
+  "de": "die Ernährung umstellen",
+  "en": "to change one's diet",
+  "lektion": 15
+ },
+ {
+  "de": "beim Essen",
+  "en": "while eating",
+  "lektion": 15
+ },
+ {
+  "de": "beim Kochen",
+  "en": "while cooking",
+  "lektion": 15
+ },
+ {
+  "de": "beim Einkaufen",
+  "en": "while shopping",
+  "lektion": 15
+ },
+ {
+  "de": "beim Lernen",
+  "en": "while studying",
+  "lektion": 15
+ },
+ {
+  "de": "beim Autofahren",
+  "en": "while driving",
+  "lektion": 15
+ },
+ {
+  "de": "beim Sport",
+  "en": "while doing sport",
+  "lektion": 15
+ },
+ {
+  "de": "ein besonderes Ereignis",
+  "en": "a special event",
+  "lektion": 15
  }
 ]

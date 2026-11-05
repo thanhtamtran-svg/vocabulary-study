@@ -11,6 +11,26 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-05 — Chuyển hết cụm từ Schritte A1 sang Hören & Sprechen A1; Schritte A1 chỉ giữ từ gốc
+
+- **Cụm từ:** cả 156 thẻ loại "Expression" còn lại trong Schritte A1 (vd
+  *mit dem Bus, Hunger haben, links abbiegen, am Wochenende, danke*) đã
+  chuyển sang Hören & Sprechen A1. 12 cụm đã có sẵn bên đó (vd *danke* →
+  "Danke.", *es regnet* → "Es regnet.") được ghép vào thẻ cũ; 142 thẻ mới
+  được xếp vào đúng tình huống (Nach dem Weg fragen, Uhrzeit, Gesundheit…).
+  Thay đổi so với quyết định 2026-10-20 (khi đó giữ cụm kiểu *mit dem Bus*
+  ở Schritte A1).
+- **Từ gốc:** 7 cặp số ít/số nhiều gộp còn thẻ số ít (*Speise, Getränk,
+  Nachricht, Hausaufgabe, Schmerz, Haar, Medikament*); thẻ số ít lấy bài
+  học sớm hơn của cặp. 3 thẻ đổi sang số ít: *die Nudel, die Süßigkeit,
+  der High Heel*. Cố ý giữ số nhiều: *die Leute, Ferien, Nebenkosten,
+  Spaghetti* (không có số ít), *die Kleider, Papiere* (khác nghĩa), nhóm
+  *-schmerzen* (cách nói tự nhiên).
+- **Tiến độ học không mất:** thẻ đã thuộc ở Schritte A1 tự tính là đã thuộc
+  ở khoá mới; tiến độ thẻ số nhiều dồn sang thẻ số ít. Có kiểm thử tự động.
+- Schritte A1 còn 1.413 thẻ. Trang Browse ẩn nút lọc "Expression" (giờ trống).
+- Ảnh/phát âm đã lưu cho 3 thẻ đổi tên sẽ tạo lại khi cần.
+
 ## 2026-11-05 — Nút "Tạo ảnh": đổi sang AI vẽ rẻ hơn 4 lần + sửa lỗi
 
 - Đổi mẫu AI vẽ ảnh từ Gemini 2.5 Flash Image (~0,04 USD/ảnh) sang

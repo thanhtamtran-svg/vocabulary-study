@@ -11,6 +11,8 @@ import {
 import { dateKey, parseDate, formatDate, addDays, getStudyDay, todayDate } from './lib/dates';
 import { speakGerman, speakPattern } from './lib/speech';
 import { migrateA11ToPatterns, applyPatternRenames } from './lib/patterns-migration';
+import { PATTERN_RENAMES } from './patterns-a1-migration';
+import { A11_RENAMES } from './a11-renames';
 import { loadState, saveState } from './lib/storage';
 import { mergeFullState, mergeProgress, cloudPull, cloudPush } from './lib/sync';
 import { fetchWordImage, generateWordImage, fetchCachedExplanation, fetchIPAAndDefinition, fetchExplanation } from './lib/api';
@@ -51,6 +53,14 @@ function App({onHome, vocabData, variant, examData}) {
     .filter(s => s.key), [cfg]);
   const saved = useMemo(() => loadState(storageKey), [storageKey]);
   const isPatternCourse = cfg.engine === 'pattern';
+  // Rows reworded after release: old progress key -> current key. Folded in on
+  // load and after every cloud pull (an older device/cloud copy keeps old keys).
+  const courseRenames = isPatternCourse ? PATTERN_RENAMES : variant === 'a11' ? A11_RENAMES : null;
+  const withRenames = function(p, e) {
+    if (!courseRenames) return { progress: p, exerciseProgress: e };
+    var r = applyPatternRenames(p, e, courseRenames);
+    return { progress: r.progress, exerciseProgress: r.exerciseProgress };
+  };
   // Patterns course: fold in this device's Schritte A1 progress for the rows
   // that moved here (idempotent merge — see lib/patterns-migration.ts).
   const initialPatternMigration = useMemo(() => {
@@ -87,7 +97,7 @@ function App({onHome, vocabData, variant, examData}) {
     var p = saved?.progress || {};
     // One-time migration: numeric keys → lowercase word keys
     if (isIndexKeyedProgress(p)) p = migrateProgressToStringKeys(p, VOCAB_DATA);
-    return p;
+    return withRenames(p, {}).progress;
   });
 
   // Helper: get progress key for a word index (uses current vocab data)
@@ -376,7 +386,7 @@ function App({onHome, vocabData, variant, examData}) {
       var d = localStorage.getItem(exerciseProgressKey);
       var ep = d ? JSON.parse(d) : {};
       if (isIndexKeyedProgress(ep)) ep = migrateExerciseProgressToStringKeys(ep, VOCAB_DATA);
-      return ep;
+      return withRenames({}, ep).exerciseProgress;
     } catch { return {}; }
   }); // {wordKey: {attempts, correct, lastExercise, nextReview, streak}}
   const [exerciseSelectedIdx, setExerciseSelectedIdx] = useState(-1); // for multiple choice
@@ -616,11 +626,9 @@ function App({onHome, vocabData, variant, examData}) {
         };
         var merged = mergeFullState(localSnapshot, remote, dateKey(today), VOCAB_DATA);
         // A cloud copy from an older app version may still use reworded keys
-        if (isPatternCourse) {
-          var renamed = applyPatternRenames(merged.progress, merged.exerciseProgress);
-          merged.progress = renamed.progress;
-          merged.exerciseProgress = renamed.exerciseProgress;
-        }
+        var renamed = withRenames(merged.progress, merged.exerciseProgress);
+        merged.progress = renamed.progress;
+        merged.exerciseProgress = renamed.exerciseProgress;
         // Compute studyDates from merged progress + exercises (source of truth)
         // Also union with remote.studyDates in case it has dates not in reviews
         var computedDates = new Set(remote.studyDates || []);
@@ -737,6 +745,9 @@ function App({onHome, vocabData, variant, examData}) {
           startDate: dateKey(startDate), started: started,
         };
         var merged = mergeFullState(localSnapshot, remote, dateKey(today), VOCAB_DATA);
+        var renamedC = withRenames(merged.progress, merged.exerciseProgress);
+        merged.progress = renamedC.progress;
+        merged.exerciseProgress = renamedC.exerciseProgress;
         setProgress(merged.progress);
         setExerciseProgress(merged.exerciseProgress);
         setTodayCompleted(merged.todayCompleted);

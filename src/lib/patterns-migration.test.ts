@@ -3,6 +3,7 @@ import { migrateA11ToPatterns, patternsKeyFor, applyPatternRenames } from './pat
 import { A11_TO_PATTERNS, PATTERN_RENAMES, DROPPED_A11_KEYS } from '../patterns-a1-migration';
 import { VOCAB_PATTERNS_DATA } from '../patterns-a1-data';
 import { VOCAB_A11_DATA } from '../vocab-a11-data';
+import { A11_RENAMES } from '../a11-renames';
 import moved from '../../scripts/data/a11-moved-rows.json';
 
 // Moving rows between courses touches real learner progress, so every rule
@@ -109,5 +110,43 @@ describe('migrateA11ToPatterns', () => {
     const r = migrateA11ToPatterns(null, undefined, null, undefined, MAP);
     expect(r.progress).toEqual({});
     expect(r.changed).toBe(false);
+  });
+});
+
+describe('2026-11-05: all Expressions moved, Schritte A1 keeps base noun forms', () => {
+  it('no Expression row is left in Schritte A1', () => {
+    const exprType = VOCAB_A11_DATA.types.indexOf('Expression');
+    expect(VOCAB_A11_DATA.words.filter(w => w[3] === exprType).map(w => w[0])).toEqual([]);
+  });
+  it('A11_RENAMES: every target is a current row, every old key is gone', () => {
+    const keys = new Set(VOCAB_A11_DATA.words.map(w => String(w[0]).toLowerCase().trim()));
+    Object.entries(A11_RENAMES).forEach(([from, to]) => {
+      expect(keys.has(to), to).toBe(true);
+      expect(keys.has(from), from).toBe(false);
+    });
+  });
+  it('kept plural on purpose: no-singular nouns, other-meaning plurals, -schmerzen compounds', () => {
+    const keys = new Set(VOCAB_A11_DATA.words.map(w => String(w[0])));
+    ['die Leute', 'die Ferien', 'die Nebenkosten', 'die Spaghetti', 'die Kleider', 'die Papiere',
+      'die Kopfschmerzen', 'die Halsschmerzen', 'die Rückenschmerzen'].forEach(k => expect(keys.has(k), k).toBe(true));
+  });
+  it('a learned plural card carries over to the singular without downgrading it', () => {
+    const p = {
+      'die getränke': { learned: true, confidence: 4, lastReview: '2026-11-01', reviews: [{ date: '2026-11-01', type: 'review', conf: 4 }] },
+      'das getränk': { learned: true, confidence: 2, lastReview: '2026-10-10', reviews: [{ date: '2026-10-10', type: 'learn', conf: 2 }] },
+      'die nudeln': { learned: true, confidence: 3, lastReview: '2026-10-12', reviews: [{ date: '2026-10-12', type: 'learn', conf: 3 }] },
+    };
+    const r = applyPatternRenames(p, { 'die nudeln': { recent: [1, 1], attempts: 2, correct: 2, streak: 2, lastExercise: '2026-10-12', nextReview: '2026-10-20' } }, A11_RENAMES);
+    expect(r.progress['das getränk'].confidence).toBe(4);
+    expect(r.progress['das getränk'].reviews).toHaveLength(2);
+    expect(r.progress['die nudel'].learned).toBe(true);
+    expect(r.exerciseProgress['die nudel'].correct).toBe(2);
+    expect(applyPatternRenames(r.progress, r.exerciseProgress, A11_RENAMES).changed).toBe(false);
+  });
+  it('a learned Schritte phrase is learned in the patterns course', () => {
+    const r = migrateA11ToPatterns({ 'mit dem bus': { learned: true, confidence: 3, lastReview: '2026-10-01', reviews: [] } }, {}, {}, {});
+    expect(r.progress['mit dem bus'].learned).toBe(true);
+    const r2 = migrateA11ToPatterns({ 'danke': { learned: true, confidence: 3, lastReview: '2026-10-01', reviews: [] } }, {}, {}, {});
+    expect(r2.progress['danke.'].learned).toBe(true);
   });
 });
