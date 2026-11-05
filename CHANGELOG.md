@@ -11,6 +11,22 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-05 — Nút "Tạo ảnh": đổi sang AI vẽ rẻ hơn 4 lần + sửa lỗi
+
+- Đổi mẫu AI vẽ ảnh từ Gemini 2.5 Flash Image (~0,04 USD/ảnh) sang
+  **FLUX 3 Image Klein** (~0,009 USD/ảnh). Chọn sau khi vẽ thử 3 từ
+  (*die Getränke, schwimmen, müde*) bằng 3 mẫu rẻ: FLUX 3 Klein rõ nghĩa
+  nhất và không chèn chữ; FLUX.2 Klein 4B chèn chữ sai chính tả nên loại;
+  Recraft V4.1 Flash rẻ hơn chút nhưng ảnh "schwimmen" khó hiểu.
+- Thay khoá OpenRouter mới trên máy chủ.
+- Sửa lỗi: từ có ä/ö/ü (vd *Getränke*) không lưu được ảnh vào kho vì kho
+  từ chối tên file có dấu → ảnh bị nhét vào cơ sở dữ liệu. Giờ tên file
+  được đổi sang chữ không dấu.
+- Sửa lỗi: nút không gửi thông tin đăng nhập nên bị giới hạn chung 2
+  ảnh/phút, bấm lần hai hay báo lỗi. Giờ người đã đăng nhập được 5 ảnh/phút.
+- **Chưa kiểm chứng:** chưa tạo lại ảnh qua app sau bản sửa cuối (PM bảo
+  không cần tạo thử). Thẻ *die Getränke* đang trống ảnh, bấm "Tạo ảnh" là có.
+
 ## 2026-11-03 — Luyện thi: thêm 6 bộ thẻ theo đề mẫu Goethe
 
 - Thêm 4 bộ **Teil 2**: Wochenende, Schule (theo đề Übungssatz 01), Sport

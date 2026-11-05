@@ -89,6 +89,15 @@ dùng chung); phương án 1–3 nên làm cho cả hai khoá.
 
 ## 🌱 Low
 
+### B-035: Chuyển 3 ảnh đang nằm trong cơ sở dữ liệu sang kho ảnh
+
+**Effort:** S · **Tier:** 1
+
+Rà 2026-11-05: 3 từ (*die folie, once in a while, def österreich*) có ảnh
+lưu dạng base64 trong bảng `vocab_images` thay vì file trong kho
+`vocab-images` (do lỗi tên file có dấu / lỗi upload cũ). Vẫn hiện được
+nhưng nặng. Upload sang kho với tên không dấu rồi cập nhật đường dẫn.
+
 ### B-033: Khoá mẫu câu — còn một kiểm tra trên web thật
 
 - Đã xong 2026-10-20 sau deploy: probe (German/English/không-lang vẫn

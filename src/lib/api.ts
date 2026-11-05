@@ -95,9 +95,11 @@ export async function fetchWordImage(germanWord, englishWord, wordType) {
 export async function generateWordImage(germanWord, englishWord, wordType) {
   var cacheKey = germanWord.toLowerCase().trim();
   try {
+    // Send the session token: without it every tap landed in the shared
+    // "unauth" bucket (2/min) and a second tap often came back 429.
     var res = await fetch(SUPABASE_URL + '/functions/v1/generate-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': explainAuthHeader() },
       body: JSON.stringify({ word: germanWord, english: englishWord, type: wordType || '' })
     });
     if (!res.ok) return null;
