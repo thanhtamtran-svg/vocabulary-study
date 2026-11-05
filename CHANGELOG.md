@@ -16,7 +16,7 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 - **Cụm từ:** cả 156 thẻ loại "Expression" còn lại trong Schritte A1 (vd
   *mit dem Bus, Hunger haben, links abbiegen, am Wochenende, danke*) đã
   chuyển sang Hören & Sprechen A1. 12 cụm đã có sẵn bên đó (vd *danke* →
-  "Danke.", *es regnet* → "Es regnet.") được ghép vào thẻ cũ; 142 thẻ mới
+  "Danke.", *es regnet* → "Es regnet.") được ghép vào thẻ cũ; 143 thẻ mới (hai thẻ trùng *von...bis* gộp làm một)
   được xếp vào đúng tình huống (Nach dem Weg fragen, Uhrzeit, Gesundheit…).
   Thay đổi so với quyết định 2026-10-20 (khi đó giữ cụm kiểu *mit dem Bus*
   ở Schritte A1).
