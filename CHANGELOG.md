@@ -11,6 +11,14 @@ Các thay đổi nhỏ kiểu typo, comment, format không cần ghi.
 
 ---
 
+## 2026-11-09 — Khung ảnh: "Đang tìm ảnh…" khác với "Đang tạo ảnh…"
+
+- Lúc app chỉ đang tìm ảnh đã lưu, khung ảnh từng hiện "Đang tạo ảnh…"
+  (hoặc "Generating image..." ở mặt trước), trông như app tự vẽ. Giờ hiện
+  **"Đang tìm ảnh…"**; chữ "Đang tạo ảnh…" chỉ hiện sau khi PM bấm
+  "✨ Tạo ảnh". Cách làm không đổi: có ảnh thì hiện, chưa có thì hiện nút,
+  chỉ vẽ khi bấm (máy chủ cũng không vẽ lại nếu đã có ảnh).
+
 ## 2026-11-05 — Chuyển hết cụm từ Schritte A1 sang Hören & Sprechen A1; Schritte A1 chỉ giữ từ gốc
 
 - **Cụm từ:** cả 156 thẻ loại "Expression" còn lại trong Schritte A1 (vd

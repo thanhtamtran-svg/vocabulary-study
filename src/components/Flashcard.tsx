@@ -154,7 +154,7 @@ export default React.memo(function Flashcard({
                     {imageLoading
                       ? <>
                           <div className="spinner" style={{width:'24px',height:'24px'}}></div>
-                          <span style={{fontSize:'11px',color:'var(--text-faint)'}}>{'\u0110ang t\u1EA1o \u1EA3nh\u2026'}</span>
+                          <span style={{fontSize:'11px',color:'var(--text-faint)'}}>{imageLoading === 'generating' ? '\u0110ang t\u1EA1o \u1EA3nh\u2026' : '\u0110ang t\u00ECm \u1EA3nh\u2026'}</span>
                         </>
                       : <>
                           <span style={{fontSize:'34px',opacity:0.45}}>{'\uD83D\uDDBC\uFE0F'}</span>

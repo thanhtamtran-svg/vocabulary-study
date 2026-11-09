@@ -83,7 +83,7 @@ export default React.memo(function SessionView({
         {!flipped && !isPattern ? <div className="word-image-container">
           {imageLoading ? <div style={{textAlign:'center',color:'var(--text-faint)',padding:'20px',fontSize:'12px'}}>
             <div className="spinner" style={{width:'24px',height:'24px',margin:'0 auto 8px'}}></div>
-            Generating image...
+            {imageLoading === 'generating' ? 'Đang tạo ảnh…' : 'Đang tìm ảnh…'}
           </div> : null}
           {wordImage ? <div>
             <img src={wordImage.url} alt={w.english} className="word-image"

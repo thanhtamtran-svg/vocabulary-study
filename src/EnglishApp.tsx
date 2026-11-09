@@ -225,8 +225,8 @@ function EnglishApp({onHome}) {
     if (!w) return;
     var cancelled = false;
     setWordImage(null);
-    // Generate cartoon illustration for the phrase
-    setImageLoading(true);
+    // Look up a saved image only; drawing one needs the "Tạo ảnh" button
+    setImageLoading('checking');
     setWordImage(null);
     fetchWordImage(w.german, w.english, w.type).then(function(img) {
       if (cancelled) return;
@@ -1035,7 +1035,7 @@ function EnglishApp({onHome}) {
       onGenerateImage={function() {
         var w = sessionWords[currentIdx];
         if (!w) return;
-        setImageLoading(true);
+        setImageLoading('generating');
         generateWordImage(w.german, w.english, w.type).then(function(img) {
           setWordImage(img);
           setImageLoading(false);

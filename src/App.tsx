@@ -302,7 +302,7 @@ function App({onHome, vocabData, variant, examData}) {
     var cancelled = false;
     setWordImage(null);
     if (cfg.images) {
-      setImageLoading(true);
+      setImageLoading('checking');
       fetchWordImage(w.german, w.english, w.type).then(function(img) {
         if (cancelled) return;
         setWordImage(img);
@@ -1292,7 +1292,7 @@ function App({onHome, vocabData, variant, examData}) {
       onGenerateImage={function() {
         var w = sessionWords[currentIdx];
         if (!w) return;
-        setImageLoading(true);
+        setImageLoading('generating');
         generateWordImage(w.german, w.english, w.type).then(function(img) {
           setWordImage(img);
           setImageLoading(false);
